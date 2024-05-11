@@ -3,12 +3,14 @@
 **Creada por [Skyflyer](https://twitter.com/Sky_fangames) y [DPertierra](https://github.com/dpertierra)**
 
 ## Base de Pokémon Essentials en Español creada sobre la versión 21.1
+**DESCARGAR BASE: https://skyfangames.blogspot.com/2024/01/base-de-sky.html**
+
 
 ### AÑADIDOS V 1.0.6
 - Añadidas las evoluciones faltantes de Pokémon de Hisui y de Paldea en el PBS de Pokémon.
 - Corregido error en los sprites de Basculegion hembra.
 - Correcciones a los íconos de status en la party y en combate.
-- Agrega métodos de evolución para los Pokémon que deben evolucionar a una forma random (Dunsparce y Tandemaus)
+- Agrega métodos de evolución para los Pokémon que deben evolucionar a una forma random (Dunsparce y Tandemaus).
 - Actualizada la Pokédex avanzada con varias mejoras.
 - Añadida compatibilidad de la opción de mostrar el gráfico de un Pokémon en un recuadro con los sprites animados.
 - Añadido NPC en Pueblo Inicio que sirve de ejemplo sobre cómo mostrar el grito de un Pokémon.
