@@ -189,55 +189,6 @@ FRONTSPRITE_SCALE = 1 #2
 BACKSPRITE_SCALE  = 1 #3
 
 
-
-################################################################################
-#  CONFIGURACIÓN DECOUPLED ABILITIES
-################################################################################
-# Un array de habilidades que pueden ser separadas.
-# Elimina entradas de esta lista si deseas que sigan siendo exclusivas de su especie
-DECOUPLED_ABILITIES = [
-  :BATTLEBOND,      # de Greninja - ten en cuenta que Greninja utiliza la forma de la
-                    #               habilidad de la Gen 7 y todos los demás Pokémon 
-                    #               utilizan la forma de la habilidad de la Gen 9
-  :COMATOSE,        # de Komala
-  :COMMANDER,       # de Tatsugiri
-  :DISGUISE,        # de Mimikyu
-  :EMBODYASPECT,    # de Ogerpon
-  :EMBODYASPECT_2,
-  :EMBODYASPECT_3,
-  :EMBODYASPECT_4,
-  :FLOWERGIFT,      # de Cherrim
-  :FORECAST,        # de Castform
-  :GULPMISSILE,     # de Cramorant
-  :HUNGERSWITCH,    # de Morpeko
-  :ICEFACE,         # de Eiscue
-  :MULTITYPE,       # de Arceus
-  :POISONPUPPETEER, # de Pecharunt
-  :POWERCONSTRUCT,  # de Zygarde
-  :RKSSYSTEM,       # de Silvally
-  :SCHOOLING,       # de Wishiwashi
-  :SHIELDSDOWN,     # de Minior
-  :STANCECHANGE,    # de Aegislash
-  :TERAFORMZERO,    # de Stellar Terapagos
-  :TERASHELL,       # de Terapagos por defecto
-  :TERASHIFT,       # de Terapagos bebé
-  :ZENMODE,         # de Darmanitan
-  :ZEROTOHERO,      # de Palafin
-]
-
-# Castform no tiene una forma de arena. Los Pokémon que no son de Castform ganarán
-# el tipo Tierra si esta configuración está en verdadero.
-ALLOW_SAND_FORECAST = false
-
-# Embody Aspect se trata como cuatro habilidades, una para cada forma. Cambia esta
-# configuración a verdadera si deseas que estas habilidades se comporten de manera
-# idéntica
-#     (con qué estadística se eleva siendo determinado por el objeto que lleva el
-#     usuario.)
-EMBODY_ASPECT_IS_UNITED = true
-
-
-
 ################################################################################
 #  PANEL DE EXPERIENCIA MÚLTIPLE
 ################################################################################

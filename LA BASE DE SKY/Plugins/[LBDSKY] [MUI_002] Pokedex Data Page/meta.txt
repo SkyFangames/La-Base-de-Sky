@@ -3,4 +3,4 @@ Version    = 2.0
 Essentials = 21.1
 Requires   = Modular UI Scenes,2.0.4
 Website    = https://www.pokecommunity.com/threads/in-depth-pokedex-data-page-v21-1.500459/
-Credits    = Lucidious89
+Credits    = Lucidious89, Skyflyer, DPertierra

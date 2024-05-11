@@ -1,194 +1,216 @@
-#===============================================================================
-# Basic trainer class (use a child class rather than this one)
-#===============================================================================
-class Trainer
-  attr_accessor :trainer_type
-  attr_accessor :name
-  attr_accessor :id
-  attr_accessor :language
-  attr_accessor :party
+module GameData
+  class Trainer
+    attr_reader :id
+    attr_reader :trainer_type
+    attr_reader :real_name
+    attr_reader :version
+    attr_reader :items
+    attr_reader :real_lose_text
+    attr_reader :pokemon
+    attr_reader :pbs_file_suffix
 
-  def inspect
-    str = super.chop
-    party_str = @party.map { |p| p.species_data.species }.inspect
-    str << sprintf(" %s @party=%s>", self.full_name, party_str)
-    return str
-  end
+    DATA = {}
+    DATA_FILENAME = "trainers.dat"
+    PBS_BASE_FILENAME = "trainers"
 
-  def full_name
-    return _INTL("{1} {2}", trainer_type_name, @name)
-  end
+    # "Pokemon" is specially mentioned in def compile_trainers and def
+    # write_trainers, and acts as a subheading for a particular Pokémon.
+    SCHEMA = {
+      "SectionName" => [:id,             "esU", :TrainerType],
+      "Items"       => [:items,          "*e", :Item],
+      "LoseText"    => [:real_lose_text, "q"],
+      "Pokemon"     => [:pokemon,        "ev", :Species]   # Species, level
+    }
+    # This schema is for definable properties of individual Pokémon (apart from
+    # species and level which are above).
+    SUB_SCHEMA = {
+      "Form"         => [:form,            "u"],
+      "Name"         => [:real_name,       "s"],
+      "Moves"        => [:moves,           "*e", :Move],
+      "Ability"      => [:ability,         "e", :Ability],
+      "AbilityIndex" => [:ability_index,   "u"],
+      "Item"         => [:item,            "e", :Item],
+      "Gender"       => [:gender,          "e", {"M" => 0, "m" => 0, "Male" => 0, "male" => 0, "0" => 0,
+                                                 "F" => 1, "f" => 1, "Female" => 1, "female" => 1, "1" => 1}],
+      "Nature"       => [:nature,          "e", :Nature],
+      "IV"           => [:iv,              "uUUUUU"],
+      "EV"           => [:ev,              "uUUUUU"],
+      "Happiness"    => [:happiness,       "u"],
+      "Shiny"        => [:shininess,       "b"],
+      "SuperShiny"   => [:super_shininess, "b"],
+      "Shadow"       => [:shadowness,      "b"],
+      "Ball"         => [:poke_ball,       "e", :Item]
+    }
 
-  #=============================================================================
+    extend ClassMethodsSymbols
+    include InstanceMethods
 
-  # Portion of the ID which is visible on the Trainer Card
-  def public_ID(id = nil)
-    return id ? id & 0xFFFF : @id & 0xFFFF
-  end
-
-  # Other portion of the ID
-  def secret_ID(id = nil)
-    return id ? id >> 16 : @id >> 16
-  end
-
-  # Random ID other than this Trainer's ID
-  def make_foreign_ID
-    loop do
-      ret = rand(2**16) | (rand(2**16) << 16)
-      return ret if ret != @id
+    def self.sub_schema
+      return SUB_SCHEMA
     end
-    return 0
-  end
 
-  #=============================================================================
-
-  def trainer_type_name; return GameData::TrainerType.get(self.trainer_type).name;            end
-  def base_money;        return GameData::TrainerType.get(self.trainer_type).base_money;      end
-  def gender;            return GameData::TrainerType.get(self.trainer_type).gender;          end
-  def male?;             return GameData::TrainerType.get(self.trainer_type).male?;           end
-  def female?;           return GameData::TrainerType.get(self.trainer_type).female?;         end
-  def skill_level;       return GameData::TrainerType.get(self.trainer_type).skill_level;     end
-  def flags;             return GameData::TrainerType.get(self.trainer_type).flags;           end
-  def has_flag?(flag);   return GameData::TrainerType.get(self.trainer_type).has_flag?(flag); end
-
-  #=============================================================================
-
-  def pokemon_party
-    return @party.find_all { |p| p && !p.egg? }
-  end
-
-  def able_party
-    return @party.find_all { |p| p && !p.egg? && !p.fainted? }
-  end
-
-  def party_count
-    return @party.length
-  end
-
-  def pokemon_count
-    ret = 0
-    @party.each { |p| ret += 1 if p && !p.egg? }
-    return ret
-  end
-
-  def able_pokemon_count
-    ret = 0
-    @party.each { |p| ret += 1 if p && !p.egg? && !p.fainted? }
-    return ret
-  end
-
-  def party_full?
-    return party_count >= Settings::MAX_PARTY_SIZE
-  end
-
-  # Returns true if there are no usable Pokémon in the player's party.
-  def all_fainted?
-    return able_pokemon_count == 0
-  end
-
-  def first_party
-    return @party[0]
-  end
-
-  def first_pokemon
-    return pokemon_party[0]
-  end
-
-  def first_able_pokemon
-    return able_party[0]
-  end
-
-  def last_party
-    return (@party.length > 0) ? @party[@party.length - 1] : nil
-  end
-
-  def last_pokemon
-    p = pokemon_party
-    return (p.length > 0) ? p[p.length - 1] : nil
-  end
-
-  def last_able_pokemon
-    p = able_party
-    return (p.length > 0) ? p[p.length - 1] : nil
-  end
-
-  def remove_pokemon_at_index(index)
-    return false if index < 0 || index >= party_count
-    have_able = false
-    @party.each_with_index do |pkmn, i|
-      have_able = true if i != index && pkmn.able?
-      break if have_able
+    # @param tr_type [Symbol, String]
+    # @param tr_name [String]
+    # @param tr_version [Integer, nil]
+    # @return [Boolean] whether the given other is defined as a self
+    def self.exists?(tr_type, tr_name, tr_version = 0)
+      validate tr_type => [Symbol, String]
+      validate tr_name => [String]
+      key = [tr_type.to_sym, tr_name, tr_version]
+      return !self::DATA[key].nil?
     end
-    return false if !have_able
-    @party.delete_at(index)
-    return true
-  end
 
-  # Checks whether the trainer would still have an unfainted Pokémon if the
-  # Pokémon given by _index_ were removed from the party.
-  def has_other_able_pokemon?(index)
-    @party.each_with_index { |pkmn, i| return true if i != index && pkmn.able? }
-    return false
-  end
+    # @param tr_type [Symbol, String]
+    # @param tr_name [String]
+    # @param tr_version [Integer, nil]
+    # @return [self]
+    def self.get(tr_type, tr_name, tr_version = 0)
+      validate tr_type => [Symbol, String]
+      validate tr_name => [String]
+      key = [tr_type.to_sym, tr_name, tr_version]
+      raise "Unknown trainer #{tr_type} #{tr_name} #{tr_version}." unless self::DATA.has_key?(key)
+      return self::DATA[key]
+    end
 
-  # Returns true if there is a Pokémon of the given species in the trainer's
-  # party. You may also specify a particular form it should be.
-  def has_species?(species, form = -1)
-    return pokemon_party.any? { |p| p&.isSpecies?(species) && (form < 0 || p.form == form) }
-  end
+    # @param tr_type [Symbol, String]
+    # @param tr_name [String]
+    # @param tr_version [Integer, nil]
+    # @return [self, nil]
+    def self.try_get(tr_type, tr_name, tr_version = 0)
+      validate tr_type => [Symbol, String]
+      validate tr_name => [String]
+      key = [tr_type.to_sym, tr_name, tr_version]
+      return (self::DATA.has_key?(key)) ? self::DATA[key] : nil
+    end
 
-  # Returns whether there is a fatefully met Pokémon of the given species in the
-  # trainer's party.
-  def has_fateful_species?(species)
-    return pokemon_party.any? { |p| p&.isSpecies?(species) && p.obtain_method == 4 }
-  end
+    def initialize(hash)
+      @id              = hash[:id]
+      @trainer_type    = hash[:trainer_type]
+      @real_name       = hash[:real_name]       || ""
+      @version         = hash[:version]         || 0
+      @items           = hash[:items]           || []
+      @real_lose_text  = hash[:real_lose_text]  || "..."
+      @pokemon         = hash[:pokemon]         || []
+      @pokemon.each do |pkmn|
+        GameData::Stat.each_main do |s|
+          pkmn[:iv][s.id] ||= 0 if pkmn[:iv]
+          pkmn[:ev][s.id] ||= 0 if pkmn[:ev]
+        end
+      end
+      @pbs_file_suffix = hash[:pbs_file_suffix] || ""
+    end
 
-  # Returns whether there is a Pokémon with the given type in the trainer's
-  # party.
-  def has_pokemon_of_type?(type)
-    return false if !GameData::Type.exists?(type)
-    type = GameData::Type.get(type).id
-    return pokemon_party.any? { |p| p&.hasType?(type) }
-  end
+    # @return [String] the translated name of this trainer
+    def name
+      return pbGetMessageFromHash(MessageTypes::TRAINER_NAMES, @real_name)
+    end
 
-  # Checks whether any Pokémon in the party knows the given move, and returns
-  # the first Pokémon it finds with that move, or nil if no Pokémon has that move.
-  def get_pokemon_with_move(move)
-    pokemon_party.each { |pkmn| return pkmn if pkmn.hasMove?(move) }
-    return nil
-  end
+    # @return [String] the translated in-battle lose message of this trainer
+    def lose_text
+      return pbGetMessageFromHash(MessageTypes::TRAINER_SPEECHES_LOSE, @real_lose_text)
+    end
 
-  # Fully heal all Pokémon in the party.
-  def heal_party
-    @party.each { |pkmn| pkmn.heal }
-  end
+    # Creates a battle-ready version of a trainer's data.
+    # @return [Array] all information about a trainer in a usable form
+    def to_trainer
+      # Determine trainer's name
+      tr_name = self.name
+      Settings::RIVAL_NAMES.each do |rival|
+        next if rival[0] != @trainer_type || !$game_variables[rival[1]].is_a?(String)
+        tr_name = $game_variables[rival[1]]
+        break
+      end
+      # Create trainer object
+      trainer = NPCTrainer.new(tr_name, @trainer_type, @version)
+      trainer.id        = $player.make_foreign_ID
+      trainer.items     = @items.clone
+      trainer.lose_text = self.lose_text
+      # Create each Pokémon owned by the trainer
+      @pokemon.each do |pkmn_data|
+        species = GameData::Species.get(pkmn_data[:species]).species
+        pkmn = Pokemon.new(species, pkmn_data[:level], trainer, false)
+        trainer.party.push(pkmn)
+        # Set Pokémon's properties if defined
+        if pkmn_data[:form]
+          pkmn.forced_form = pkmn_data[:form] if MultipleForms.hasFunction?(species, "getForm")
+          pkmn.form_simple = pkmn_data[:form]
+        end
+        pkmn.item = pkmn_data[:item]
+        if pkmn_data[:moves] && pkmn_data[:moves].length > 0
+          pkmn_data[:moves].each { |move| pkmn.learn_move(move) }
+        else
+          pkmn.reset_moves
+        end
+        pkmn.ability_index = pkmn_data[:ability_index] || 0
+        pkmn.ability = pkmn_data[:ability]
+        pkmn.gender = pkmn_data[:gender] || ((trainer.male?) ? 0 : 1)
+        pkmn.shiny = (pkmn_data[:shininess]) ? true : false
+        pkmn.super_shiny = (pkmn_data[:super_shininess]) ? true : false
+        if pkmn_data[:nature]
+          pkmn.nature = pkmn_data[:nature]
+        else   # Make the nature random but consistent for the same species used by the same trainer type
+          species_num = GameData::Species.keys.index(species) || 1
+          tr_type_num = GameData::TrainerType.keys.index(@trainer_type) || 1
+          idx = (species_num + tr_type_num) % GameData::Nature.count
+          pkmn.nature = GameData::Nature.get(GameData::Nature.keys[idx]).id
+        end
+        GameData::Stat.each_main do |s|
+          if pkmn_data[:iv]
+            pkmn.iv[s.id] = pkmn_data[:iv][s.id]
+          else
+            pkmn.iv[s.id] = [pkmn_data[:level] / 2, Pokemon::IV_STAT_LIMIT].min
+          end
+          if pkmn_data[:ev]
+            pkmn.ev[s.id] = pkmn_data[:ev][s.id]
+          else
+            pkmn.ev[s.id] = [pkmn_data[:level] * 3 / 2, Pokemon::EV_LIMIT / 6].min
+          end
+        end
+        pkmn.happiness = pkmn_data[:happiness] if pkmn_data[:happiness]
+        if !nil_or_empty?(pkmn_data[:real_name])
+          pkmn.name = pbGetMessageFromHash(MessageTypes::POKEMON_NICKNAMES, pkmn_data[:real_name])
+        end
+        if pkmn_data[:shadowness]
+          pkmn.makeShadow
+          pkmn.shiny = false
+        end
+        pkmn.poke_ball = pkmn_data[:poke_ball] if pkmn_data[:poke_ball]
+        pkmn.calc_stats
+      end
+      return trainer
+    end
 
-  #=============================================================================
+    alias __orig__get_property_for_PBS get_property_for_PBS unless method_defined?(:__orig__get_property_for_PBS)
+    def get_property_for_PBS(key, index = 0)
+      ret = __orig__get_property_for_PBS(key)
+      case key
+      when "SectionName"
+        ret = [@trainer_type, @real_name] if @version == 0
+      when "Pokemon"
+        ret = [@pokemon[index][:species], @pokemon[index][:level]]
+      end
+      return ret
+    end
 
-  def initialize(name, trainer_type)
-    @trainer_type = GameData::TrainerType.get(trainer_type).id
-    @name         = name
-    @id           = rand(2**16) | (rand(2**16) << 16)
-    @language     = pbGetLanguage
-    @party        = []
+    def get_pokemon_property_for_PBS(key, index = 0)
+      return [@pokemon[index][:species], @pokemon[index][:level]] if key == "Pokemon"
+      ret = @pokemon[index][SUB_SCHEMA[key][0]]
+      ret = nil if ret == false || (ret.is_a?(Array) && ret.length == 0) || ret == ""
+      case key
+      when "Gender"
+        ret = ["male", "female"][ret] if ret
+      when "IV", "EV"
+        if ret
+          new_ret = []
+          GameData::Stat.each_main do |s|
+            new_ret[s.pbs_order] = ret[s.id] if s.pbs_order >= 0
+          end
+          ret = new_ret
+        end
+      when "Shiny"
+        ret = nil if @pokemon[index][:super_shininess]
+      end
+      return ret
+    end
   end
 end
-
-#===============================================================================
-# Trainer class for NPC trainers
-#===============================================================================
-class NPCTrainer < Trainer
-  attr_accessor :version
-  attr_accessor :items
-  attr_accessor :lose_text
-  attr_accessor :win_text
-
-  def initialize(name, trainer_type, version = 0)
-    super(name, trainer_type)
-    @version   = version
-    @items     = []
-    @lose_text = nil
-    @win_text  = nil
-  end
-end
-
