@@ -1,0 +1,36 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[0]
+Name = Essen
+Filename = mapRegion0.png
+Point = 13,12,Pueblo Inicio,Laboratorio Pokémon,2,8,8
+Point = 13,11,Ruta 1
+Point = 13,10,Ciudad Lugano,Lugano CC,7,47,11
+Point = 14,10,Ciudad Lugano,,7,47,11
+Point = 14,9,Ruta 2
+Point = 14,8,Ruta 2
+Point = 15,8,Pueblo Macabeo,,23,11,15
+Point = 16,8,Parque Natural
+Point = 15,7,Ruta 3
+Point = 15,6,Ruta 3,Cueva de Hielo
+Point = 14,6,Ruta 3
+Point = 13,6,Meseta Añil,,35,17,7
+Point = 12,6,Ruta 4
+Point = 11,6,Ruta 4
+Point = 11,7,Ruta 5,Carril Bici
+Point = 11,8,Ruta 5,Carril Bici
+Point = 11,9,Ruta 5,Carril Bici
+Point = 11,10,Ruta 6
+Point = 12,10,Ruta 6
+Point = 15,10,Ruta 7
+Point = 16,10,Ruta 7,Cueva de Roca
+Point = 17,10,Frente de Batalla,,52,17,14
+Point = 12,12,Zona Safari
+Point = 13,13,Ruta 8,Fondo marino
+Point = 18,17,Isla Origen,,,,,51
+Point = 22,16,Isla Dyson,,,,,52
+#-------------------------------
+[1]
+Name = Tiall
+Filename = mapRegion1.png
+Point = 13,16,Aquí

@@ -1,0 +1,102 @@
+﻿Name       = v21.1 Hotfixes
+Version    = 1.0.9
+Essentials = 21.1
+Conflicts  = v19 Hotfixes
+Conflicts  = v19.1 Updates
+Conflicts  = v20 Hotfixes
+Conflicts  = v20.1 Hotfixes
+Conflicts  = v21 Hotfixes
+Website    = https://github.com/Maruno17/pokemon-essentials
+Credits    = Maruno
+#=====================================================================
+# Change log
+#=====================================================================
+#
+# 1.0.0:
+# - Fixed Pokédex not showing male/female options for species with
+#   gender differences, and showing them for species without.
+# - Fixed AI always switching Pokémon due to unusable moves if the
+#   Pokémon is asleep or frozen.
+# - Fixed class PngAnimatedBitmap animating slowly.
+#
+# 1.0.1:
+# - Fixed being unable to replace a NamedEvent.
+# - Fixed Cramorant's form not reverting after coughing up its Gulp
+#   Missile.
+#
+# 1.0.2:
+# - Fixed crash when a phone contact tries to call you while you're on
+#   a map with no map metadata.
+# - Fixed error from previous version relating to AI switching.
+# - Fixed long messages in battle not appearing/lingering properly,
+#   especially when making them appear faster by pressing Use/Back.
+#
+# 1.0.3:
+# - Fixed being able to fly from the Town Map even if the
+#   CAN_FLY_FROM_TOWN_MAP Setting is false.
+# - Made some unhelpful error messages when compiling more helpful.
+# - Language files are now loaded properly even if the game is
+#   encrypted.
+# - Fixed trying to load non-existent language files not reverting the
+#   messages to the default messages if other language files are
+#   already loaded.
+# - Fixed standing on an event preventing you from interacting with an
+#   event you're facing.
+#
+# 1.0.4:
+#
+# - Fixed error messages in def validate_all_compiled_types.
+# - Fixed line breaks making some messages appear oddly at slow text
+#   speeds.
+# - Fixed being unable to write values to PBS files that were
+#   enumerated to something other than a number.
+# - Fixed abilities triggering twice when a Pokémon with Neutralizing
+#   Gas faints and is switched out.
+#
+# 1.0.5:
+#
+# - Fixed error in previous version relating to writing PBS files.
+#
+# 1.0.6:
+#
+# - Fixed forcing a caught Pokémon into your party not actually
+#   forcing it.
+# - Fixed Rotom Catalog not being able to change Rotom to its base
+#   form.
+# - Fixed the Compiler not writing some enumerables correctly when
+#   writing PBS files.
+# - Fixed the default battle weather being a primal weather causing an
+#   endless loop of that weather starting and ending.
+#
+# 1.0.7:
+#
+# - Fixed the AI thinking it will take End of Round damage when it
+#   won't, and switching because of that.
+# - Fixed the AI wanting to trigger a target's ability/item instead of
+#   not wanting to.
+# - Fixed an event's reflection not disappearing if its page is
+#   changed to one without a graphic.
+#
+# 1.0.8:
+#
+# - Fixed bad conversion of old phone data in an old save file.
+# - Fixed events with an even width/height that approach the player
+#   shuffling back and forth endlessly in front of them.
+# - Fixed Event Touch events on a connected map triggering themselves
+#   by moving around.
+# - Properly fixed previous fix relating to Cramorant's form changing.
+# - Fixed a replacement Pokémon being invisible if its predecessor
+#   fainted and used the same sprite as it.
+#
+# 1.0.9:
+#
+# - Fixed the previous version of this plugin so it actually works.
+#
+#=====================================================================
+#
+# Also included in this plugin is an updated copy of townmapgen.html,
+# now called "Town Map Generator.html", which you should put in your
+# game's main folder. It is now able to find map images again, which
+# were moved into a different folder in Essentials v21.
+#
+#=====================================================================

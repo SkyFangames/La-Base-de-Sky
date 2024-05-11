@@ -1,0 +1,1601 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[000]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MATAS
+PokemonNos = 36,38,42,43,56,76,78,91,94,105,108,115
+BeginSpeech = ¡Allá voy!
+Type = BUGCATCHER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[001]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KUIO
+PokemonNos = 14,26,33,34,35,37,41,47,52,71,74,101,107,109,114
+BeginSpeech = ¡Allá voy!
+Type = BUGCATCHER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[002]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PAH
+PokemonNos = 9,20,26,34,37,43,48,51,62,64,65,70,77,109,111
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[003]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PARIK
+PokemonNos = 0,1,10,12,21,34,47,70,97,115,121
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[004]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SKOR
+PokemonNos = 9,26,51,59,73,91,113
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[005]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = JAST
+PokemonNos = 0,19,31,36,53,60,62,63,68,75,77,80,89,93,94,101,122
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[006]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DOKE
+PokemonNos = 2,7,9,17,29,30,54,60,63,77
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[007]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LONKA
+PokemonNos = 10,18,35,47,49,61,64,73,84,85,89,98,102
+BeginSpeech = ¡Allá voy!
+Type = LASS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[008]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = YAPSINA
+PokemonNos = 3,5,23,31,34,43,47,51,52,62,73,108,112,116
+BeginSpeech = ¡Allá voy!
+Type = LASS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[009]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ELI
+PokemonNos = 1,10,21,29,40,53,67,78,99,104,106,113,116,118
+BeginSpeech = ¡Allá voy!
+Type = LASS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[010]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRAE
+PokemonNos = 9,11,14,22,41,46,53,66,69,77,84,91,100,111
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[011]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MIUS
+PokemonNos = 12,26,30,34,37,41,46,54,59,77,83,106,107
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[012]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ROIUS
+PokemonNos = 14,38,48,53,54,55,61,73,75,78,84,86,88,98,110,112,117,122
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[013]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MAE
+PokemonNos = 6,26,31,35,40,46,50,63,65,68,73,76,77,78,81,91,95,96,97,99,104,105,106,116,117,118,122
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[014]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZAV
+PokemonNos = 7,11,12,19,41,47,54,56,78,101,102,103,114,115,116
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[015]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PREEFT
+PokemonNos = 9,19,24,25,28,37,55,56,60,66,80,81,101,115
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[016]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = CRIB
+PokemonNos = 17,19,37,42,48,73,97,107,117
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[017]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KLILA
+PokemonNos = 2,4,8,11,24,28,38,43,63,67,80,89,95,96,105,109,111,122
+BeginSpeech = ¡Allá voy!
+Type = TUBER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[018]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRUN
+PokemonNos = 2,15,29,50,52,58,65,77,83,97,104,110
+BeginSpeech = ¡Allá voy!
+Type = TUBER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[019]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZOKIZ
+PokemonNos = 37,50,52,64,77,92,94,106,110,113,121
+BeginSpeech = ¡Allá voy!
+Type = TUBER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[020]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = TALA
+PokemonNos = 11,19,27,64,67,75,78,93,105,107,111,116,120,121
+BeginSpeech = ¡Allá voy!
+Type = PICNICKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[021]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = WUCHA
+PokemonNos = 16,18,21,28,41,46,58,66,78,89,95,99,106
+BeginSpeech = ¡Allá voy!
+Type = PICNICKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[022]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BLIRA
+PokemonNos = 8,9,16,25,30,54,75,86,88,98,106
+BeginSpeech = ¡Allá voy!
+Type = PICNICKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[023]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = UROBBA
+PokemonNos = 2,6,37,38,46,58,74,80,82,87,88,111,118
+BeginSpeech = ¡Allá voy!
+Type = PICNICKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[024]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ICHA
+PokemonNos = 20,32,35,54,67,77,81,85,89,91,92,94,100,105,122
+BeginSpeech = ¡Allá voy!
+Type = PICNICKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[025]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ERNICHA
+PokemonNos = 1,10,37,39,60,62,76,84,90,96
+BeginSpeech = ¡Allá voy!
+Type = PICNICKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[026]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SIJUB
+PokemonNos = 0,1,18,26,35,41,49,57,77,78,83,85,87,110,119,121
+BeginSpeech = ¡Allá voy!
+Type = FISHERMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[027]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GAFITO
+PokemonNos = 2,13,23,31,44,60,61,62,64,66,93,98,101,102,108,116
+BeginSpeech = ¡Allá voy!
+Type = FISHERMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[028]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KUITO
+PokemonNos = 3,7,13,16,26,30,61,69,73,114
+BeginSpeech = ¡Allá voy!
+Type = FISHERMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[029]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DEIUS
+PokemonNos = 14,31,37,52,53,55,63,72,79,90,108,119
+BeginSpeech = ¡Allá voy!
+Type = FISHERMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[030]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZOMS
+PokemonNos = 1,15,16,29,35,44,52,56,65,95,98,99,104,109
+BeginSpeech = ¡Allá voy!
+Type = FISHERMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[031]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRUUZEP
+PokemonNos = 1,9,32,53,70,79,80,81,87,94,105,112
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[032]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LEO
+PokemonNos = 16,19,24,32,35,50,64,79,89,109,111
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[033]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MART
+PokemonNos = 0,5,7,10,13,15,19,23,39,46,47,49,70,74,79,90,92,109
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[034]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OCHOFALA
+PokemonNos = 15,18,27,47,50,60,67,69,70,85,87,108,111
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[035]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GONA
+PokemonNos = 12,38,41,47,59,62,70,84,89,91,103,115
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[036]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = EFTICHA
+PokemonNos = 14,15,35,39,53,58,82,90,94,112,118
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[037]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = APITA
+PokemonNos = 5,18,19,24,25,28,38,39,43,51,59,64,82,91,93,95,96,101,116,122
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[038]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ELI
+PokemonNos = 1,18,22,30,37,59,90,96,98,99,122
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[039]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = UNGULI
+PokemonNos = 46,47,52,62,64,94,97,102,107
+BeginSpeech = ¡Allá voy!
+Type = POKEMONBREEDER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[040]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ISIRNIKA
+PokemonNos = 3,5,18,26,29,95,99,105,107,112,119,122
+BeginSpeech = ¡Allá voy!
+Type = POKEMONBREEDER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[041]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = UGGA
+PokemonNos = 0,11,21,28,36,48,51,64,105,114,118,119,121
+BeginSpeech = ¡Allá voy!
+Type = POKEMONBREEDER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[042]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ASA
+PokemonNos = 3,17,28,30,34,44,60,63,65,79,82,106,107,109,113
+BeginSpeech = ¡Allá voy!
+Type = POKEMONBREEDER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[043]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ARKICHA
+PokemonNos = 17,34,46,55,57,84,94,112,113,114
+BeginSpeech = ¡Allá voy!
+Type = POKEMONBREEDER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[044]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = TED
+PokemonNos = 13,14,17,19,25,26,41,57,58,62,63,71,72,78,85,87,114
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[045]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MATIFS
+PokemonNos = 18,24,26,33,35,49,51,56,63,74,81,85,122
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[046]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = APHUTA
+PokemonNos = 18,38,41,48,49,67,73,77,85,102,106,110
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[047]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ACINE
+PokemonNos = 11,45,54,64,71,74,78,89,110,112,114,117,120,121,122
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[048]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = EZOLI
+PokemonNos = 1,3,5,11,20,25,60,76,94,110
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[049]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ROSTA
+PokemonNos = 1,7,14,31,41,45,51,53,61,64,70,86,93,102,104,109,112,120
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[050]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ENDRA
+PokemonNos = 9,14,29,34,62,73,81,94,119
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[051]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ASOSTA
+PokemonNos = 7,28,29,50,60,61,68,83,87,107,109
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[052]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = IPTECHA
+PokemonNos = 9,30,40,46,52,56,82,91,98,103,116,119
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[053]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GLEEGITO
+PokemonNos = 1,11,18,39,63,78,83,110,112,115,119
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[054]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DATU
+PokemonNos = 18,26,28,49,81,85,89,91,97,101,118
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[055]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZOB
+PokemonNos = 24,27,34,40,42,69,78,87,91,99,100,116,117,118
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[056]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DIRAK
+PokemonNos = 20,22,47,52,55,56,60,74,82,93,121
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[057]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LIG
+PokemonNos = 12,20,30,45,47,53,60,80,87,89,90,103,111
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[058]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LAE
+PokemonNos = 23,25,28,33,35,36,42,51,55,58,66,77,79,98,105,110,115
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[059]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ENKA
+PokemonNos = 3,7,9,13,31,53,57,62,118,121
+BeginSpeech = ¡Allá voy!
+Type = AROMALADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[060]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ENDRA
+PokemonNos = 10,25,27,30,37,66,68,70,82,83,103,110,122
+BeginSpeech = ¡Allá voy!
+Type = AROMALADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[061]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = THULI
+PokemonNos = 27,37,39,54,94,104,110,113
+BeginSpeech = ¡Allá voy!
+Type = AROMALADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[062]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LONA
+PokemonNos = 0,1,2,3,16,17,20,60,62,73,83,107,117
+BeginSpeech = ¡Allá voy!
+Type = PSYCHIC_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[063]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KUSSO
+PokemonNos = 2,18,24,27,32,40,43,45,47,53,60,63,83,84,99,104,107,115
+BeginSpeech = ¡Allá voy!
+Type = SUPERNERD
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[064]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GLOROB
+PokemonNos = 5,11,19,38,52,59,62,63,67,74,76,81,84,97,99,102,105,106,108
+BeginSpeech = ¡Allá voy!
+Type = CHANNELER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[065]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = REG
+PokemonNos = 14,22,32,37,50,66,76,84,115
+BeginSpeech = ¡Allá voy!
+Type = CHANNELER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[066]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRAVIUS
+PokemonNos = 0,3,10,24,30,31,34,35,36,42,48,73,74,78,88,91,96,97,106,114,121
+BeginSpeech = ¡Allá voy!
+Type = CHANNELER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[067]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DAIO
+PokemonNos = 129,130,134,141,148,149,155,178,196,197,212,214,232,236,240
+BeginSpeech = ¡Allá voy!
+Type = BIRDKEEPER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[068]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SEM
+PokemonNos = 123,147,149,150,153,172,174,178,189,199,227
+BeginSpeech = ¡Allá voy!
+Type = BIRDKEEPER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[069]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SNUFS
+PokemonNos = 127,139,150,161,165,177,187,204,216,222,236,241
+BeginSpeech = ¡Allá voy!
+Type = BIRDKEEPER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[070]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ROLD
+PokemonNos = 167,199,212,231,233,242
+BeginSpeech = ¡Allá voy!
+Type = BUGCATCHER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[071]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RITAT
+PokemonNos = 131,133,145,146,149,156,160,177,200,205,206,227
+BeginSpeech = ¡Allá voy!
+Type = BUGCATCHER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[072]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LESP
+PokemonNos = 134,137,151,156,165,177,188,218,225,245
+BeginSpeech = ¡Allá voy!
+Type = HIKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[073]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KITU
+PokemonNos = 0,141,152,161,164,176
+BeginSpeech = ¡Allá voy!
+Type = HIKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[074]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ARUFILA
+PokemonNos = 0,1,134,185,202,235
+BeginSpeech = ¡Allá voy!
+Type = BEAUTY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[075]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OPSESTA
+PokemonNos = 123,125,160,176,180,215,217,232,245
+BeginSpeech = ¡Allá voy!
+Type = BEAUTY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[076]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = VITA
+PokemonNos = 136,150,162,169,172,194,198,202,211,213,223,240
+BeginSpeech = ¡Allá voy!
+Type = TWINS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[077]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OMECHA
+PokemonNos = 141,152,153,154,160,165,167,169,174,193,197,210,214,216,231,241
+BeginSpeech = ¡Allá voy!
+Type = TWINS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[078]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = UDONDRA
+PokemonNos = 127,138,141,146,148,152,166,183,185,235,239
+BeginSpeech = ¡Allá voy!
+Type = TWINS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[079]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ICANKA
+PokemonNos = 124,127,130,153,169,175,187,197,207,227
+BeginSpeech = ¡Allá voy!
+Type = TWINS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[080]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ANDRA
+PokemonNos = 130,133,153,181,186,196,203,205,221,224,228,233,237
+BeginSpeech = ¡Allá voy!
+Type = TWINS
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[081]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = USENDA
+PokemonNos = 123,125,135,177,188,192,202,225,227,228,238
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[082]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OKSOSA
+PokemonNos = 131,137,141,148,154,188,190,196,199,203,205,208,213,214,222
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[083]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ITEGSIKA
+PokemonNos = 125,129,147,158,159,161,171,175,178,182,190,205,213,215,217,233,234,245
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[084]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = INDRA
+PokemonNos = 138,145,161,182,183,184,189,194,206,211,214,216,220,228,240
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[085]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OTITA
+PokemonNos = 138,156,157,160,175,180,200,213,216,220,235,237
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[086]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = CITA
+PokemonNos = 124,128,137,139,157,166,210,216,222,233,243
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[087]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = JILA
+PokemonNos = 148,170,214,222,223,242
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[088]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RERTIO
+PokemonNos = 132,146,186,188,199,211,229,234,237
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[089]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SEGS
+PokemonNos = 128,136,161,168,172,182,187,188,197,207,212,229,233,241,242
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[090]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LERDIH
+PokemonNos = 127,133,141,146,155,162,168,169,179,197,201,221,225,240
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[091]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = NYAIUS
+PokemonNos = 132,142,155,160,179,230,243
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[092]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SMED
+PokemonNos = 138,154,184,189,194,208,213,214,226,243,244
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[093]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PRORTE
+PokemonNos = 134,158,161,170,175,178,180,185,192,207,217,220,225
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[094]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GOS
+PokemonNos = 128,131,142,144,148,154,159,165,166,171,172,175,211,219,222,230,232
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[095]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GLEEIO
+PokemonNos = 137,152,154,161,190,192,194,201,212,217,220,236,239,245
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[096]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZOCUN
+PokemonNos = 134,141,142,156,160,166,180,185,187,207,208,229
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[097]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LIV
+PokemonNos = 133,166,167,196,210,227,240
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[098]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PAUS
+PokemonNos = 137,145,149,160,161,171,190,195,207,208,222,224,238
+BeginSpeech = ¡Allá voy!
+Type = YOUNGSTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[099]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SWALA
+PokemonNos = 148,154,164,181,182,201,203,206,213,217
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[100]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = INDRA
+PokemonNos = 129,160,175,177,181,198,205,245
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[101]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GECHA
+PokemonNos = 123,131,146,149,155,156,162,176,184,211,221,222,230,234,240
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[102]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DIN
+PokemonNos = 126,129,147,163,168,187,201,203,233,241,244
+BeginSpeech = ¡Allá voy!
+Type = ENGINEER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[103]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = JUBB
+PokemonNos = 124,130,143,147,154,179,183,215,228,235
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[104]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KIV
+PokemonNos = 130,135,139,144,184,202,203,208,226,228,229,236
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[105]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BOB
+PokemonNos = 136,144,145,149,165,167,198,220,242
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[106]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ORA
+PokemonNos = 136,145,152,168,169,170,173,176,180,187,196,202,229,230
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[107]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ANDRA
+PokemonNos = 124,158,161,165,168,189,212
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[108]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DILA
+PokemonNos = 131,151,154,159,175,185,189,207,221,230
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[109]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SKEND
+PokemonNos = 123,138,146,153,155,160,171,175,183,184,213,228,231,238
+BeginSpeech = ¡Allá voy!
+Type = RUINMANIAC
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[110]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRUUSEL
+PokemonNos = 130,137,144,161,174,175,179,190,197,218,230,239
+BeginSpeech = ¡Allá voy!
+Type = RUINMANIAC
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[111]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LIU
+PokemonNos = 123,133,139,140,151,171,186,193,209,229,231,232,241
+BeginSpeech = ¡Allá voy!
+Type = RUINMANIAC
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[112]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MONS
+PokemonNos = 170,171,173,174,183,191,194,198,202,210,221,222
+BeginSpeech = ¡Allá voy!
+Type = RUINMANIAC
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[113]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LIBSOLD
+PokemonNos = 133,141,142,146,158,165,185,192,194,195,203,220,221,223,225
+BeginSpeech = ¡Allá voy!
+Type = BIKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[114]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SIU
+PokemonNos = 180,181,201,210,219,223,237
+BeginSpeech = ¡Allá voy!
+Type = BIKER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[115]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = HAHAY
+PokemonNos = 144,151,170,177,181,186,201,213,215,232,235
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[116]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = WIRNA
+PokemonNos = 147,148,152,154,162,170,184,197,210,223
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[117]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LOND
+PokemonNos = 124,174,182,189,201,206,219,226,234,237,244,245
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[118]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OUB
+PokemonNos = 137,142,144,149,179,182,189,191,195,197,209,214,223,227,233,237,245
+BeginSpeech = ¡Allá voy!
+Type = ENGINEER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[119]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OUBSAM
+PokemonNos = 146,162,167,180,181,197,204,205,206,245
+BeginSpeech = ¡Allá voy!
+Type = ENGINEER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[120]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ENE
+PokemonNos = 133,158,175,176,192,201,232,233,241
+BeginSpeech = ¡Allá voy!
+Type = ENGINEER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[121]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = AGORTA
+PokemonNos = 156,171,175,200,208,237,239
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[122]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ALA
+PokemonNos = 124,136,143,146,152,168,170,180,197,198,200,213,215,223,244,245
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[123]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = INUPA
+PokemonNos = 127,136,147,154,168,172,189,194,203,219,226,236,237
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[124]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ECONDRA
+PokemonNos = 131,147,152,153,155,159,164,168,200,241,243
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[125]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = AKTILI
+PokemonNos = 126,134,148,150,151,153,157,161,168,180,192,206,216,222,236,242
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[126]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ICHA
+PokemonNos = 142,144,147,158,160,161,164,165,171,176,179,188,213,219,231,234
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[127]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = CHONG
+PokemonNos = 165,184,188,191,215,221,232
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[128]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PROBACS
+PokemonNos = 150,158,173,182,183,186,192,216,217,221,232,234,235,238
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[129]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MOU
+PokemonNos = 143,150,172,185,195,199,211,216,224,225,226,241
+BeginSpeech = ¡Allá voy!
+Type = POKEMONRANGER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[130]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = NESSIKA
+PokemonNos = 126,133,157,168,192,210,211,221,222,241
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[131]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ARESTA
+PokemonNos = 126,140,142,150,175,189,192,235,240
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[132]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OLILI
+PokemonNos = 124,132,137,147,156,165,188,190,208,220,221
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[133]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RESTA
+PokemonNos = 123,125,139,174,178,182,189,195,198,216,233,238
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[134]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ONDRA
+PokemonNos = 251,267,271,295,308,309,318,321,327,333,335,351,364,365
+BeginSpeech = ¡Allá voy!
+Type = PAINTER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[135]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BEMIR
+PokemonNos = 248,261,272,280,288,297,320,321,325,332,334,345
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[136]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PROSAND
+PokemonNos = 254,259,266,270,292,295,298,301,303,320,326,338,339,343,349
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[137]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BAFTEN
+PokemonNos = 247,248,260,261,265,269,273,280,284,295,299,309,337,342,352
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[138]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KAREB
+PokemonNos = 258,260,267,278,279,287,289,296,312,313,315,317,333,346,349,360
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[139]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DRONA
+PokemonNos = 299,308,311,314,323,335,348,356
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[140]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = UZHENDA
+PokemonNos = 250,255,269,294,299,310,315,333,336,351,365
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[141]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = AFIKA
+PokemonNos = 247,254,257,260,270,275,281,283,286,291,292,295,301,308,325,334,340,342,361
+BeginSpeech = ¡Allá voy!
+Type = SWIMMER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[142]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LEZUS
+PokemonNos = 246,250,252,253,267,269,287,291,292,294,295,300,302,303,310,325,330,349,354,355,363,368
+BeginSpeech = ¡Allá voy!
+Type = SAILOR
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[143]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MIJECS
+PokemonNos = 270,300,301,302,308,309,316,326,340,345,356,364,366,367
+BeginSpeech = ¡Allá voy!
+Type = SAILOR
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[144]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = NYAVUL
+PokemonNos = 248,249,266,277,300,309,321,324,325,327,329,340,342,347
+BeginSpeech = ¡Allá voy!
+Type = SAILOR
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[145]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = KINGIUS
+PokemonNos = 253,275,284,292,294,295,299,304,314,339,343,354
+BeginSpeech = ¡Allá voy!
+Type = SAILOR
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[146]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRALSIUS
+PokemonNos = 253,270,272,284,295,306,312,314,321,335,341,344,360
+BeginSpeech = ¡Allá voy!
+Type = SAILOR
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[147]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RAO
+PokemonNos = 276,278,279,288,306,320,330,343,347,360
+BeginSpeech = ¡Allá voy!
+Type = SUPERNERD
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[148]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BOH
+PokemonNos = 249,268,269,272,280,287,288,293,305,309,322,335,349,355,365
+BeginSpeech = ¡Allá voy!
+Type = SUPERNERD
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[149]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = JOP
+PokemonNos = 254,264,282,286,289,334,357,362,365
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[150]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RIVOD
+PokemonNos = 252,264,274,276,278,292,312,317,327,330,341,346,353,360,363
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[151]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PREETIUS
+PokemonNos = 280,282,294,307,320,341,356,360
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[152]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZEK
+PokemonNos = 248,251,253,255,256,315,329,340,344,349
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[153]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = NYANG
+PokemonNos = 252,255,260,271,287,294,318,328,330,351
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[154]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DAU
+PokemonNos = 247,248,263,265,279,280,281,289,294,302,309,312,318,337,340,349,351,357
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[155]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = INGOCHIE
+PokemonNos = 246,265,279,281,298,299,314,320,344
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[156]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ONDRA
+PokemonNos = 250,259,267,268,269,303,332,337,353
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[157]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GOO
+PokemonNos = 246,253,258,269,286,295,306,313,335,343,347,355,362
+BeginSpeech = ¡Allá voy!
+Type = POKEMANIAC
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[158]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GAMED
+PokemonNos = 248,258,262,264,270,281,282,293,319,329,347,351,353,356,359,366
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[159]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GLOUS
+PokemonNos = 273,274,280,294,310,312,338,347,350,355,361
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[160]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RAUS
+PokemonNos = 250,262,275,278,282,287,294,305,313,338,350,351,365,368
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[161]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BENGIO
+PokemonNos = 248,250,268,294,328,341,349,352
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[162]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PASUJ
+PokemonNos = 254,256,266,267,269,272,283,288,300,304,315,321,352,363
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[163]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GLOKIO
+PokemonNos = 249,276,283,295,306,327,332,361,364,366
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[164]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = REFITO
+PokemonNos = 246,251,262,268,278,286,301,323,338,343,350,355
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[165]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BOF
+PokemonNos = 247,268,279,280,284,305,308,314,315,316,340,346,360
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[166]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BLEM
+PokemonNos = 250,254,260,283,286,300,303,306,307,313,320,322,338,356,361,368
+BeginSpeech = ¡Allá voy!
+Type = BLACKBELT
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[167]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OPTUCHA
+PokemonNos = 290,298,301,321,322,326,337,351,361
+BeginSpeech = ¡Allá voy!
+Type = CRUSHGIRL
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[168]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PHEN
+PokemonNos = 268,271,272,298,300,313,320,321,325,328,338,341
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[169]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BAIUS
+PokemonNos = 252,256,263,266,275,287,301,317,365
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[170]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LIPHUS
+PokemonNos = 252,253,254,285,286,289,311,335,343,349,350,352,359,368
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[171]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = DASHILA
+PokemonNos = 247,248,254,264,273,297,314,315,321,322,325,336,344
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[172]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = EMSA
+PokemonNos = 249,269,277,278,303,305,311,312,334,345,358,363,368
+BeginSpeech = ¡Allá voy!
+Type = TEAMROCKET_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[173]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RAKT
+PokemonNos = 252,255,258,259,262,266,270,279,301,306,309,315,323,328,329,332,342,354
+BeginSpeech = ¡Allá voy!
+Type = TAMER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[174]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MAH
+PokemonNos = 260,275,308,310,317,329,331,333,336,350,356,362,363
+BeginSpeech = ¡Allá voy!
+Type = TAMER
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[175]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PHOKTANA
+PokemonNos = 246,252,257,259,277,279,307,322,330,348,358
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[176]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LACHIE
+PokemonNos = 249,255,260,263,284,330,338,344,351,356,360
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[177]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = UVA
+PokemonNos = 249,262,267,272,281,309,325,335,340,346,348,350,362,364,368
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[178]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OSIFILA
+PokemonNos = 255,261,267,273,277,281,285,291,299,311,313,316,325,335,341,350,357,361,368
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[179]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ISTOLITA
+PokemonNos = 250,253,272,284,318,344,357,361
+BeginSpeech = ¡Allá voy!
+Type = LADY
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[180]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = RAMIL
+PokemonNos = 252,253,259,262,265,271,273,281,283,295,304,306,308,315,322,328,342,354
+BeginSpeech = ¡Allá voy!
+Type = SUPERNERD
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[181]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ARAY
+PokemonNos = 246,254,256,257,261,270,286,294,302,304,305,310,315,321,325,330,342,359,362,367
+BeginSpeech = ¡Allá voy!
+Type = YOUNGCOUPLE
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[182]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ANGIFS
+PokemonNos = 260,263,264,276,281,298,306,309,311,325,329
+BeginSpeech = ¡Allá voy!
+Type = YOUNGCOUPLE
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[183]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = LIS
+PokemonNos = 251,267,296,309,313,346,351,357,360,366
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[184]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GRUURKILS
+PokemonNos = 253,259,265,271,272,290,301,319,326,334,351,363
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[185]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = PAGSIUS
+PokemonNos = 250,256,272,274,305,310,322,330,333,336,338,344,346,349,358,360,367
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[186]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = GAMEZ
+PokemonNos = 253,259,260,265,270,274,279,281,304,319,335,348,360,365
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[187]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = BACHID
+PokemonNos = 257,264,269,295,303,304,305,315,319,321,366
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_M
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[188]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = IBA
+PokemonNos = 253,257,266,270,273,280,284,288,292,299,314,319,321,326,329,330,341,346
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[189]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ROCHIE
+PokemonNos = 249,259,270,297,300,303,308,343,363
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[190]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = MINA
+PokemonNos = 251,256,259,263,274,283,288,297,304,337,357,362
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[191]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = OKTUVINA
+PokemonNos = 258,261,264,279,296,297,303,311,320,325,333,337,342,353,355,356,365
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[192]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = SECHIE
+PokemonNos = 251,252,266,282,295,307,315,327,329,345,347,352,354,357,360,363
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[193]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = STUNKA
+PokemonNos = 252,261,269,286,289,322,325,338,346,348,362
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[194]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ULITELLE
+PokemonNos = 246,248,252,272,291,294,305,309,339,350,351,358,367
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[195]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = IGA
+PokemonNos = 265,276,289,297,326,332,341
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[196]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = ZUNA
+PokemonNos = 249,255,266,269,271,277,281,284,292,296,302,305,312,317,318,335,345,348,350
+BeginSpeech = ¡Allá voy!
+Type = COOLTRAINER_F
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[197]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = NAME
+PokemonNos = 256,258,274,279,283,287,290,306,315,321,338,355,361,365
+BeginSpeech = ¡Allá voy!
+Type = GENTLEMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[198]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = TWON
+PokemonNos = 250,255,257,266,278,298,301,303,323,343,344,350,354,359
+BeginSpeech = ¡Allá voy!
+Type = GENTLEMAN
+EndSpeechWin = "¡Sí, he ganado!"
+#-------------------------------
+[199]
+EndSpeechLose = "¡Vaya, he perdido!"
+Name = TUJOGS
+PokemonNos = 249,255,258,267,279,294,318,320,326,330,352,365,367
+BeginSpeech = ¡Allá voy!
+Type = GENTLEMAN
+EndSpeechWin = "¡Sí, he ganado!"

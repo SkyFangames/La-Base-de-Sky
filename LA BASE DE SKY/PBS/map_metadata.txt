@@ -1,0 +1,332 @@
+﻿# Consulta la documentación en la wiki para aprender cómo editar este archivo.
+#-------------------------------
+[001]   # Intro
+#-------------------------------
+[002]   # Pueblo Inicio
+Outdoor = true
+ShowArea = true
+MapPosition = 0,13,12
+BattleBack = field
+#-------------------------------
+[003]   # Casa del jugador
+HealingSpot = 2,8,8
+MapPosition = 0,13,12
+#-------------------------------
+[004]   # Laboratorio Pokémon
+MapPosition = 0,13,12
+#-------------------------------
+[005]   # Ruta 1
+Outdoor = true
+ShowArea = true
+MapPosition = 0,13,11
+BattleBack = field
+#-------------------------------
+[006]   # Casa de César
+MapPosition = 0,13,11
+#-------------------------------
+[007]   # Ciudad Lugano
+Outdoor = true
+ShowArea = true
+MapPosition = 0,13,10
+MapSize = 2,11
+#-------------------------------
+[008]   # Casa de Dalia
+MapPosition = 0,13,12
+#-------------------------------
+[009]   # Centro Pokémon
+HealingSpot = 8,17,11
+MapPosition = 0,14,10
+#-------------------------------
+[010]   # Gimnasio Lugano
+MapPosition = 0,13,10
+BattleBack = indoor3
+Environment = Rock
+Flags = DisableBoxLink
+#-------------------------------
+[011]   # Instituto Pokémon
+MapPosition = 0,14,10
+#-------------------------------
+[012]   # Condominio de Lugano
+MapPosition = 0,14,10
+#-------------------------------
+[013]   # Game Corner
+MapPosition = 0,14,10
+#-------------------------------
+[014]   # Lugano CC P1
+MapPosition = 0,13,10
+#-------------------------------
+[015]   # Lugano CC P2
+MapPosition = 0,13,10
+#-------------------------------
+[016]   # Lugano CC P3
+MapPosition = 0,13,10
+#-------------------------------
+[017]   # Lugano CC P4
+MapPosition = 0,13,10
+#-------------------------------
+[018]   # Lugano CC P5
+MapPosition = 0,13,10
+#-------------------------------
+[019]   # Lugano CC Azotea
+MapPosition = 0,13,10
+#-------------------------------
+[020]   # Lugano CC Ascensor
+MapPosition = 0,13,10
+#-------------------------------
+[021]   # Ruta 2
+Outdoor = true
+ShowArea = true
+Weather = Rain,100
+MapPosition = 0,14,8
+BattleBack = field
+MapSize = 1,11
+#-------------------------------
+[023]   # Pueblo Macabeo
+Outdoor = true
+ShowArea = true
+MapPosition = 0,15,8
+#-------------------------------
+[024]   # Centro Pokémon Macabeo
+HealingSpot = 23,11,15
+MapPosition = 0,15,8
+#-------------------------------
+[025]   # Tienda Pokémon
+MapPosition = 0,15,8
+#-------------------------------
+[026]   # Club de Fans Pokémon
+MapPosition = 0,15,8
+#-------------------------------
+[027]   # Guardería Pokémon
+MapPosition = 0,15,8
+#-------------------------------
+[028]   # Parque Natural
+Outdoor = true
+ShowArea = true
+MapPosition = 0,16,8
+BattleBack = field
+Flags = MossRock,BugContest
+#-------------------------------
+[029]   # Entrada Parque Natural
+Bicycle = true
+MapPosition = 0,16,8
+Flags = BugContestReception
+#-------------------------------
+[030]   # Pabellón Parque Natural
+MapPosition = 0,16,8
+Flags = BugContestReception
+#-------------------------------
+[031]   # Ruta 3
+Outdoor = true
+ShowArea = true
+MapPosition = 0,14,6
+BattleBack = field
+MapSize = 2,1101
+#-------------------------------
+[033]   # Mazmorra Bosque
+Dungeon = true
+#-------------------------------
+[034]   # Cueva de Hielo
+Bicycle = true
+MapPosition = 0,15,6
+BattleBack = cave1
+Environment = Cave
+Flags = IceRock
+#-------------------------------
+[035]   # Meseta Añil exterior
+Outdoor = true
+ShowArea = true
+MapPosition = 0,13,6
+#-------------------------------
+[036]   # Liga Pokémon entrada
+HealingSpot = 35,17,7
+MapPosition = 0,13,6
+#-------------------------------
+[037]   # Liga Pokémon sala 1
+MapPosition = 0,13,6
+BattleBack = elite1
+Flags = DisableBoxLink
+#-------------------------------
+[038]   # Hall de la Fama
+MapPosition = 0,13,6
+Flags = DisableBoxLink
+#-------------------------------
+[039]   # Ruta 4
+Outdoor = true
+ShowArea = true
+MapPosition = 0,11,6
+BattleBack = field
+MapSize = 2,11
+#-------------------------------
+[040]   # Ruta 4 Carril Bici
+Outdoor = true
+ShowArea = true
+BicycleAlways = true
+MapPosition = 0,11,6
+#-------------------------------
+[041]   # Ruta 5
+Outdoor = true
+ShowArea = true
+BicycleAlways = true
+MapPosition = 0,11,7
+MapSize = 1,111
+#-------------------------------
+[044]   # Ruta 6
+Outdoor = true
+ShowArea = true
+MapPosition = 0,11,10
+BattleBack = field
+MapSize = 2,11
+#-------------------------------
+[045]   # Ruta 6 Carril Bici
+Outdoor = true
+ShowArea = true
+BicycleAlways = true
+MapPosition = 0,11,10
+#-------------------------------
+[046]   # Ruta 4 Carril Bici entrada
+Bicycle = true
+MapPosition = 0,12,6
+#-------------------------------
+[047]   # Ruta 7
+Outdoor = true
+ShowArea = true
+Weather = Rain,0
+MapPosition = 0,15,10
+BattleBack = rocky
+MapSize = 2,11
+Environment = Rock
+#-------------------------------
+[049]   # Cueva de Roca P1
+Bicycle = true
+MapPosition = 0,16,10
+BattleBack = cave1
+Environment = Cave
+Flags = Magnetic,DistortionWorld
+#-------------------------------
+[050]   # Cueva de Roca S1
+Bicycle = true
+MapPosition = 0,16,10
+DarkMap = true
+BattleBack = cave3
+Environment = Cave
+Flags = Magnetic,DistortionWorld
+#-------------------------------
+[051]   # Mazmorra
+Bicycle = true
+MapPosition = 0,16,10
+Dungeon = true
+BattleBack = cave2
+Environment = Cave
+Flags = Magnetic,DistortionWorld,ScaleWildEncounterLevels
+#-------------------------------
+[052]   # Frente de Batalla
+Outdoor = true
+ShowArea = true
+MapPosition = 0,17,10
+#-------------------------------
+[053]   # Centro Pokémon Frente de Batalla
+HealingSpot = 52,17,14
+MapPosition = 0,17,10
+#-------------------------------
+[054]   # Tienda Frente de Batalla
+MapPosition = 0,17,10
+#-------------------------------
+[055]   # Torre Batalla
+HealingSpot = 52,30,10
+MapPosition = 0,17,10
+#-------------------------------
+[056]   # Arena Torre Batalla
+MapPosition = 0,17,10
+BattleBack = indoor1
+Flags = DisableBoxLink
+#-------------------------------
+[057]   # Vestíbulo Copa Estadio
+MapPosition = 0,17,10
+#-------------------------------
+[058]   # Palacio Batalla
+MapPosition = 0,17,10
+#-------------------------------
+[059]   # Battle Palace arena
+MapPosition = 0,17,10
+BattleBack = indoor1
+Flags = DisableBoxLink
+#-------------------------------
+[060]   # Dojo Batalla
+MapPosition = 0,17,10
+#-------------------------------
+[061]   # Arena Dojo Batalla
+MapPosition = 0,17,10
+BattleBack = indoor1
+Flags = DisableBoxLink
+#-------------------------------
+[062]   # Fábrica Batalla
+MapPosition = 0,17,10
+#-------------------------------
+[063]   # Pasillo inicial Fábrica Batalla
+MapPosition = 0,17,10
+Flags = DisableBoxLink
+#-------------------------------
+[064]   # Arena Fábrica Batalla
+MapPosition = 0,17,10
+BattleBack = indoor1
+Flags = DisableBoxLink
+#-------------------------------
+[065]   # Pasillo Fábrica Batalla
+MapPosition = 0,17,10
+Flags = DisableBoxLink
+#-------------------------------
+[066]   # Afueras Zona Safari
+Outdoor = true
+ShowArea = true
+MapPosition = 0,12,12
+BattleBack = field
+#-------------------------------
+[067]   # Entrada Zona Safari
+MapPosition = 0,12,12
+#-------------------------------
+[068]   # Zona Safari
+Outdoor = true
+ShowArea = true
+MapPosition = 0,12,12
+SafariMap = true
+BattleBack = forest
+Environment = Forest
+#-------------------------------
+[069]   # Ruta 8
+Outdoor = true
+ShowArea = true
+MapPosition = 0,13,13
+DiveMap = 70
+BattleBack = field
+#-------------------------------
+[070]   # Ruta 8 Fondo marino
+MapPosition = 0,13,13
+BattleBack = underwater
+Environment = Underwater
+#-------------------------------
+[071]   # Ruta 8 Puerto
+MapPosition = 0,13,13
+#-------------------------------
+[072]   # Isla Origen
+Outdoor = true
+ShowArea = true
+Weather = Storm,50
+MapPosition = 0,18,17
+BattleBack = field
+Flags = DistortionWorld
+#-------------------------------
+[073]   # Isla Dyson
+Outdoor = true
+ShowArea = true
+MapPosition = 0,22,16
+BattleBack = field
+Flags = DistortionWorld
+#-------------------------------
+[074]   # Ruta 6 Carril Bici entrada
+Bicycle = true
+MapPosition = 0,12,10
+#-------------------------------
+[075]   # Región Tiall
+Outdoor = true
+MapPosition = 1,13,16
+BattleBack = city

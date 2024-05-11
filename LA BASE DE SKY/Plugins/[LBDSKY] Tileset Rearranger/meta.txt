@@ -1,0 +1,71 @@
+﻿Name       = Tileset Rearranger
+Version    = 1.4
+Essentials = 20,20.1,21,21.1
+Credits    = Maruno
+Link       = https://reliccastle.com/resources/794/
+#====================================================================
+# Tileset Rearranger
+# Version 1.4
+# By Maruno
+#====================================================================
+#
+# This plugin allows you to rearrange tiles in a tileset. You can
+# swap tiles (individual and sets thereof), cut tiles and insert them
+# as new rows, erase tiles (individual and sets thereof), move whole
+# rows, insert whole rows and delete whole rows.
+#
+#====================================================================
+#
+# Controls:
+#
+# All controls and instructions are shown on-screen, and are dynamic
+# (they change depending on what is possible at any given moment).
+#
+# Hold Ctrl while moving the cursor to move two tiles in that
+# direction at once.
+#
+# Once you have selected a tile(s) in "Swap" mode, you can press Z to
+# toggle between swapping the selected tile(s) with another tile(s)
+# and inserting the selected tiles in a new row(s).
+#
+#====================================================================
+#
+# Tileset display:
+#
+# Tiles that are in use by a map are indicated with a star. This
+# takes into account all tiles covered by an event with a name of
+# "size(x,y)" - all covered tiles will be marked as used. You cannot
+# by any means delete a tile which is in use by a map.
+#
+# Tiles that are fully transparent will have a black/purple grid of
+# squares drawn over them. These are likely to be tiles that should
+# be erased/deleted.
+#
+#====================================================================
+#
+# Saving changes:
+#
+# When saving, the following are affected:
+#
+#   * Tileset data (Tilesets.rxdata)
+#   * Map files (Map###.rxdata) that use the amended tileset - alters
+#     tiles used and event graphics if they use a tile from the
+#     tileset
+#   * Tileset graphic in Graphics/Tilesets/
+#
+# For each of these, a backup is first created (with "_backup"
+# appended to the filename). A new backup will overwrite an existing
+# backup file. There is no built-in way to restore from a backup, so
+# you will have to rename the files manually. Note that this plugin
+# does not care whether a graphic is used by two or more tilesets, so
+# changes made to the graphic from one tileset will not be made in
+# any other tileset that uses the same graphic. Be sure that any
+# tileset you edit with this plugin uses a graphic that no other
+# tileset uses.
+#
+# A tileset may be loaded and rearranged if its graphic is taller
+# than the GPU cache size limit (Bitmap.max_size), but it cannot be
+# saved until it is shrunk down to this limit or smaller. The current
+# height and maximum allowed height are shown in the editor.
+#
+#====================================================================

@@ -1,0 +1,6 @@
+Name         = Marin's Scripting Utilities
+Version      = 1.7
+Essentials   = 21.1
+Credits      = Marin
+Link         = https://reliccastle.com/resources/165/
+Disabled = 

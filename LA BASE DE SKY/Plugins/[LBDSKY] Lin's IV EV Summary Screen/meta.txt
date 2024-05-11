@@ -1,0 +1,6 @@
+﻿Name       = Lin's IV EV Summary Screen
+Version    = 1.2.1
+Essentials = 21,21.1
+Requires   = Modular UI Scenes
+Link       = https://reliccastle.com/resources/1328/
+Credits    = LinKazamine, Lucidious89

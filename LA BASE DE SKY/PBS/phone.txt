@@ -1,0 +1,48 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[Default]
+Intro = ¡Hola! Soy \TN.
+Intro = ¡Buen día, \PN! ¡Hola! Soy \TN.
+Intro = ¿Cómo estás? ¡\PN, hola! Soy \TN. ¿No está bonito el día?
+Intro = ¡\PN, buen día! Soy yo, \TN. ¿Tienes un minuto?
+Intro = Hola, \PN. Soy \TN. ¿Cómo van las cosas?
+IntroMorning = Buenos días, \PN. Soy \TN. ¿Te desperté?
+IntroAfternoon = ¡Buenas tardes, \PN! Soy \TN.
+IntroEvening = ¡\PN, buenas noches! ¡Hola! Soy \TN.
+Body = ¿Cómo están tus Pokémon?\m¡Mi \TP está lleno de energía! ¡Es un puñado!\mOh sí, logré vencer a un \TE difícil.\mNecesito fortalecer mi equipo.
+Body = Mi \TP se ve realmente genial. Ojalá pudiera mostrártelo.\m¡Oye, escucha! Casi atrapo un \TE el otro día.\m¡Oh, estuvo tan cerca!
+Body1 = ¿Cómo están tus Pokémon?\m¡Mi \TP está lleno de energía! ¡Es un puñado!
+Body1 = ¿Cómo están tus Pokémon?\mSiempre mantengo a mi \TP en buena forma yendo a los Centros Pokémon.
+Body1 = Mi \TP se ve realmente genial. Ojalá pudiera mostrártelo.
+Body1 = Vestí a mi \TP y se ve aún más lindo que antes.
+Body2 = Oh sí, logré vencer a un \TE difícil.\mNecesito fortalecer mi equipo.
+Body2 = ¡Tienes que escuchar esto! Luché contra \TE el otro día.\m¡Fue fácil! Tenía ventaja de tipo.
+Body2 = ¡Oye, escucha! Casi atrapo a \TE el otro día.\mOh, estuvo tan cerca.
+Body2 = Adivina qué pasó el otro día. Volví a perder la captura de \TE.\mQuizás no soy muy bueno en esto.
+BattleRequest = ¿Quieres luchar? No va a ser como la última vez que nos encontramos.\mEstaré esperándote alrededor de \TM.
+BattleRequest = ¿Quieres luchar? ¡Esta vez voy a ganar!\mEstaré esperándote alrededor de \TM.\m¡Búscame, ¿de acuerdo? Mi \TP estará esperándote.
+#-------------------------------
+[CAMPER,Jeff]
+Intro = ¡Hola! Soy \TN...\m¿Cómo va, \PN?
+Body1 = Mi \TP se parece cada vez más a mí. ¡Se está volviendo más lindo!
+Body2 = ¿Y sabes? Ahora podemos derrotar a \TE fácilmente.\mDebería desafiar al Gimnasio de Cedolan.
+Body2 = ¿Y sabes? Acabamos de fallar en vencer a \TE por un margen pequeño.\mSupongo que los niveles de mis Pokémon aún no son lo suficientemente altos...
+BattleRequest = Debes ser mucho mejor ahora, ¿verdad?\m¿Qué tal si me muestras tu técnica en una verdadera batalla conmigo?\mEstaré esperando en \TM.
+BattleRemind = ¿Dónde estás? ¡Tengamos nuestra batalla pronto!\mEstaré esperando en \TM.
+End = ¡Nos vemos luego!
+#-------------------------------
+[PICNICKER,Susie]
+Intro = ¡Soy \TN!
+Intro = ¡Hola, soy \TN!
+IntroMorning = ¡Soy \TN! ¡Buenos días, \PN!
+IntroMorning = ¡Hola, soy \TN! ¡Buenos días, \PN!
+IntroAfternoon = ¡Soy \TN! ¡Buenas tardes, \PN!
+IntroAfternoon = ¡Hola, soy \TN! ¡Buenas tardes, \PN!
+IntroEvening = ¡Soy \TN! ¡Buenas noches, \PN!
+IntroEvening = ¡Hola, soy \TN! ¡Buenas noches, \PN!
+Body1 = Mi \TP y yo nos estamos sincronizando más entre nosotros.
+Body2 = Luchamos contra un \TE salvaje y logramos vencerlo en una batalla reñida.\m¡Nos estamos acostumbrando!
+Body2 = Pero, ¿sabes qué? Todavía no he atrapado a \TE.\mEstá empezando a ser frustrante...
+BattleRequest = ¿Quieres ser mi compañero de práctica de nuevo?\mEstaré esperando en \TM...\m¿Podrías tomarlo un poco más fácil conmigo la próxima vez?
+BattleRemind = ¿Cuándo podré verte?\m¡No olvides, \TM!
+End = ¡Adiós! ¡Hablemos de nuevo!
