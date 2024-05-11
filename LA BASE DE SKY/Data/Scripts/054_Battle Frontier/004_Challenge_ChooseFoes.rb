@@ -162,3 +162,4 @@ def pbBattleFactoryPokemon(rules, win_count, swap_count, rentals)
   rules.ruleset.setNumberRange(old_min, old_max)
   return party
 end
+

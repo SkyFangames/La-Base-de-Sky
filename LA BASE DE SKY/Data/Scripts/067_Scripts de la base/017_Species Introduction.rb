@@ -113,8 +113,21 @@ class SpeciesIntro
 
   def create_picture_icon(bitmap)
     ret = PictureWindow.new(bitmap)
-    ret.x = (Graphics.width/2) - (ret.width/2)
-    ret.y = ((Graphics.height-96)/2) - (ret.height/2)
+    if PluginManager.installed?("Sprites Animados")
+      ret.width = ret.height
+      ret.zoom_x = ret.zoom_x * 2
+      ret.zoom_y = ret.zoom_y * 2
+      ret.x = (Graphics.width/2)
+      ret.x = ret.x/2
+      ret.x -= (ret.width/2)
+      ret.y = ((Graphics.height-96)/2)
+      ret.y = ret.y/2
+      ret.y -= (ret.height/2)
+      #ret.y += 10
+    else
+      ret.x = (Graphics.width/2) - (ret.width/2)
+      ret.y = ((Graphics.height-96)/2) - (ret.height/2)
+    end
     return ret
   end
 

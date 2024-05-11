@@ -123,3 +123,4 @@ def pbWriteMail(item, pkmn, pkmnid, scene)
     return false if scene.pbConfirm(_INTL("¿Dejar de darle la Carta al Pokémon?"))
   end
 end
+

@@ -842,3 +842,4 @@ class PBAnimationPlayerX
     @animation.playTiming(@frame, @bgGraphic, @bgColor, @foGraphic, @foColor, @oldbg, @oldfo, @user)
   end
 end
+

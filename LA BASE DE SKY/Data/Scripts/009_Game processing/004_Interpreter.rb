@@ -451,3 +451,4 @@ class Interpreter
     setPrice(item, -1, sell_price)
   end
 end
+

@@ -357,3 +357,4 @@ def pbRandomPokemonFromRule(rules, trainer)
   end
   return pkmn
 end
+

@@ -290,3 +290,4 @@ def pbHasEgg?(species)
   return true if species == baby   # Is an egg species without incense
   return false
 end
+

@@ -61,3 +61,4 @@ class Battle::DamageState
     @berryWeakened      = false
   end
 end
+

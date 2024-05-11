@@ -704,3 +704,4 @@ def pbTrainerMapName(contact)
   Deprecation.warn_method("pbTrainerMapName", "v22", "Phone::Call.get_map_name(contact)")
   return Phone::Call.get_map_name(contact)
 end
+

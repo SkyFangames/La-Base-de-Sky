@@ -408,3 +408,4 @@ def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sort
   cmdwindow.active = false
   return ret
 end
+

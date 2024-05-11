@@ -466,3 +466,4 @@ def pbEncounter(enc_type, only_single = true)
   $game_temp.force_single_battle = false
   return true
 end
+

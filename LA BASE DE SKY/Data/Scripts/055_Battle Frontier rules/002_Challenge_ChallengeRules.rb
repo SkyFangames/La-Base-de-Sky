@@ -380,3 +380,4 @@ PokemonChallengeRules.new
 .addBattleRule(SelfdestructClause.new)
 .addBattleRule(PerishSongClause.new)
 =end
+

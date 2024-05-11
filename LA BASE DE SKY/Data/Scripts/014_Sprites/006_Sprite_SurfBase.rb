@@ -89,3 +89,4 @@ class Sprite_SurfBase
     @sprite.opacity = @parent_sprite.opacity
   end
 end
+

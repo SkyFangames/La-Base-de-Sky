@@ -392,3 +392,4 @@ def pbDuel(trainer_id, trainer_name, event, speeches)
   end
   duel.pbDuel(opponent, event, speech_texts)
 end
+

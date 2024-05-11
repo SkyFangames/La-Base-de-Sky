@@ -526,3 +526,4 @@ module RPG
     end
   end
 end
+

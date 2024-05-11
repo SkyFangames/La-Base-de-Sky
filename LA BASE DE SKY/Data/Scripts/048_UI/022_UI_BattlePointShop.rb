@@ -523,3 +523,4 @@ def pbBattlePointShop(stock, speech = nil)
   pbMessage(_INTL("Por favor, visítanos de nuevo cuando hayas conseguido más PB."))
   $game_temp.clear_mart_prices
 end
+

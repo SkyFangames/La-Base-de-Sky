@@ -504,3 +504,4 @@ def updateTilesets
     map&.updateTileset
   end
 end
+

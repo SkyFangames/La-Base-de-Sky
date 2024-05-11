@@ -86,10 +86,10 @@ def pbStartOver(gameover = false)
   $player.heal_party
   if $PokemonGlobal.pokecenterMapId && $PokemonGlobal.pokecenterMapId >= 0
     if gameover
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
                 _INTL("Tras la derrota, fuiste corriendo a un Centro Pokémon."))
     else
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
                 _INTL("Has salido corriendo hacia un Centro Pokémon para que tu equipo no sufra más daño..."))
     end
     pbCancelVehicles
@@ -113,10 +113,10 @@ def pbStartOver(gameover = false)
       return
     end
     if gameover
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
                 _INTL("Tras la derrota, volviste corriendo a casa."))
     else
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
                 _INTL("Has vuelto corriendo a casa para que tu equipo no sufra más daños..."))
     end
     if homedata
@@ -136,3 +136,4 @@ def pbStartOver(gameover = false)
   end
   pbEraseEscapePoint
 end
+

@@ -307,3 +307,4 @@ end
 def zodiacComplements(sign)
   return [(sign + 1) % 12, (sign + 11) % 12]
 end
+

@@ -427,3 +427,4 @@ class BattleFactoryData
     return pbOrganizedBattleEx(@opponent, challenge.rules)
   end
 end
+

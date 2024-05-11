@@ -232,3 +232,4 @@ module Console
     return string
   end
 end
+

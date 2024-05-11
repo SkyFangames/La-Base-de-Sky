@@ -98,3 +98,4 @@ class Battle::AI::AITrainer
     return @skill >= 100
   end
 end
+

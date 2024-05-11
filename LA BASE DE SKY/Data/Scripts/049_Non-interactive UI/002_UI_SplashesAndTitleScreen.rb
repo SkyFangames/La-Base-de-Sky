@@ -127,3 +127,4 @@ class Scene_Intro
     Graphics.freeze
   end
 end
+

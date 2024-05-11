@@ -245,3 +245,4 @@ class BattleSwapScreen
     end
   end
 end
+

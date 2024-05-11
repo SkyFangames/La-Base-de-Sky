@@ -235,3 +235,4 @@ MenuHandlers.add(:pc_menu, :close, {
     next true
   }
 })
+

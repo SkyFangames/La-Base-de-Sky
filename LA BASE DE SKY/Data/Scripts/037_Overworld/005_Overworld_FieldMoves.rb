@@ -967,3 +967,4 @@ HiddenMoveHandlers::UseMove.add(:WATERFALL, proc { |move, pokemon|
   pbAscendWaterfall
   next true
 })
+

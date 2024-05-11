@@ -134,3 +134,4 @@ module MenuHandlers
     return option_hash[function].call(*args)
   end
 end
+

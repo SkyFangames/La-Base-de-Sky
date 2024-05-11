@@ -874,3 +874,4 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_effects, {
     editor.dispose
   }
 })
+

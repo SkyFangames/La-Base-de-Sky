@@ -2297,3 +2297,4 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("PoisonTarget","Starmobi
 #===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.copy("SleepTarget","StarmobileSleepTarget")
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("SleepTarget","StarmobileSleepTarget")
+

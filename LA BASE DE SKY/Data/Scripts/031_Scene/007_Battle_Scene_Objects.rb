@@ -696,3 +696,4 @@ class Battle::Scene::BattlerShadowSprite < RPG::Sprite
     self.bitmap = @_iconBitmap.bitmap
   end
 end
+

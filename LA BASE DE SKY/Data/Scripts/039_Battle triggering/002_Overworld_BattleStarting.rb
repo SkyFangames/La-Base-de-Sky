@@ -746,3 +746,4 @@ def pbHoneyGather(pkmn)
   return unless rand(100) < chance
   pkmn.item = :HONEY
 end
+

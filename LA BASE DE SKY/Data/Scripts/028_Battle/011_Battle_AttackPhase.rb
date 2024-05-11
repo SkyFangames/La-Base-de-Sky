@@ -200,3 +200,4 @@ class Battle
     pbAttackPhaseMoves
   end
 end
+

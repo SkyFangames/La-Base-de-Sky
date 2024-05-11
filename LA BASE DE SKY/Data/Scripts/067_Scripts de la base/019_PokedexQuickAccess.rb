@@ -71,7 +71,7 @@ class PokemonStorageScreen
               pbDisplay(_INTL("¡Estás sosteniendo un Pokémon!"))
               next
             end
-            next if pbConfirm(_INTL("¿Desea hacer mas operaciones?"))
+            next if pbConfirm(_INTL("¿Desea hacer más operaciones?"))
             break
           elsif selected[0] == -3   # Close box
             if pbHeldPokemon
@@ -194,7 +194,7 @@ class PokemonStorageScreen
         loop do
           selected = @scene.pbSelectBox(@storage.party)
           if selected.nil?
-            next if pbConfirm(_INTL("¿Desea hacer mas operaciones?"))
+            next if pbConfirm(_INTL("¿Desea hacer más operaciones?"))
             break
           else
             case selected[0]
@@ -241,7 +241,7 @@ class PokemonStorageScreen
             end
             next
           elsif selected < 0
-            next if pbConfirm(_INTL("¿Desea hacer mas operaciones?"))
+            next if pbConfirm(_INTL("¿Desea hacer más operaciones?"))
             break
           else
             pokemon = @storage[-1, selected]

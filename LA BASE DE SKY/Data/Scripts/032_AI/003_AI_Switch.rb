@@ -708,3 +708,4 @@ Battle::AI::Handlers::ShouldNotSwitch.add(:battler_has_very_raised_stats,
     next false
   }
 )
+

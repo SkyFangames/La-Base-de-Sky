@@ -267,3 +267,4 @@ EventHandlers.add(:on_player_step_taken, :hatch_eggs,
     end
   }
 )
+

@@ -592,3 +592,4 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartSaltCureTarget",
 )
 
 
+

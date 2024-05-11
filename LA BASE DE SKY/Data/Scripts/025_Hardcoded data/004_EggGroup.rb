@@ -99,3 +99,4 @@ GameData::EggGroup.register({
   :id   => :Dragon,
   :name => _INTL("Dragón")
 })
+

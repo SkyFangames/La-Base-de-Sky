@@ -29,3 +29,4 @@ module Kernel
     raise ArgumentError, "Argumento no válido pasado al método.\r\n" + errors.join("\r\n")
   end
 end
+

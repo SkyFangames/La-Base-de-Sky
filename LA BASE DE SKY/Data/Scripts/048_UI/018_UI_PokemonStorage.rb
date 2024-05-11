@@ -2020,3 +2020,4 @@ class PokemonStorageScreen
     return retval
   end
 end
+

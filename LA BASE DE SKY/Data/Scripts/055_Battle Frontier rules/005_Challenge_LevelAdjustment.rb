@@ -227,3 +227,4 @@ class OpenLevelAdjustment < LevelAdjustment
     return ret
   end
 end
+

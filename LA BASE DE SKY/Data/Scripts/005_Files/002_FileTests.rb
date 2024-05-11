@@ -486,3 +486,4 @@ class StringInput
   alias read_all read
   alias sysread read
 end
+

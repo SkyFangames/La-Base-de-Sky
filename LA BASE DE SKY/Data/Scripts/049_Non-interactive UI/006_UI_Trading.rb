@@ -241,3 +241,4 @@ def pbStartTrade(pokemonIndex, newpoke, nickname, trainerName, trainerGender = 0
   end
   $player.party[pokemonIndex] = yourPokemon
 end
+

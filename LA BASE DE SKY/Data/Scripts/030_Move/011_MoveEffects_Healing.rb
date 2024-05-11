@@ -730,3 +730,4 @@ class Battle::Move::DisableTargetHealingMoves2Turns < Battle::Move
     target.pbItemStatusCureCheck
   end
 end
+

@@ -76,3 +76,4 @@ GameData::BodyColor.register({
   :id   => :Pink,
   :name => _INTL("Rosa")
 })
+

@@ -176,3 +176,4 @@ GameData::EncounterType.register({
   :type           => :contest,
   :trigger_chance => 21
 })
+

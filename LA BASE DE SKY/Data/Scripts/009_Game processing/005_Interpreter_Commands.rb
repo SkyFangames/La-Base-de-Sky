@@ -1178,3 +1178,4 @@ class Interpreter
     return true
   end
 end
+

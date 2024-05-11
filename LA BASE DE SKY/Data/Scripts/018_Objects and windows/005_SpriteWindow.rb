@@ -923,3 +923,4 @@ class SpriteWindow_Base < SpriteWindow
     super
   end
 end
+

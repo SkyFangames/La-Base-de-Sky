@@ -163,3 +163,4 @@ GameData::Weather.register({
   :tile_delta_y     => 0,
   :graphics         => [nil, ["fog_tile"]]
 })
+

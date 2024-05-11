@@ -142,3 +142,4 @@ class BitmapWrapper < Bitmap
     @refcount += 1
   end
 end
+

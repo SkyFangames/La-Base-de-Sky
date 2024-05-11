@@ -274,3 +274,4 @@ class PokemonEvolutionScene
     @msgviewport.dispose
   end
 end
+

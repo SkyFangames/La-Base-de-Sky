@@ -265,3 +265,4 @@ ItemHandlers::UseInField.add(:POKERADAR, proc { |item|
 ItemHandlers::UseFromBag.add(:POKERADAR, proc { |item|
   next (pbCanUsePokeRadar?) ? 2 : 0
 })
+

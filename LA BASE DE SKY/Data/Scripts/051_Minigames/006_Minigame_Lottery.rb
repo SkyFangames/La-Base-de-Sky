@@ -44,3 +44,4 @@ def pbLottery(winnum, nameVar = 2, positionVar = 3, matchedVar = 4)
   $game_variables[positionVar] = winpos
   $game_variables[matchedVar] = winmatched
 end
+

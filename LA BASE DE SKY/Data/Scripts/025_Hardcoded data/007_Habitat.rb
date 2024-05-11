@@ -52,7 +52,7 @@ GameData::Habitat.register({
 
 GameData::Habitat.register({
   :id   => :Cave,
-  :name => _INTL("Caverna")
+  :name => _INTL("Cueva")
 })
 
 GameData::Habitat.register({
@@ -74,3 +74,4 @@ GameData::Habitat.register({
   :id   => :Rare,
   :name => _INTL("Raros")
 })
+

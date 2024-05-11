@@ -285,3 +285,4 @@ module RecordedBattle::PlaybackHelper
     return ret
   end
 end
+

@@ -821,3 +821,4 @@ module Battle::Scene::Animation::BallAnimationMixin
     ring2.moveOpacity(delay + burst_duration + 2, 4, 0)
   end
 end
+

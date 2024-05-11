@@ -74,3 +74,4 @@ class AnimatedPlane < Plane
     self.bitmap = nil if !self.disposed?
   end
 end
+

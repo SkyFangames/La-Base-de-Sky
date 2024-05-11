@@ -276,3 +276,4 @@ def pbPlayCloseMenuSE
     pbSEPlay("GUI menu close", 80)
   end
 end
+

@@ -390,3 +390,4 @@ class LittleCupRestriction
     return true
   end
 end
+

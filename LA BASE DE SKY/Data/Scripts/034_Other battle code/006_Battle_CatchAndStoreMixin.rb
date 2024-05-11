@@ -270,3 +270,4 @@ end
 class Battle
   include Battle::CatchAndStoreMixin
 end
+

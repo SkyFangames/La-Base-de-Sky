@@ -57,25 +57,25 @@ GameData::BodyShape.register({
 
 GameData::BodyShape.register({
   :id            => :HeadBase,
-  :name          => _INTL("Cabeza y base"),
+  :name          => _INTL("Cabeza y cuerpo"),
   :icon_position => 4
 })
 
 GameData::BodyShape.register({
   :id            => :BipedalTail,
-  :name          => _INTL("Bípedo con cola"),
+  :name          => _INTL("Bípeda con cola"),
   :icon_position => 5
 })
 
 GameData::BodyShape.register({
   :id            => :HeadLegs,
-  :name          => _INTL("Bípedo sin extremidades"),
+  :name          => _INTL("Bípeda sin extremidades"),
   :icon_position => 6
 })
 
 GameData::BodyShape.register({
   :id            => :Quadruped,
-  :name          => _INTL("Cuadrúpedo"),
+  :name          => _INTL("Cuadrúpeda"),
   :icon_position => 7
 })
 
@@ -99,7 +99,7 @@ GameData::BodyShape.register({
 
 GameData::BodyShape.register({
   :id            => :Bipedal,
-  :name          => _INTL("Bípedo sin cola"),
+  :name          => _INTL("Bípeda sin cola"),
   :icon_position => 11
 })
 
@@ -114,3 +114,4 @@ GameData::BodyShape.register({
   :name          => _INTL("Insectoide"),
   :icon_position => 13
 })
+

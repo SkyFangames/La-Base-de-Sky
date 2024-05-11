@@ -2341,3 +2341,4 @@ class Battle::Move::RaiseAlliesCriticalHitRate1DragonTypes2 < Battle::Move
   end
 end
 
+

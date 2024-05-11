@@ -2017,3 +2017,4 @@ Battle::ItemEffects::OnOpposingStatGain.add(:MIRRORHERB,
   }
 )
 
+

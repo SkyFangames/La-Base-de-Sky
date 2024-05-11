@@ -198,3 +198,4 @@ end
 class Game_Temp
   attr_accessor :last_uptime_refreshed_play_time
 end
+

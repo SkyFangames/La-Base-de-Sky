@@ -602,3 +602,4 @@ class Battle::AI::AIMove
     return 0
   end
 end
+

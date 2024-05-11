@@ -237,3 +237,4 @@ def XPML_read(map, markup, event, max_param_number = 0)
   end
   return parameter_list
 end
+

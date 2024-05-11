@@ -523,7 +523,7 @@ MenuHandlers.add(:options_menu, :text_input_style, {
   "name"        => _INTL("Entrada de Texto"),
   "order"       => 110,
   "type"        => EnumOption,
-  "parameters"  => [_INTL("Cursor"), _INTL("Teclado")],
+  "parameters"  => [_INTL("Teclado"), _INTL("Cursor")],
   "description" => _INTL("Elige cómo quieres introducir el texto."),
   "get_proc"    => proc { next $PokemonSystem.textinput },
   "set_proc"    => proc { |value, _scene| $PokemonSystem.textinput = value }
@@ -542,3 +542,4 @@ MenuHandlers.add(:options_menu, :screen_size, {
     pbSetResizeFactor($PokemonSystem.screensize)
   }
 })
+

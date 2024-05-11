@@ -164,3 +164,4 @@ class Game_Picture
     end
   end
 end
+

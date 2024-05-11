@@ -225,3 +225,4 @@ EventHandlers.add(:on_new_spriteset_map, :add_light_effects,
     end
   }
 )
+

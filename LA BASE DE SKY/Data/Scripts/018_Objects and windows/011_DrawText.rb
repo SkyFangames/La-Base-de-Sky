@@ -1149,3 +1149,4 @@ def pbDrawImagePositions(bitmap, textpos)
     srcbitmap.dispose
   end
 end
+

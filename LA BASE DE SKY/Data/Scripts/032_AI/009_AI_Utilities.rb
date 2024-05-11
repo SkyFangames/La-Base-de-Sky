@@ -1055,3 +1055,4 @@ Battle::AI::Handlers::ItemRanking.add(:WELLSPRINGMASK,
 )
 
 Battle::AI::Handlers::ItemRanking.copy(:WELLSPRINGMASK,:HEARTHFLAMEMASK, :CORNERSTONEMASK)
+

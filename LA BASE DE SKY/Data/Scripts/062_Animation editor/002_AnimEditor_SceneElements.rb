@@ -1010,3 +1010,4 @@ module BattleAnimationEditor
     def disposed; @window.disposed?; end
   end
 end
+

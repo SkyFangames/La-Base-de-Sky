@@ -56,8 +56,7 @@ class Swdfm_Exp_Screen
   
   def update_bars
     for i in 0...$player.party.size
-      next if $player.party[i].level == Settings:: MAXIMUM_LEVEL
-      #value = @values[i] || 1
+      next if $player.party[i].level == Settings::MAXIMUM_LEVEL
       next if !@values[i]
       mock_exp  = $player.party[i].exp + (@values[i] * @elapsed / @total_frames).floor
       lvl, perc = $player.party[i].exp_fraction_for_panel(mock_exp)

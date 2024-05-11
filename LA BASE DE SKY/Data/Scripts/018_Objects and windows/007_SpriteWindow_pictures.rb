@@ -116,3 +116,4 @@ class PictureWindow < SpriteWindow_Base
     end
   end
 end
+

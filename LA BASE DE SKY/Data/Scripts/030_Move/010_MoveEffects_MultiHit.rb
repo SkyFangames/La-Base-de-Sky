@@ -668,3 +668,4 @@ class Battle::Move::HitTenTimes < Battle::Move
 end  
 
 
+

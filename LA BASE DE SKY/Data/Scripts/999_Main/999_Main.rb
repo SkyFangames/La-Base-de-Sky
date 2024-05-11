@@ -1,5 +1,5 @@
 module LBDSKY
-  LA_BASE_DE_SKY_VERSION = "1.0.5" # No modificar esto
+  LA_BASE_DE_SKY_VERSION = "1.0.6" # No modificar esto
 end
 
 class Scene_DebugIntro
@@ -56,3 +56,4 @@ loop do
     break
   end
 end
+

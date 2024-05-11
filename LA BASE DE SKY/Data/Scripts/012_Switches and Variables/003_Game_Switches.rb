@@ -23,3 +23,4 @@ class Game_Switches
     @data[switch_id] = value if switch_id <= 5000
   end
 end
+

@@ -748,3 +748,4 @@ def pbBuyPrize(item, quantity = 1)
                            item_name, pocket, PokemonBag.pocket_names[pocket - 1]))
   return true
 end
+

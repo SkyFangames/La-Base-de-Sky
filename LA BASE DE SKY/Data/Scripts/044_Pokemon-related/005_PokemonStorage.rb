@@ -398,3 +398,4 @@ end
 def pbEachNonEggPokemon
   pbEachPokemon { |pkmn, box| yield(pkmn, box) if !pkmn.egg? }
 end
+

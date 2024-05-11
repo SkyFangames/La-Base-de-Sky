@@ -209,3 +209,4 @@ module Battle::AI::Handlers
     return (ret.nil?) ? score : ret
   end
 end
+

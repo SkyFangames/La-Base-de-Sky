@@ -181,3 +181,4 @@ class PokemonMapMetadata
     end
   end
 end
+

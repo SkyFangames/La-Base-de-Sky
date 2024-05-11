@@ -1169,3 +1169,4 @@ def pbAnimationEditor
   pbSetResizeFactor($PokemonSystem.screensize)
   $game_map&.autoplay
 end
+

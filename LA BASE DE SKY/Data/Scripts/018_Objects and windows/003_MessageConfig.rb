@@ -349,7 +349,8 @@ def getSkinColor(windowskin, color, isDarkSkin)
       MessageConfig::DARK_TEXT_MAIN_COLOR,
       MessageConfig::DARK_TEXT_SHADOW_COLOR,   # 11 Dark default
       MessageConfig::LIGHT_TEXT_MAIN_COLOR,
-      MessageConfig::LIGHT_TEXT_SHADOW_COLOR   # 12 Light default
+      MessageConfig::LIGHT_TEXT_SHADOW_COLOR,   # 12 Light default
+      [120, 120, 128], [240, 240, 248]    # 13  White with black background
     ]
     if color == 0 || color > textcolors.length / 2   # No special colour, use default
       if isDarkSkin   # Dark background, light text
@@ -812,3 +813,4 @@ if !defined?(_MAPINTL)
     return string
   end
 end
+

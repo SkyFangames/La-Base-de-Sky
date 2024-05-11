@@ -624,3 +624,4 @@ class Battle::AI::AIBattler
     return ret
   end
 end
+

@@ -1134,14 +1134,25 @@ ItemHandlers::UseOnPokemon.add(:ABILITYPATCH, proc { |item, qty, pkmn, scene|
 
 ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
   if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}?", pkmn.name))
+    oldabil=pkmn.ability_index
     abils = pkmn.getAbilityList
     ability_commands = []
     abil_cmd = 0
     for i in abils
-      ability_commands.push(((i[1] < 2) ? "" : "(H) ") + GameData::Ability.get(i[0]).name)
+      ability_commands.push(GameData::Ability.get(i[0]).name + ((i[1] < 2) ? "" : " (H)"))
     end
-    cmd= pbMessage("¿Qué habilidad quieres para tu Pokémon?",ability_commands,0,nil,0)
-    pkmn.ability = abils[cmd][0]
+    cmd= pbMessage("¿Qué habilidad quieres para tu Pokémon?",ability_commands,-1,nil,0)
+    next false if cmd == -1
+    if oldabil == abils[cmd][1]
+      scene.pbDisplay("Tu Pokémon ya posee esa habilidad.") 
+      next false
+    end
+    pkmn.ability_index = abils[cmd][1]
+    pkmn.ability = nil
+    newabilname = GameData::Ability.get(abils[cmd][0]).name
+    scene.pbRefresh
+    scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, newabilname))
+    next true
   end
 })
 

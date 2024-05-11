@@ -145,3 +145,4 @@ class PokemonJukeboxScreen
     @scene.pbEndScene
   end
 end
+

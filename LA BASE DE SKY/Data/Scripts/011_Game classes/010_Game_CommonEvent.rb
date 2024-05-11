@@ -54,3 +54,4 @@ class Game_CommonEvent
     @interpreter.update
   end
 end
+

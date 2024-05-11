@@ -197,3 +197,4 @@ class Battle
     pbDisplay(_INTL("¡{1} ha experimentado una Regresión Primigenea y ha recobrado su apariencia primitiva!", battler.pbThis))
   end
 end
+

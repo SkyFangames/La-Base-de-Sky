@@ -1590,3 +1590,4 @@ Battle::AI::Handlers::MoveBasePower.add("IncreasePowerSuperEffective",
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
                                          "PowerHigherWithTargetHP100PowerRange")
+

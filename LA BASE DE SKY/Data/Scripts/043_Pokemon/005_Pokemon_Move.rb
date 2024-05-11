@@ -75,3 +75,4 @@ class Pokemon
     def display_accuracy(pkmn); return GameData::Move.get(@id).display_accuracy(pkmn, self); end
   end
 end
+

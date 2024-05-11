@@ -1,4 +1,39 @@
 #===============================================================================
+# Adds additional Habitat game data.
+#===============================================================================
+module GameData
+  class Habitat
+    attr_accessor :icon_position
+
+    alias _dataplus_initialize initialize
+    def initialize(hash)
+      _dataplus_initialize(hash)
+      @icon_position = hash[:icon_position] || 0
+    end
+  end
+end
+
+#-------------------------------------------------------------------------------
+# Adds icon positions to each Habitat.
+#-------------------------------------------------------------------------------
+GameData::Habitat.each do |habitat|
+  case habitat.id
+  when :None         then habitat.icon_position = 0
+  when :Grassland    then habitat.icon_position = 1
+  when :Forest       then habitat.icon_position = 2
+  when :WatersEdge   then habitat.icon_position = 3
+  when :Sea          then habitat.icon_position = 4
+  when :Cave         then habitat.icon_position = 5
+  when :Mountain     then habitat.icon_position = 6
+  when :RoughTerrain then habitat.icon_position = 7
+  when :Urban        then habitat.icon_position = 8
+  when :Rare         then habitat.icon_position = 9
+  else                    habitat.icon_position = 0
+  end
+end
+
+
+#===============================================================================
 # Adds additional Egg Group game data.
 #===============================================================================
 module GameData
@@ -113,18 +148,18 @@ module GameData
       # Determines the species name.
       if GameData::Species.exists?(species)
         prefix = ""
-        if @id.to_s.include?("Macho")
-          prefix = "un macho "
-        elsif @id.to_s.include?("Hembra")
-          prefix = "una hembra "
+        if @id.to_s.include?("female")
+          prefix = " siendo hembra"
+        elsif @id.to_s.include?("male")
+          prefix = " siendo macho"
         end
         form = false if evo == :MOTHIM
         species_data = GameData::Species.get(species)
         form_name = species_data.form_name
         if form && form_name && !form_name.include?(species_data.name)
-          full_name = _INTL("{1}{2} {3}", prefix, species_data.form_name, species_data.name)
+          full_name = _INTL("{2} {3}{1}", prefix, species_data.name, species_data.form_name)
         else
-          full_name = _INTL("{1}{2}", prefix, species_data.name)
+          full_name = _INTL("{2}{1}", prefix, species_data.name)
         end
       else
         full_name = _INTL("????")
@@ -212,7 +247,7 @@ module GameData
         desc = _INTL("{1} a través de un método desconocido", desc)
       end
       #-------------------------------------------------------------------------
-      # Determina la descripción completa combinando detalles de métodos específicos.
+      # Determines the full description by combining method-specific details.
       if !nil_or_empty?(@description)
         desc2 = _INTL("#{@description}", param_name, param_name2)
         full_desc = _INTL("{1} {2}.", desc, desc2)
@@ -282,7 +317,93 @@ end
 
 
 #===============================================================================
-# Permite mostrar los métodos de Reversión Primigenia en la página de datos
+# Adds new utilities to the species class.
+#===============================================================================
+module GameData
+  class Species
+    #---------------------------------------------------------------------------
+    # Determines if this species should be viewable in the data page menus.
+    #---------------------------------------------------------------------------
+    def display_species?(dexlist, species, special = false, skip_owned_check = false)
+      return false if !dexlist.any? { |dex| dex[:species] == @species }
+      return false if (!$player.owned?(@species) && !skip_owned_check)
+      return false if @species == species.species && @form == species.form
+      if @form > 0 && !Settings::DEX_SHOWS_ALL_FORMS
+        return false if !($player.pokedex.seen_form?(@species, 0, @form) ||
+                        $player.pokedex.seen_form?(@species, 1, @form))
+      end
+      return false if @form != 0 && (!@real_form_name || @real_form_name.empty?)
+      return false if @pokedex_form != @form
+      return false if [:PICHU_2, :FLOETTE_5, :GIMMIGHOUL_1].include?(@id)
+      return false if @species == :PIKACHU && (8..15).include?(@form)
+      if special
+        return false if @mega_stone || @mega_move
+        return false if defined?(@gmax_move) && @gmax_move
+      end
+      return true
+    end
+    
+    #---------------------------------------------------------------------------
+    # Determines the base form of a species.
+    #---------------------------------------------------------------------------
+    def base_pokedex_form
+      return @ungmax_form if defined?(@ungmax_form) && @ungmax_form > 0
+      return @unmega_form if @unmega_form > 0
+      return default_form if default_form >= 0
+      return 0
+    end
+	
+    #---------------------------------------------------------------------------
+    # Determines if the species is a regional form.
+    #---------------------------------------------------------------------------
+    def is_regional_form?
+      if @form > 0 && self.form_name
+        return false if self.form_name.include?(_INTL("Forma Daruma"))
+        Settings::REGIONAL_NAMES.each do |region|
+          return true if self.form_name.include?(region)
+        end
+      end
+      return false
+    end
+	
+    #---------------------------------------------------------------------------
+    # Includes special form moves in tutor move lists.
+    #---------------------------------------------------------------------------
+    def get_tutor_moves
+      case @id
+      when :PIKACHU     then moves = [:VOLTTACKLE]
+      when :ROTOM_1     then moves = [:OVERHEAT]
+      when :ROTOM_2     then moves = [:HYDROPUMP]
+      when :ROTOM_3     then moves = [:BLIZZARD]
+      when :ROTOM_4     then moves = [:AIRSLASH]
+      when :ROTOM_5     then moves = [:LEAFSTORM]
+      when :KYUREM_1    then moves = [:ICEBURN, :FUSIONFLARE]
+      when :KYUREM_2    then moves = [:FREEZESHOCK, :FUSIONBOLT]
+      when :NECROZMA_1  then moves = [:SUNSTEELSTRIKE]
+      when :NECROZMA_2  then moves = [:MOONGEISTBEAM]
+      when :ZACIAN_1    then moves = [:BEHEMOTHBLADE]
+      when :ZAMAZENTA_1 then moves = [:BEHEMOTHBASH]
+      when :CALYREX_1   then moves = [:GLACIALLANCE]
+      when :CALYREX_2   then moves = [:ASTRALBARRAGE]
+      end
+      return @tutor_moves if !moves
+      return moves.concat(@tutor_moves.clone)
+    end
+	
+    #---------------------------------------------------------------------------
+    # Alias for displaying the "return" icon in species lists.
+    #---------------------------------------------------------------------------
+    Species.singleton_class.alias_method :pokedex_icon_filename, :icon_filename
+    def self.icon_filename(*params)
+      return pbResolveBitmap("Graphics/Pokemon/Icons/_RETURN_") if params[0] == :RETURN
+      return self.pokedex_icon_filename(*params)
+    end
+  end
+end
+
+
+#===============================================================================
+# Allows Primal Reversion methods to be displayed in the Data page.
 #===============================================================================
 MultipleForms.register(:GROUDON, {
   "getPrimalForm" => proc { |pkmn|

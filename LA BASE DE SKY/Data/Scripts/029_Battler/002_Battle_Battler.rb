@@ -870,3 +870,4 @@ class Battle::Battler
            pbHasMove?(:JUDGMENT)
   end
 end
+

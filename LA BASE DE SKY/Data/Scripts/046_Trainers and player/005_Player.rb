@@ -121,3 +121,4 @@ class Player < Trainer
     return @pokedex.owned?(species)
   end
 end
+

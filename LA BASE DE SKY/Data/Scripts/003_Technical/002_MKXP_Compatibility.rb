@@ -46,3 +46,4 @@ if System::VERSION != Essentials::MKXPZ_VERSION
                  System::VERSION, Essentials::MKXPZ_VERSION))
   printf("\e[1;33mWARNING: Pokémon Essentials may not work properly.\e[0m\r\n")
 end
+

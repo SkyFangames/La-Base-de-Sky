@@ -214,3 +214,4 @@ class Battle::Move
 
   def display_accuracy(battler); return @realMove.display_accuracy(battler.pokemon); end
 end
+

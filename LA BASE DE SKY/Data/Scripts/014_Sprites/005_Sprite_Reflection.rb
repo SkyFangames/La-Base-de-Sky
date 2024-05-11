@@ -87,3 +87,4 @@ class Sprite_Reflection
     end
   end
 end
+

@@ -75,3 +75,4 @@ class Battle::NullPeer
   def pbCurrentBox;            return -1;  end
   def pbBoxName(box);          return "";  end
 end
+

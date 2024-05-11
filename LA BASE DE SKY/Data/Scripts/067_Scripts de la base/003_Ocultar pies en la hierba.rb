@@ -24,3 +24,4 @@ class Game_Character
     end
   end
 end
+

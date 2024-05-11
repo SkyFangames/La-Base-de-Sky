@@ -147,3 +147,4 @@ end
 class StringOutput
   include FileOutputMixin
 end
+

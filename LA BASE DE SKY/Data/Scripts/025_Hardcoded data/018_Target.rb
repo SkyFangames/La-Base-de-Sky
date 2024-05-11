@@ -183,3 +183,4 @@ GameData::Target.register({
   :name             => _INTL("Ambos Bandos"),
   :affects_foe_side => true
 })
+

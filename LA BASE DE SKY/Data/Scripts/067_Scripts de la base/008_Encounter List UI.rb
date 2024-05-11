@@ -257,3 +257,4 @@ ItemHandlers::UseInField.add(:RADAR,proc{|item|
   screen.pbStartScreen 
   next 1
 })
+

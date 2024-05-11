@@ -296,3 +296,4 @@ end
 
 class MoveHandlerHash < HandlerHashSymbol
 end
+

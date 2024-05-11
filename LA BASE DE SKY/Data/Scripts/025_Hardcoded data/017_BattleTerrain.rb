@@ -56,3 +56,4 @@ GameData::BattleTerrain.register({
   :name      => _INTL("Psíquico"),
   :animation => "PsychicTerrain"
 })
+

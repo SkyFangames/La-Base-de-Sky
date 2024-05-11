@@ -890,3 +890,4 @@ def pbMessageFreeText(message, currenttext, passwordbox, maxlength, width = 240,
   pbDisposeMessageWindow(msgwindow)
   return retval
 end
+

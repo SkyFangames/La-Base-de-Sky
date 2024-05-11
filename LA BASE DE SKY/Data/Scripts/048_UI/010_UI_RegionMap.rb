@@ -353,3 +353,4 @@ def pbShowMap(region = -1, wallmap = true)
     $game_temp.fly_destination = ret if ret && !wallmap
   end
 end
+

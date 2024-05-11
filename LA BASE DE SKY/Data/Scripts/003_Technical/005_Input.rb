@@ -29,3 +29,4 @@ module Mouse
     return Input.mouse_x, Input.mouse_y
   end
 end
+

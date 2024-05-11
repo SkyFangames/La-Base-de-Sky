@@ -439,3 +439,4 @@ MenuHandlers.add(:pause_menu, :quit_bug_contest, {
     next false
   }
 })
+

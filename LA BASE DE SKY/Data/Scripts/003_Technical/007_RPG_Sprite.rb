@@ -357,3 +357,4 @@ class FloatSprite < Sprite
     super
   end
 end
+

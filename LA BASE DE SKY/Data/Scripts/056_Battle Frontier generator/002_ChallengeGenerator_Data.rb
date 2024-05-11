@@ -336,3 +336,4 @@ def pbWriteCup(id, rules)
     pbMessage(_INTL("Generación de equipo completada."))
   end
 end
+

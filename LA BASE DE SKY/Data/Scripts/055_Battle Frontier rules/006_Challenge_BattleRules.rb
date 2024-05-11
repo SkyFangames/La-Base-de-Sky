@@ -101,3 +101,4 @@ end
 class SkillSwapClause < BattleRule
   def setRule(battle); battle.rules["skillswapclause"] = true; end
 end
+

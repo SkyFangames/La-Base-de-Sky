@@ -226,3 +226,4 @@ end
 def pbGetAnimation(name, hue = 0)
   return AnimatedBitmap.new("Graphics/Animations/" + name, hue).deanimate
 end
+

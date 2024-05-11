@@ -95,3 +95,4 @@ class Game_Temp
     @mart_prices = {}
   end
 end
+

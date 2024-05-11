@@ -1471,3 +1471,4 @@ EventHandlers.add(:on_player_step_taken, :mirrorherb_step, proc {
     $PokemonGlobal.mirrorherb_steps = 0
   end
 })
+

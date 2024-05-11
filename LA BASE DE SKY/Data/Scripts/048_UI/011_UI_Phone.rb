@@ -269,3 +269,4 @@ class PokemonPhoneScreen
     @scene.pbEndScene
   end
 end
+

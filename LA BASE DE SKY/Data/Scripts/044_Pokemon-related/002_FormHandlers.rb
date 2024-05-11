@@ -813,3 +813,4 @@ MultipleForms.register(:TERAPAGOS, {
     next 0 if endBattle
   }
 })
+

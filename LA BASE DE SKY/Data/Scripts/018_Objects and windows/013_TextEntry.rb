@@ -554,3 +554,4 @@ class Window_MultilineTextEntry < SpriteWindow_Base
     end
   end
 end
+

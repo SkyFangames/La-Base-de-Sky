@@ -404,3 +404,4 @@ def lerp(start_val, end_val, duration, delta, now = nil)
   return end_val if delta >= duration
   return start_val + ((end_val - start_val) * delta / duration.to_f)
 end
+

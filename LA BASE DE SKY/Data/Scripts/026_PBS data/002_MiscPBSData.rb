@@ -62,3 +62,4 @@ def pbLoadMapInfos
   end
   return $game_temp.map_infos
 end
+

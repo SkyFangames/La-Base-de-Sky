@@ -501,3 +501,4 @@ class Battle::DebugSetEffects
     end
   end
 end
+

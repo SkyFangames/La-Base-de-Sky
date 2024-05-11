@@ -233,3 +233,4 @@ class Scene_Credits
     @credit_sprites.each_with_index { |s, i| s.oy = @realOY - (@bitmap_height * i) }
   end
 end
+

@@ -370,3 +370,4 @@ class Battle::Battler
 
   def pbHyperMode; end
 end
+

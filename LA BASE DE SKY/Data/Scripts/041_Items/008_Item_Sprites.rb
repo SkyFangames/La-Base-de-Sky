@@ -155,3 +155,4 @@ class HeldItemIconSprite < Sprite
     end
   end
 end
+

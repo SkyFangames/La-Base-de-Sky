@@ -117,3 +117,4 @@ GameData::Stat.register({
   :name_brief => _INTL("Eva"),
   :type       => :battle
 })
+

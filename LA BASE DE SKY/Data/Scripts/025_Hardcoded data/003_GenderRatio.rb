@@ -81,3 +81,4 @@ GameData::GenderRatio.register({
   :name          => _INTL("Hembra 7 de cada 8"),
   :female_chance => 224
 })
+

@@ -31,6 +31,10 @@ module Settings
   # Almacena la ruta para los gráficos utilizados por este plugin.
   BATTLE_UI_GRAPHICS_PATH = "Graphics/Plugins/Enhanced Battle UI/"
   
+  # Cuando está activado, aparecerán botones para abrir los menús de interfaz 
+  # de usuario al seleccionar comandos.
+  SHOW_UI_PROMPTS = true
+  
   # Cuando es falso, la pantalla no mostrará la efectividad del tipo de movimientos
   # contra especies nuevas que encuentres por primera vez.
   # Cuando es verdadero, siempre se mostrará la efectividad del tipo, incluso para
@@ -345,4 +349,5 @@ end
 ################################################################################
 
 MOSTRAR_PASOS_HUEVO = false
+
 

@@ -630,3 +630,4 @@ class Battle::Battler
     @effects[PBEffects::Flinch] = true
   end
 end
+

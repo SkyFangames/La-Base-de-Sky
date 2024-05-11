@@ -414,3 +414,4 @@ class SpritePositionerScreen
     @scene.pbClose
   end
 end
+

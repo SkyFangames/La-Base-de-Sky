@@ -870,3 +870,4 @@ class Battle::Move::RandomlyDealsDoubleDamage < Battle::Move
   end
 end
 
+

@@ -618,3 +618,4 @@ class TilemapRenderer
     @autotiles.changed = false
   end
 end
+

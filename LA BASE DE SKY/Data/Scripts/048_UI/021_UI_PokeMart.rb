@@ -746,3 +746,4 @@ def pbPokemonMart(stock, speech = nil, cantsell = false)
   end
   $game_temp.clear_mart_prices
 end
+

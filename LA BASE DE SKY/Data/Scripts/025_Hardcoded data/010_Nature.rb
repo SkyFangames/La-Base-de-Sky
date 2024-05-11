@@ -171,3 +171,4 @@ GameData::Nature.register({
   :id           => :QUIRKY,
   :name         => _INTL("Rara")
 })
+

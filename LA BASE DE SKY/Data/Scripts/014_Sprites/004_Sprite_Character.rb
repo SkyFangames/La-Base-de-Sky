@@ -185,3 +185,4 @@ class Sprite_Character < RPG::Sprite
     @surfbase&.update
   end
 end
+

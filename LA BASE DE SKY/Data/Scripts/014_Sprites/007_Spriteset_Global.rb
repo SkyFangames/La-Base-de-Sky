@@ -54,3 +54,4 @@ class Spriteset_Global
     @timer_sprite.update
   end
 end
+

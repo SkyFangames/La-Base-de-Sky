@@ -139,3 +139,4 @@ module Effectiveness
     return ret
   end
 end
+

@@ -624,3 +624,4 @@ class Battle::Move::PledgeMove < Battle::Move
     return super
   end
 end
+

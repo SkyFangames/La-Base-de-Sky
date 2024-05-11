@@ -56,3 +56,4 @@ class Sprite_Picture
     @sprite.tone = @picture.tone
   end
 end
+

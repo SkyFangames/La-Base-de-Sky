@@ -142,3 +142,4 @@ end
 def pbPlayBattleFromFile(filename)
   pbRgssOpen(filename, "rb") { |f| pbPlayBattle(f.read) }
 end
+

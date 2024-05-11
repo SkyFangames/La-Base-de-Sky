@@ -469,3 +469,4 @@ class Battle::Move::ThrowUserItemAtTarget < Battle::Move
     user.pbConsumeItem(true, true, false) if user.item
   end
 end
+

@@ -285,3 +285,4 @@ class Game_System
     end
   end
 end
+

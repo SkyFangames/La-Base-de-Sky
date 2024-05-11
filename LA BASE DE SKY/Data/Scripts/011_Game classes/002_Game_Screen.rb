@@ -132,3 +132,4 @@ end
 def pbShake(power, speed, frames)
   $game_screen.start_shake(power, speed, frames)
 end
+

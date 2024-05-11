@@ -250,3 +250,4 @@ class Scene_Map
     end
   end
 end
+

@@ -1105,3 +1105,4 @@ EventHandlers.add(:on_game_map_setup, :random_dungeon,
     end
   }
 )
+

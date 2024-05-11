@@ -129,3 +129,4 @@ class Spriteset_Map
     @@viewport3.update
   end
 end
+

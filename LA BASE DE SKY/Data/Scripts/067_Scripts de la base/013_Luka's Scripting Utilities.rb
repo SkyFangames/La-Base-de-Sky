@@ -1433,3 +1433,4 @@ def getConst(mod, constant)
   return mod.const_get(constant.to_sym) rescue nil
 end
 #===============================================================================
+

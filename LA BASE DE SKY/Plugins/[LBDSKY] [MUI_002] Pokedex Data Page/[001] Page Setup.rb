@@ -1,30 +1,49 @@
 #===============================================================================
-# Configuraciones.
+# Settings.
 #===============================================================================
 module Settings
-  # Definidos en PluginSettings
+  #-----------------------------------------------------------------------------
+  # Graphics path
+  #-----------------------------------------------------------------------------
+  # Stores the path name for the graphics utilized by this plugin.
+  #-----------------------------------------------------------------------------
+  POKEDEX_DATA_PAGE_GRAPHICS_PATH = "Graphics/Plugins/Pokedex Data Page/"
+  
+  #-----------------------------------------------------------------------------
+  # The switch number used to unlock the Data page in the Pokedex.
+  #-----------------------------------------------------------------------------
+  POKEDEX_DATA_PAGE_SWITCH = 60
+  
+  #-----------------------------------------------------------------------------
+  # Toggles whether or not alternative Egg Group names should be displayed.
+  #-----------------------------------------------------------------------------
+  ALT_EGG_GROUP_NAMES = false
+  
+  #-----------------------------------------------------------------------------
+  # List of regional names to check for to display for evolution methods.
+  #-----------------------------------------------------------------------------
+  REGIONAL_NAMES = ["Alola", "Galar", "Hisui", "Paldea"]
 end
 
 
 #===============================================================================
 # Menu handler for the Pokedex Data page.
-# Controlador del menu para la pagina de datos de la Pokedex.
 #===============================================================================
 UIHandlers.add(:pokedex, :page_data, { 
   "name"      => "DATA",
   "suffix"    => "data",
   "order"     => 40,
-  # "condition" => proc { next $game_switches[Settings::POKEDEX_DATA_PAGE_SWITCH] },
+  #"condition" => proc { next $game_switches[Settings::POKEDEX_DATA_PAGE_SWITCH] },
   "layout"    => proc { |species, scene| scene.drawPageData }
 })
 
 
 #===============================================================================
-# Varias utilidades y alias requeridos para configurar las pantallas de la pagina de datos.
+# Various utilities and aliases required for setting up Data page displays.
 #===============================================================================
 class PokemonPokedexInfo_Scene
   #-----------------------------------------------------------------------------
-  # Coordenadas para los iconos de la familia de Pokemon en la pagina de datos.
+  # Sets the coordinates for Pokemon family icons on the Data page.
   #-----------------------------------------------------------------------------
   ICONS_POS_Y         = 130
   ICONS_CENTER        = 369
@@ -36,7 +55,7 @@ class PokemonPokedexInfo_Scene
   ICONS_RIGHT_TRIPLE  = ICONS_CENTER + ICONS_OFFSET_TRIPLE - 1
   
   #-----------------------------------------------------------------------------
-  # Configura el color de texto para las notas en la pagina de datos.
+  # Sets the text color options for notes drawn on the Data page.
   #-----------------------------------------------------------------------------
   DATA_TEXT_TAGS = [
     shadowc3tag(Color.new(88, 88, 80),  Color.new(168, 184, 184)), # Black
@@ -46,7 +65,7 @@ class PokemonPokedexInfo_Scene
   ]
   
   #-----------------------------------------------------------------------------
-  # Alias para implementar elementos de IU personalizados.
+  # Aliased for implementing custom UI elements.
   #-----------------------------------------------------------------------------
   alias modular_pbStartScene pbStartScene
   def pbStartScene(*args)
@@ -55,6 +74,15 @@ class PokemonPokedexInfo_Scene
     @moveList      = []
     @moveCommands  = []
     @moveListIndex = 0
+    @viewingMoves  = false
+    @forceRefresh  = false
+    if PluginManager.installed?("[DBK] Z-Power")
+      @zcrystals = []
+      GameData::Item.each { |item| @zcrystals.push(item) if item.is_zcrystal? }
+    end
+    if PluginManager.installed?("[DBK] Dynamax")
+      @maxmoves = GameData::Move.get_generic_dynamax_moves
+    end
     modular_pbStartScene(*args)
     @typebitmap2 = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
     3.times do |i|
@@ -64,7 +92,7 @@ class PokemonPokedexInfo_Scene
       @sprites["familyicon#{i}"].y = ICONS_POS_Y
       @sprites["familyicon#{i}"].visible = false
     end
-    @sprites["itemicon"] = ItemIconSprite.new(292, 200, nil, @viewport)
+    @sprites["itemicon"] = ItemIconSprite.new(261, 200, nil, @viewport)
     @sprites["itemicon"].blankzero = true
     @sprites["leftarrow"] = AnimatedSprite.new("Graphics/UI/left_arrow", 8, 40, 28, 2, @viewport)
     @sprites["leftarrow"].x       = -2
@@ -72,7 +100,7 @@ class PokemonPokedexInfo_Scene
     @sprites["leftarrow"].visible = false
     @sprites["leftarrow"].play
     @sprites["rightarrow"] = AnimatedSprite.new("Graphics/UI/right_arrow", 8, 40, 28, 2, @viewport)
-    @sprites["rightarrow"].x       = 220 #+ 50
+    @sprites["rightarrow"].x       = 220
     @sprites["rightarrow"].y       = 46
     @sprites["rightarrow"].visible = false
     @sprites["rightarrow"].play
@@ -100,7 +128,7 @@ class PokemonPokedexInfo_Scene
   end
   
   #-----------------------------------------------------------------------------
-  # Permite una acción personalizada en la página de datos cuando se presiona la tecla USE.
+  # Allows for a custom action on the Data page when the USE key is pressed.
   #-----------------------------------------------------------------------------
   alias modular_pbPageCustomUse pbPageCustomUse
   def pbPageCustomUse(page_id)
@@ -112,7 +140,7 @@ class PokemonPokedexInfo_Scene
   end
   
   #-----------------------------------------------------------------------------
-  # Utilidad para restablecer los sprites de iconos de familia.
+  # Utility for resetting family icon sprites.
   #-----------------------------------------------------------------------------
   def pbResetFamilyIcons
     3.times do |i|
@@ -124,18 +152,18 @@ class PokemonPokedexInfo_Scene
   end
   
   #-----------------------------------------------------------------------------
-  # Utilidad para determinar si una especie tiene diferencias de género.
+  # Utility for determining if a species has gender differences.
   #-----------------------------------------------------------------------------
   def gender_difference?(form)
     file1 = GameData::Species.front_sprite_filename(@species, form)
     file2 = GameData::Species.front_sprite_filename(@species, form, 1)
     return true if file1 != file2 
     species_data = GameData::Species.get_species_form(@species, form)
-    return [_INTL("Male"), _INTL("Female")].include?(species_data.form_name)
+    return [_INTL("Macho"), _INTL("Hembra")].include?(species_data.form_name)
   end
   
   #-----------------------------------------------------------------------------
-  # Reescrito para permitir que aparezcan formas con diferencias de género.
+  # Rewritten to allow for forms with gender differences to appear.
   #-----------------------------------------------------------------------------
   def pbGetAvailableForms
     ret = []
@@ -160,7 +188,7 @@ class PokemonPokedexInfo_Scene
         next if !$player.pokedex.seen_form?(@species, sp.form, sp.form) && !Settings::DEX_SHOWS_ALL_FORMS
         ret.push([sp.form_name, sp.form, sp.form])
       else
-        g = [_INTL("Macho"), _INTL("Hembra")]
+        g = [_INTL("macho"), _INTL("Hembra")]
         2.times do |real_gndr|
           next if !$player.pokedex.seen_form?(@species, real_gndr, sp.form) && !Settings::DEX_SHOWS_ALL_FORMS
           form_name = (sp.form_name) ? sp.form_name + " " + g[real_gndr] : g[real_gndr]
@@ -188,7 +216,7 @@ end
 
 
 #===============================================================================
-# Fix para que los iconos de los shinies aparezcan cuando no deberían si tienes alguno instalado.
+# Fix for shiny icons appearing when they shouldn't be if you have any installed.
 #===============================================================================
 class PokemonSpeciesIconSprite < Sprite
   alias _shinyfix_initialize initialize

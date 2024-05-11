@@ -606,3 +606,4 @@ def pbTilePuzzle(game, board, width = 0, height = 0)
   end
   return ret
 end
+

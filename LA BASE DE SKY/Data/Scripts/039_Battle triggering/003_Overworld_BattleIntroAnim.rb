@@ -430,3 +430,4 @@ SpecialBattleIntroAnimations.register("rocket_grunt_animation", 40,   # Priority
     pbBattleAnimationCore("RocketGrunt", viewport, location)
   }
 )
+

@@ -503,3 +503,4 @@ class SafariBattle
     return @decision
   end
 end
+

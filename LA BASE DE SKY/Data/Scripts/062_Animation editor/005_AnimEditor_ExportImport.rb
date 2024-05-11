@@ -145,3 +145,4 @@ module BattleAnimationEditor
     pbMessage(_INTL("{1} se han convertido las animaciones al nuevo formato.", count))
   end
 end
+

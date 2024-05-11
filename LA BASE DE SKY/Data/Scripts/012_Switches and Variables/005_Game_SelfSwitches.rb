@@ -22,3 +22,4 @@ class Game_SelfSwitches
     @data[key] = value
   end
 end
+

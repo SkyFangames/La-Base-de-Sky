@@ -1,6 +1,6 @@
 ﻿Name       = [MUI] Pokedex Data Page
-Version    = 1.0.5
+Version    = 2.0
 Essentials = 21.1
 Requires   = Modular UI Scenes,2.0.4
-Website    = https://reliccastle.com/resources/1380/
-Credits    = Lucidious89, Skyflyer, DPertierra
+Website    = https://www.pokecommunity.com/threads/in-depth-pokedex-data-page-v21-1.500459/
+Credits    = Lucidious89

@@ -219,3 +219,4 @@ class Pokemon
     return ret
   end
 end
+

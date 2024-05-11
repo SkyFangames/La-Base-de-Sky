@@ -87,3 +87,4 @@ module FilenameUpdater
     Console.echo_h2(_INTL("Se ha terminado de actualizar los nombres de archivos y localizaciones"), text: :green)
   end
 end
+

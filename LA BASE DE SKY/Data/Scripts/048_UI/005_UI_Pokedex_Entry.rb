@@ -617,3 +617,4 @@ class PokemonPokedexInfoScreen
     @scene.pbEndScene
   end
 end
+

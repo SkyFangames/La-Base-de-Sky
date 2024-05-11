@@ -1300,3 +1300,4 @@ class PokemonPokedexScreen
     @scene.pbEndScene
   end
 end
+

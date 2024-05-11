@@ -376,3 +376,4 @@ class Scene_Map
     Input.update
   end
 end
+

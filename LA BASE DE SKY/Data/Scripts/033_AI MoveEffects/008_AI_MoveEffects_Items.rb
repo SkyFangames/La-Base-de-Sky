@@ -374,3 +374,4 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ThrowUserItemAtTarget",
     next score
   }
 )
+

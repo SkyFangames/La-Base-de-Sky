@@ -494,3 +494,4 @@ def pbHallOfFamePC
   screen = HallOfFameScreen.new(scene)
   screen.pbStartScreenPC
 end
+

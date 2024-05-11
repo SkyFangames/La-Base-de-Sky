@@ -549,3 +549,4 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
     refreshButtons
   end
 end
+

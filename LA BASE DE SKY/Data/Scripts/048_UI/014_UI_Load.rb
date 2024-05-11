@@ -299,7 +299,7 @@ class PokemonLoadScreen
     commands[cmd_new_game = commands.length]  = _INTL("Juego Nuevo")
     commands[cmd_options = commands.length]   = _INTL("Opciones")
     commands[cmd_language = commands.length]  = _INTL("Idioma") if Settings::LANGUAGES.length >= 2
-    commands[cmd_update=commands.length]      = _INTL("Buscar actualizaciones")
+    commands[cmd_update=commands.length]      = _INTL("Buscar actualizaciones") if PluginManager.installed?("Pokemon Essentials Game Updater")
     commands[cmd_debug = commands.length]     = _INTL("Debug") if $DEBUG
     commands[cmd_quit = commands.length]      = _INTL("Cerrar Juego")
     map_id = show_continue ? @save_data[:map_factory].map.map_id : 0
@@ -351,3 +351,4 @@ class PokemonLoadScreen
     end
   end
 end
+

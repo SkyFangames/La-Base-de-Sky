@@ -79,3 +79,4 @@ class Spriteset_Map
     @usersprites.each { |sprite| sprite.update if !sprite.disposed? }
   end
 end
+

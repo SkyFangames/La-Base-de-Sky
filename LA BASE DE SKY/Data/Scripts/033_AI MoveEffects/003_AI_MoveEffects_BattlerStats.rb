@@ -2015,3 +2015,4 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("ConfuseTargetIfTargetSta
   }
 )
 
+

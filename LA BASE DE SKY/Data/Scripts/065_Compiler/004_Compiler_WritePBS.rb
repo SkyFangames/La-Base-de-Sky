@@ -819,3 +819,4 @@ module Compiler
     Console.echo_h2(_INTL("Successfully rewrote all PBS files"), text: :green)
   end
 end
+

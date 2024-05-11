@@ -129,3 +129,4 @@ GameData::Environment.register({
   :id   => :UltraSpace,
   :name => _INTL("Ultraespacio")
 })
+

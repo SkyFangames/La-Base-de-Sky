@@ -359,3 +359,4 @@ class Player < Trainer
     end
   end
 end
+

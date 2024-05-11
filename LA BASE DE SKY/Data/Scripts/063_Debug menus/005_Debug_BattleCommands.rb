@@ -488,3 +488,4 @@ MenuHandlers.add(:battle_debug_menu, :position_effects, {
     end
   }
 })
+

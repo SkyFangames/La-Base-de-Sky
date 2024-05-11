@@ -940,3 +940,4 @@ module BattleAnimationEditor
     end
   end
 end
+

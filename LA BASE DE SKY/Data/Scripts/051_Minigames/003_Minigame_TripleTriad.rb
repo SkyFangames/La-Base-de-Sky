@@ -1298,3 +1298,4 @@ def pbGiveTriadCard(species, quantity = 1)
   $PokemonGlobal.triads.add(sp.id, quantity)
   return true
 end
+

@@ -319,3 +319,4 @@ MenuHandlers.add(:pause_menu, :quit_game, {
     next false
   }
 })
+

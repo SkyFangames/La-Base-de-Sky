@@ -469,3 +469,4 @@ def pbPickBerry(berry, qty = 1)
   pbSetSelfSwitch(this_event.id, "A", true)
   return true
 end
+

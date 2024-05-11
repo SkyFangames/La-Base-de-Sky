@@ -364,3 +364,4 @@ class Battle::Scene
     end
   end
 end
+

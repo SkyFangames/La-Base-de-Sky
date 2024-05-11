@@ -158,3 +158,4 @@ class Battle
     return -1
   end
 end
+

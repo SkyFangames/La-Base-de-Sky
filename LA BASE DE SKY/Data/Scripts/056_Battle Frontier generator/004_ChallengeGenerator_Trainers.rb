@@ -209,3 +209,4 @@ def pbTrainerInfo(pokemonlist, trfile, rules)
   Compiler.write_trainer_lists
   yield(nil) if block_given?
 end
+

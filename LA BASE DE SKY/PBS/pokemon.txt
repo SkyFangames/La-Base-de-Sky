@@ -1504,6 +1504,7 @@ Habitat = Mountain
 Category = Mono Cerdo
 Pokedex = Cuando Primeape se enfada, se le acelera el ritmo cardíaco y se le fortalecen los músculos, pero también pierde en inteligencia.
 Generation = 1
+Evolutions = ANNIHILAPE,LevelUseMoveCount,RAGEFIST
 #-------------------------------
 [GROWLITHE]
 Name = Growlithe
@@ -3262,7 +3263,7 @@ Habitat = Grassland
 Category = Mantis
 Pokedex = Es espectacular ver lo rápido que es. Su velocidad potencia las guadañas que tiene en los brazos, pues rebanan gruesos troncos de un tajo.
 Generation = 1
-Evolutions = SCIZOR,CableLinkItem,METALCOAT
+Evolutions = SCIZOR,CableLinkItem,METALCOAT,KLEAVOR,Item,BLACKAUGURITE
 #-------------------------------
 [JYNX]
 Name = Jynx
@@ -5357,6 +5358,7 @@ Habitat = Grassland
 Category = Grancuello
 Pokedex = Girafarig es herbívoro: come hierba y brotes de los árboles. Mientras se alimenta, mueve la cola como si también masticara y tragara con ella.
 Generation = 2
+Evolutions = FARIGIRAF,HasMove,TWINBEAM
 #-------------------------------
 [PINECO]
 Name = Pineco
@@ -5435,6 +5437,7 @@ Habitat = Cave
 Category = Serptierra
 Pokedex = La cola es un taladro que usa para enterrarse de espaldas en el suelo. Se sabe que su nido tiene una forma muy compleja y está a gran profundidad.
 Generation = 2
+Evolutions = DUDUNSPARCE,HasMoveRandForm,HYPERDRILL
 #-------------------------------
 [GLIGAR]
 Name = Gligar
@@ -5727,6 +5730,7 @@ Habitat = Mountain
 Category = Hibernante
 Pokedex = En los bosques que habita, dicen que hay arroyos y árboles gigantes donde guarda su alimento. A diario, pasea por el bosque para recolectar comida.
 Generation = 2
+Evolutions = URSALUNA,ItemNight,PEATBLOCK
 #-------------------------------
 [SLUGMA]
 Name = Slugma
@@ -6160,7 +6164,7 @@ CatchRate = 45
 Happiness = 50
 Abilities = INTIMIDATE,FRISK
 HiddenAbilities = SAPSIPPER
-Moves=1,TACKLE,3,LEER,7,ASTONISH,10,HYPNOSIS,13,STOMP,16,SANDATTACK,21,TAKEDOWN,23,CONFUSERAY,27,CALMMIND,32,ROLEPLAY,37,ZENHEADBUTT,43,LUNGE,49,IMPRISON,50,ENTRAINMENT,55,DOUBLEEDGE
+Moves=1,TACKLE,3,LEER,7,ASTONISH,10,HYPNOSIS,13,STOMP,16,SANDATTACK,18,TAKEDOWN,21,PSYSHIELDBASH,23,CONFUSERAY,27,CALMMIND,32,ROLEPLAY,37,ZENHEADBUTT,43,LUNGE,49,IMPRISON,50,ENTRAINMENT,55,DOUBLEEDGE
 TutorMoves = ATTRACT,BODYSLAM,BOUNCE,BULLDOZE,CALMMIND,CAPTIVATE,CHARGEBEAM,CONFIDE,DOUBLEEDGE,DOUBLETEAM,DREAMEATER,EARTHQUAKE,ENDURE,ENERGYBALL,FACADE,FLASH,FRUSTRATION,GIGAIMPACT,GRAVITY,HEADBUTT,HIDDENPOWER,IRONTAIL,LASTRESORT,LIGHTSCREEN,MAGICROOM,MIMIC,MUDSLAP,NATURALGIFT,PROTECT,PSYCHIC,PSYCHUP,PSYSHOCK,RAINDANCE,REFLECT,REST,RETALIATE,RETURN,ROAR,ROLEPLAY,ROUND,SECRETPOWER,SHADOWBALL,SHOCKWAVE,SIGNALBEAM,SKILLSWAP,SLEEPTALK,SNORE,SOLARBEAM,SPITE,SUBSTITUTE,SUCKERPUNCH,SUNNYDAY,SWAGGER,SWIFT,THIEF,THROATCHOP,THUNDER,THUNDERBOLT,THUNDERWAVE,TRICKROOM,UPROAR,WILDCHARGE,WORKUP,ZENHEADBUTT
 EggMoves = BITE,DISABLE,DOUBLEKICK,EXTRASENSORY,MEGAHORN,SPITE,THRASH,ZENHEADBUTT
 EggGroups = Field
@@ -6173,6 +6177,7 @@ Habitat = Forest
 Category = Grancuerno
 Pokedex = Antes se comerciaba con la cornamenta de Stantler, considerada una obra de arte. Esto provocó que muchos intentaran darle caza y casi se extingue.
 Generation = 2
+Evolutions = WYRDEER,HasMove,PSYSHIELDBASH
 #-------------------------------
 [SMEARGLE]
 Name = Smeargle
@@ -16229,6 +16234,7 @@ Shape = Bipedal
 Category = Filo
 Pokedex = Su séquito son los Pawniard. Acorralan a su presa con todo el grupo y Bisharp propina el golpe de gracia.
 Generation = 5
+Evolutions = KINGAMBIT,LevelDefeatItsKindWithItem,LEADERSCREST
 #-------------------------------
 [BOUFFALANT]
 Name = Bouffalant
@@ -23160,7 +23166,7 @@ Name = Basculegion
 FormName = Forma Macho
 Types = WATER,GHOST
 BaseStats = 120,112,65,78,80,75
-GenderRatio = Female50Percent
+GenderRatio = AlwaysFemale
 GrowthRate = Medium
 BaseExp = 265
 EVs = HP,3
@@ -23756,7 +23762,7 @@ Habitat = Urban
 Category = Pareja
 Pokedex = Cuando encuentran un material que les parece útil para su nido, lo recortan con sus incisivos y lo acarrean, todo en perfecta compenetración.
 Generation = 9
-Evolutions = MAUSHOLD,Level,25
+Evolutions = MAUSHOLD,LevelRandForm,25
 #-------------------------------
 [MAUSHOLD]
 Name = Maushold

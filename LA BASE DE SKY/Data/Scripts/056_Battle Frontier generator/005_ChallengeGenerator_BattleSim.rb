@@ -436,3 +436,4 @@ def pbRuledBattle(team1, team2, rule)
     team2.addMatch(team1, -1)
   end
 end
+

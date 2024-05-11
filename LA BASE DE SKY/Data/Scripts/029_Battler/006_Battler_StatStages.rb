@@ -477,3 +477,4 @@ class Battle::Battler
     statUps[stat] += increment
   end
 end
+

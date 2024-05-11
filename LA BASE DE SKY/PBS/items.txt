@@ -6771,7 +6771,7 @@ NamePlural = Super Cápsulas
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Description = Una cápsula especial que permite a un Pokémon cambiar de habildiad entre todas las que tiene.
+Description = Una cápsula especial que permite a un Pokémon cambiar de habilidad entre todas las que tiene.
 #-------------------------------
 [RADAR]
 Name = Buscasalvajes

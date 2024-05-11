@@ -273,3 +273,4 @@ end
 class Spriteset_Map
   attr_accessor :character_sprites
 end
+

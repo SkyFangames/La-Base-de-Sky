@@ -711,3 +711,4 @@ ItemHandlers::BattleUseOnBattler.add(:DIREHIT3, proc { |item, battler, scene|
   scene.pbDisplay(_INTL("¡{1} se está preparando para luchar!", battler.pbThis))
   battler.pokemon.changeHappiness("battleitem")
 })
+

@@ -410,3 +410,4 @@ class Battle::AI
     end
   end
 end
+

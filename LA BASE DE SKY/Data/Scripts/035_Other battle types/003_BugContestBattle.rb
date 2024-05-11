@@ -81,3 +81,4 @@ class BugContestBattle < Battle
     @decision = 3 if @ballCount <= 0 && @decision == 0
   end
 end
+

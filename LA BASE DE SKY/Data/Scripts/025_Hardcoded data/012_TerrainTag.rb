@@ -202,3 +202,4 @@ GameData::TerrainTag.register({
   :id                     => :NoEffect,
   :id_number              => 17
 })
+

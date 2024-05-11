@@ -458,3 +458,4 @@ EventHandlers.add(:on_player_step_taken, :lower_heart_gauges,
     $PokemonGlobal.purifyChamber&.update
   }
 )
+

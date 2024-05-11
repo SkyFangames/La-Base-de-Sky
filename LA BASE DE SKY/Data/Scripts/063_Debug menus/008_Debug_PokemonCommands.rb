@@ -1149,3 +1149,4 @@ MenuHandlers.add(:pokemon_debug_menu, :delete, {
     next true
   }
 })
+

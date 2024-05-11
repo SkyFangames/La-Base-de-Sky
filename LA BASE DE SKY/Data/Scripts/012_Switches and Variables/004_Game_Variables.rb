@@ -23,3 +23,4 @@ class Game_Variables
     @data[variable_id] = value if variable_id <= 5000
   end
 end
+

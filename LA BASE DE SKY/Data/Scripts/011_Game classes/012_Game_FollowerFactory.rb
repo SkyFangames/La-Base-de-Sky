@@ -388,3 +388,4 @@ module Followers
     $game_temp.followers.put_followers_on_player
   end
 end
+

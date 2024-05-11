@@ -795,3 +795,4 @@ class Battle::AI
     return ret
   end
 end
+

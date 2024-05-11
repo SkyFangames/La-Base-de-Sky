@@ -563,3 +563,4 @@ end
 def pbScrollMapToPlayer(speed = 4)
   pbScrollMapTo($game_player.x, $game_player.y, speed)
 end
+

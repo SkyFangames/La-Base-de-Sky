@@ -284,3 +284,4 @@ class Game_Event < Game_Character
     end
   end
 end
+

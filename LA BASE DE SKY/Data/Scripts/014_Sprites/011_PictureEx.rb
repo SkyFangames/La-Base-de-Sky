@@ -546,3 +546,4 @@ end
 def setPictureIconSprite(sprite, picture)
   setPictureSprite(sprite, picture, true)
 end
+

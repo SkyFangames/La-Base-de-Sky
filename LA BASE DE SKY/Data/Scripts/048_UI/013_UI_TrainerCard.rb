@@ -109,3 +109,4 @@ class PokemonTrainerCardScreen
     @scene.pbEndScene
   end
 end
+

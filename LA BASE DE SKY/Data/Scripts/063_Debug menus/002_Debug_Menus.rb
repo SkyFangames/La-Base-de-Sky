@@ -423,3 +423,4 @@ end
 class Battle
   include Battle::DebugMixin
 end
+

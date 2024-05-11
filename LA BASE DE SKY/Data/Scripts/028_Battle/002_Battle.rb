@@ -1084,3 +1084,4 @@ class Battle
     return effective_types.sample
   end
 end
+

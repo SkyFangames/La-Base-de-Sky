@@ -108,3 +108,4 @@ def pbWaitForInput(msgWindow, message, duration)
   end
   return false
 end
+

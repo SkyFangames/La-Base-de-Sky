@@ -702,3 +702,4 @@ class PokemonBagScreen
     @scene.pbEndScene
   end
 end
+

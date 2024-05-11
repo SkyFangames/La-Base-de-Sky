@@ -194,3 +194,4 @@ MenuHandlers.add(:pause_menu, :quit_safari_game, {
     next false
   }
 })
+

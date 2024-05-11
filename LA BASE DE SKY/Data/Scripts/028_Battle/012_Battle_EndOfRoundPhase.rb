@@ -486,7 +486,7 @@ class Battle
   def pbEOREndFieldEffects(priority)
     # Trick Room
     pbEORCountDownFieldEffect(PBEffects::TrickRoom,
-                              _INTL("Se han restaurado las dimensiones alteradas"))
+                              _INTL("Se han restaurado las dimensiones alteradas."))
     # Gravity
     pbEORCountDownFieldEffect(PBEffects::Gravity,
                               _INTL("La gravedad ha vuelto a su estado normal."))
@@ -841,3 +841,4 @@ class Battle
     end
   end
 end
+

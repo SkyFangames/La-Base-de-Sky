@@ -479,3 +479,4 @@ class Battle::Battler
     end
   end
 end
+

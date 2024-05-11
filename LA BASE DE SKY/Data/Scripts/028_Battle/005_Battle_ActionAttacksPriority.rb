@@ -277,3 +277,4 @@ class Battle
     return ret
   end
 end
+

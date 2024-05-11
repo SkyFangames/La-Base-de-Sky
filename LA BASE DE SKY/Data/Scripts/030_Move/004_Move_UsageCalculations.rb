@@ -567,3 +567,4 @@ class Battle::Move
     return ret
   end
 end
+

@@ -1400,3 +1400,4 @@ def pbChooseMove(pokemon, variableNumber, nameVarNumber)
   end
   $game_map.need_refresh = true if $game_map
 end
+

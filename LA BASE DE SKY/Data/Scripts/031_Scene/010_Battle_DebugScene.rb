@@ -104,3 +104,4 @@ class Battle::DebugSceneNoVisuals
     end
   end
 end
+

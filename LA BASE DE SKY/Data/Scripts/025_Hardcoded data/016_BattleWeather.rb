@@ -79,3 +79,4 @@ GameData::BattleWeather.register({
   :name      => _INTL("Cielo sombrío"),
   :animation => "ShadowSky"
 })
+

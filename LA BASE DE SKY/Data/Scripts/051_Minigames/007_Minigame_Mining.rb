@@ -643,3 +643,4 @@ def pbMiningGame
     screen.pbStartScreen
   end
 end
+

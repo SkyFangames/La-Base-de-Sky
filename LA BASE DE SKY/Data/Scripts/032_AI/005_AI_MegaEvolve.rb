@@ -11,3 +11,4 @@ class Battle::AI
     return false
   end
 end
+

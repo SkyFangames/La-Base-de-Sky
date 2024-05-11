@@ -577,3 +577,4 @@ class Battle::Scene
     @animations.push(animPlayer)
   end
 end
+

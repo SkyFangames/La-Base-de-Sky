@@ -408,3 +408,4 @@ class Battle::Move
     end
   end
 end
+

@@ -213,3 +213,4 @@ class Game_Follower < Game_Event
     return true
   end
 end
+

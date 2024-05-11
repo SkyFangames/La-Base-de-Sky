@@ -321,3 +321,4 @@ class LightCup < PokemonRuleSet
     return _INTL("Copa Ligera")
   end
 end
+

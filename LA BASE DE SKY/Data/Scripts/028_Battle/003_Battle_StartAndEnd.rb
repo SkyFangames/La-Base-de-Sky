@@ -566,3 +566,4 @@ class Battle
     end
   end
 end
+

@@ -615,3 +615,4 @@ def pbScreenCapture
   Graphics.screenshot(capturefile)
   pbSEPlay("Pkmn exp full") if FileTest.audio_exist?("Audio/SE/Pkmn exp full")
 end
+

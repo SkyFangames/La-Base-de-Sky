@@ -847,3 +847,4 @@ class Battle::Scene::Animation::PokeballThrowDeflect < Battle::Scene::Animation
     createBallTumbling(ball, delay, 8)
   end
 end
+

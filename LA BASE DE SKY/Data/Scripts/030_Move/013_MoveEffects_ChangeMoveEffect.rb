@@ -1390,3 +1390,4 @@ class Battle::Move::TypeIsUserSecondType < Battle::Move
     super
   end
 end
+

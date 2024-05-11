@@ -515,3 +515,4 @@ Battle::AI::Handlers::GeneralMoveScore.add(:dance_move_against_dancer,
     next score
   }
 )
+

@@ -562,3 +562,4 @@ EventHandlers.add(:on_player_step_taken, :update_day_care,
     $PokemonGlobal.day_care.update_on_step_taken
   }
 )
+

@@ -753,7 +753,7 @@ end
 #===============================================================================
 def pbEnterText(helptext, minlength, maxlength, initialText = "", mode = 0, pokemon = nil, nofadeout = false)
   ret = ""
-  if ($PokemonSystem.textinput == 1 rescue false)   # Keyboard
+  if ($PokemonSystem.textinput == 0 rescue false)   # Keyboard
     pbFadeOutIn(99999, nofadeout) do
       sscene = PokemonEntryScene.new
       sscreen = PokemonEntry.new(sscene)
@@ -784,3 +784,4 @@ end
 def pbEnterBoxName(helptext, minlength, maxlength, initialText = "", nofadeout = false)
   return pbEnterText(helptext, minlength, maxlength, initialText, 4, nil, nofadeout)
 end
+

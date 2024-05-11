@@ -127,3 +127,4 @@ class PokemonPokedexMenuScreen
     @scene.pbEndScene
   end
 end
+

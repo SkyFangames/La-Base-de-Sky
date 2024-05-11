@@ -760,3 +760,4 @@ class Battle::Battler
     return true
   end
 end
+

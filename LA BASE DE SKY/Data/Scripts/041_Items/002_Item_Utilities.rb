@@ -915,3 +915,4 @@ def pbChooseItemFromList(message, variable, *args)
   $game_variables[variable] = itemid[ret] || :NONE
   return itemid[ret]
 end
+

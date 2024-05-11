@@ -612,3 +612,4 @@ def pbDismountBike
   pbUpdateVehicle
   $game_map.autoplayAsCue
 end
+

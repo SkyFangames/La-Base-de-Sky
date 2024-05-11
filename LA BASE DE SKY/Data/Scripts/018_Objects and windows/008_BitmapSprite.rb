@@ -241,3 +241,4 @@ class ChangelingSprite < Sprite
     self.bitmap = (@currentBitmap) ? @currentBitmap.bitmap : nil
   end
 end
+

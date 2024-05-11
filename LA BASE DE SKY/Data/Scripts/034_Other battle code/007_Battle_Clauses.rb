@@ -304,3 +304,4 @@ class Battle::Move::AttackerFaintsIfUserFaints
     return __clauses__pbFailsAgainstTarget?(user, target, show_message)
   end
 end
+

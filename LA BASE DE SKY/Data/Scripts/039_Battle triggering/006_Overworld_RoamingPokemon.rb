@@ -226,3 +226,4 @@ def pbRoamingPokemonBattle(pkmn, level = 1)
   # Return false if the player lost or drew the battle, and true if any other result
   return (decision != 2 && decision != 5)
 end
+

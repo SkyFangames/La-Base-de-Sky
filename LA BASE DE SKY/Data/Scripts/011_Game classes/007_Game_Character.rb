@@ -1104,3 +1104,4 @@ class Game_Character
     @anime_count -= pattern_time
   end
 end
+

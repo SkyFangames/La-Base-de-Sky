@@ -314,3 +314,4 @@ class PokemonSpeciesIconSprite < Sprite
     self.src_rect.x = self.src_rect.width * @current_frame
   end
 end
+

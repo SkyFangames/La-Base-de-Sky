@@ -1322,3 +1322,4 @@ def pbAnimationsOrganiser
   cmdwin.dispose
   viewport.dispose
 end
+

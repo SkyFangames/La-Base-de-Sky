@@ -66,3 +66,4 @@ class TrainerWalkingCharSprite < Sprite
     @updating = false
   end
 end
+

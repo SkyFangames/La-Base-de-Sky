@@ -68,16 +68,19 @@ GameData::Status.register({
   :icon_position => 3
 })
 
-GameData::Status.register({
-  :id            => :FROZEN,
-  :name          => _INTL("Congelado"),
-  :animation     => "Frozen",
-  :icon_position => 4
-})
+if !Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE
+  GameData::Status.register({
+    :id            => :FROZEN,
+    :name          => _INTL("Congelado"),
+    :animation     => "Frozen",
+    :icon_position => 4
+  })
+else
+  GameData::Status.register({
+    :id            => :FROSTBITE,
+    :name          => _INTL("Congelado"),
+    :animation     => "Frozen",
+    :icon_position => 4
+  })
+end
 
-GameData::Status.register({
-  :id            => :FROSTBITE,
-  :name          => _INTL("Congelado"),
-  :animation     => "Frozen",
-  :icon_position => 4
-})

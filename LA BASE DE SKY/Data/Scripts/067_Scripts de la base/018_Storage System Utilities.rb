@@ -908,3 +908,4 @@ class PokemonStorageScreen
     @scene.release_tension
   end
 end
+

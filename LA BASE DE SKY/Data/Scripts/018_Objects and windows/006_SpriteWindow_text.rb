@@ -1372,3 +1372,4 @@ end
 #===============================================================================
 class Window_AdvancedCommandPokemonEx < Window_AdvancedCommandPokemon
 end
+

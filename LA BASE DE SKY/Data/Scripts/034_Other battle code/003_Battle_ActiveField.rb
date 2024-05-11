@@ -86,3 +86,4 @@ class Battle::ActivePosition
     @effects[PBEffects::WishMaker]                 = -1
   end
 end
+

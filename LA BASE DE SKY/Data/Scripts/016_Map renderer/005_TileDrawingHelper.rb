@@ -239,3 +239,4 @@ def getPassabilityMinimap(mapid)
   minimap.dispose
   return ret
 end
+

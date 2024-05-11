@@ -189,3 +189,4 @@ class Battle::Scene
     @sprites["shadow_#{idxBattler}"] = shaSprite
   end
 end
+

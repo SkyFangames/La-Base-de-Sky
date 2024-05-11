@@ -434,3 +434,4 @@ module BattleAnimationEditor
     return
   end
 end
+

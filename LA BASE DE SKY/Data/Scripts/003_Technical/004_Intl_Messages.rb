@@ -820,3 +820,4 @@ def _MAPISPRINTF(mapid, *arg)
   end
   return string
 end
+

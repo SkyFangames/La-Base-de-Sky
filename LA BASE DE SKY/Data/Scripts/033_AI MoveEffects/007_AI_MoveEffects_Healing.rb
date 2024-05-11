@@ -735,3 +735,4 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("HealUserByHalfOfDamageDo
   }
 )
 
+
