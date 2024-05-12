@@ -5,6 +5,9 @@
 ## Base de Pokémon Essentials en Español creada sobre la versión 21.1
 **DESCARGAR BASE: https://skyfangames.blogspot.com/2024/01/base-de-sky.html**
 
+### AÑADIDOS V 1.0.7
+
+- Mejoras en el script de la dex avanzada, ahora permite moverse en el listado de movimientos manteniendo pulsada las flechas y con la A y la D para moverse de 4 en 4.
 
 ### AÑADIDOS V 1.0.6
 - Añadidas las evoluciones faltantes de Pokémon de Hisui y de Paldea en el PBS de Pokémon.
