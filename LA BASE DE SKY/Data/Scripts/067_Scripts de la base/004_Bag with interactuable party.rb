@@ -513,7 +513,7 @@ class PokemonBagPartyPanel < Sprite
           # Draw status
           status = -1
           if @pokemon.fainted?
-            status = GameData::Status.count - 2
+            status = GameData::Status.count - 1
           elsif @pokemon.status != :NONE
             status = GameData::Status.get(@pokemon.status).icon_position
           end

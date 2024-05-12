@@ -118,6 +118,7 @@ class MoveRelearnerScreen
 
     def pbStartScreen(pkmn)
         moves = pbGetRelearnableMoves(pkmn)
+        return false if moves.length < 1 
         @scene.pbStartScene(pkmn, moves)
         loop do
           move = @scene.pbChooseMove
