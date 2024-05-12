@@ -18,6 +18,8 @@
 - Solo muestra el boton de "Buscar actualizaciones" en la pantalla de carga si el Plugin "Pokemon Essentials Game Updater" está instalado.
 - Arreglados los colores del texto cuando te derrotan y te mandan al centro Pokémon.
 - Cambio a la Super Cápsula, ahora avisa que el Pokémon ya tiene esa habilidad y no consume el objeto.
+- Se corrigió un error en el script de la Mochila que mostraba el icono de congelado en lugar de debilitado.
+- Se corrigió un error en el script del recordador de movimientos que generaba crasheos si el pokemon no tenia movimientos para recordar.
 - Correcciones menores de textos.
 
 ### AÑADIDOS V 1.0.5
