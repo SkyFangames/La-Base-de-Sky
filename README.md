@@ -6,6 +6,10 @@
 **DESCARGAR BASE: https://skyfangames.blogspot.com/2024/01/base-de-sky.html**
 
 
+
+### AÑADIDOS V 1.0.7 (aún no lanzada)
+- Corregido error con las bayas, que no mostraban gráfico al plantarlas.
+
 ### AÑADIDOS V 1.0.6
 - Añadidas las evoluciones faltantes de Pokémon de Hisui y de Paldea en el PBS de Pokémon.
 - Corregido error en los sprites de Basculegion hembra.
