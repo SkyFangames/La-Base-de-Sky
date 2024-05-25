@@ -46,7 +46,7 @@ def recharge_vial()
 end
 
 def add_new_vial_charge()
-    return if !($bag.has?(:EMPTYVIAL) || !$bag.has?(:VIAL))
+    return if !($bag.has?(:EMPTYVIAL) || $bag.has?(:VIAL))
     $PokemonGlobal.max_vial_charges += 1
     Kernel.pbMessage(_INTL("¡Ahora tu Pokévial puede almacenar {1} cargas!",$PokemonGlobal.max_vial_charges))
 end
