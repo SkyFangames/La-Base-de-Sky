@@ -21632,7 +21632,7 @@ Shape = Serpentine
 Category = Manzanido
 Pokedex = Habita durante toda su vida en el interior de una manzana. Finge ser una fruta para protegerse de los Pokémon pájaro, sus enemigos naturales.
 Generation = 8
-Evolutions = FLAPPLE,Item,TARTAPPLE,APPLETUN,Item,SWEETAPPLE
+Evolutions = FLAPPLE,Item,TARTAPPLE,APPLETUN,Item,SWEETAPPLE,DIPPLIN,Item,SYRUPYAPPLE
 #-------------------------------
 [FLAPPLE]
 Name = Flapple
@@ -22736,6 +22736,7 @@ Shape = BipedalTail
 Category = Aleación
 Pokedex = Su cuerpo, similar a un metal pulido, es tan ligero como robusto. Sin embargo, tiene el defecto de que se oxida con facilidad.
 Generation = 8
+Evolutions = ARCHALUDON,Item,METALALLOY
 #-------------------------------
 [DREEPY]
 Name = Dreepy
