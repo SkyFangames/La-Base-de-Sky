@@ -9,6 +9,7 @@
 
 - Mejoras en el script de la dex avanzada, ahora permite moverse en el listado de movimientos manteniendo pulsada las flechas y con la A y la D para moverse de 4 en 4.
 - Corrección en el script del Pokevial, no agregaba nuevas cargas cuando el vial aun contenia cargas.
+- Metodos de evolucion para Applin -> Dipplin y Duraludon -> Archaludon
 
 
 ### AÑADIDOS V 1.0.7 (aún no lanzada)
