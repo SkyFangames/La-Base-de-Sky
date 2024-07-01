@@ -39,7 +39,7 @@ ItemHandlers::UseInField.add(:VIAL,proc{|item|
 })
 
 def recharge_vial()
-    return if !($bag.has?(:EMPTYVIAL) || !$bag.has?(:VIAL))
+    return if !($bag.has?(:EMPTYVIAL) || $bag.has?(:VIAL))
     $PokemonGlobal.vial_charges = $PokemonGlobal.max_vial_charges ? $PokemonGlobal.max_vial_charges : CARGAS_INICIALES_POKEVIAL
     Kernel.pbMessage(_INTL("¡Tu Pokévial ha sido recargado!"))
     $bag.replace_item(:EMPTYVIAL,:VIAL) if $bag.has?(:EMPTYVIAL)
