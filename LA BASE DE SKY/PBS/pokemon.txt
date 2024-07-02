@@ -26382,4 +26382,4 @@ Habitat = Rare
 Category = Controlador
 Pokedex = Su caparazón con forma de melocotón alberga un potente veneno con el que prepara un mochi tóxico que ofrece a humanos y Pokémon.
 Generation = 9
-Flags = Mythicalal
+Flags = Mythical
