@@ -279,7 +279,7 @@ class Battle::Battler
       when :BURN
         @battle.pbDisplay(_INTL("¡{1} se ha quemado!", pbThis))
       when :PARALYSIS
-        @battle.pbDisplay(_INTL("¡{1} sufre parálisis! Quizás no se pueda mover", pbThis))
+        @battle.pbDisplay(_INTL("¡{1} sufre parálisis! ¡Quizás no se pueda mover!", pbThis))
       when :FROZEN
         @battle.pbDisplay(_INTL("¡{1} está congelado!", pbThis))
       end

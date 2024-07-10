@@ -17,7 +17,7 @@ def pbOpenGenericListSearch(commands, type = 0)
         end
     end
     if newSearch.length < 1
-      pbMessage(_INTL("No results found."))
+      pbMessage(_INTL("No hay resultados."))
       return []
     else
       return newSearch
