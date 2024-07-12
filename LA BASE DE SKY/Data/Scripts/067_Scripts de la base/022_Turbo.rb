@@ -1,18 +1,35 @@
-#===============================================================================
-# CREDITOS
-# Marin (og speed up script), Phantombass (19.1 version), Mashirosakura, Golisopod User, 
-# D0vid (v21.1 version), Naelle & Skyflyer (Turbo Icon/Animation), DPertierra
-# Website = https://reliccastle.com/threads/7145
-#===============================================================================
 #===============================================================================#
-# Configuracion de velocidades
+# Whether the options menu shows the speed up settings (true by default)
 #===============================================================================#
-SPEEDUP_STAGES = [1, 2, 3]
-$GameSpeed = 0
-$CanToggle = true
+module Settings
+  SPEED_OPTIONS = true
+end
 
 #===============================================================================#
-# Controlar la velocidad del turbo presionando ALT
+# Speed-up config
+#===============================================================================#
+SPEEDUP_STAGES = [1, 1.5, 2]
+$GameSpeed = 0
+$CanToggle = true
+$RefreshEventsForTurbo = false
+
+#===============================================================================#
+# Set $CanToggle depending on the saved setting
+#===============================================================================#
+module Game
+  class << self
+    alias_method :original_load, :load unless method_defined?(:original_load)
+  end
+
+  def self.load(save_data)
+    original_load(save_data)
+    # echoln "UNSCALED #{System.unscaled_uptime} * #{SPEEDUP_STAGES[$GameSpeed]} - #{$GameSpeed}"
+    $CanToggle = $PokemonSystem.only_speedup_battles == 0
+  end
+end
+
+#===============================================================================#
+# Handle incrementing speed stages if $CanToggle allows it
 #===============================================================================#
 module Input
   def self.update
@@ -22,13 +39,15 @@ module Input
       $GameSpeed += 1
       $GameSpeed = 0 if $GameSpeed >= SPEEDUP_STAGES.size
       $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
-	    $buttonframes = 0
+      $buttonframes = 0
+      $RefreshEventsForTurbo  = true
     end
   end
 end
-#====================================================================================#
-# Devuelve System.Uptime con un multiplicador creando una linea de tiempo alternativa
-#====================================================================================#
+
+#===============================================================================#
+# Return System.Uptime with a multiplier to create an alternative timeline
+#===============================================================================#
 module System
   class << self
     alias_method :unscaled_uptime, :uptime unless method_defined?(:unscaled_uptime)
@@ -38,8 +57,9 @@ module System
     return SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime
   end
 end
+
 #===============================================================================#
-# Controlador de eventos para el turbo en combates
+# Event handlers for in-battle speed-up restrictions
 #===============================================================================#
 EventHandlers.add(:on_start_battle, :start_speedup, proc {
   $CanToggle = false
@@ -49,9 +69,9 @@ EventHandlers.add(:on_end_battle, :stop_speedup, proc {
   $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
   $CanToggle = true if $PokemonSystem.only_speedup_battles == 0
 })
+
 #===============================================================================#
-# Solo se puede cambiar la velocidad en combates durante la fase de comandos 
-# de los contrario da errores
+# Can only change speed in battle during command phase (prevents weird animation glitches)
 #===============================================================================#
 class Battle
   alias_method :original_pbCommandPhase, :pbCommandPhase unless method_defined?(:original_pbCommandPhase)
@@ -61,23 +81,84 @@ class Battle
     $CanToggle = false
   end
 end
+
 #===============================================================================#
-# Corrección para soft lockeos en combates consecutivos
+# Fix for consecutive battle soft-lock glitch
 #===============================================================================#
 alias :original_pbBattleOnStepTaken :pbBattleOnStepTaken
 def pbBattleOnStepTaken(repel_active)
   return if $game_temp.in_battle
   original_pbBattleOnStepTaken(repel_active)
 end
+
+class Game_Event < Game_Character
+def pbGetInterpreter
+  return @interpreter
+end
+
+def pbResetInterpreterWaitCount
+  @interpreter.pbRefreshWaitCount if @interpreter
+end
+
+def IsParallel
+  return @trigger == 4
+end  
+end  
+
+class Interpreter
+  def pbRefreshWaitCount
+    @wait_count = 0
+    @wait_start = System.uptime
+  end  
+end  
+
+class Window_AdvancedTextPokemon < SpriteWindow_Base
+  def pbResetWaitCounter
+    @wait_timer_start = nil
+    @waitcount = 0
+    @display_last_updated = nil
+  end  
+end  
+
+$CurrentMsgWindow = nil;
+def pbMessage(message, commands = nil, cmdIfCancel = 0, skin = nil, defaultCmd = 0, &block)
+  ret = 0
+  msgwindow = pbCreateMessageWindow(nil, skin)
+  $CurrentMsgWindow = msgwindow
+
+  if commands
+    ret = pbMessageDisplay(msgwindow, message, true,
+                           proc { |msgwndw|
+                             next Kernel.pbShowCommands(msgwndw, commands, cmdIfCancel, defaultCmd, &block)
+                           }, &block)
+  else
+    pbMessageDisplay(msgwindow, message, &block)
+  end
+  pbDisposeMessageWindow(msgwindow)
+  $CurrentMsgWindow = nil
+  Input.update
+  return ret
+end
+
 #===============================================================================#
-# Corrección para controlar la velocidad de la niebla
+# Fix for scrolling fog speed
 #===============================================================================#
 class Game_Map
   alias_method :original_update, :update unless method_defined?(:original_update)
 
   def update
+    if $RefreshEventsForTurbo
+      echoln "UNSCALED #{System.unscaled_uptime} * #{SPEEDUP_STAGES[$GameSpeed]} - #{$GameSpeed}"
+      if $game_map&.events
+        $game_map.events.each_value { |event| event.pbResetInterpreterWaitCount }
+      end
+      @scroll_timer_start = System.uptime/SPEEDUP_STAGES[SPEEDUP_STAGES.size-1] if (@scroll_distance_x || 0) != 0 || (@scroll_distance_y || 0) != 0
+      $CurrentMsgWindow.pbResetWaitCounter if $game_temp.message_window_showing && $CurrentMsgWindow 
+      $RefreshEventsForTurbo = false
+    end
+
     temp_timer = @fog_scroll_last_update_timer
-    @fog_scroll_last_update_timer = System.uptime # No scrollear en el metodo de actualización original
+    @fog_scroll_last_update_timer = System.uptime # Don't scroll in the original update method
     original_update
     @fog_scroll_last_update_timer = temp_timer
     update_fog
@@ -93,8 +174,9 @@ class Game_Map
     @fog_scroll_last_update_timer = uptime_now
   end
 end
+
 #===============================================================================#
-# Correción para crasheos del animation index
+# Fix for animation index crash
 #===============================================================================#
 class SpriteAnimation
   def update_animation
@@ -121,6 +203,7 @@ class SpriteAnimation
     end
   end
 end
+
 #===============================================================================#
 # PokemonSystem Accessors
 #===============================================================================#
@@ -131,25 +214,11 @@ class PokemonSystem
 
   def initialize
     original_initialize
-    @only_speedup_battles = 0 # Configuracion del turbo (0=siempre, 1=solo_combates)
+    @only_speedup_battles = 0 # Speed up setting (0=always, 1=battle_only)
     @battle_speed = 0 # Depends on the SPEEDUP_STAGES array size
   end
 end
 
-#===============================================================================#
-# Controlador de opciones del menú 
-#===============================================================================#
-MenuHandlers.add(:options_menu, :only_speedup_battles, {
-  "name" => _INTL("Aumentar velocidad"),
-  "order" => 25,
-  "type" => EnumOption,
-  "parameters" => [_INTL("Siempre"), _INTL("En combates")],
-  "description" => _INTL("Elige cuándo quieres que se pueda acelerar la velocidad del juego."),
-  "get_proc" => proc { next $PokemonSystem.only_speedup_battles },
-  "set_proc" => proc { |value, scene|
-    $PokemonSystem.only_speedup_battles = value
-  }
-})
 
 module Graphics
   class << self
