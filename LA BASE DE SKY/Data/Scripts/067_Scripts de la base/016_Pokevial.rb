@@ -54,8 +54,8 @@ end
 def inicializar_pokevial()
   if !$PokemonGlobal.vial_charges
     $PokemonGlobal.vial_charges=CARGAS_INICIALES_POKEVIAL
-   end
-   if !$PokemonGlobal.max_vial_charges
+  end
+  if !$PokemonGlobal.max_vial_charges
     $PokemonGlobal.max_vial_charges=CARGAS_INICIALES_POKEVIAL 
-   end
+  end
 end
