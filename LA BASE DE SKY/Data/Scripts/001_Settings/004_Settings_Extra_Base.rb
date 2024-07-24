@@ -23,6 +23,9 @@ module Settings
   # Activa o desactiva la animación de Reversión Primigenia utilizada por este plugin.
   SHOW_PRIMAL_ANIM = true
 
+  # Activa el nuevo repartir experiencia que se puede activar para cada pokemon del equipo.
+  USE_NEW_EXP_SHARE = true
+
 
   
 ################################################################################
