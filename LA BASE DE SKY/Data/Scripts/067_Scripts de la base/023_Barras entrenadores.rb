@@ -123,7 +123,7 @@ def update_trainer_bars
   entrenadorMasCercano = RANGE_BARS_TRAINER+1
   
   for event in $game_map.events.values
-    if event.name[/^Trainer\((\d+)\)$/] && event.isOff?(TrainerSensor::SELF_SWITCH) && !event.erased
+    if event.name[/^Trainer\((\d+)\)$/] && event.isOff?(TrainerSensor::SELF_SWITCH)
 
       # Obtenemos la distancia a la que mira el entrenador.
       rango_entrenador = event.name[8...9].to_i
