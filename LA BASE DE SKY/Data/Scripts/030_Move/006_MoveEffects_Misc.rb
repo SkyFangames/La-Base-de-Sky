@@ -870,4 +870,30 @@ class Battle::Move::RandomlyDealsDoubleDamage < Battle::Move
   end
 end
 
+#===============================================================================
+# Ceaseless Edge (Gen 9+)
+#===============================================================================
+# Lays spikes on the opposing side if damage was dealt (max. 3 layers).
+#-------------------------------------------------------------------------------
+class Battle::Move::DamageTargetAddSpikesToFoeSide < Battle::Move
+  def pbEffectWhenDealingDamage(user, target)
+    return if target.pbOwnSide.effects[PBEffects::Spikes] == 3
+    target.pbOwnSide.effects[PBEffects::Spikes] += 1
+    @battle.pbAnimation(:SPIKES, user, target)
+    @battle.pbDisplay(_INTL("Spikes were scattered all around {1}'s feet!", user.pbOpposingTeam(true)))
+  end
+end
 
+#===============================================================================
+# Stone Axe (Gen 9+)
+#===============================================================================
+# Lays stealth rocks on the opposing side if damage was dealt.
+#-------------------------------------------------------------------------------
+class Battle::Move::DamageTargetAddStealthRocksToFoeSide < Battle::Move
+  def pbEffectWhenDealingDamage(user, target)
+    return if target.pbOwnSide.effects[PBEffects::StealthRock]
+    target.pbOwnSide.effects[PBEffects::StealthRock] = true
+    @battle.pbAnimation(:STEALTHROCK, user, target)
+    @battle.pbDisplay(_INTL("Pointed stones float in the air around {1}!", user.pbOpposingTeam(true)))
+  end
+end
