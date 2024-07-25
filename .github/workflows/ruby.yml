@@ -36,6 +36,7 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - uses: marocchino/ruby-check-action@v2
       with:
+          switch: '-c'
           paths: |
             LA BASE DE SKY/Data/Scripts/**/*.rb
             LA BASE DE SKY/Plugins/**/*.rb
