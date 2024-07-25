@@ -12,6 +12,7 @@
 - Metodos de evolucion para Applin -> Dipplin y Duraludon -> Archaludon
 - Corregido error con las bayas, que no mostraban gráfico al plantarlas.
 - Se agregó una opción para desactivar el nuevo repartir experiencia nuevo.
+- Corrección de los movimientos Tajo Metralla y Hachazo Pétreo
 
 ### AÑADIDOS V 1.0.6
 
