@@ -305,3 +305,11 @@ end
 MOSTRAR_PASOS_HUEVO = false
 
 
+
+################################################################################
+# MAPAS SIN REFLEJOS
+# IDs de los mapas en los que no quieres que el personaje tenga reflejo.
+# Ejemplo: MAPAS_SIN_REFLEJO = [12,157,536]
+################################################################################
+
+MAPAS_SIN_REFLEJO = []
