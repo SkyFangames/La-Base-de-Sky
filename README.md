@@ -9,10 +9,14 @@
 
 - Mejoras en el script de la dex avanzada, ahora permite moverse en el listado de movimientos manteniendo pulsada las flechas y con la A y la D para moverse de 4 en 4.
 - Corrección en el script del Pokevial, no agregaba nuevas cargas cuando el vial aun contenia cargas.
-- Metodos de evolucion para Applin -> Dipplin y Duraludon -> Archaludon
+- Arreglados los métodos de evolucion para Applin -> Dipplin y Duraludon -> Archaludon
 - Corregido error con las bayas, que no mostraban gráfico al plantarlas.
-- Se agregó una opción para desactivar el nuevo repartir experiencia nuevo.
+- Se agregó una opción para desactivar el nuevo repartir experiencia.
 - Corrección de los movimientos Tajo Metralla y Hachazo Pétreo
+- Añadida la opción de tener mapas sin reflejo, pudiendo definirlos en Settings.
+- Correcciones en el script del turbo.
+- Correcciones de algunos sprites de OWs.
+- Pequeños arreglos menores.
 
 ### AÑADIDOS V 1.0.6
 
