@@ -148,7 +148,6 @@ class Game_Map
 
   def update
     if $RefreshEventsForTurbo
-      echoln "UNSCALED #{System.unscaled_uptime} * #{SPEEDUP_STAGES[$GameSpeed]} - #{$GameSpeed}"
       if $game_map&.events
         $game_map.events.each_value { |event| event.pbResetInterpreterWaitCount }
       end
