@@ -21,3 +21,4 @@ jobs:
         files: "LA BASE DE SKY V${{github.ref_name}}.zip"
         generate_release_notes: true
         make_latest: true
+        token: ${{ secrets.TOKEN_GITHUB }}
