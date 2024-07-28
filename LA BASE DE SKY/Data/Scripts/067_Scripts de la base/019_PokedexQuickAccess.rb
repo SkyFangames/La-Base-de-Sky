@@ -21,37 +21,50 @@ def openPokedexOnPokemon(species)
     end
     pokedexScene = PokemonPokedexInfo_Scene.new
     pokedexScreen = PokemonPokedexInfoScreen.new(pokedexScene)
-    pokedexScreen.pbStartSceneSingle(species)
+    dexlist, index = pbGetDexList(species)
+    pokedexScreen.pbStartScreen(dexlist, index, region)
 end
 
-def pbGetDexList(species)
-    if $player.pokedex.unlocked?(-1)   # National Dex is unlocked
-        species_data = GameData::Species.try_get(species)
-        if species_data
-            nationalDexList = [:NONE]
-            GameData::Species.each_species { |s| nationalDexList.push(s.species) }
-            dexnum = nationalDexList.index(species_data.species) || 0
-            dexnumshift = true if dexnum > 0 && Settings::DEXES_WITH_OFFSETS.include?(-1)
-        end
-    else
-        ($player.pokedex.dexes_count - 1).times do |i|   # Regional Dexes
-        next if !$player.pokedex.unlocked?(i)
-        num = pbGetRegionalNumber(i, species)
-        next if num <= 0
-        dexnum = num
-        dexnumshift = true if Settings::DEXES_WITH_OFFSETS.include?(i)
-        break
-        end
-    end
-    dexlist = [{
-        :species => species,
-        :name    => GameData::Species.get(species).name,
-        :height  => 0,
-        :weight  => 0,
-        :number  => dexnum,
-        :shift   => dexnumshift
-    }]
-    return dexlist
+def pbGetPokedexRegion
+  if Settings::USE_CURRENT_REGION_DEX
+    region = pbGetCurrentRegion
+    region = -1 if region >= $player.pokedex.dexes_count - 1
+    return region
+  else
+    return $PokemonGlobal.pokedexDex   # National Dex -1, regional Dexes 0, 1, etc.
+  end
+end
+
+def pbGetDexList(species_to_find = nil)
+  region = pbGetPokedexRegion
+  regionalSpecies = pbAllRegionalSpecies(region)
+  if !regionalSpecies || regionalSpecies.length == 0
+    # If no Regional Dex defined for the given region, use the National Pokédex
+    regionalSpecies = []
+    GameData::Species.each_species { |s| regionalSpecies.push(s.id) }
+  end
+  shift = Settings::DEXES_WITH_OFFSETS.include?(region)
+  dexlist = []
+  index = 1
+  regionalSpecies.each_with_index do |species, i|
+    next if !species
+    # next if !pbCanAddForModeList?($PokemonGlobal.pokedexMode, species)
+    _gender, form, _shiny = $player.pokedex.last_form_seen(species)
+    species_data = GameData::Species.get_species_form(species, form)
+    index = i if species_to_find == species
+    dexlist.push({
+      :species => species,
+      :name    => species_data.name,
+      :height  => species_data.height,
+      :weight  => species_data.weight,
+      :number  => i + 1,
+      :shift   => shift,
+      :types   => species_data.types,
+      :color   => species_data.color,
+      :shape   => species_data.shape
+    })
+  end
+  return dexlist, index
 end
 
 class PokemonStorageScreen

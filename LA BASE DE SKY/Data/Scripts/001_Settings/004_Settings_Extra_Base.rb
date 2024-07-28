@@ -63,6 +63,10 @@ module Settings
   # huevo.
   ALT_EGG_GROUP_NAMES = false
 
+  # Número de pagina de la Dex Avanzada
+  # Si agregan paginas nuevas a la pokédex en medio, cambiar esto
+  ADVANCED_DEX_PAGE = 4
+
 
   
 ################################################################################
