@@ -1,0 +1,26 @@
+name: Create release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Zip Folder
+      run: zip -r "LA BASE DE SKY V${{github.ref}}.zip" . -x ".git/*" ".github/*" ".gitignore" "LA BASE DE SKY/rgss-compiler.json", ".ruby-lsp/*"
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: "${{ github.event.repository.name }} V${{github.ref}}.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        generate_release_notes: true
+        make_latest: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
