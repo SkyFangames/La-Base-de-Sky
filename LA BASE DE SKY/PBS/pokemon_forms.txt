@@ -1499,28 +1499,28 @@ HiddenAbilities = BATTLEBOND
 Generation = 7
 #-------------------------------
 [VIVILLON,1]
-FormName = Motivo Continental
+FormName = Motivo Isleño
 #-------------------------------
 [VIVILLON,2]
-FormName = Motivo Oriental
+FormName = Motivo Continental
 #-------------------------------
 [VIVILLON,3]
-FormName = Motivo Vergel
+FormName = Motivo Oriental
 #-------------------------------
 [VIVILLON,4]
-FormName = Motivo Estepa
+FormName = Motivo Vergel
 #-------------------------------
 [VIVILLON,5]
-FormName = Motivo Polar
+FormName = Motivo Estepa
 #-------------------------------
 [VIVILLON,6]
-FormName = Motivo Jungla
+FormName = Motivo Polar
 #-------------------------------
 [VIVILLON,7]
-FormName = Motivo Marino
+FormName = Motivo Jungla
 #-------------------------------
 [VIVILLON,8]
-FormName = Motivo Floral
+FormName = Motivo Marino
 #-------------------------------
 [VIVILLON,9]
 FormName = Motivo Moderno

@@ -17238,7 +17238,7 @@ Evolutions = VIVILLON,Level,12
 #-------------------------------
 [VIVILLON]
 Name = Vivillon
-FormName = Motivo Isleño
+FormName = Motivo Floral
 Types = BUG,FLYING
 BaseStats = 80,52,50,89,90,50
 GenderRatio = Female50Percent
