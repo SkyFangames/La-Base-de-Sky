@@ -162,7 +162,6 @@ class PokemonPokedexInfo_Scene
 
       # Family members.
       next if blacklisted
-
       ## NO LO HAS VISTO
       if sp.display_species?(@dexlist, species)
         if family.include?(sp.species)

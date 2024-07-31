@@ -324,9 +324,9 @@ module GameData
     #---------------------------------------------------------------------------
     # Determines if this species should be viewable in the data page menus.
     #---------------------------------------------------------------------------
-    def display_species?(dexlist, species, special = false)
+    def display_species?(dexlist, species, special = false, skip_owned_check = false)
       return false if !dexlist.any? { |dex| dex[:species] == @species }
-      return false if !$player.owned?(@species)
+      return false if (!$player.owned?(@species) && !skip_owned_check)
       return false if @species == species.species && @form == species.form
       if @form > 0 && !Settings::DEX_SHOWS_ALL_FORMS
         return false if !($player.pokedex.seen_form?(@species, 0, @form) ||
@@ -353,7 +353,7 @@ module GameData
       return 0
     end
 		
-	#---------------------------------------------------------------------------
+	  #---------------------------------------------------------------------------
     # Checks a species for all forms that branch off into different evolutions.
     #---------------------------------------------------------------------------
     def branch_evolution_forms
