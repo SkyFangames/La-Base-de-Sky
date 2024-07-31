@@ -44,25 +44,20 @@ module Scripts
       file_id += 1
       section_id = filename_to_id(f)
       if file_id < section_id
-        #scripts << [rand(999_999), "==================", Zlib::Deflate.deflate("")]
         file_id = section_id
       end
       section_name = filename_to_title(f)
-      content = File.open(path + "/" + f, "rb") { |f2| f2.read }#.gsub(/\n/, "\r\n")
+      content = File.open(path + "/" + f, "rb") { |f2| f2.read }
       scripts << [rand(999_999), section_name, Zlib::Deflate.deflate(content)]
     end
-    # Check each subfolder for scripts to aggregate
+    # Add separator before each folder
     folders.sort!
     folders.each do |f|
       section_name = filename_to_title(f)
-      if section_name == "=================="
-        scripts << [rand(999_999), section_name, Zlib::Deflate.deflate("")]
-      #elsif level == 0
-      #  scripts << [rand(999_999), "==================", Zlib::Deflate.deflate("")]
-      #  scripts << [rand(999_999), "[[ " + section_name + " ]]", Zlib::Deflate.deflate("")]
-      else
-        scripts << [rand(999_999), "[[ " + section_name + " ]]", Zlib::Deflate.deflate("")]
+      if level == 0
+        scripts << [rand(999_999), "==================", Zlib::Deflate.deflate("")]
       end
+      scripts << [rand(999_999), "[[ " + section_name + " ]]", Zlib::Deflate.deflate("")]
       aggregate_from_folder(path + "/" + f, scripts, level + 1)
     end    
   end
