@@ -5,6 +5,7 @@
 ## Base de Pokémon Essentials en Español creada sobre la versión 21.1
 **DESCARGAR BASE: https://skyfangames.blogspot.com/2024/01/base-de-sky.html**
 
+
 ### AÑADIDOS V 1.0.7
 
 - Mejoras en el script de la dex avanzada, ahora permite moverse en el listado de movimientos manteniendo pulsada las flechas y con la A y la D para moverse de 4 en 4.
@@ -13,10 +14,18 @@
 - Corregido error con las bayas, que no mostraban gráfico al plantarlas.
 - Se agregó una opción para desactivar el nuevo repartir experiencia.
 - Corrección de los movimientos Tajo Metralla y Hachazo Pétreo
-- Añadida la opción de tener mapas sin reflejo, pudiendo definirlos en Settings.
 - Correcciones en el script del turbo.
+- Añadida la opción de tener mapas sin reflejo, pudiendo definirlos en Settings.
+- Actualizada la Pokédex, ahora con opción de buscar con la D un Pokémon rápidamente.
+- Arreglado error de la Pokédex, que no mostraba sprites animados dentro de ella (solo si tienes el script).
+- Añadidas todas las formas de Pikachu coqueta y de Pikachu con la gorra de Ash.
+- Arreglados errores en las formas de Vivillon, que no terminaban de cuadrar.
+- Actualización de sprites de huellas de Pokémon para la Pokédex.
+- Actualización de varios scripts de la base a la última versión.
+- Eliminados archivos innecesarios de la base.
 - Correcciones de algunos sprites de OWs.
 - Pequeños arreglos menores.
+
 
 ### AÑADIDOS V 1.0.6
 
@@ -35,6 +44,7 @@
 - Se corrigió un error en el script del recordador de movimientos que generaba crasheos si el pokemon no tenia movimientos para recordar.
 - Correcciones menores de textos.
 
+
 ### AÑADIDOS V 1.0.5
 - Actualizados los OWs de Archaludon y las tres líneas evolutivas de starters de Galar.
 - Actualización del Plugin de Hotfixex a la versión 1.0.9.
@@ -43,6 +53,7 @@
 - Actualizado el archivo de town map generator.
 - Corrección de textos y faltas de ortografía.
 - Pequeños arreglos menores.
+
 
 ### AÑADIDOS V 1.0.4
 - Añadidas las Pokédex Regionales de todas las generaciones (por defecto solo salían la de Kanto y Johto).
@@ -57,6 +68,7 @@
 - Corrección de textos en inglés.
 - Pequeños arreglos menores.
 
+
 ### AÑADIDOS V 1.0.3
 
 - Corregido error con las mentas que no mostraba el texto y no te dejaba ni confirmar ni cancelar el uso.
@@ -67,12 +79,14 @@
 - Añadidos iconos faltantes de Pokémon de Paldea variocolor.
 - Pequeños arreglos menores.
 
+
 ### AÑADIDOS V 1.0.2
 
 - Añadido el OW de Archaludon.
 - Arreglo del script de cámara (en settings no estaba bien definido el switch que usa).
 - Mapa de Intro colocado el primero, que se había metido dentro del mapa de la Ruta 1.
 - Pequeños arreglos menores.
+
 
 ### AÑADIDOS V 1.0.1
 
@@ -94,6 +108,7 @@
 - Corrección en el MultiExp Panel.
 - Corrección de traducciones.
 - Pequeños arreglos menores.
+
 
 ### AÑADIDOS V 1.0
 
