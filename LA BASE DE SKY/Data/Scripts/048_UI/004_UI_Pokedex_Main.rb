@@ -442,7 +442,7 @@ class PokemonPokedex_Scene
       end
     end
     textpos = [
-      [dexname, (Graphics.width / 2)+84, 10, :center, Color.new(248, 248, 248), Color.black]
+      [dexname, (Graphics.width / 2)+40, 10, :center, Color.new(248, 248, 248), Color.black]
     ]
     textpos.push([GameData::Species.get(iconspecies).name, 112, 58, :center, base, shadow]) if iconspecies
     if @searchResults
