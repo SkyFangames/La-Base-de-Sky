@@ -787,7 +787,7 @@ class Battle::Move::StartWeakenSpecialDamageAgainstUserSide < Battle::Move
   def pbEffectGeneral(user)
     user.pbOwnSide.effects[PBEffects::LightScreen] = 5
     user.pbOwnSide.effects[PBEffects::LightScreen] = 8 if user.hasActiveItem?(:LIGHTCLAY)
-    @battle.pbDisplay(_INTL("{1} ha aumentado la resistencia de {2} ante los ataques especiales!", @name, user.pbTeam(true)))
+    @battle.pbDisplay(_INTL("¡{1} ha aumentado la resistencia de {2} ante los ataques especiales!", @name, user.pbTeam(true)))
   end
 end
 
@@ -813,7 +813,7 @@ class Battle::Move::StartWeakenDamageAgainstUserSideIfHail < Battle::Move
   def pbEffectGeneral(user)
     user.pbOwnSide.effects[PBEffects::AuroraVeil] = 5
     user.pbOwnSide.effects[PBEffects::AuroraVeil] = 8 if user.hasActiveItem?(:LIGHTCLAY)
-    @battle.pbDisplay(_INTL("{1} ha aumentado la resistencia de {2} ante los ataques físicos y especiales!",
+    @battle.pbDisplay(_INTL("¡{1} ha aumentado la resistencia de {2} ante los ataques físicos y especiales!",
                             @name, user.pbTeam(true)))
   end
 end

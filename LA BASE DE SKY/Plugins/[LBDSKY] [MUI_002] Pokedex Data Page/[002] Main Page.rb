@@ -162,7 +162,6 @@ class PokemonPokedexInfo_Scene
 
       # Family members.
       next if blacklisted
-
       ## NO LO HAS VISTO
       if sp.display_species?(@dexlist, species)
         if family.include?(sp.species)
@@ -213,6 +212,16 @@ class PokemonPokedexInfo_Scene
         end
       end
       #-------------------------------------------------------------------------
+      # Family members.
+      next if blacklisted
+      if family.include?(sp.species)
+        if sp.species == species.species
+          special_form, _check_form, _check_item = pbGetSpecialFormData(sp)
+          next if !special_form
+        end
+        @data_hash[:family] << sp.id
+      end
+      #-------------------------------------------------------------------------
       # Compatible egg groups.
       if showCompatible
         if base_form && !regional_form && sp.egg_groups == base_form.egg_groups
@@ -221,12 +230,14 @@ class PokemonPokedexInfo_Scene
         sp.egg_groups.each do |group|
           case group
           when :Ditto
-            next if eggSpecies.egg_groups.include?(:Undiscovered)
             next if eggSpecies.egg_groups.include?(:Ditto)
+            next if eggSpecies.egg_groups.include?(:Undiscovered)
             @data_hash[:egg] << sp.id
           else
             next if eggSpecies.egg_groups.include?(:Undiscovered)
             if eggSpecies.egg_groups.include?(:Ditto)
+              next if sp.egg_groups.include?(:Ditto)
+              next if sp.egg_groups.include?(:Undiscovered)
               @data_hash[:egg] << sp.id
             elsif eggSpecies.egg_groups.include?(group)
               next if eggSpecies.gender_ratio == :Genderless

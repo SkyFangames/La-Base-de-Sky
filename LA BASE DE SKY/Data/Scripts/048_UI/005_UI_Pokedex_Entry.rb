@@ -133,6 +133,7 @@ class PokemonPokedexInfo_Scene
       end
       @sprites["areahighlight"].opacity = intensity
     end
+    pbUpdateSpriteHash(@sprites)
   end
 
   def pbUpdateDummyPokemon

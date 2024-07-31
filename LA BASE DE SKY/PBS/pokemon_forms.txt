@@ -94,6 +94,68 @@ Generation = 7
 Flags = InheritFormWithEverStone
 WildItemUncommon = PECHABERRY
 #-------------------------------
+[PIKACHU,2]
+FormName = Forma Coqueta
+GenderRatio = AlwaysFemale
+Abilities = LIGHTNINGROD
+#-------------------------------
+[PIKACHU,3]
+FormName = Forma Aristócrata
+GenderRatio = AlwaysFemale
+Abilities = LIGHTNINGROD
+#-------------------------------
+[PIKACHU,4]
+FormName = Forma Enmascarada
+GenderRatio = AlwaysFemale
+Abilities = LIGHTNINGROD
+#-------------------------------
+[PIKACHU,5]
+FormName = Forma Erudita
+GenderRatio = AlwaysFemale
+Abilities = LIGHTNINGROD
+#-------------------------------
+[PIKACHU,6]
+FormName = Forma Superstar
+GenderRatio = AlwaysFemale
+Abilities = LIGHTNINGROD
+#-------------------------------
+[PIKACHU,7]
+FormName = Forma Roquera
+GenderRatio = AlwaysFemale
+Abilities = LIGHTNINGROD
+#-------------------------------
+[PIKACHU,8]
+FormName = Forma Gorra Original
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,9]
+FormName = Forma Gorra Hoenn
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,10]
+FormName = Forma Gorra Sinnoh
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,11]
+FormName = Forma Gorra Teselia
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,12]
+FormName = Forma Gorra Kalos
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,13]
+FormName = Forma Gorra Alola
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,14]
+FormName = Forma Gorra Compañero
+GenderRatio = AlwaysMale
+#-------------------------------
+[PIKACHU,15]
+FormName = Forma Gorra Trotamundos
+GenderRatio = AlwaysMale
+#-------------------------------
 [RAICHU,1]
 FormName = Forma Alola
 Types = ELECTRIC,PSYCHIC
@@ -1499,28 +1561,28 @@ HiddenAbilities = BATTLEBOND
 Generation = 7
 #-------------------------------
 [VIVILLON,1]
-FormName = Motivo Continental
+FormName = Motivo Isleño
 #-------------------------------
 [VIVILLON,2]
-FormName = Motivo Oriental
+FormName = Motivo Continental
 #-------------------------------
 [VIVILLON,3]
-FormName = Motivo Vergel
+FormName = Motivo Oriental
 #-------------------------------
 [VIVILLON,4]
-FormName = Motivo Estepa
+FormName = Motivo Vergel
 #-------------------------------
 [VIVILLON,5]
-FormName = Motivo Polar
+FormName = Motivo Estepa
 #-------------------------------
 [VIVILLON,6]
-FormName = Motivo Jungla
+FormName = Motivo Polar
 #-------------------------------
 [VIVILLON,7]
-FormName = Motivo Marino
+FormName = Motivo Jungla
 #-------------------------------
 [VIVILLON,8]
-FormName = Motivo Floral
+FormName = Motivo Marino
 #-------------------------------
 [VIVILLON,9]
 FormName = Motivo Moderno

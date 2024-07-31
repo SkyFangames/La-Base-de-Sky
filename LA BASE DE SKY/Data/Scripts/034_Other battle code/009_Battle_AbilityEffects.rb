@@ -2215,7 +2215,7 @@ Battle::AbilityEffects::OnBeingHit.add(:STAMINA,
 Battle::AbilityEffects::OnBeingHit.add(:STATIC,
   proc { |ability, user, target, move, battle|
     next if !move.pbContactMove?(user)
-    next if user.paralyzed? || battle.pbRandom(100) >= 30
+    next if user.paralyzed? || (battle.pbRandom(100) >= 30)
     battle.pbShowAbilitySplash(target)
     if user.pbCanParalyze?(target, Battle::Scene::USE_ABILITY_SPLASH) &&
        user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)

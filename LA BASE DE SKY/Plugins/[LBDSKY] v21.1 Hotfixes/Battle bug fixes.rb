@@ -145,7 +145,7 @@ class Battle::Battler
         @battle.pbHideAbilitySplash(target)
         user.pbItemHPHealCheck if user.hp < oldHP
       end
-    end    
+    end
     __hotfixes__pbEffectsOnMakingHit(move, user, target)
   end
 end

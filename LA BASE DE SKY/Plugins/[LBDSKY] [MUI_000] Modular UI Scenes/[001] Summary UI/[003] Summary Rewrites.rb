@@ -260,6 +260,13 @@ class PokemonSummary_Scene
       if Input.trigger?(Input::ACTION)
         pbSEStop
         @pokemon.play_cry
+        @show_back = !@show_back
+        if PluginManager.installed?("[DBK] Animated Pokémon System")
+          @sprites["pokemon"].setSummaryBitmap(@pokemon, @show_back)
+          @sprites["pokemon"].constrict([208, 164])
+        else
+          @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
+        end
       elsif Input.trigger?(Input::BACK)
         pbPlayCloseMenuSE
         break
@@ -339,6 +346,7 @@ class PokemonSummary_Scene
           dorefresh = true
         end
       end
+      @show_back = false if dorefresh
       drawPage(@page) if dorefresh
     end
     return @partyindex

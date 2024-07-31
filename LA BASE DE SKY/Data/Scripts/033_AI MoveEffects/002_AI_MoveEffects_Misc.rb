@@ -822,18 +822,18 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DoublePowerIfTargetStatu
 #===============================================================================
 # Ceaseless Edge
 #===============================================================================
-Battle::AI::Handlers::MoveFailureCheck.add("SplintersTargetGen8AddSpikesGen9",
+Battle::AI::Handlers::MoveFailureCheck.add("DamageTargetAddSpikesToFoeSide",
   proc { |move, user, ai, battle|
     next user.pbOpposingSide.effects[PBEffects::Spikes] >= 3 && Settings::MECHANICS_GENERATION >= 9
   }
 )
-Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SplintersTargetGen8AddStealthRocksGen9",
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("DamageTargetAddStealthRocksToFoeSide",
   proc { |move, user, target, ai, battle|
     next true if Settings::MECHANICS_GENERATION < 9 && target.effects[PBEffects::Splinters] > 0
     next false
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("SplintersTargetGen8AddSpikesGen9",
+Battle::AI::Handlers::MoveEffectScore.add("DamageTargetAddSpikesToFoeSide",
   proc { |score, move, user, ai, battle|
     score += 15
     if Settings::MECHANICS_GENERATION >= 9
@@ -865,18 +865,18 @@ Battle::AI::Handlers::MoveEffectScore.add("SplintersTargetGen8AddSpikesGen9",
 #===============================================================================
 # Stone Axe
 #===============================================================================
-Battle::AI::Handlers::MoveFailureCheck.add("SplintersTargetGen8AddStealthRocksGen9",
+Battle::AI::Handlers::MoveFailureCheck.add("DamageTargetAddStealthRocksToFoeSide",
   proc { |move, user, ai, battle|
     next user.pbOpposingSide.effects[PBEffects::StealthRock] && Settings::MECHANICS_GENERATION >= 9
   }
 )
-Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SplintersTargetGen8AddStealthRocksGen9",
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("DamageTargetAddStealthRocksToFoeSide",
   proc { |move, user, target, ai, battle|
     next true if Settings::MECHANICS_GENERATION < 9 && target.effects[PBEffects::Splinters] > 0
     next Battle::AI::Handlers.move_will_fail_against_target?("OHKO", move, user, target, ai, battle)
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("SplintersTargetGen8AddStealthRocksGen9",
+Battle::AI::Handlers::MoveEffectScore.add("DamageTargetAddStealthRocksToFoeSide",
   proc { |score, move, user, ai, battle|
     score += 15
     if Settings::MECHANICS_GENERATION >= 9

@@ -12,7 +12,8 @@ module Scripts
   def self.from_folder(path = "Data/Scripts", rxdata = "Data/Scripts.rxdata")
     scripts = File.open(rxdata, 'rb') { |f| Marshal.load(f) }
     if scripts.length > 10
-      p "Scripts.rxdata already has a bunch of scripts in it. Won't consolidate script files."
+      p "Scripts.rxdata ya tiene bastantes scripts dentro. No se pueden añadir nuevos ya que se perderían."
+      p "Debes extraer primero los scripts y vaciar los del juego para poder añadir nuevos desde fuera."
       return
     end
 
@@ -54,15 +55,16 @@ module Scripts
     folders.sort!
     folders.each do |f|
       section_name = filename_to_title(f)
-      #scripts << [rand(999_999), "==================", Zlib::Deflate.deflate("")] if level == 0
-      scripts << [rand(999_999), "", Zlib::Deflate.deflate("")] if level == 1
-      if section_name != "=================="
-        scripts << [rand(999_999), "[[ " + section_name + " ]]", Zlib::Deflate.deflate("")]
-      else
+      if section_name == "=================="
         scripts << [rand(999_999), section_name, Zlib::Deflate.deflate("")]
+      #elsif level == 0
+      #  scripts << [rand(999_999), "==================", Zlib::Deflate.deflate("")]
+      #  scripts << [rand(999_999), "[[ " + section_name + " ]]", Zlib::Deflate.deflate("")]
+      else
+        scripts << [rand(999_999), "[[ " + section_name + " ]]", Zlib::Deflate.deflate("")]
       end
       aggregate_from_folder(path + "/" + f, scripts, level + 1)
-    end
+    end    
   end
 
   def self.filename_to_id(filename)

@@ -242,7 +242,7 @@ class Battle
   def pbMessageOnRecall(battler)
     if battler.pbOwnedByPlayer?
       if battler.hp <= battler.totalhp / 4
-        pbDisplayBrief(_INTL("¡Buen tabajo {1}! ¡Regresa!", battler.name))
+        pbDisplayBrief(_INTL("¡Buen trabajo {1}! ¡Regresa!", battler.name))
       elsif battler.hp <= battler.totalhp / 2
         pbDisplayBrief(_INTL("¡OK, {1}! ¡Regresa!", battler.name))
       elsif battler.turnCount >= 5

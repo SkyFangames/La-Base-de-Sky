@@ -30,7 +30,7 @@ if MOSTRAR_PANEL_REP_EXP
         if !expAll
           eachInTeam(0, 0) do |pkmn, i|
             next if !pkmn.able?
-            next if !pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE && !pkmn.expshare
+            next if ( !pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE ) ||  !pkmn&.expshare
             expShare.push(i)
           end
         end

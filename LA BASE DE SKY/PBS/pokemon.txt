@@ -17238,7 +17238,7 @@ Evolutions = VIVILLON,Level,12
 #-------------------------------
 [VIVILLON]
 Name = Vivillon
-FormName = Motivo Isleño
+FormName = Motivo Floral
 Types = BUG,FLYING
 BaseStats = 80,52,50,89,90,50
 GenderRatio = Female50Percent
@@ -20876,7 +20876,7 @@ Height = 0.3
 Weight = 5.0
 Color = Green
 Shape = BipedalTail
-Category = Cimpancé
+Category = Chimpancé
 Pokedex = Ataca golpeando sin cesar con su baqueta, con un entusiasmo que crece a medida que acelera el ritmo.
 Generation = 8
 Evolutions = THWACKEY,Level,16
@@ -21632,7 +21632,7 @@ Shape = Serpentine
 Category = Manzanido
 Pokedex = Habita durante toda su vida en el interior de una manzana. Finge ser una fruta para protegerse de los Pokémon pájaro, sus enemigos naturales.
 Generation = 8
-Evolutions = FLAPPLE,Item,TARTAPPLE,APPLETUN,Item,SWEETAPPLE
+Evolutions = FLAPPLE,Item,TARTAPPLE,APPLETUN,Item,SWEETAPPLE,DIPPLIN,Item,SYRUPYAPPLE
 #-------------------------------
 [FLAPPLE]
 Name = Flapple
@@ -22736,6 +22736,7 @@ Shape = BipedalTail
 Category = Aleación
 Pokedex = Su cuerpo, similar a un metal pulido, es tan ligero como robusto. Sin embargo, tiene el defecto de que se oxida con facilidad.
 Generation = 8
+Evolutions = ARCHALUDON,Item,METALALLOY
 #-------------------------------
 [DREEPY]
 Name = Dreepy
@@ -26381,4 +26382,4 @@ Habitat = Rare
 Category = Controlador
 Pokedex = Su caparazón con forma de melocotón alberga un potente veneno con el que prepara un mochi tóxico que ofrece a humanos y Pokémon.
 Generation = 9
-Flags = Mythicalal
+Flags = Mythical

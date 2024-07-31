@@ -119,14 +119,14 @@ class Battle
       allOtherSideBattlers(idxBattler).each do |b|
         next if !b.abilityActive?
         if Battle::AbilityEffects.triggerTrappingByTarget(b.ability, battler, b, self)
-          pbDisplayPaused(_INTL("{1} evita que se huya con {2}!", b.pbThis, b.abilityName))
+          pbDisplayPaused(_INTL("¡{1} evita que se huya con {2}!", b.pbThis, b.abilityName))
           return 0
         end
       end
       allOtherSideBattlers(idxBattler).each do |b|
         next if !b.itemActive?
         if Battle::ItemEffects.triggerTrappingByTarget(b.item, battler, b, self)
-          pbDisplayPaused(_INTL("{1} evita que se huya con {2}!", b.pbThis, b.itemName))
+          pbDisplayPaused(_INTL("¡{1} evita que se huya con {2}!", b.pbThis, b.itemName))
           return 0
         end
       end

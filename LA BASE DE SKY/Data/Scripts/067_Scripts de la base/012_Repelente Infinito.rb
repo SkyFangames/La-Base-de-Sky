@@ -5,6 +5,7 @@
 #===============================================================================
 class PokemonGlobalMetadata
     attr_accessor :infRepel
+    attr_accessor :repel
 end
   
 def pbToggleInfiniteRepel()
@@ -22,5 +23,6 @@ ItemHandlers::UseText.add(:INFREPEL, proc { |item| next ($PokemonGlobal.infRepel
 
 alias pbBattleOnStepTakenOverride pbBattleOnStepTaken 
 def pbBattleOnStepTaken(repel_active)
-  pbBattleOnStepTakenOverride($PokemonGlobal.infRepel)
+  repel = ($PokemonGlobal.infRepel  || $PokemonGlobal.repel > 0 || repel_active)
+  pbBattleOnStepTakenOverride(repel)
 end

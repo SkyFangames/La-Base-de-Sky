@@ -83,7 +83,7 @@ class PokemonEvolutionScene
   # Opens the evolution screen
   def pbEvolution(cancancel = true)
     pbBGMStop
-    pbMessageDisplay(@sprites["msgwindow"], "\\se[]" + _INTL("¿Cómo?") + "\1") { pbUpdate }
+    pbMessageDisplay(@sprites["msgwindow"], "\\se[]" + _INTL("¡Anda!") + "\1") { pbUpdate }
     pbPlayDecisionSE
     @pokemon.play_cry
     @sprites["msgwindow"].text = _INTL("¡{1} está evolucionando!", @pokemon.name)

@@ -647,7 +647,7 @@ class Battle::Battler
     elsif move.pbTarget(user).num_targets > 1 || target.effects[PBEffects::TwoTurnAttack]
       @battle.pbDisplay(_INTL("¡{1} ha evitado el ataque!", target.pbThis))
     elsif !move.pbMissMessage(user, target)
-      @battle.pbDisplay(_INTL("¡El ataque de {1} ha fallado!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡El ataque de {1} ha fallado!", user.pbThis(true)))
     end
   end
 end

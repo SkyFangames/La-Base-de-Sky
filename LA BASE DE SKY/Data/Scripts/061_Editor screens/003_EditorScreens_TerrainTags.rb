@@ -223,7 +223,7 @@ class PokemonTilesetScene
         if pbConfirmMessage(_INTL("¿Guardar cambios?"))
           save_data(@tilesets_data, "Data/Tilesets.rxdata")
           $data_tilesets = @tilesets_data
-          pbMessage(_INTL("Para asegurarse de que los cambios se guardan, cierra y abre RPG Maker XP."))
+          pbMessage(_INTL("Para que los cambios se guarden, cierra y abre RPG Maker XP. No le des a guardar en el RPG Maker antes de cerrarlo o se perderán los cambios de tiles que acabas de hacer."))
         end
         break if pbConfirmMessage(_INTL("¿Salir del editor?"))
       elsif Input.trigger?(Input::USE)

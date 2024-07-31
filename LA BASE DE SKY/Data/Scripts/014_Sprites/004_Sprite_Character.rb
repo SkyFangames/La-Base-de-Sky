@@ -181,7 +181,12 @@ class Sprite_Character < RPG::Sprite
       animation(animation, true)
       @character.animation_id = 0
     end
-    @reflection&.update
+    unless MAPAS_SIN_REFLEJO.include?($game_map.map_id)
+      @reflection&.visible = true
+      @reflection&.update
+    else
+      @reflection&.visible = true
+    end
     @surfbase&.update
   end
 end

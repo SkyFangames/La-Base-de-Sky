@@ -325,18 +325,30 @@ class PokemonPokedexInfo_Scene
       #-------------------------------------------------------------------------
       if prevo == species.species
         text = t[0] + "Ramas evolutivas\n"
-        family = species.get_family_evolutions
-        if family.empty?              # Species doesn't evolve.
+        # Updated
+        family_ids = []
+        evos = species.get_evolutions
+        evos.each do |evo|
+          next if family_ids.include?(evo[0]) || evo[1] == :None
+          family_ids.push(evo[0])
+          species.branch_evolution_forms.each do |form|
+            try_species = GameData::Species.get_species_form(evo[0], form)
+            try_evos = try_species.get_evolutions
+            next if try_evos.empty?
+            try_evos.each do |try_evo|
+              next if family_ids.include?(try_evo[0]) || try_evo[1] == :None
+              family_ids.push(try_evo[0])
+            end
+          end
+        end
+        if family_ids.empty?          # Species doesn't evolve.
           text << "No evoluciona."
         else                          # Species does evolve.
-          ids = []
-          family.each { |f| ids.push(f[1]) if !ids.include?(f[1]) }
-          ids.each_with_index do |fam, i|  
-            #name = ($player.seen?(fam)) ? GameData::Species.get(fam).name : "????"
+          family_ids.each_with_index do |fam, i|  
             name = GameData::Species.get(fam).name
             text << t[1] + name
-            if i < ids.length - 1
-              if fam == GameData::Species.get(ids[i + 1]).get_previous_species
+            if i < family_ids.length - 1
+              if fam == GameData::Species.get(family_ids[i + 1]).get_previous_species
                 text << t[0] + "=> "  # Shows evolution pathway.
               else
                 text << t[0] + ", "   # Shows a new pathway.

@@ -309,7 +309,7 @@ class Battle::Move
     end
     case user.effectiveWeather
     when :Sun, :HarshSun
-      if @function_code = "IncreasePowerInSunWeather"
+      if @function_code == "IncreasePowerInSunWeather"
         multipliers[:final_damage_multiplier] *= (type == :FIRE) ? 1 : (type == :WATER) ? 3 : 1.5
       end
     when :Hail

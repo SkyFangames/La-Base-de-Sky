@@ -471,7 +471,6 @@ class Sprite_Character < RPG::Sprite
   end
 end
 
-
 #===============================================================================
 # Fixed bad conversion of old phone data in an old save file.
 #===============================================================================
@@ -545,7 +544,7 @@ class Game_Event < Game_Character
   alias __hotfixes__over_trigger? over_trigger? unless method_defined?(:__hotfixes__over_trigger?)
   def over_trigger?
     return false if @map_id != $game_player.map_id
-        return __hotfixes__over_trigger?
+    return __hotfixes__over_trigger?
   end
   alias __hotfixes__check_event_trigger_touch check_event_trigger_touch unless method_defined?(:__hotfixes__check_event_trigger_touch)
   def check_event_trigger_touch(dir)
@@ -555,7 +554,7 @@ class Game_Event < Game_Character
   alias __hotfixes__pbCheckEventTriggerAfterTurning pbCheckEventTriggerAfterTurning unless method_defined?(:__hotfixes__pbCheckEventTriggerAfterTurning)
   def pbCheckEventTriggerAfterTurning
     return if @map_id != $game_player.map_id
-        return __hotfixes__pbCheckEventTriggerAfterTurning
+    return __hotfixes__pbCheckEventTriggerAfterTurning
   end
   def onEvent?
     return @map_id == $game_player.map_id && at_coordinate?($game_player.x, $game_player.y)

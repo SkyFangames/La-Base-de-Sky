@@ -1615,7 +1615,7 @@ end
 class Battle::Move::UserLosesElectricType < Battle::Move
   def pbMoveFailed?(user, targets)
     if !user.pbHasType?(:ELECTRIC)
-      @battle.pbDisplay(_INTL("But it failed!"))
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
     return false
@@ -1624,7 +1624,7 @@ class Battle::Move::UserLosesElectricType < Battle::Move
   def pbEffectAfterAllHits(user, target)
     if !user.effects[PBEffects::DoubleShock]
       user.effects[PBEffects::DoubleShock] = true
-      @battle.pbDisplay(_INTL("{1} used up all its electricity!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡{1} ha usado toda su electricidad!", user.pbThis))
     end
   end
 end

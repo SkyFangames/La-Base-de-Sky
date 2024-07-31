@@ -414,6 +414,18 @@ class PokemonPokedex_Scene
     pbRefresh
   end
 
+  # DP - Agrega funcion para buscar por nombre presionando la D
+  def searchByName()
+    term = pbMessageFreeText(_INTL("¿Qué Pokémon desea buscar?"), "", false, 32)
+    return false if term == "" || term == nil
+    @dexlist.each do |item|
+      next if !$player.seen?(item[:species])
+      next if item[:shift] && !$player.seen?(item[:species])
+      return pbRefreshDexList(item[:number] - 1) if item[:name].downcase.include?(term.downcase)
+    end
+    return false
+  end
+
   def pbRefresh
     overlay = @sprites["overlay"].bitmap
     overlay.clear
@@ -430,7 +442,7 @@ class PokemonPokedex_Scene
       end
     end
     textpos = [
-      [dexname, (Graphics.width / 2)+84, 10, :center, Color.new(248, 248, 248), Color.black]
+      [dexname, (Graphics.width / 2)+40, 10, :center, Color.new(248, 248, 248), Color.black]
     ]
     textpos.push([GameData::Species.get(iconspecies).name, 112, 58, :center, base, shadow]) if iconspecies
     if @searchResults
@@ -1280,6 +1292,8 @@ class PokemonPokedex_Scene
             pbSEPlay("GUI pokedex open")
             pbDexEntry(@sprites["pokedex"].index)
           end
+        elsif Input.trigger?(Input::SPECIAL)
+          searchByName()
         end
       end
     end

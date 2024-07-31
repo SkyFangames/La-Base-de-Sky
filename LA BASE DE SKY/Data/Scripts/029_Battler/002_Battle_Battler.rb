@@ -226,7 +226,7 @@ class Battle::Battler
         return lowerCase ? _INTL("el {1} salvaje", name) : _INTL("El {1} salvaje", name)
       end
     elsif !pbOwnedByPlayer?
-      return lowerCase ? _INTL("el {1} aliado", name) : _INTL("el {1} aliado", name)
+      return lowerCase ? _INTL("el {1} aliado", name) : _INTL("El {1} aliado", name)
     end
     return name
   end

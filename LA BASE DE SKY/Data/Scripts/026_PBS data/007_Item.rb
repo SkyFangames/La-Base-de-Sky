@@ -226,7 +226,8 @@ module GameData
                        :ICICLEPLATE, :ICIUMZ,
                        :DRACOPLATE,  :DRAGONIUMZ,
                        :DREADPLATE,  :DARKINIUMZ,
-                       :PIXIEPLATE,  :FAIRIUMZ],
+                       :PIXIEPLATE,  :FAIRIUMZ,
+                       :BLANKPLATE, :LEGENDPLATE],
         :SILVALLY  => [:FIGHTINGMEMORY,
                        :FLYINGMEMORY,
                        :POISONMEMORY,
@@ -244,7 +245,6 @@ module GameData
                        :DRAGONMEMORY,
                        :DARKMEMORY,
                        :FAIRYMEMORY],
-        :GIRATINA  => [:GRISEOUSORB],
         :GENESECT  => [:BURNDRIVE, :CHILLDRIVE, :DOUSEDRIVE, :SHOCKDRIVE],
         :KYOGRE    => [:BLUEORB],
         :GROUDON   => [:REDORB],
@@ -253,13 +253,12 @@ module GameData
         :DIALGA   => [:ADAMANTCRYSTAL],
         :PALKIA   => [:LUSTROUSGLOBE],
         :GIRATINA => [:GRISEOUSCORE],
-        :ARCEUS   => [:BLANKPLATE, :LEGENDPLATE],
         :OGERPON  => [:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK]
       }
-      return combos[species]&.include?(@id)
       return true if @id == :BOOSTERENERGY &&
                      [:PROTOSYNTHESIS, :QUARKDRIVE].include?(ability) &&
                      GameData::Species.get(species).has_flag?("Paradox")
+      return combos[species]&.include?(@id)
     end
 
     alias __orig__get_property_for_PBS get_property_for_PBS unless method_defined?(:__orig__get_property_for_PBS)

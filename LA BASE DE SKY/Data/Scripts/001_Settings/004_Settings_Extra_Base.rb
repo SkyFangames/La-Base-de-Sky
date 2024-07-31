@@ -23,6 +23,9 @@ module Settings
   # Activa o desactiva la animación de Reversión Primigenia utilizada por este plugin.
   SHOW_PRIMAL_ANIM = true
 
+  # Activa el nuevo repartir experiencia que se puede activar para cada pokemon del equipo.
+  USE_NEW_EXP_SHARE = true
+
 
   
 ################################################################################
@@ -59,6 +62,10 @@ module Settings
   # Activa o desactiva la visualización de los nombres alternativos de los grupos
   # huevo.
   ALT_EGG_GROUP_NAMES = false
+
+  # Número de pagina de la Dex Avanzada
+  # Si agregan paginas nuevas a la pokédex en medio, cambiar esto
+  ADVANCED_DEX_PAGE = 4
 
 
   
@@ -302,3 +309,11 @@ end
 MOSTRAR_PASOS_HUEVO = false
 
 
+
+################################################################################
+# MAPAS SIN REFLEJOS
+# IDs de los mapas en los que no quieres que el personaje tenga reflejo.
+# Ejemplo: MAPAS_SIN_REFLEJO = [12,157,536]
+################################################################################
+
+MAPAS_SIN_REFLEJO = []
