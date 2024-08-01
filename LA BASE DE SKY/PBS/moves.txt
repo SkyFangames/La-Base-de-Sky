@@ -9000,7 +9000,7 @@ Target = NearOther
 FunctionCode = DamageTargetAddSpikesToFoeSide
 Flags = Contact,CanProtect,CanMirrorMove,Slicing
 EffectChance = 100
-Description = Fuerte golpe de espada que suele asestar golpe crítico y puede reducir la Defensa o amedrentar.
+Description = Ataca con una espada de forma brusca y, al hacerlo, se deprenden púas que rodean al bando enemigo.
 #-------------------------------
 [TAKEHEART]
 Name = Bálsamo Osado

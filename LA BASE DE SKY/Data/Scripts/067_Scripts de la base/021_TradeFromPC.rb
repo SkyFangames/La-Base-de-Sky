@@ -34,6 +34,7 @@ def pbChooseTradablePokemonPC(variableNumber, nameVarNumber, wanted, ableProc = 
     })
   }
   pbSet(variableNumber, chosen)
+  echoln chosen
   if chosen.nil?
     # No Pokémon was chosen, so reset the variables and do not proceed with the trade
     pbSet(nameVarNumber, "")
@@ -47,9 +48,9 @@ end
 
 
 def pbStartTradePC(newpoke, nickname = nil, trainerName = nil, trainerGender = 0)
-storageLoc = 2
-$PokemonStorage[storageLoc[0], storageLoc[1]] = pbGet(2)
-  myPokemon = $PokemonStorage[storageLoc[0], storageLoc[1]]  
+  pos_pokemon_pc = pbGet(1)
+  myPokemon = $PokemonStorage[pos_pokemon_pc[0], pos_pokemon_pc[1]]
+  echoln myPokemon
   $stats.trade_count += 1 
   yourPokemon = nil
   resetmoves = true
@@ -69,23 +70,23 @@ $PokemonStorage[storageLoc[0], storageLoc[1]] = pbGet(2)
   yourPokemon.reset_moves if resetmoves
   yourPokemon.record_first_moves
 
-		if PluginManager.installed?("Charms Case")
-        tradingCharmIV = CharmCaseSettings::TRADING_CHARM_IV
-          if $player.activeCharm?(:TRADINGCHARM)
-            unless yourPokemon.tradingCharmStatsIncreased
-              GameData::Stat.each_main do |s|
-                stat_id = s.id
-                # Adds 5 IVs to each stat.
-                yourPokemon.iv[stat_id] = [yourPokemon.iv[stat_id] + tradingCharmIV, 31].min if yourPokemon.iv[stat_id]
-              end
-              # Set the attribute to track the stat increase
-              yourPokemon.tradingCharmStatsIncreased = true
-			end
-            if rand(100) < CharmCaseSettings::TRADING_CHARM_SHINY
-              yourPokemon.shiny = true
-            end
-		  end
-		end
+  if PluginManager.installed?("Charms Case")
+      tradingCharmIV = CharmCaseSettings::TRADING_CHARM_IV
+        if $player.activeCharm?(:TRADINGCHARM)
+          unless yourPokemon.tradingCharmStatsIncreased
+            GameData::Stat.each_main do |s|
+              stat_id = s.id
+              # Adds 5 IVs to each stat.
+              yourPokemon.iv[stat_id] = [yourPokemon.iv[stat_id] + tradingCharmIV, 31].min if yourPokemon.iv[stat_id]
+          end
+            # Set the attribute to track the stat increase
+            yourPokemon.tradingCharmStatsIncreased = true
+        end
+        if rand(100) < CharmCaseSettings::TRADING_CHARM_SHINY
+          yourPokemon.shiny = true
+        end
+    end
+  end
 		
   pbFadeOutInWithMusic {
     evo = PokemonTrade_Scene.new
@@ -93,7 +94,7 @@ $PokemonStorage[storageLoc[0], storageLoc[1]] = pbGet(2)
     evo.pbTrade
     evo.pbEndScreen
   }
-   $PokemonStorage[storageLoc[0]][storageLoc[1]] = yourPokemon
+   $PokemonStorage[pos_pokemon_pc[0]][pos_pokemon_pc[1]] = yourPokemon
 end
 
 # Modified pbChoosePokemon method
