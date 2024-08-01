@@ -588,7 +588,7 @@ class PokemonPokedexInfoScreen
   end
 
   # For use from a Pokémon's summary screen.
-  def pbStartSceneSingle(species)
+  def pbStartSceneSingle(species, full_dexlist = false)
     region = -1
     if Settings::USE_CURRENT_REGION_DEX
       region = pbGetCurrentRegion
@@ -598,15 +598,20 @@ class PokemonPokedexInfoScreen
     end
     dexnum = pbGetRegionalNumber(region, species)
     dexnumshift = Settings::DEXES_WITH_OFFSETS.include?(region)
-    dexlist = [{
-      :species => species,
-      :name    => GameData::Species.get(species).name,
-      :height  => 0,
-      :weight  => 0,
-      :number  => dexnum,
-      :shift   => dexnumshift
-    }]
-    @scene.pbStartScene(dexlist, 0, region)
+    if full_dexlist
+      dexlist, index = pbGetDexList(species)
+    else
+      dexlist = [{
+        :species => species,
+        :name    => GameData::Species.get(species).name,
+        :height  => 0,
+        :weight  => 0,
+        :number  => dexnum,
+        :shift   => dexnumshift
+      }]
+      index = 0
+    end
+    @scene.pbStartScene(dexlist, index, region)
     @scene.pbScene
     @scene.pbEndScene
   end

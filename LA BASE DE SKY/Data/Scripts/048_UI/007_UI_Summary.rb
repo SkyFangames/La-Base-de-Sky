@@ -1222,7 +1222,7 @@ class PokemonSummary_Scene
       pbFadeOutIn do
         scene = PokemonPokedexInfo_Scene.new
         screen = PokemonPokedexInfoScreen.new(scene)
-        screen.pbStartSceneSingle(@pokemon.species)
+        screen.pbStartSceneSingle(@pokemon.species, true)
       end
       dorefresh = true
     elsif cmdMark >= 0 && command == cmdMark
