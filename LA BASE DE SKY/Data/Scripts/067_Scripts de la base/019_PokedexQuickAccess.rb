@@ -5,7 +5,7 @@
 MenuHandlers.add(:party_menu, :pokedex, {
     "name"      => _INTL("Pokédex"),
     "order"     => 60,
-    "condition" => proc { next $player.has_pokedex && $player.pokedex.unlocked(-1) },
+    "condition" => proc { next $player.has_pokedex && $player.pokedex.unlocked?(-1) },
     "effect"    => proc { |screen, party, party_idx|
       openPokedexOnPokemon(party[party_idx].species)
     }
@@ -167,7 +167,7 @@ class PokemonStorageScreen
               commands[cmdItem = commands.length]     = _INTL("Objeto")
               commands[cmdMark = commands.length]     = _INTL("Marcas")
               commands[cmdRelease = commands.length]  = _INTL("Liberar")
-              commands[cmdPokedex = commands.length]  = _INTL("Pokédex")
+              commands[cmdPokedex = commands.length]  = _INTL("Pokédex") if $player.has_pokedex && $player.pokedex.unlocked?(-1)
               commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
               commands[commands.length]               = _INTL("Cancelar")
               command = pbShowCommands(helptext, commands)
