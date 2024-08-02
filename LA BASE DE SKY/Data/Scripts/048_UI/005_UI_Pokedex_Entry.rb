@@ -599,7 +599,8 @@ class PokemonPokedexInfoScreen
     dexnum = pbGetRegionalNumber(region, species)
     dexnumshift = Settings::DEXES_WITH_OFFSETS.include?(region)
     if full_dexlist
-      dexlist, index = pbGetDexList(species, -1)
+      region = -1
+      dexlist, index = pbGetDexList(species, region)
     else
       dexlist = [{
         :species => species,

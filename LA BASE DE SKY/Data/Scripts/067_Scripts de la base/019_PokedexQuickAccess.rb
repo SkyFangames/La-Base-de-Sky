@@ -31,7 +31,6 @@ def pbGetPokedexRegion
 end
 
 def pbGetDexList(species_to_find = nil, region = -1)
-  region = pbGetPokedexRegion
   regionalSpecies = pbAllRegionalSpecies(region)
   if !regionalSpecies || regionalSpecies.length == 0
     # If no Regional Dex defined for the given region, use the National Pokédex

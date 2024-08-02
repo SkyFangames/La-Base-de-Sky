@@ -513,7 +513,6 @@ class PokemonPokedexInfo_Scene
       else
         form = (species_data.default_form >= 0) ? species_data.default_form : @form
         prevo_data = GameData::Species.get_species_form(prevo, form)
-        #echoln " prevo: #{prevo_data.species}"
         stages = (species_data.get_baby_species == prevo) ? 1 : 2
         imagepos.push([path + "evolutions", 234, ICONS_POS_Y - 34, 0, 64 * stages, 272, 64])
         @sprites["familyicon0"].pbSetParams(@species, @gender, @form)

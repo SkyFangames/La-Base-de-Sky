@@ -423,7 +423,6 @@ class PokemonPokedex_Scene
   end
 
   def searchByName(text, char="")
-    echoln("Searching for #{text}...")
     current_index = @sprites["pokedex"].index
     for i in current_index...@dexlist.length
       item = @dexlist[i]

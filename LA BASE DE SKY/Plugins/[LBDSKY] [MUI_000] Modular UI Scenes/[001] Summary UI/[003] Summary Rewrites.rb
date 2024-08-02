@@ -120,7 +120,7 @@ class PokemonSummary_Scene
       when :tms      then commands[cmd] = _INTL("Usar MT")      if Settings::MECHANICS_GENERATION >= 9 && $bag.has_compatible_tm?(@pokemon)
       when :mark     then commands[cmd] = _INTL("Marcas")
       when :ability  then commands[cmd] = _INTL("Ver Habilidad")
-      when :legacy   then commands[cmd] = _INTL("Histórico") if !@pokemon.egg? && defined?(show_legacy)
+      when :legacy   then commands[cmd] = _INTL("Histórico") if (!@pokemon.egg? && defined?(show_legacy))
       when String    then commands[cmd] = _INTL("#{cmd}")
       end
     end
@@ -234,7 +234,7 @@ class PokemonSummary_Scene
         showAbilityDescription(@pokemon)
       }
     when :legacy
-      dorefresh = show_legacy
+      dorefresh = show_legacy if defined?(show_legacy)
     else
       cmd = command_list[command][0]
       if cmd.is_a?(String)
