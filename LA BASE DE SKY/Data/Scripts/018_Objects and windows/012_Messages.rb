@@ -892,43 +892,50 @@ def pbMessageFreeText(message, currenttext, passwordbox, maxlength, width = 240,
 end
 
 
-def pbFreeTextWithOnInput(msgwindow, currenttext, passwordbox, maxlength, width = 240, on_input = nil)
-  window = Window_TextEntry_Keyboard_Per_Key.new(currenttext, 0, 0, width, 64, heading = nil, usedarkercolor = false, on_input)
-  ret = ""
-  window.maxlength = maxlength
-  window.visible = true
-  window.z = 99999
-  pbPositionNearMsgWindow(window, msgwindow, :right)
-  window.text = currenttext
-  window.passwordChar = "*" if passwordbox
+def pb_free_text_with_on_input(msg_window, current_text, password_box, max_length, width = 240, on_input = nil)
+  window = WindowTextEntryKeyboardPerKey.new(current_text, 0, 0, width, 64, nil, false, on_input)
+  configure_window(window, msg_window, password_box, max_length, current_text)
+
   Input.text_input = true
   loop do
-    Graphics.update
-    Input.update
-    if Input.triggerex?(:ESCAPE)
-      ret = currenttext
-      break
-    elsif Input.triggerex?(:RETURN)
-      ret = window.text
-      break
-    end
-    window.update
-    msgwindow&.update
-    yield if block_given?
+    break if handle_input(window, msg_window, current_text)
   end
   Input.text_input = false
   window.dispose
   Input.update
-  return ret
+  window.text
 end
 
-def pbMessageFreeTextWithOnInput(message, currenttext, passwordbox, maxlength, width = 240, on_input = nil, &block)
+def handle_input(window, msg_window, current_text = '')
+  Graphics.update
+  Input.update
+  if Input.triggerex?(:ESCAPE)
+    window.text = current_text
+    return true
+  elsif Input.triggerex?(:RETURN)
+    return true
+  end
+
+  window.update
+  msg_window&.update
+  yield if block_given?
+end
+
+def configure_window(window, msg_window, password_box, max_length, current_text)
+  window.maxlength = max_length
+  window.visible = true
+  window.z = 99_999
+  pbPositionNearMsgWindow(window, msg_window, :right)
+  window.text = current_text
+  window.password_char = '*' if password_box
+end
+
+def pb_message_free_text_with_on_input(message, currenttext, passwordbox, maxlength, width = 240, on_input = nil, &block)
   msgwindow = pbCreateMessageWindow
   retval = pbMessageDisplay(msgwindow, message, true,
                             proc { |msgwndw|
-                              next pbFreeTextWithOnInput(msgwndw, currenttext, passwordbox, maxlength, width, on_input, &block)
+                              next pb_free_text_with_on_input(msgwndw, currenttext, passwordbox, maxlength, width, on_input, &block)
                             }, &block)
   pbDisposeMessageWindow(msgwindow)
-  return retval
+  retval
 end
-

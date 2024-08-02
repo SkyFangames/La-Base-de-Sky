@@ -415,11 +415,8 @@ class PokemonPokedex_Scene
   end
 
   # DP - Agrega funcion para buscar por nombre presionando la D
-  def OpenSearchBox()
-    on_input = lambda {|text, char=""| searchByName(text, char) }
-    term = pbMessageFreeTextWithOnInput(_INTL("¿Qué Pokémon desea buscar?"), "", false, 32, width = 240, on_input = on_input)
-    return false if term == "" || term == nil
-    searchByName(term)
+  def open_search_box
+    PokedexSearcher.new(@dexlist, self)
   end
 
   def searchByName(text, char="")
@@ -1308,7 +1305,7 @@ class PokemonPokedex_Scene
             pbDexEntry(@sprites["pokedex"].index)
           end
         elsif Input.trigger?(Input::SPECIAL)
-          OpenSearchBox()
+          open_search_box
         end
       end
     end
