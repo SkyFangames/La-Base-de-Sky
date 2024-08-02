@@ -20,16 +20,6 @@ def openPokedexOnPokemon(species)
     pokedexScreen.pbStartScreen(dexlist, index, region)
 end
 
-def pbGetPokedexRegion
-  if Settings::USE_CURRENT_REGION_DEX
-    region = pbGetCurrentRegion
-    region = -1 if region >= $player.pokedex.dexes_count - 1
-    return region
-  else
-    return $PokemonGlobal.pokedexDex   # National Dex -1, regional Dexes 0, 1, etc.
-  end
-end
-
 def pbGetDexList(species_to_find = nil, region = -1)
   regionalSpecies = pbAllRegionalSpecies(region)
   if !regionalSpecies || regionalSpecies.length == 0
