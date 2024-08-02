@@ -1,3 +1,7 @@
+class PokemonPokedex_Scene
+  attr_reader :sprites
+end
+
 # Searches for a Pokémon in the dexlist based on the given text.
 #
 # @param text [String] The name of the Pokémon to search for.
