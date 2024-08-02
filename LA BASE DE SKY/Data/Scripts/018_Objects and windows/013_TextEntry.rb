@@ -269,7 +269,7 @@ class Window_TextEntry_Keyboard_Per_Key < Window_TextEntry
       @cursor_timer_start = System.uptime
       @cursor_shown = true
       self.refresh
-      @on_input.call(@helper.text, ch) if @on_input
+      @on_input.call(@helper.text) if @on_input
       return true
     end
     return false

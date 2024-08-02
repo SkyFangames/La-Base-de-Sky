@@ -594,12 +594,12 @@ class PokemonPokedexInfoScreen
       region = pbGetCurrentRegion
       region = -1 if region >= $player.pokedex.dexes_count - 1
     else
-      region = $PokemonGlobal.pokedexDex   # National Dex -1, regional Dexes 0, 1, etc.
+      region = $PokemonGlobal.pokedexDex  # National Dex -1, regional Dexes 0, 1, etc.
     end
     dexnum = pbGetRegionalNumber(region, species)
     dexnumshift = Settings::DEXES_WITH_OFFSETS.include?(region)
     if full_dexlist
-      dexlist, index = pbGetDexList(species)
+      dexlist, index = pbGetDexList(species, -1)
     else
       dexlist = [{
         :species => species,

@@ -5,23 +5,18 @@
 MenuHandlers.add(:party_menu, :pokedex, {
     "name"      => _INTL("Pokédex"),
     "order"     => 60,
-    "condition" => proc { next $player.has_pokedex && $player.pokedex.accessible_dexes.length > 0 },
+    "condition" => proc { next $player.has_pokedex && $player.pokedex.unlocked(-1) },
     "effect"    => proc { |screen, party, party_idx|
       openPokedexOnPokemon(party[party_idx].species)
     }
 })
 
 def openPokedexOnPokemon(species)
+
     region = -1
-    if Settings::USE_CURRENT_REGION_DEX
-        region = pbGetCurrentRegion
-        region = -1 if region >= $player.pokedex.dexes_count - 1
-    else
-        region = $PokemonGlobal.pokedexDex   # National Dex -1, regional Dexes 0, 1, etc.
-    end
     pokedexScene = PokemonPokedexInfo_Scene.new
     pokedexScreen = PokemonPokedexInfoScreen.new(pokedexScene)
-    dexlist, index = pbGetDexList(species)
+    dexlist, index = pbGetDexList(species, region)
     pokedexScreen.pbStartScreen(dexlist, index, region)
 end
 
@@ -35,7 +30,7 @@ def pbGetPokedexRegion
   end
 end
 
-def pbGetDexList(species_to_find = nil)
+def pbGetDexList(species_to_find = nil, region = -1)
   region = pbGetPokedexRegion
   regionalSpecies = pbAllRegionalSpecies(region)
   if !regionalSpecies || regionalSpecies.length == 0

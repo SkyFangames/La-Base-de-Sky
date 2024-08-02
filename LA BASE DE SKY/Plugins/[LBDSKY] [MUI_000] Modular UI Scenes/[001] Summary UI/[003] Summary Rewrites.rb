@@ -113,7 +113,7 @@ class PokemonSummary_Scene
         commands[:item] = _INTL("Dar Objeto")
         commands[:take] = _INTL("Quitar Objeto") if @pokemon.hasItem?
       when :nickname then commands[cmd] = _INTL("Mote")      if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.foreign?
-      when :pokedex  then commands[cmd] = _INTL("Ver Pokédex")  if $player.has_pokedex
+      when :pokedex  then commands[cmd] = _INTL("Ver Pokédex")  if $player.has_pokedex && $player.pokedex.unlocked?(-1)
       when :moves    then commands[cmd] = _INTL("Movimientos")   if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.moves.empty?
       when :remember then commands[cmd] = _INTL("Recordar Movimiento") if Settings::MECHANICS_GENERATION >= 9 && @pokemon.can_relearn_move?
       when :forget   then commands[cmd] = _INTL("Olvidar Movimiento")   if Settings::MECHANICS_GENERATION >= 9 && @pokemon.moves.length > 1
@@ -162,7 +162,7 @@ class PokemonSummary_Scene
       dorefresh = true
     #---------------------------------------------------------------------------
     # [:pokedex] View the Pokedex entry for this Pokemon's species.
-    when :pokedex   
+    when :pokedex
       $player.pokedex.register_last_seen(@pokemon)
       pbFadeOutIn do
         scene = PokemonPokedexInfo_Scene.new
@@ -172,7 +172,7 @@ class PokemonSummary_Scene
       dorefresh = true
     #---------------------------------------------------------------------------
     # [:moves] View and/or reorder this Pokemon's moves. (Gen 9+)
-    when :moves     
+    when :moves
       pbPlayDecisionSE
       pbMoveSelection
       @sprites["pokemon"].visible = true
