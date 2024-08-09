@@ -1745,7 +1745,7 @@ module Compiler
     save_data(commonEvents, "Data/CommonEvents.rxdata") if changed
     Console.echo_done(true)
     if change_record.length > 0 || changed
-      Console.echo_warn(_INTL("Se han alterado los datos RMXP. CIerra RMXP para asegurarte de que los cambios se aplican."))
+      Console.echo_warn(_INTL("Se han alterado los datos RMXP. Cierra RMXP para asegurarte de que los cambios se aplican."))
     end
   end
 end
