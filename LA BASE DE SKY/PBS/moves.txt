@@ -6251,8 +6251,8 @@ Accuracy = 0
 TotalPP = 10
 Target = User
 Priority = 4
-FunctionCode = ProtectUser
-Description = Frena s los ataques, pero puede fallar si se usa repetidamente.
+FunctionCode = ProtectUse
+Description = Frena los ataques, pero puede fallar si se usa repetidamente.
 #-------------------------------
 [PSYCHUP]
 Name = Autosugestión
