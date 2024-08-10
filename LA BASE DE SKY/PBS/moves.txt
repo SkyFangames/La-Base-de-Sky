@@ -2342,9 +2342,8 @@ Accuracy = 0
 TotalPP = 5
 Target = User
 Priority = 4
-FunctionCode = ProtectUser
-Description = Frena s los ataques, pero puede fallar si se usa repetidamente.
-#-------------------------------
+FunctionCode = ProtectUserDescription = Frena s los ataques, pero puede fallar si se usa repetidamente.
+Description = Frena los ataques, pero puede fallar si se usa repetidamente.
 [MATBLOCK]
 Name = Escudo Tatami
 Type = FIGHTING
