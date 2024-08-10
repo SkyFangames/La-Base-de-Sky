@@ -185,7 +185,7 @@ TotalPP = 25
 Target = NearOther
 FunctionCode = RaiseUserAttack3IfTargetFaints
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Al derrotar al objetivo utilizando este movimiento, aumenta mucho el Ataque del usuario.
+Description = Al derrotar al objetivo utilizando este movimiento, aumenta muchísimo el Ataque del usuario.
 #-------------------------------
 [STRUGGLEBUG]
 Name = Estoicismo
