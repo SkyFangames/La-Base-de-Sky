@@ -192,7 +192,7 @@ class Hatcher
                chosen=screen.pbChoosePokemon
                screen.pbEndScene
             }
-            if $player.party[chosen] != nil
+            if chosen != -1 && $player.party[chosen] != nil
               if !$player.party[chosen].egg?
                 Kernel.pbMessage("El Pokémon elegido no es un Huevo.")
               else
