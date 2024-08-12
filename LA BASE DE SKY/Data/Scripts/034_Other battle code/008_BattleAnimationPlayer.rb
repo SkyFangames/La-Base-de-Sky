@@ -424,7 +424,7 @@ class PBAnimation < Array
   end
 
   def length
-    return @array.length
+    @array.length
   end
 
   def each
@@ -432,7 +432,7 @@ class PBAnimation < Array
   end
 
   def [](i)
-    return @array[i]
+    @array[i]
   end
 
   def []=(i, value)
@@ -440,11 +440,11 @@ class PBAnimation < Array
   end
 
   def insert(*arg)
-    return @array.insert(*arg)
+    @array.insert(*arg)
   end
 
   def delete_at(*arg)
-    return @array.delete_at(*arg)
+    @array.delete_at(*arg)
   end
 
   def resize(len)
@@ -468,61 +468,61 @@ class PBAnimation < Array
     @array[pos][1] = pbCreateCel(Battle::Scene::FOCUSTARGET_X, Battle::Scene::FOCUSTARGET_Y, -2)
     @array[pos][1][AnimFrame::FOCUS]  = 1
     @array[pos][1][AnimFrame::LOCKED] = 1
-    return @array[pos]
+    @array[pos]
   end
 
   def playTiming(frame, bgGraphic, bgColor, foGraphic, foColor, oldbg = [], oldfo = [], user = nil)
     @timing.each do |i|
       next if !i.duration || i.duration <= 0
       next if i.frame + i.duration < frame || i.frame >= frame
+
       fraction = (frame - i.frame).to_f / i.duration
       case i.timingType
       when 2
         if bgGraphic.bitmap.nil?
-          if i.opacity
-            bgColor.opacity = oldbg[2] + ((i.opacity - oldbg[2]) * fraction)
-          end
-          cr = (i.colorRed) ? oldbg[3].red + ((i.colorRed - oldbg[3].red) * fraction) : oldbg[3].red
-          cg = (i.colorGreen) ? oldbg[3].green + ((i.colorGreen - oldbg[3].green) * fraction) : oldbg[3].green
-          cb = (i.colorBlue) ? oldbg[3].blue + ((i.colorBlue - oldbg[3].blue) * fraction) : oldbg[3].blue
-          ca = (i.colorAlpha) ? oldbg[3].alpha + ((i.colorAlpha - oldbg[3].alpha) * fraction) : oldbg[3].alpha
+          bgColor.opacity = oldbg[2] + ((i.opacity - oldbg[2]) * fraction) if i.opacity
+          cr = i.colorRed ? oldbg[3].red + ((i.colorRed - oldbg[3].red) * fraction) : oldbg[3].red
+          cg = i.colorGreen ? oldbg[3].green + ((i.colorGreen - oldbg[3].green) * fraction) : oldbg[3].green
+          cb = i.colorBlue ? oldbg[3].blue + ((i.colorBlue - oldbg[3].blue) * fraction) : oldbg[3].blue
+          ca = i.colorAlpha ? oldbg[3].alpha + ((i.colorAlpha - oldbg[3].alpha) * fraction) : oldbg[3].alpha
           bgColor.color = Color.new(cr, cg, cb, ca)
         else
           bgGraphic.ox      = oldbg[0] - ((i.bgX - oldbg[0]) * fraction) if i.bgX
           bgGraphic.oy      = oldbg[1] - ((i.bgY - oldbg[1]) * fraction) if i.bgY
           bgGraphic.opacity = oldbg[2] + ((i.opacity - oldbg[2]) * fraction) if i.opacity
-          cr = (i.colorRed) ? oldbg[3].red + ((i.colorRed - oldbg[3].red) * fraction) : oldbg[3].red
-          cg = (i.colorGreen) ? oldbg[3].green + ((i.colorGreen - oldbg[3].green) * fraction) : oldbg[3].green
-          cb = (i.colorBlue) ? oldbg[3].blue + ((i.colorBlue - oldbg[3].blue) * fraction) : oldbg[3].blue
-          ca = (i.colorAlpha) ? oldbg[3].alpha + ((i.colorAlpha - oldbg[3].alpha) * fraction) : oldbg[3].alpha
+          cr = i.colorRed ? oldbg[3].red + ((i.colorRed - oldbg[3].red) * fraction) : oldbg[3].red
+          cg = i.colorGreen ? oldbg[3].green + ((i.colorGreen - oldbg[3].green) * fraction) : oldbg[3].green
+          cb = i.colorBlue ? oldbg[3].blue + ((i.colorBlue - oldbg[3].blue) * fraction) : oldbg[3].blue
+          ca = i.colorAlpha ? oldbg[3].alpha + ((i.colorAlpha - oldbg[3].alpha) * fraction) : oldbg[3].alpha
           bgGraphic.color = Color.new(cr, cg, cb, ca)
         end
       when 4
         if foGraphic.bitmap.nil?
           foColor.opacity = oldfo[2] + ((i.opacity - oldfo[2]) * fraction) if i.opacity
-          cr = (i.colorRed) ? oldfo[3].red + ((i.colorRed - oldfo[3].red) * fraction) : oldfo[3].red
-          cg = (i.colorGreen) ? oldfo[3].green + ((i.colorGreen - oldfo[3].green) * fraction) : oldfo[3].green
-          cb = (i.colorBlue) ? oldfo[3].blue + ((i.colorBlue - oldfo[3].blue) * fraction) : oldfo[3].blue
-          ca = (i.colorAlpha) ? oldfo[3].alpha + ((i.colorAlpha - oldfo[3].alpha) * fraction) : oldfo[3].alpha
+          cr = i.colorRed ? oldfo[3].red + ((i.colorRed - oldfo[3].red) * fraction) : oldfo[3].red
+          cg = i.colorGreen ? oldfo[3].green + ((i.colorGreen - oldfo[3].green) * fraction) : oldfo[3].green
+          cb = i.colorBlue ? oldfo[3].blue + ((i.colorBlue - oldfo[3].blue) * fraction) : oldfo[3].blue
+          ca = i.colorAlpha ? oldfo[3].alpha + ((i.colorAlpha - oldfo[3].alpha) * fraction) : oldfo[3].alpha
           foColor.color = Color.new(cr, cg, cb, ca)
         else
           foGraphic.ox      = oldfo[0] - ((i.bgX - oldfo[0]) * fraction) if i.bgX
           foGraphic.oy      = oldfo[1] - ((i.bgY - oldfo[1]) * fraction) if i.bgY
           foGraphic.opacity = oldfo[2] + ((i.opacity - oldfo[2]) * fraction) if i.opacity && oldfo[2]
-          cr = (i.colorRed) ? oldfo[3].red + ((i.colorRed - oldfo[3].red) * fraction) : oldfo[3].red
-          cg = (i.colorGreen) ? oldfo[3].green + ((i.colorGreen - oldfo[3].green) * fraction) : oldfo[3].green
-          cb = (i.colorBlue) ? oldfo[3].blue + ((i.colorBlue - oldfo[3].blue) * fraction) : oldfo[3].blue
-          ca = (i.colorAlpha) ? oldfo[3].alpha + ((i.colorAlpha - oldfo[3].alpha) * fraction) : oldfo[3].alpha
+          cr = i.colorRed ? oldfo[3].red + ((i.colorRed - oldfo[3].red) * fraction) : oldfo[3].red
+          cg = i.colorGreen ? oldfo[3].green + ((i.colorGreen - oldfo[3].green) * fraction) : oldfo[3].green
+          cb = i.colorBlue ? oldfo[3].blue + ((i.colorBlue - oldfo[3].blue) * fraction) : oldfo[3].blue
+          ca = i.colorAlpha ? oldfo[3].alpha + ((i.colorAlpha - oldfo[3].alpha) * fraction) : oldfo[3].alpha
           foGraphic.color = Color.new(cr, cg, cb, ca)
         end
       end
     end
     @timing.each do |i|
       next if i.frame != frame
+
       case i.timingType
-      when 0   # Play SE
-        if i.name && i.name != ""
-          pbSEPlay("Anim/" + i.name, i.volume, i.pitch)
+      when 0 # Play SE
+        if i.name && i.name != ''
+          pbSEPlay("Anim/#{i.name}", i.volume, i.pitch)
         elsif user&.pokemon
           name = GameData::Species.cry_filename_from_pokemon(user.pokemon)
           pbSEPlay(name, i.volume, i.pitch) if name
@@ -532,8 +532,8 @@ class PBAnimation < Array
 #          sprite.flash(nil, i.flashDuration * 2) if i.flashScope == 3
 #        end
       when 1   # Set background graphic (immediate)
-        if i.name && i.name != ""
-          bgGraphic.setBitmap("Graphics/Animations/" + i.name)
+        if i.name && i.name != ''
+          bgGraphic.setBitmap("Graphics/Animations/#{i.name}")
           bgGraphic.ox      = -i.bgX || 0
           bgGraphic.oy      = -i.bgY || 0
           bgGraphic.color   = Color.new(i.colorRed || 0, i.colorGreen || 0, i.colorBlue || 0, i.colorAlpha || 0)
