@@ -508,9 +508,7 @@ class PBAnimation < Array
         else
           foGraphic.ox      = oldfo[0] - ((i.bgX - oldfo[0]) * fraction) if i.bgX
           foGraphic.oy      = oldfo[1] - ((i.bgY - oldfo[1]) * fraction) if i.bgY
-          if i.opacity
-            foGraphic.opacity = oldfo[2] + ((i.opacity - oldfo[2]) * fraction) 
-          end
+          foGraphic.opacity = oldfo[2] + ((i.opacity - oldfo[2]) * fraction) if i.opacity && oldfo[2]
           cr = (i.colorRed) ? oldfo[3].red + ((i.colorRed - oldfo[3].red) * fraction) : oldfo[3].red
           cg = (i.colorGreen) ? oldfo[3].green + ((i.colorGreen - oldfo[3].green) * fraction) : oldfo[3].green
           cb = (i.colorBlue) ? oldfo[3].blue + ((i.colorBlue - oldfo[3].blue) * fraction) : oldfo[3].blue
