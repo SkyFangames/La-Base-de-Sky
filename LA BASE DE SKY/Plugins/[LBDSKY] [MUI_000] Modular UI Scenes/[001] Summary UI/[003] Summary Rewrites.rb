@@ -307,7 +307,7 @@ class PokemonSummary_Scene
           @ribbonOffset = 0
           dorefresh = true
         end
-      elsif Input.trigger?(Input::JUMPUP)
+      elsif Input.trigger?(Input::JUMPUP) && !@party.is_a?(PokemonBox)
         oldindex = @partyindex
         @partyindex = 0
         if @partyindex != oldindex
@@ -315,7 +315,7 @@ class PokemonSummary_Scene
           @ribbonOffset = 0
           dorefresh = true
         end
-      elsif Input.trigger?(Input::JUMPDOWN)
+      elsif Input.trigger?(Input::JUMPDOWN) && !@party.is_a?(PokemonBox)
         oldindex = @partyindex
         @partyindex = @party.length - 1
         if @partyindex != oldindex
