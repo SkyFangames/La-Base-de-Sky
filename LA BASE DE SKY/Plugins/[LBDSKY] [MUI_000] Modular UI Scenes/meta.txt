@@ -1,5 +1,5 @@
 ﻿Name       = Modular UI Scenes
-Version    = 2.0.5
+Version    = 2.0.6
 Essentials = 21.1
 Requires   = v21.1 Hotfixes,1.0.6
 Optional   = Generation 8 Pack Scripts,1.0
