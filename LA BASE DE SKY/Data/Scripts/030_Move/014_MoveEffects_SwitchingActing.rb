@@ -279,17 +279,17 @@ class Battle::Move::BindTarget < Battle::Move
     msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     case @id
     when :BIND
-      msg = _INTL("¡Atadura de {2} oprime a {1}!", target.pbThis, user.pbThis(true))
+      msg = _INTL("¡Atadura de {2} oprime a {1}!", target.pbThis(true), user.pbThis(true))
     when :CLAMP
-      msg = _INTL("¡{2} atenazó a {1}!", user.pbThis, target.pbThis(true))
+      msg = _INTL("¡{2} atenazó a {1}!", user.pbThis(true), target.pbThis)
     when :FIRESPIN
       msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     when :INFESTATION
-      msg = _INTL("¡{2} es presa del acoso de  {1}!", target.pbThis, user.pbThis(true))
+      msg = _INTL("¡{2} es presa del acoso de  {1}!", target.pbThis(true), user.pbThis)
     when :MAGMASTORM
-      msg = _INTL("¡Lluvia Ígnea atrapó a {1}!", target.pbThis)
+      msg = _INTL("¡Lluvia Ígnea atrapó a {1}!", target.pbThis(true))
     when :SANDTOMB
-      msg = _INTL("¡Bucle Arena atrapó a {1}!", target.pbThis)
+      msg = _INTL("¡Bucle Arena atrapó a {1}!", target.pbThis(true))
     when :WHIRLPOOL
       msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     when :WRAP
