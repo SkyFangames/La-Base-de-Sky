@@ -154,7 +154,8 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
   
   alias pbPickBerry_itemfind pbPickBerry
   def pbPickBerry(berry, qty = 1)
-    pbPickBerry_itemfind(berry,qty)
+    ret = pbPickBerry_itemfind(berry,qty)
     $item_log.register(berry) if $bag.has?(berry)
+    return ret
   end
 end
