@@ -408,7 +408,7 @@ class Battle::Move::AddToxicSpikesToFoeSide < Battle::Move
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas tóxicas!",
-                            user.pbOpposingTeam(true)))
+                            user.pbOpposingTeam()))
   end
 end
 
@@ -429,7 +429,7 @@ class Battle::Move::AddStealthRocksToFoeSide < Battle::Move
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::StealthRock] = true
     @battle.pbDisplay(_INTL("¡{1} está rodeado de piedras puntiagudas!",
-                            user.pbOpposingTeam(true)))
+                            user.pbOpposingTeam()))
   end
 end
 
@@ -450,7 +450,7 @@ class Battle::Move::AddStickyWebToFoeSide < Battle::Move
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::StickyWeb] = true
     @battle.pbDisplay(_INTL("¡Una red viscosa se extiende a los pies de {1}!",
-                            user.pbOpposingTeam(true)))
+                            user.pbOpposingTeam()))
   end
 end
 
