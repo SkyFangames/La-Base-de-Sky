@@ -77,7 +77,7 @@ class Battle::Battler
     
     if hasActiveAbility?(:TRACE) && hasActiveItem?(:ABILITYSHIELD)
       @battle.pbShowAbilitySplash(self)
-      @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", pbThis))
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por el efecto de su Escudo Habilidad!", pbThis(true)))
       @battle.pbHideAbilitySplash(self)
     # Trace
     elsif hasActiveAbility?(:TRACE)

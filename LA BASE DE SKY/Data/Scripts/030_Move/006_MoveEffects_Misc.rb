@@ -785,7 +785,7 @@ class Battle::Move::SetUserAlliesAbilityToTargetAbility < Battle::Move
       return true
     end
     if user.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("La habilidad de {1} está protegida por los efectos de su Escudo Habilidad!",user.pbThis))
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos de su Escudo Habilidad!",user.pbThis))
       return true
     end
     return false
@@ -807,13 +807,13 @@ class Battle::Move::SetUserAlliesAbilityToTargetAbility < Battle::Move
     @battle.allSameSideBattlers(user).each do |b|
 	  next if b.ability == target.ability
       if b.hasActiveItem?(:ABILITYSHIELD)
-        @battle.pbDisplay(_INTL("{1}'s Ability is protected by the effects of its Ability Shield!", b.pbThis))
+        @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por el efecto de su Escudo Habilidad!", b.pbThis(true)))
       else
         @battle.pbShowAbilitySplash(b, true, false)
         oldAbil = b.ability
         b.ability = target.ability
         @battle.pbReplaceAbilitySplash(b)
-        @battle.pbDisplay(_INTL("{1} copied {2}'s {3}!",
+        @battle.pbDisplay(_INTL("¡{1} copió {3} de {2}!",
                             user.pbThis, target.pbThis(true), target.abilityName))
         @battle.pbHideAbilitySplash(b)
         b.pbOnLosingAbility(oldAbil)
