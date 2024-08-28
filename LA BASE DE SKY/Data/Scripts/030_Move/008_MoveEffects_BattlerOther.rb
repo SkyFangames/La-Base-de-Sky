@@ -1503,7 +1503,7 @@ class Battle::Move::RemoveUserBindingAndEntryHazardsPoisonTarget < Battle::Move:
     end
     if defined?(PBEffects::Steelsurge) && user.pbOwnSide.effects[PBEffects::Steelsurge]
       user.pbOwnSide.effects[PBEffects::Steelsurge] = false
-      @battle.pbDisplay(_INTL("¡{1} eliminó las puás metalicas!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡{1} eliminó las púas metalicas!", user.pbThis))
     end
     if user.pbOwnSide.effects[PBEffects::Spikes] > 0
       user.pbOwnSide.effects[PBEffects::Spikes] = 0
@@ -1578,7 +1578,7 @@ class Battle::Move::DamageTargetAddSpikesToFoeSide < Battle::Move
     return if target.pbOwnSide.effects[PBEffects::Spikes] == 3
     target.pbOwnSide.effects[PBEffects::Spikes] += 1
     @battle.pbAnimation(:SPIKES, user, target)
-    @battle.pbDisplay(_INTL("¡Se espacieron puás alrededor de {1}!", user.pbOpposingTeam(true)))
+    @battle.pbDisplay(_INTL("¡Se espacieron púas alrededor de {1}!", user.pbOpposingTeam(true)))
   end
 end
 

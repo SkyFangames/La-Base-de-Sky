@@ -34,10 +34,21 @@ module Settings
   # Almacena la ruta para los gráficos utilizados por este plugin.
   BATTLE_UI_GRAPHICS_PATH = "Graphics/Plugins/Enhanced Battle UI/"
   
-  # Cuando está activado, aparecerán botones para abrir los menús de interfaz 
-  # de usuario al seleccionar comandos.
-  SHOW_UI_PROMPTS = true
+  #-----------------------------------------------------------------------------
+  # The display style for button prompts used to open UI menus that appear when selecting commands.
+  # 0 => No prompts shown
+  # 1 => Always show prompt
+  # 2 => Show prompt, but hide after 2 seconds.
+  #-----------------------------------------------------------------------------
+  UI_PROMPT_DISPLAY = 2
   
+
+  #-----------------------------------------------------------------------------
+  # When true, Move UI background will reflect the color of the move type.
+  #-----------------------------------------------------------------------------
+  USE_MOVE_TYPE_BACKGROUNDS = true
+
+
   # Cuando es falso, la pantalla no mostrará la efectividad del tipo de movimientos
   # contra especies nuevas que encuentres por primera vez.
   # Cuando es verdadero, siempre se mostrará la efectividad del tipo, incluso para

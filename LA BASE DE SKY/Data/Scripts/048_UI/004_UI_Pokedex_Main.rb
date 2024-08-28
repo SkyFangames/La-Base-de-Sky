@@ -415,13 +415,25 @@ class PokemonPokedex_Scene
   end
 
   # DP - Agrega funcion para buscar por nombre presionando la D
-  def searchByName()
-    term = pbMessageFreeText(_INTL("¿Qué Pokémon desea buscar?"), "", false, 32)
-    return false if term == "" || term == nil
-    @dexlist.each do |item|
+  def open_search_box
+    PokedexSearcher.new(@dexlist, self)
+  end
+
+  def searchByName(text, char="")
+    current_index = @sprites["pokedex"].index
+    for i in current_index...@dexlist.length
+      item = @dexlist[i]
       next if !$player.seen?(item[:species])
       next if item[:shift] && !$player.seen?(item[:species])
-      return pbRefreshDexList(item[:number] - 1) if item[:name].downcase.include?(term.downcase)
+      return pbRefreshDexList(item[:number] - 1) if item[:name].downcase.include?(text.downcase)
+    end
+    if current_index > 0
+      for i in 0...current_index
+        item = @dexlist[i]
+        next if !$player.seen?(item[:species])
+        next if item[:shift] && !$player.seen?(item[:species])
+        return pbRefreshDexList(item[:number] - 1) if item[:name].downcase.include?(text.downcase)
+      end
     end
     return false
   end
@@ -1293,7 +1305,7 @@ class PokemonPokedex_Scene
             pbDexEntry(@sprites["pokedex"].index)
           end
         elsif Input.trigger?(Input::SPECIAL)
-          searchByName()
+          open_search_box
         end
       end
     end

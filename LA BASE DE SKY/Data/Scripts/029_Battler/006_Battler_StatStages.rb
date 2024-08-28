@@ -16,7 +16,7 @@ class Battle::Battler
     if statStageAtMax?(stat)
       if showFailMsg
         @battle.pbDisplay(_INTL("¡{2} de {1} no puede subir más!",
-                                pbThis, GameData::Stat.get(stat).name))
+                                pbThis(true), GameData::Stat.get(stat).name))
       end
       return false
     end
@@ -55,9 +55,9 @@ class Battle::Battler
     # Stat up animation and message
     @battle.pbCommonAnimation("StatUp", self) if showAnim
     arrStatTexts = [
-      _INTL("¡{2} de {1} ha aumentado!", pbThis, GameData::Stat.get(stat).name),
-      _INTL("¡{2} de {1} ha aumentado mucho!", pbThis, GameData::Stat.get(stat).name),
-      _INTL("¡{2} de {1} ha aumentado muchísimo!", pbThis, GameData::Stat.get(stat).name)
+      _INTL("¡{2} de {1} ha aumentado!", pbThis(true), GameData::Stat.get(stat).name),
+      _INTL("¡{2} de {1} ha aumentado mucho!", pbThis(true), GameData::Stat.get(stat).name),
+      _INTL("¡{2} de {1} ha aumentado muchísimo!", pbThis(true), GameData::Stat.get(stat).name)
     ]
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat gain
@@ -91,15 +91,15 @@ class Battle::Battler
     @battle.pbCommonAnimation("StatUp", self) if showAnim
     if user.index == @index
       arrStatTexts = [
-        _INTL("¡{2} de {1} ha aumentado su {3}!", pbThis, cause, GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha aumentado mucho su {3}!", pbThis, cause, GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha aumentado muchísimo su {3}!", pbThis, cause, GameData::Stat.get(stat).name)
+        _INTL("¡{2} de {1} ha aumentado su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha aumentado mucho su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha aumentado muchísimo su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name)
       ]
     else
       arrStatTexts = [
-        _INTL("¡{2} de {1} ha aumentado {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha aumentado mucho {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha aumentado muchísimo {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name)
+        _INTL("¡{2} de {1} ha aumentado {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha aumentado mucho {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha aumentado muchísimo {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name)
       ]
     end
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
@@ -179,12 +179,12 @@ class Battle::Battler
     if !user || user.index != @index   # Not self-inflicted
       if @effects[PBEffects::Substitute] > 0 &&
          (ignoreMirrorArmor || !(move && move.ignoresSubstitute?(user)))
-        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis)) if showFailMsg
+        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis(true))) if showFailMsg
         return false
       end
       if pbOwnSide.effects[PBEffects::Mist] > 0 &&
          !(user && user.hasActiveAbility?(:INFILTRATOR))
-        @battle.pbDisplay(_INTL("¡Los efectos de la Neblina han protegido a {1}!", pbThis)) if showFailMsg
+        @battle.pbDisplay(_INTL("¡Los efectos de la Neblina han protegido a {1}!", pbThis(true))) if showFailMsg
         return false
       end
       if abilityActive?
@@ -208,7 +208,7 @@ class Battle::Battler
     if statStageAtMin?(stat)
       if showFailMsg
         @battle.pbDisplay(_INTL("¡{2} de {1} no puede subir más!",
-                                pbThis, GameData::Stat.get(stat).name))
+                                pbThis(true), GameData::Stat.get(stat).name))
       end
       return false
     end
@@ -250,7 +250,7 @@ class Battle::Battler
         if mirrorArmorSplash < 2
           @battle.pbShowAbilitySplash(self)
           if !Battle::Scene::USE_ABILITY_SPLASH
-            @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis, abilityName))
+            @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis(true), abilityName))
           end
         end
         ret = false
@@ -267,9 +267,9 @@ class Battle::Battler
     # Stat down animation and message
     @battle.pbCommonAnimation("StatDown", self) if showAnim
     arrStatTexts = [
-      _INTL("¡{2} de {1} ha disminuido!", pbThis, GameData::Stat.get(stat).name),
-      _INTL("¡{2} de {1} ha disminuido mucho!", pbThis, GameData::Stat.get(stat).name),
-      _INTL("¡{2} de {1} ha disminuido muchísimo!", pbThis, GameData::Stat.get(stat).name)
+      _INTL("¡{2} de {1} ha disminuido!", pbThis(true), GameData::Stat.get(stat).name),
+      _INTL("¡{2} de {1} ha disminuido mucho!", pbThis(true), GameData::Stat.get(stat).name),
+      _INTL("¡{2} de {1} ha disminuido muchísimo!", pbThis(true), GameData::Stat.get(stat).name)
     ]
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat loss
@@ -291,7 +291,7 @@ class Battle::Battler
          user && user.index != @index && !statStageAtMin?(stat)
         @battle.pbShowAbilitySplash(self)
         if !Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis, abilityName))
+          @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis(true), abilityName))
         end
         ret = false
         if user.pbCanLowerStatStage?(stat, self, nil, true, ignoreContrary, true)
@@ -308,15 +308,15 @@ class Battle::Battler
     @battle.pbCommonAnimation("StatDown", self) if showAnim
     if user.index == @index
       arrStatTexts = [
-        _INTL("¡{2} de {1} ha disminuido su {3}!", pbThis, cause, GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido mucho su {3}!", pbThis, cause, GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido muchísimo su {3}!", pbThis, cause, GameData::Stat.get(stat).name)
+        _INTL("¡{2} de {1} ha disminuido su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido mucho su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido muchísimo su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name)
       ]
     else
       arrStatTexts = [
-        _INTL("¡{2} de {1} ha disminuido {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido mucho {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido muchísimo {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name)
+        _INTL("¡{2} de {1} ha disminuido {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido mucho {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido muchísimo {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name)
       ]
     end
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
@@ -358,19 +358,19 @@ class Battle::Battler
     # NOTE: Substitute intentionally blocks Intimidate even if self has Contrary.
     if @effects[PBEffects::Substitute] > 0
       if Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis))
+        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis(true)))
       else
         @battle.pbDisplay(_INTL("¡El sustituto de {1} le protegió de {3} de {2}!",
-                                pbThis, user.pbThis(true), user.abilityName))
+                                pbThis(true), user.pbThis(true), user.abilityName))
       end
       return false
     end
     if Settings::MECHANICS_GENERATION >= 8 && hasActiveAbility?([:OBLIVIOUS, :OWNTEMPO, :INNERFOCUS, :SCRAPPY])
       @battle.pbShowAbilitySplash(self)
       if Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("¡{2} de {1} no puede bajar más!", pbThis, GameData::Stat.get(:ATTACK).name))
+        @battle.pbDisplay(_INTL("¡{2} de {1} no puede bajar más!", pbThis(true), GameData::Stat.get(:ATTACK).name))
       else
-        @battle.pbDisplay(_INTL("¡{2} de {1} evitó que bajara su {3}!", pbThis, abilityName,
+        @battle.pbDisplay(_INTL("¡{2} de {1} evitó que bajara su {3}!", pbThis(true), abilityName,
                                 GameData::Stat.get(:ATTACK).name))
       end
       @battle.pbHideAbilitySplash(self)
@@ -385,21 +385,21 @@ class Battle::Battler
     if !hasActiveAbility?(:CONTRARY)
       if pbOwnSide.effects[PBEffects::Mist] > 0
         @battle.pbDisplay(_INTL("¡Los efectos de Neblina han protegido a {1} de {2} de {3}!",
-                                pbThis, user.pbThis(true), user.abilityName))
+                                pbThis(true), user.pbThis(true), user.abilityName))
         return false
       end
       if abilityActive? &&
          (Battle::AbilityEffects.triggerStatLossImmunity(self.ability, self, :ATTACK, @battle, false) ||
           Battle::AbilityEffects.triggerStatLossImmunityNonIgnorable(self.ability, self, :ATTACK, @battle, false))
         @battle.pbDisplay(_INTL("¡Los efectos de {2} han protegido a {1} de {4} de {3}",
-                                pbThis, abilityName, user.pbThis(true), user.abilityName))
+                                pbThis(true), abilityName, user.pbThis(true), user.abilityName))
         return false
       end
       allAllies.each do |b|
         next if !b.abilityActive?
         if Battle::AbilityEffects.triggerStatLossImmunityFromAlly(b.ability, b, self, :ATTACK, @battle, false)
           @battle.pbDisplay(_INTL("¡Los efectos de {3} de {2} han protegido a {1} de {5} de {4}",
-                                  pbThis, user.pbThis(true), user.abilityName, b.pbThis(true), b.abilityName))
+                                  pbThis(true), user.pbThis(true), user.abilityName, b.pbThis(true), b.abilityName))
           return false
         end
       end

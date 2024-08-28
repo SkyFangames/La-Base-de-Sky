@@ -174,16 +174,6 @@ class PokemonPokedexInfo_Scene
           drawPage(@page)
           pbDrawDataNotes
           break
-        elsif Input.repeat?(Input::UP)
-          @sprites["movecmds"].index -= 1 if @sprites["movecmds"].index > 0
-        elsif Input.repeat?(Input::DOWN)
-          @sprites["movecmds"].index += 1 if @sprites["movecmds"].index < @moveCommands.length - 1
-        elsif Input.trigger?(Input::JUMPUP)
-          @sprites["movecmds"].index -= 4 if @sprites["movecmds"].index >= 4 
-          @sprites["movecmds"].index = 0 if @sprites["movecmds"].index < 0 || @sprites["movecmds"].index - 4 < 0
-        elsif Input.trigger?(Input::JUMPDOWN)
-          @sprites["movecmds"].index += 4 if @sprites["movecmds"].index + 4 < @moveCommands.length
-          @sprites["movecmds"].index = @moveCommands.length - 1 if @sprites["movecmds"].index >= @moveCommands.length || @sprites["movecmds"].index + 4 >= @moveCommands.length
         end  
         if @sprites["movecmds"].index != oldcmd
           pbDrawMoveList

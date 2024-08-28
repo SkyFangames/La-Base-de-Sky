@@ -113,14 +113,14 @@ class PokemonSummary_Scene
         commands[:item] = _INTL("Dar Objeto")
         commands[:take] = _INTL("Quitar Objeto") if @pokemon.hasItem?
       when :nickname then commands[cmd] = _INTL("Mote")      if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.foreign?
-      when :pokedex  then commands[cmd] = _INTL("Ver Pokédex")  if $player.has_pokedex
+      when :pokedex  then commands[cmd] = _INTL("Ver Pokédex")  if $player.has_pokedex && $player.pokedex.unlocked?(-1)
       when :moves    then commands[cmd] = _INTL("Movimientos")   if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.moves.empty?
       when :remember then commands[cmd] = _INTL("Recordar Movimiento") if Settings::MECHANICS_GENERATION >= 9 && @pokemon.can_relearn_move?
       when :forget   then commands[cmd] = _INTL("Olvidar Movimiento")   if Settings::MECHANICS_GENERATION >= 9 && @pokemon.moves.length > 1
       when :tms      then commands[cmd] = _INTL("Usar MT")      if Settings::MECHANICS_GENERATION >= 9 && $bag.has_compatible_tm?(@pokemon)
       when :mark     then commands[cmd] = _INTL("Marcas")
       when :ability  then commands[cmd] = _INTL("Ver Habilidad")
-      when :legacy   then commands[cmd] = _INTL("Histórico") if !@pokemon.egg?
+      when :legacy   then commands[cmd] = _INTL("Histórico") if (!@pokemon.egg? && defined?(show_legacy))
       when String    then commands[cmd] = _INTL("#{cmd}")
       end
     end
@@ -162,17 +162,17 @@ class PokemonSummary_Scene
       dorefresh = true
     #---------------------------------------------------------------------------
     # [:pokedex] View the Pokedex entry for this Pokemon's species.
-    when :pokedex   
+    when :pokedex
       $player.pokedex.register_last_seen(@pokemon)
       pbFadeOutIn do
         scene = PokemonPokedexInfo_Scene.new
         screen = PokemonPokedexInfoScreen.new(scene)
-        screen.pbStartSceneSingle(@pokemon.species)
+        screen.pbStartSceneSingle(@pokemon.species, true)
       end
       dorefresh = true
     #---------------------------------------------------------------------------
     # [:moves] View and/or reorder this Pokemon's moves. (Gen 9+)
-    when :moves     
+    when :moves
       pbPlayDecisionSE
       pbMoveSelection
       @sprites["pokemon"].visible = true
@@ -234,7 +234,7 @@ class PokemonSummary_Scene
         showAbilityDescription(@pokemon)
       }
     when :legacy
-      dorefresh = show_legacy
+      dorefresh = show_legacy if defined?(show_legacy)
     else
       cmd = command_list[command][0]
       if cmd.is_a?(String)
@@ -307,7 +307,7 @@ class PokemonSummary_Scene
           @ribbonOffset = 0
           dorefresh = true
         end
-      elsif Input.trigger?(Input::JUMPUP)
+      elsif Input.trigger?(Input::JUMPUP) && !@party.is_a?(PokemonBox)
         oldindex = @partyindex
         @partyindex = 0
         if @partyindex != oldindex
@@ -315,7 +315,7 @@ class PokemonSummary_Scene
           @ribbonOffset = 0
           dorefresh = true
         end
-      elsif Input.trigger?(Input::JUMPDOWN)
+      elsif Input.trigger?(Input::JUMPDOWN) && !@party.is_a?(PokemonBox)
         oldindex = @partyindex
         @partyindex = @party.length - 1
         if @partyindex != oldindex

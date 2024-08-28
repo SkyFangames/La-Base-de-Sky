@@ -2245,7 +2245,7 @@ Battle::AbilityEffects::OnBeingHit.add(:TOXICDEBRIS,
     battle.pbShowAbilitySplash(target)
     target.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
     battle.pbAnimation(:TOXICSPIKES, target, target.pbDirectOpposing)
-    battle.pbDisplay(_INTL("Puás tóxicas se esparcieron en el suelo alrededor de {1}!", target.pbOpposingTeam(true)))
+    battle.pbDisplay(_INTL("Púas tóxicas se esparcieron en el suelo alrededor de {1}!", target.pbOpposingTeam(true)))
     battle.pbHideAbilitySplash(target)
   }
 )
