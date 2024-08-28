@@ -6,6 +6,18 @@
 **DESCARGAR BASE: https://skyfangames.blogspot.com/2024/01/base-de-sky.html**
 
 
+### AÑADIDOS V 1.0.8
+
+- Añadido buscador instantáneo en la Pokédex al pulsar la tecla D.
+- Arreglado el movimiento por los ataques de la Dex ampliada.
+- Arreglado error que saltaba en la Incubadora.
+- Añadidas validaciones para evitar errores si no se usan bases en combate.
+- Actualización de plugins de la base y añadido uno que se borró en la anterior versión por error.
+- Actualización de los iconos de todos los Pokémon de Paldea.
+- Arreglado bug con los árboles de bayas, que no desaparecían al recogerlas.
+- Pequeños arreglos menores.
+
+
 ### AÑADIDOS V 1.0.7
 
 - Mejoras en el script de la dex avanzada, ahora permite moverse en el listado de movimientos manteniendo pulsada las flechas y con la A y la D para moverse de 4 en 4.
