@@ -12,6 +12,7 @@ SPEEDUP_STAGES = [1, 1.5, 2]
 $GameSpeed = 0
 $CanToggle = true
 $RefreshEventsForTurbo = false
+$SpeedDiference = 0
 
 #===============================================================================#
 # Set $CanToggle depending on the saved setting
@@ -37,8 +38,11 @@ module Input
     pbScreenCapture if trigger?(Input::F8)
     if $CanToggle && trigger?(Input::ALT)
       $GameSpeed += 1
-      $GameSpeed = 0 if $GameSpeed >= SPEEDUP_STAGES.size
-      $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
+      if $GameSpeed >= SPEEDUP_STAGES.size
+        $GameSpeed = 0 
+        $SpeedDiference += (System.real_uptime * SPEEDUP_STAGES[-1])
+      end
+      # $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
       $buttonframes = 0
       $RefreshEventsForTurbo  = true
     end
@@ -54,33 +58,33 @@ module System
   end
 
   def self.uptime
-    return SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime
+    return (SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime) + $SpeedDiference
   end
 end
 
-#===============================================================================#
-# Event handlers for in-battle speed-up restrictions
-#===============================================================================#
-EventHandlers.add(:on_start_battle, :start_speedup, proc {
-  $CanToggle = false
-  $GameSpeed = $PokemonSystem.battle_speed if $PokemonSystem.only_speedup_battles == 1
-})
-EventHandlers.add(:on_end_battle, :stop_speedup, proc {
-  $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
-  $CanToggle = true if $PokemonSystem.only_speedup_battles == 0
-})
+# #===============================================================================#
+# # Event handlers for in-battle speed-up restrictions
+# #===============================================================================#
+# EventHandlers.add(:on_start_battle, :start_speedup, proc {
+#   $CanToggle = false
+#   $GameSpeed = $PokemonSystem.battle_speed if $PokemonSystem.only_speedup_battles == 1
+# })
+# EventHandlers.add(:on_end_battle, :stop_speedup, proc {
+#   $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
+#   $CanToggle = true if $PokemonSystem.only_speedup_battles == 0
+# })
 
-#===============================================================================#
-# Can only change speed in battle during command phase (prevents weird animation glitches)
-#===============================================================================#
-class Battle
-  alias_method :original_pbCommandPhase, :pbCommandPhase unless method_defined?(:original_pbCommandPhase)
-  def pbCommandPhase
-    $CanToggle = true
-    original_pbCommandPhase
-    $CanToggle = false
-  end
-end
+# #===============================================================================#
+# # Can only change speed in battle during command phase (prevents weird animation glitches)
+# #===============================================================================#
+# class Battle
+#   alias_method :original_pbCommandPhase, :pbCommandPhase unless method_defined?(:original_pbCommandPhase)
+#   def pbCommandPhase
+#     $CanToggle = true
+#     original_pbCommandPhase
+#     $CanToggle = false
+#   end
+# end
 
 #===============================================================================#
 # Fix for consecutive battle soft-lock glitch
