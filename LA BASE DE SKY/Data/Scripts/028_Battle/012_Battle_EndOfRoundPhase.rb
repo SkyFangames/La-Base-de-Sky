@@ -194,7 +194,7 @@ class Battle
       pbCommonAnimation("LeechSeed", recipient, battler)
       battler.pbTakeEffectDamage(battler.totalhp / 8) do |hp_lost|
         recipient.pbRecoverHPFromDrain(hp_lost, battler,
-                                       _INTL("¡Las drenadoras han restado salud a {1}!", battler.pbThis))
+                                       _INTL("¡Las drenadoras han restado salud a {1}!", battler.pbThis(true)))
         recipient.pbAbilitiesOnDamageTaken
       end
       recipient.pbFaint if recipient.fainted?

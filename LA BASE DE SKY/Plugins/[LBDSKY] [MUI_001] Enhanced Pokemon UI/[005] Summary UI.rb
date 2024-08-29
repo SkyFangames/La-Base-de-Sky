@@ -22,7 +22,7 @@ class PokemonSummary_Scene
     enhanced_drawPageOne
     return if !Settings::SUMMARY_HAPPINESS_METER
     overlay = @sprites["overlay"].bitmap
-    coords = [242+46, 346]
+    coords = [242, 346]
     pbDisplayHappiness(@pokemon, overlay, coords[0], coords[1])
   end
   
@@ -48,11 +48,13 @@ class PokemonSummary_Scene
   #-----------------------------------------------------------------------------
   alias enhanced_pbPageCustomUse pbPageCustomUse
   def pbPageCustomUse(page_id)
-    if page_id == :page_skills && $game_switches[Settings::ENHANCED_STATS_SWITCH]
-      @statToggle = !@statToggle
-      drawPage(:page_skills)
-      pbPlayDecisionSE
-      return true
+    if page_id == :page_skills
+      if defined?(Settings::DISPLAY_ENHANCED_STATS) && Settings::DISPLAY_ENHANCED_STATS
+        @statToggle = !@statToggle
+        drawPage(:page_skills)
+        pbPlayDecisionSE
+        return true
+      end
     end
     return enhanced_pbPageCustomUse(page_id)
   end
@@ -64,7 +66,7 @@ class PokemonSummary_Scene
   def pbStartScene(*args)
     if Settings::SUMMARY_LEGACY_DATA
       UIHandlers.edit_hash(:summary, :page_memo, "options", 
-        [:item, :nickname, :pokedex, :legacy, :mark]
+        [:item, :nickname, :pokedex, _INTL("Ver Histórico"), :mark]
       )
     end
     @statToggle = false
@@ -78,17 +80,11 @@ class PokemonSummary_Scene
 
   alias enhanced_pbPageCustomOption pbPageCustomOption
   def pbPageCustomOption(cmd)
-    echoln cmd
-    if cmd == :legacy
+    if cmd == _INTL("Ver Histórico")
       pbLegacyMenu
       return true
     end
     return enhanced_pbPageCustomOption(cmd)
-  end
-
-  def show_legacy()
-    pbLegacyMenu
-    return true
   end
   
   #-----------------------------------------------------------------------------
@@ -173,7 +169,7 @@ class PokemonSummary_Scene
           imagepos.push([path + "arrows_legacy", 118, ypos + 84, 0, 0, 32, 32])
         end
         if index < TOTAL_LEGACY_PAGES - 1
-          imagepos.push([path + "arrows_legacy", 362+128, ypos + 84, 32, 0, 32, 32])
+          imagepos.push([path + "arrows_legacy", 362, ypos + 84, 32, 0, 32, 32])
         end
         legacy_overlay.clear
         pbDrawImagePositions(legacy_overlay, imagepos)
