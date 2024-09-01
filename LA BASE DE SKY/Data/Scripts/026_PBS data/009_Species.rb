@@ -376,10 +376,10 @@ module GameData
 
     # utility function to get the first species in the evolutionary line
     def first_evo
-      prev = GameData::Species.get(@id).get_previous_evo
+      prev = GameData::Species.get(@id).previous_evo
       return @id if prev == @id
 
-      GameData::Species.get(prev).get_previous_evo
+      GameData::Species.get(prev).previous_evo
     end
 
     # utility function to get the previous species in the evolutionary line
@@ -398,15 +398,15 @@ module GameData
 
       evo.each do |arr|
         all += [GameData::Species.get_species_form(arr[0], @form).id]
-        all += GameData::Species.get_species_form(arr[0], @form).get_next_evos
+        all += GameData::Species.get_species_form(arr[0], @form).next_evos
       end
       all.uniq
     end
 
     # utility function to get all species inside an evolutionary line
     def evolutionary_line
-      sp = get_first_evo
-      ([sp] + GameData::Species.get(sp).get_next_evos).uniq
+      sp = first_evo
+      ([sp] + GameData::Species.get(sp).next_evos).uniq
     end
 
     def minimum_level
