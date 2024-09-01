@@ -103,6 +103,12 @@ module GameData
       return false
     end
 
+    # Detecta si el movimiento es OHKO, lo hace detectando si hay alguna flag que comience con ohko (sin importar las mayusculas)
+    def ohko?
+      @flags.each { |flag| return true if flag.downcase.start_with?("ohko") }
+      false
+    end
+
     def display_type(pkmn, move = nil)
 =begin
       case @function_code
