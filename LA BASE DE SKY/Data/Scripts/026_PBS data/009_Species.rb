@@ -347,16 +347,17 @@ module GameData
     def family_evolutions_have_method?(check_method, check_param = nil)
       sp = get_baby_species
       evos = GameData::Species.get(sp).get_family_evolutions
-      return false if evos.length == 0
+      return false if evos.empty?
+
       evos.each do |evo|
         if check_method.is_a?(Array)
-          next if !check_method.include?(evo[2])
+          next unless check_method.include?(evo[2])
         elsif evo[2] != check_method
           next
         end
         return true if check_param.nil? || evo[3] == check_param
       end
-      return false
+      false
     end
 
     # Used by the Moon Ball when checking if a Pokémon's evolution family
@@ -364,12 +365,48 @@ module GameData
     def family_item_evolutions_use_item?(check_item = nil)
       sp = get_baby_species
       evos = GameData::Species.get(sp).get_family_evolutions
-      return false if !evos || evos.length == 0
+      return false if !evos || evos.empty?
+
       evos.each do |evo|
         next if GameData::Evolution.get(evo[2]).use_item_proc.nil?
         return true if check_item.nil? || evo[3] == check_item
       end
-      return false
+      false
+    end
+
+    # utility function to get the first species in the evolutionary line
+    def first_evo
+      prev = GameData::Species.get(@id).get_previous_evo
+      return @id if prev == @id
+
+      GameData::Species.get(prev).get_previous_evo
+    end
+
+    # utility function to get the previous species in the evolutionary line
+    def previous_evo
+      return @id if @evolutions.empty?
+
+      @evolutions.each { |evo| return GameData::Species.get_species_form(evo[0], @form).id if evo[3] } # Get prevolution
+      @id
+    end
+
+    # utility function to get every evolution after defined species
+    def next_evos
+      evo = GameData::Species.get(@id).get_evolutions
+      all = []
+      return [@id] if evo.empty?
+
+      evo.each do |arr|
+        all += [GameData::Species.get_species_form(arr[0], @form).id]
+        all += GameData::Species.get_species_form(arr[0], @form).get_next_evos
+      end
+      all.uniq
+    end
+
+    # utility function to get all species inside an evolutionary line
+    def evolutionary_line
+      sp = get_first_evo
+      ([sp] + GameData::Species.get(sp).get_next_evos).uniq
     end
 
     def minimum_level
