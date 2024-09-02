@@ -18,7 +18,7 @@ def pbCallTitle
 end
 
 def mainFunction
-  if $DEBUG
+  if true #$DEBUG
     pbCriticalCode { mainFunctionDebug }
   else
     mainFunctionDebug
