@@ -570,6 +570,11 @@ module PluginManager
     return true if !FileTest.exist?("Data/PluginScripts.rxdata")
     Input.update
     return true if Input.press?(Input::SHIFT) || Input.press?(Input::CTRL)
+
+    # Verificar si se agregaron o borraron carpetas y recompilar si es necesario
+    scripts_aux = load_data("Data/PluginScripts.rxdata")
+    return true if scripts_aux.length != plugins.length
+
     # analizar si se debe presionar o no la recompilación
     mtime = File.mtime("Data/PluginScripts.rxdata")
     order.each do |o|
