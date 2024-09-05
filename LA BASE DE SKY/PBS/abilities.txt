@@ -58,7 +58,7 @@ Description = Aumenta la precisión de sus movimientos en un 30%. También aumen
 #-------------------------------
 [INSOMNIA]
 Name = Insomnio
-Description = Su resistencia al sueño le impide quedarse dormido. También le impide el uso de Descanso. Si un Pokémon dormido adquiere esta habilidad, se desertará.
+Description = Su resistencia al sueño le impide quedarse dormido. También le impide el uso de Descanso. Si un Pokémon dormido adquiere esta habilidad, se despertará.
 #-------------------------------
 [COLORCHANGE]
 Name = Cambio Color
