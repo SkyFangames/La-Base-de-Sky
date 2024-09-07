@@ -5463,7 +5463,7 @@ NamePlural = Bayas Hibis
 Pocket = 5
 Price = 20
 Flags = Berry,Fling_10,NaturalGift_FAIRY_80
-Description = Debilita ataques super eficaces de tipo hada.
+Description = Debilita ataques super eficaces de tipo Hada.
 #-------------------------------
 [CHILANBERRY]
 Name = Baya Chilan
@@ -5575,7 +5575,7 @@ NamePlural = Bayas Biglia
 Pocket = 5
 Price = 20
 Flags = Berry,Fling_10,NaturalGift_FAIRY_100
-Description = Aumenta la defensa cuando el pokémon recibe un ataque físico.
+Description = Aumenta la defensa cuando el Pokémon recibe un ataque físico.
 #-------------------------------
 [MARANGABERRY]
 Name = Baya Maranga
