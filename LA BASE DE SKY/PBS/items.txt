@@ -5724,7 +5724,7 @@ Pocket = 7
 Price = 2000
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 1 nivel el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 1 nivel la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE2]
 Name = Defensa X 2
@@ -5733,7 +5733,7 @@ Pocket = 7
 Price = 0
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 2 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 2 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE3]
 Name = Defensa X 3
@@ -5742,7 +5742,7 @@ Pocket = 7
 Price = 0
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 3 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 3 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE6]
 Name = Defensa X 6
@@ -5751,7 +5751,7 @@ Pocket = 7
 Price = 0
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 6 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 6 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK]
 Name = Ataque Especial X 1
@@ -5760,7 +5760,7 @@ Pocket = 7
 Price = 1000
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 1 nivel la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 1 nivel el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK2]
 Name = Ataque Especial X 2
@@ -5769,7 +5769,7 @@ Pocket = 7
 Price = 0
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 2 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 2 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK3]
 Name = Ataque Especial X 3
@@ -5778,7 +5778,7 @@ Pocket = 7
 Price = 0
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 3 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 3 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK6]
 Name = Ataque Especial X 6
@@ -5787,7 +5787,7 @@ Pocket = 7
 Price = 0
 BattleUse = OnBattler
 Flags = Fling_30
-Description = Aumenta 6 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
+Description = Aumenta 6 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPDEF]
 Name = Defensa Especial X 1
