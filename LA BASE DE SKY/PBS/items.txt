@@ -2876,7 +2876,7 @@ Price = 700
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Medicina en spray que cura heridas y restaura 50 PS de un Pokémon.
+Description = Medicina en spray que cura heridas y restaura 60 PS de un Pokémon.
 #-------------------------------
 [HYPERPOTION]
 Name = Hiperpoción
@@ -2886,7 +2886,7 @@ Price = 1500
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Medicina en spray que cura heridas y restaura 200 PS de un Pokémon.
+Description = Medicina en spray que cura heridas y restaura 120 PS de un Pokémon.
 #-------------------------------
 [MAXPOTION]
 Name = Poción Máxima
@@ -3107,7 +3107,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Agua de alto contenido mineral que restaura 50 PS de un Pokémon.
+Description = Agua de alto contenido mineral que restaura 30 PS de un Pokémon.
 #-------------------------------
 [SODAPOP]
 Name = Refresco
@@ -3117,7 +3117,7 @@ Price = 300
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Chispeante bebida gaseosa que restaura 60 PS de un Pokémon.
+Description = Chispeante bebida gaseosa que restaura 50 PS de un Pokémon.
 #-------------------------------
 [LEMONADE]
 Name = Limonada
@@ -3128,7 +3128,7 @@ SellPrice = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Bebida dulce que restaura 80 PS de un Pokémon.
+Description = Bebida dulce que restaura 70 PS de un Pokémon.
 #-------------------------------
 [MOOMOOMILK]
 Name = Leche Mu-mu
@@ -3158,7 +3158,7 @@ Price = 1200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Raíz muy amarga que restaura 200 PS de un Pokémon.
+Description = Raíz muy amarga que restaura 120 PS de un Pokémon.
 #-------------------------------
 [HEALPOWDER]
 Name = Polvo Curación
