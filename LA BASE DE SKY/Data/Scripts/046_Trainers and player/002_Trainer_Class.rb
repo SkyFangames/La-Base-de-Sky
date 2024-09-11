@@ -210,6 +210,15 @@ class Trainer
     return nil
   end
 
+
+  # Checks whether any Pokemon in the party can learn the given move, and
+  # returns the first Pokemon it finds with that move, or nil if no Pokemon
+  # can learn that move.
+  def get_pokemon_can_learn_move(move)
+    pokemon_party.each { |pkmn| return pkmn if pkmn.compatible_with_move?(move) }
+    return nil
+  end
+
   # Fully heal all Pokémon in the party.
   def heal_party
     @party.each { |pkmn| pkmn.heal }
