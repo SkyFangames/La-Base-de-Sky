@@ -731,7 +731,7 @@ Battle::AbilityEffects::StatLossImmunity.add(:BIGPECKS,
     if showMessages
       battle.pbShowAbilitySplash(battler)
       if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} de {2} no puede ser bajado!", battler.pbThis, GameData::Stat.get(stat).name))
+        battle.pbDisplay(_INTL("¡{2} de {1} no puede ser bajado!", battler.pbThis(true), GameData::Stat.get(stat).name))
       else
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita la bajada de {3}!", battler.pbThis,
            battler.abilityName, GameData::Stat.get(stat).name))
@@ -781,7 +781,7 @@ Battle::AbilityEffects::StatLossImmunity.add(:HYPERCUTTER,
     if showMessages
       battle.pbShowAbilitySplash(battler)
       if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} de {2} no puede ser bajado!", battler.pbThis, GameData::Stat.get(stat).name))
+        battle.pbDisplay(_INTL("¡{2} de {1} no puede ser bajado!", battler.pbThis(true), GameData::Stat.get(stat).name))
       else
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita la bajada de {3}!", battler.pbThis,
            battler.abilityName, GameData::Stat.get(stat).name))
@@ -798,7 +798,7 @@ Battle::AbilityEffects::StatLossImmunity.add(:KEENEYE,
     if showMessages
       battle.pbShowAbilitySplash(battler)
       if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} de {2} no puede ser bajado!", battler.pbThis, GameData::Stat.get(stat).name))
+        battle.pbDisplay(_INTL("¡{2} de {1} no puede ser bajado!", battler.pbThis(true), GameData::Stat.get(stat).name))
       else
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita la bajada de {3}!", battler.pbThis,
            battler.abilityName, GameData::Stat.get(stat).name))
