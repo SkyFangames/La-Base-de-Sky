@@ -433,8 +433,9 @@ class Game_Player < Game_Character
     elsif dir.positive? && !pbMapInterpreterRunning? && !$game_temp.message_window_showing &&
           !$game_temp.in_mini_update && !$game_temp.in_menu
       # Move player in the direction the directional button is being pressed
+      subs = System.real_uptime - @lastdirframe
       if @moved_last_frame ||
-         (dir == @lastdir && System.uptime - @lastdirframe >= 0.075)
+         (dir == @lastdir && (subs >= 0.075 || subs.negative?))
         case dir
         when 2 then move_down
         when 4 then move_left
@@ -450,7 +451,7 @@ class Game_Player < Game_Character
         end
       end
       # Record last direction input
-      @lastdirframe = System.uptime if dir != @lastdir
+      @lastdirframe = System.real_uptime if dir != @lastdir
       @lastdir = dir
     end
   end
