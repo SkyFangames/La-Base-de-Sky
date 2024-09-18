@@ -35,7 +35,7 @@ USER_DEFINED_NAMES = {
 :SuperRod => "Pescando (Super Caña)",
 :RockSmash => "Golpe Roca",
 :HeadbuttLow => "Cabezazo (Raro)",
-:HeadbuttHigh => "Headbutt (Común)",
+:HeadbuttHigh => "Cabezazo (Común)",
 :BugContest => "Concurso de Bichos",
 :PokeRadar => "PokéRadar"
 }
