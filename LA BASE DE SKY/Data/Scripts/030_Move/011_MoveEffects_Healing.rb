@@ -726,7 +726,7 @@ class Battle::Move::DisableTargetHealingMoves2Turns < Battle::Move
     return if target.effects[PBEffects::HealBlock] > 0
     return if pbMoveFailedAromaVeil?(user, target, false)
     target.effects[PBEffects::HealBlock] = 2
-    @battle.pbDisplay(_INTL("{1} was prevented from healing!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} no puede curarse!", target.pbThis))
     target.pbItemStatusCureCheck
   end
 end
