@@ -175,7 +175,7 @@ end
 #===============================================================================
 def pbCut
   move = :CUT
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_CUT, false) || (!$DEBUG && !movefinder)
     pbMessage(_INTL("Parece que este árbol puede ser cortado."))
     return false
@@ -278,7 +278,7 @@ def pbDive
   map_metadata = $game_map.metadata
   return false if !map_metadata || !map_metadata.dive_map_id
   move = :DIVE
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_DIVE, false) || (!$DEBUG && !movefinder)
     pbMessage(_INTL("El agua está profunda. Un Pokémon podría ser capaz de sumergirse."))
     return false
@@ -315,7 +315,7 @@ def pbSurfacing
   end
   return if !surface_map_id
   move = :DIVE
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_DIVE, false) || (!$DEBUG && !movefinder)
     pbMessage(_INTL("La luz se filtra desde la superficie. Un Pokémon podría subir a la superficie desde aquí."))
     return false
@@ -456,7 +456,8 @@ HiddenMoveHandlers::UseMove.add(:FLASH, proc { |move, pokemon|
 #===============================================================================
 def pbCanFly?(pkmn = nil, show_messages = false)
   return false if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_FLY, show_messages)
-  return false if !$DEBUG && !pkmn && !$player.get_pokemon_with_move(:FLY)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(:FLY) : $player.get_pokemon_with_move(:FLY)
+  return false if !$DEBUG && !pkmn && !movefinder
   if !$game_player.can_map_transfer_with_follower?
     pbMessage(_INTL("No se puede usar cuando hay alguien contigo.")) if show_messages
     return false
@@ -470,7 +471,7 @@ end
 
 def pbFlyToNewLocation(pkmn = nil, move = :FLY)
   return false if $game_temp.fly_destination.nil?
-  pkmn = $player.get_pokemon_with_move(move) if !pkmn
+  pkmn = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move) if !pkmn
   if !$DEBUG && !pkmn
     $game_temp.fly_destination = nil
     yield if block_given?
@@ -544,7 +545,7 @@ end
 
 def pbHeadbutt(event = nil)
   move = :HEADBUTT
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !$DEBUG && !movefinder
     pbMessage(_INTL("Un Pokémon podría estar en este árbol. Quizás un Pokémon podría agitarlo."))
     return false
@@ -590,7 +591,7 @@ end
 
 def pbRockSmash
   move = :ROCKSMASH
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_ROCKSMASH, false) || (!$DEBUG && !movefinder)
     pbMessage(_INTL("Es una roca con grietas, pero un Pokémon podría ser capaz de romperla."))
     return false
@@ -637,7 +638,7 @@ def pbStrength
     return false
   end
   move = :STRENGTH
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_STRENGTH, false) || (!$DEBUG && !movefinder)
     pbMessage(_INTL("Es una gran roca, pero un Pokémon podría ser capaz de moverla."))
     return false
@@ -685,7 +686,7 @@ HiddenMoveHandlers::UseMove.add(:STRENGTH, proc { |move, pokemon|
 def pbSurf
   return false if !$game_player.can_ride_vehicle_with_follower?
   move = :SURF
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_SURF, false) || (!$DEBUG && !movefinder)
     return false
   end
@@ -925,7 +926,7 @@ end
 
 def pbWaterfall
   move = :WATERFALL
-  movefinder = $player.get_pokemon_with_move(move)
+  movefinder = Settings::USE_HM_WITHOUT_LEARNING_THEM ? $player.get_pokemon_can_learn_move(move) : $player.get_pokemon_with_move(move)
   if !pbCheckHiddenMoveBadge(Settings::BADGE_FOR_WATERFALL, false) || (!$DEBUG && !movefinder)
     pbMessage(_INTL("Un muro de agua cae con un estruendo ensordecedor."))
     return false

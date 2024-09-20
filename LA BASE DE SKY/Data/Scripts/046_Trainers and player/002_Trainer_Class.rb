@@ -124,6 +124,51 @@ class Trainer
     return true
   end
 
+  # Deletes all Pokémon of the given type from the trainer's party.
+  def delete_type_from_party(type)
+    return unless GameData::Type.exists?(type)
+
+    type = GameData::Type.get(type).id
+    @party.delete_if { |pkmn| pkmn&.hasType?(type) && @party.length > 1 }
+  end
+
+  # Deletes all Pokemon of the given type from the trainer's PC.
+  def delete_type_from_pc(type)
+    return unless GameData::Type.exists?(type)
+
+    type = GameData::Type.get(type).id
+    (-1...$PokemonStorage.maxBoxes).each do |i|
+      $PokemonStorage.maxPokemon(i).times do |j|
+        pkmn = $PokemonStorage[i][j]
+        next if pkmn.nil?
+
+        $PokemonStorage.pbDelete(i, j) if pkmn.hasType?(type)
+      end
+    end
+  end
+
+  # Deletes all Pokemon of the given species from the trainer's party.
+  # You may also specify a particular form it should be.
+  def delete_species_from_party(species, form = -1)
+    @party.delete_if { |pkmn| !pkmn.egg? && pkmn.isSpecies?(species) && (form.negative? || pkmn.form == form) && @party.length > 1 }
+  end
+
+  # Deletes all Pokemon of the given species from the trainer's PC.
+  # You may also specify a particular form it should be.
+  def delete_species_from_pc(species, form = -1)
+    (-1...$PokemonStorage.maxBoxes).each do |i|
+      $PokemonStorage.maxPokemon(i).times do |j|
+        pkmn = $PokemonStorage[i][j]
+        next if pkmn.nil?
+
+        if !pkmn.egg? && pkmn.isSpecies?(species) && (form.negative? || pkmn.form == form)
+          $PokemonStorage.pbDelete(i, j)
+        end
+      end
+    end
+  end
+
+
   # Checks whether the trainer would still have an unfainted Pokémon if the
   # Pokémon given by _index_ were removed from the party.
   def has_other_able_pokemon?(index)
@@ -151,10 +196,26 @@ class Trainer
     return pokemon_party.any? { |p| p&.hasType?(type) }
   end
 
+  def find_pokemon_of_type(type, all = false)
+    return false unless GameData::Type.exists?(type)
+
+    type = GameData::Type.get(type).id
+    all ? pokemon_party.find_all { |p| p&.hasType?(type) } : pokemon_party.find { |p| p&.hasType?(type) }
+  end
+
   # Checks whether any Pokémon in the party knows the given move, and returns
   # the first Pokémon it finds with that move, or nil if no Pokémon has that move.
   def get_pokemon_with_move(move)
     pokemon_party.each { |pkmn| return pkmn if pkmn.hasMove?(move) }
+    return nil
+  end
+
+
+  # Checks whether any Pokemon in the party can learn the given move, and
+  # returns the first Pokemon it finds with that move, or nil if no Pokemon
+  # can learn that move.
+  def get_pokemon_can_learn_move(move)
+    pokemon_party.each { |pkmn| return pkmn if pkmn.compatible_with_move?(move) }
     return nil
   end
 

@@ -35,7 +35,7 @@ USER_DEFINED_NAMES = {
 :SuperRod => "Pescando (Super Caña)",
 :RockSmash => "Golpe Roca",
 :HeadbuttLow => "Cabezazo (Raro)",
-:HeadbuttHigh => "Headbutt (Común)",
+:HeadbuttHigh => "Cabezazo (Común)",
 :BugContest => "Concurso de Bichos",
 :PokeRadar => "PokéRadar"
 }
@@ -46,8 +46,8 @@ USER_DEFINED_NAMES = {
 # Method that returns whether a specific form has been seen (any gender)
 def seen_form_any_gender?(species, form)
   ret = false
-  if $Trainer.pokedex.seen_form?(species, 0, form) ||
-    $Trainer.pokedex.seen_form?(species, 1, form)
+  if $player.pokedex.seen_form?(species, 0, form) ||
+    $player.pokedex.seen_form?(species, 1, form)
     ret = true
   end
   return ret
@@ -116,7 +116,7 @@ class EncounterList_Scene
     @sprites["locwindow"].windowskin = nil
     @h = (Graphics.height - @sprites["base"].bitmap.height)/2
     @w = (Graphics.width - @sprites["base"].bitmap.width)/2
-    @max_enc.times do |i|
+    @max_enc&.times do |i|
       @sprites["icon_#{i}"] = PokemonSpeciesIconSprite.new(nil,@viewport)
       @sprites["icon_#{i}"].x = @w + 28 + 64*(i%7)
       @sprites["icon_#{i}"].y = @h + 100 + (i/7)*64
@@ -167,10 +167,10 @@ class EncounterList_Scene
     enc_array, currKey = getEncData
     enc_array.each do |s|
       species_data = GameData::Species.get(s)  # SI NO LO HE VISTO NI CAPTURADO
-      if false # !$Trainer.pokedex.owned?(s) && !seen_form_any_gender?(s,species_data.form)
+      if !$player.pokedex.owned?(s) && !seen_form_any_gender?(s,species_data.form)
         @sprites["icon_#{i}"].pbSetParams(0,0,0,false)
         @sprites["icon_#{i}"].visible = true
-      elsif $player.has_pokedex && !($player.pokedex.species_in_unlocked_dex?(species_data)) #!$Trainer.pokedex.owned?(s) # SI NO LO HE CAPTURADO
+      elsif $player.has_pokedex && !($player.pokedex.species_in_unlocked_dex?(species_data)) # SI NO LO HE CAPTURADO
         @sprites["icon_#{i}"].pbSetParams(s,0,species_data.form,false)
         @sprites["icon_#{i}"].tone = Tone.new(0,0,0,255)
         @sprites["icon_#{i}"].visible = true
@@ -203,7 +203,7 @@ class EncounterList_Scene
     currKey = @encounter_tables.keys[@index]
     arr = []
     enc_array = []
-    @encounter_tables[currKey].each { |s| arr.push( s[1] ) }
+    @encounter_tables[currKey]&.each { |s| arr.push( s[1] ) }
     GameData::Species.each { |s| enc_array.push(s.id) if arr.include?(s.id) } # From Maruno
     enc_array.uniq!
     return enc_array, currKey

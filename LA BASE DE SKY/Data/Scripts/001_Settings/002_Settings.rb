@@ -221,6 +221,10 @@ module Settings
   BADGE_FOR_DIVE      = 7
   BADGE_FOR_WATERFALL = 8
 
+  # Si deseas usar la MO en el OW, sin la necesidad de aprenderlas, cambia la siguiente constante a true
+  # IMPORTANTE: tienes que tener un Pokémon en el equipo que pueda aprender el movimiento, pero no es necesario enseñarselo.
+  USE_HM_WITHOUT_LEARNING_THEM = false
+
   #=============================================================================
 
   # Los nombres de cada bolsillo de la Mochila.

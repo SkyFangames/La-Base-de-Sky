@@ -54,7 +54,13 @@ end
 #===============================================================================#
 module System
   class << self
-    alias_method :unscaled_uptime, :uptime unless method_defined?(:unscaled_uptime)
+    unless method_defined?(:unscaled_uptime)
+      alias_method :unscaled_uptime, :uptime
+    end
+  end
+
+  def self.real_uptime
+    return unscaled_uptime
   end
 
   def self.real_uptime
@@ -66,9 +72,9 @@ module System
   end
 end
 
-# #===============================================================================#
-# # Event handlers for in-battle speed-up restrictions
-# #===============================================================================#
+#===============================================================================#
+# Event handlers for in-battle speed-up restrictions
+#===============================================================================#
 # EventHandlers.add(:on_start_battle, :start_speedup, proc {
 #   $CanToggle = false
 #   $GameSpeed = $PokemonSystem.battle_speed if $PokemonSystem.only_speedup_battles == 1
@@ -78,9 +84,10 @@ end
 #   $CanToggle = true if $PokemonSystem.only_speedup_battles == 0
 # })
 
-# #===============================================================================#
-# # Can only change speed in battle during command phase (prevents weird animation glitches)
-# #===============================================================================#
+
+#===============================================================================#
+# Can only change speed in battle during command phase (prevents weird animation glitches)
+#===============================================================================#
 # class Battle
 #   alias_method :original_pbCommandPhase, :pbCommandPhase unless method_defined?(:original_pbCommandPhase)
 #   def pbCommandPhase
