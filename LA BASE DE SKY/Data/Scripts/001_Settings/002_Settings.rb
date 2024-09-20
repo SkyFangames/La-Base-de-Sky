@@ -112,6 +112,10 @@ module Settings
   # compres de una sola vez (true) o que te den 1 sola Honor Ball cuando compras
   # 10 o más Poké Balls (false). 
   MORE_BONUS_PREMIER_BALLS                   = (MECHANICS_GENERATION >= 8)
+
+  # El valor por defecto de venta de un objeto en las tiendas, es el precio de compra dividido por este número
+  ITEM_SELL_PRICE_DIVISOR                    = MECHANICS_GENERATION >= 9 ? 4 : 2
+
   # El número de pasos permitodos en la Zona Safari antes de que te echen
   # (0 = infinito).
   SAFARI_STEPS                               = 600
