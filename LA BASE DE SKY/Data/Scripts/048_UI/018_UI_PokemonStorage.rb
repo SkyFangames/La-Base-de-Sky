@@ -1865,6 +1865,7 @@ class PokemonStorageScreen
     command = pbShowCommands(_INTL("¿Liberar este Pokémon?"), [_INTL("No"), _INTL("Sí")])
     if command == 1
       pkmnname = pokemon.name
+      $bag.add(pokemon.item_id) if pokemon.hasItem?
       @scene.pbRelease(selected, heldpoke)
       if heldpoke
         @heldpkmn = nil

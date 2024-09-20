@@ -134,6 +134,7 @@ class Battle::Move
   def highCriticalRate?;  return @flags.any? { |f| f[/^HighCriticalHitRate$/i] }; end
   def bitingMove?;        return @flags.any? { |f| f[/^Biting$/i] };              end
   def punchingMove?;      return @flags.any? { |f| f[/^Punching$/i] };            end
+  def kickingMove?;       return @flags.any? { |f| f[/^Kicking$/i] };             end
   def soundMove?;         return @flags.any? { |f| f[/^Sound$/i] };               end
   def powderMove?;        return @flags.any? { |f| f[/^Powder$/i] };              end
   def pulseMove?;         return @flags.any? { |f| f[/^Pulse$/i] };               end
