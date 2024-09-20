@@ -2059,7 +2059,7 @@ Battle::AbilityEffects::OnBeingHit.add(:ILLUSION,
     next if !target.effects[PBEffects::Illusion]
     target.effects[PBEffects::Illusion] = nil
     battle.scene.pbChangePokemon(target, target.pokemon)
-    battle.pbDisplay(_INTL("{1}'s illusion wore off!", target.pbThis))
+    battle.pbDisplay(_INTL("¡La ilusión de {1} se ha desvanecido!", target.pbThis))
     battle.pbSetSeen(target)
   }
 )

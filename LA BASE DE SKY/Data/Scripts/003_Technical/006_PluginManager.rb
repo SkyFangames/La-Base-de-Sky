@@ -569,7 +569,25 @@ module PluginManager
     return false if !$DEBUG || FileTest.exist?("Game.rgssad")
     return true if !FileTest.exist?("Data/PluginScripts.rxdata")
     Input.update
+
     return true if Input.press?(Input::SHIFT) || Input.press?(Input::CTRL)
+
+    # Should compile if the number of plugins has changed
+    scripts = load_data("Data/PluginScripts.rxdata")
+    return true if scripts.length != plugins.length
+
+    # Should compile if any plugins have changed version or been replaced
+    found_plugins = []
+    plugins.each_pair { |name, meta| found_plugins.push([meta[:name], meta[:version]]) }
+    existing_plugins = []
+    scripts.each { |plugin| existing_plugins.push([plugin[1][:name], plugin[1][:version]]) }
+
+    return true if found_plugins != existing_plugins
+
+    # # Verificar si se agregaron o borraron carpetas y recompilar si es necesario
+    # scripts_aux = load_data("Data/PluginScripts.rxdata")
+    # return true if scripts_aux.length != plugins.length
+
     # analizar si se debe presionar o no la recompilación
     mtime = File.mtime("Data/PluginScripts.rxdata")
     order.each do |o|
