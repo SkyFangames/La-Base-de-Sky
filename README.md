@@ -6,6 +6,20 @@
 **DESCARGAR BASE: https://skyfangames.blogspot.com/2024/01/base-de-sky.html**
 
 
+### AÑADIDOS V 1.0.9
+
+- Más validaciones para las animaciones de ataques
+- Mejoras en el movimiento del jugador, ahora se mueve con solo darle tap a las teclas
+- Correcciones en el precio de venta de los objetos
+- Mejoras en el PluginManager para que detecte cuando se agregan o eliminan carpetas
+- Corrección stats mega Scizor
+- Si se libera a un Pokémon con un objeto equipado, el objeto se guarda en la mochila
+- Cambios en el NPC configurador del random del mapa de Script
+- Agrega opción de usar las MOs sin aprenderlas
+- Agrega posibilidad de flag Kicking en el PBS de moves.txt y metodo kickingMove? para saber si es un movimiento de patadas
+- Correcciones en el PokeRadar
+- Cambios menores de traducciones
+
 ### AÑADIDOS V 1.0.8
 
 - Añadido buscador instantáneo en la Pokédex al pulsar la tecla D.
