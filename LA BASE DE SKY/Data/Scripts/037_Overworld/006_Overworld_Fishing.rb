@@ -54,7 +54,7 @@ def pbFishing(hasEncounter, rodType = 1)
       end
       if Settings::FISHING_AUTO_HOOK || rand(100) < hookChance
         pbFishingEnd do
-          pbMessageDisplay(msgWindow, _INTL("¡Has conseguido un Pokémon!")) if !Settings::FISHING_AUTO_HOOK
+          pbMessageDisplay(msgWindow, _INTL("¡Un Pokémon ha picado el anzuelo!")) if !Settings::FISHING_AUTO_HOOK
         end
         ret = true
         break
