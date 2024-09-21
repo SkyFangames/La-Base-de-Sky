@@ -1840,7 +1840,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = CrashDamageIfFailsUnusableInGravity
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Salta muy alto y lanza una patada. Si falla, dañará al usuario.
 #-------------------------------
 [CLOSECOMBAT]
@@ -1938,7 +1938,7 @@ Accuracy = 95
 TotalPP = 10
 Target = NearOther
 FunctionCode = CrashDamageIfFailsUnusableInGravity
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Da un salto y pega una patada. Si falla, dañará al usuario.
 #-------------------------------
 [SACREDSWORD]
@@ -1962,7 +1962,7 @@ Accuracy = 100
 TotalPP = 10
 Target = NearOther
 FunctionCode = LowerTargetDefense1
-Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome
+Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome,Kicking
 EffectChance = 100
 Description = El usuario arremete contra el rival con una poderosa patada que siempre baja la Defensa.
 #-------------------------------
@@ -2084,7 +2084,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = LowerTargetSpeed1
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 100
 Description = Un veloz ataque a los pies que reduce la Velocidad del objetivo.
 #-------------------------------
@@ -2136,7 +2136,7 @@ Accuracy = 85
 TotalPP = 15
 Target = NearOther
 FunctionCode = FlinchTarget
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 30
 Description = Una patada rápida y circular. También puede amedrentar al objetivo.
 #-------------------------------
@@ -2225,7 +2225,7 @@ Accuracy = 100
 TotalPP = 30
 Target = NearOther
 FunctionCode = HitTwoTimes
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Una patada doble. Golpea dos veces.
 #-------------------------------
 [ARMTHRUST]
@@ -2249,7 +2249,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = HitThreeTimesPowersUpWithEachHit
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patea hasta tres veces seguidas y cada vez más fuerte.
 #-------------------------------
 [COUNTER]
@@ -2286,7 +2286,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = PowerHigherWithTargetWeight
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patada baja. Cuanto más pesa el objetivo, más daño causa.
 #-------------------------------
 [REVERSAL]
@@ -2621,7 +2621,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = BurnTarget
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Kicking
 EffectChance = 10
 Description = Patada que suele ser un golpe crítico y puede causar quemaduras.
 #-------------------------------
@@ -3673,7 +3673,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = LowerTargetAttack1
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 100
 Description = Lanza una patada con la fuerza del trópico que golpea al rival y reduce su Ataque.
 #-------------------------------
@@ -4555,7 +4555,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = HitThreeTimesPowersUpWithEachHit
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patea hasta tres veces seguidas y cada vez más fuerte.
 #-------------------------------
 [SHEERCOLD]
@@ -4727,7 +4727,7 @@ Accuracy = 75
 TotalPP = 5
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patada de extrema fuerza.
 #-------------------------------
 [MULTIATTACK]
@@ -9058,7 +9058,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = CrashDamageIfFailsConfuseTarget
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 30
 Description = Lanza una patada al aire y golpea con el talón. Si falla, se hiere a sí mismo. Puede confundir. 
 #-------------------------------
