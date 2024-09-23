@@ -1292,7 +1292,7 @@ MenuHandlers.add(:debug_menu, :animation_organiser, {
 })
 
 MenuHandlers.add(:debug_menu, :import_animations, {
-  "name"        => _INTL("Exportar animaciones de combate"),
+  "name"        => _INTL("Importar animaciones de combate"),
   "parent"      => :editors_menu,
   "description" => _INTL("Importar todas las animaciones de combate de la carpeta \"Animations\"."),
   "effect"      => proc {
