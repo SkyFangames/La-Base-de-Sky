@@ -94,7 +94,6 @@
 #===============================================================================
 
 module NameBox
-
   # Nombre de la skin para el cuadro en "Graphics/Windowskins"
   NAMEBOXWINSKIN = "speech hgss 2"
 
@@ -152,41 +151,41 @@ module NameBox
   # Se hará visible cuando se muestre un cuadro de diálogo
 
   def self.load(name, number = nil)
-      @currentName = name.clone
-      @currentName = IMPORTANTCHARACTER[name] if IMPORTANTCHARACTER[name]
-      @currentName = CHARACTERNAMES[name] if CHARACTERNAMES[name]
-      @currentName += " #{number}" if number
-      # Parseo antiguo para mostrar el nombre de personaje
-      @currentName.gsub!(/\\pn/i,  $player.name) if $player
-      # Parseo nuevo para mostrar el nombre de personaje
-      @currentName.gsub!(/\\[Pp][Nn]/,$player.name) if $player
-      # Parsea la variable con el formato '\v[n]'
-      @currentName.gsub!(/\\v\[([0-9]+)\]/i) { $game_variables[$1.to_i] }
-      # Temas relacionados al genero
-      @currentName.gsub!(/\\@a/i,"a") if $player&.female?
-      @currentName.gsub!(/\\@a/i,"") if $player&.male?
-      @currentName.gsub!(/\\@/i,"a") if $player&.female?
-      @currentName.gsub!(/\\@/i,"o") if $player&.male?
-      @currentName.gsub!(/\\&/i,"o") if $player&.female?
-      @currentName.gsub!(/\\&/i,"a") if $player&.male?
-      @namebox&.dispose
-      @namebox = Window_AdvancedTextPokemon.new(@currentName)
-      @namebox.visible = true
+    @currentName = name.clone
+    @currentName = IMPORTANTCHARACTER[name] if IMPORTANTCHARACTER[name]
+    @currentName = CHARACTERNAMES[name] if CHARACTERNAMES[name]
+    @currentName += " #{number}" if number
+    # Parseo antiguo para mostrar el nombre de personaje
+    @currentName.gsub!(/\\pn/i,  $player.name) if $player
+    # Parseo nuevo para mostrar el nombre de personaje
+    @currentName.gsub!(/\\[Pp][Nn]/,$player.name) if $player
+    # Parsea la variable con el formato '\v[n]'
+    @currentName.gsub!(/\\v\[([0-9]+)\]/i) { $game_variables[$1.to_i] }
+    # Temas relacionados al genero
+    @currentName.gsub!(/\\@a/i,"a") if $player&.female?
+    @currentName.gsub!(/\\@a/i,"") if $player&.male?
+    @currentName.gsub!(/\\@/i,"a") if $player&.female?
+    @currentName.gsub!(/\\@/i,"o") if $player&.male?
+    @currentName.gsub!(/\\&/i,"o") if $player&.female?
+    @currentName.gsub!(/\\&/i,"a") if $player&.male?
+    @namebox&.dispose
+    @namebox = Window_AdvancedTextPokemon.new(@currentName)
+    @namebox.visible = true
 
-      if USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX
-        # Usa la skin de la caja de mensajes para el cuadro del namebox
-        # Cambio realizado por Pokémon Ultimate
-        @namebox.setSkin(MessageConfig.pbGetSpeechFrame)
-      else
-        skin = NAMEBOX_WINDOW_SKINS_FOR_NPC[@currentName] || MessageConfig.pbGetSpeechFrame
-        @namebox.setSkin("Graphics/Windowskins/#{skin}")
-      end
+    if USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX
+      # Usa la skin de la caja de mensajes para el cuadro del namebox
+      # Cambio realizado por Pokémon Ultimate
+      @namebox.setSkin(MessageConfig.pbGetSpeechFrame)
+    else
+      skin = NAMEBOX_WINDOW_SKINS_FOR_NPC[@currentName] || MessageConfig.pbGetSpeechFrame
+      @namebox.setSkin("Graphics/Windowskins/#{skin}")
+    end
 
-      @namebox.resizeToFit(@namebox.text, Graphics.width)
-      @namebox.x = NAMEBOX_X
-      @namebox.y = NAMEBOX_Y
-      @namebox.z = NAMEBOX_Z if NAMEBOX_IN_TOP
-      setTextColor
+    @namebox.resizeToFit(@namebox.text, Graphics.width)
+    @namebox.x = NAMEBOX_X
+    @namebox.y = NAMEBOX_Y
+    @namebox.z = NAMEBOX_Z if NAMEBOX_IN_TOP
+    setTextColor
   end
 
   # Muestra el NameBox (Debe estár integrada la llamada del Paso 1)
