@@ -94,8 +94,6 @@
 #===============================================================================
 
 module NameBox
-  # Nombre de la skin para el cuadro en "Graphics/Windowskins"
-  NAMEBOXWINSKIN = "speech hgss 2"
 
   # Posición del NameBox en pantalla
   NAMEBOX_X = 14
@@ -141,11 +139,18 @@ module NameBox
   USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX = true
 
   # Si USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX es false, entonces se usarán los siguientes skins para los NPCs
-  # Si no se encuentra al NPC en este listado se usará el mismo Skin que hay para las text box
   NAMEBOX_WINDOW_SKINS_FOR_NPC = {
     "Prof. Oak" => "speech hgss 2",
     "Candela" => "speech hgss 1"
   }
+
+  # Si USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX es false, y no se encuentra al NPC en el hash NAMEBOX_WINDOW_SKINS_FOR_NPC,
+  # Se verifica la siguiente constante si está en true se utilizará por defecto el Skin de la Text Box como skin de la NameBox
+  # Si es false, se usará el skin definido en la constante DEFAULT_NAMEBOXWINSKIN
+  USE_TEXT_WINDOW_SKIN_AS_DEFAULT = false
+
+  # Nombre de la skin para el cuadro en "Graphics/Windowskins"
+  DEFAULT_NAMEBOXWINSKIN = "speech hgss 2"
 
   # Carga el NameBox con el nombre indicado pero no lo deja visible
   # Se hará visible cuando se muestre un cuadro de diálogo
@@ -178,14 +183,13 @@ module NameBox
     @namebox = Window_AdvancedTextPokemon.new(@currentName)
     @namebox.visible = true
 
-    if USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX
-      # Usa la skin de la caja de mensajes para el cuadro del namebox
-      # Cambio realizado por Pokémon Ultimate
-      @namebox.setSkin(MessageConfig.pbGetSpeechFrame)
-    else
-      skin = NAMEBOX_WINDOW_SKINS_FOR_NPC[@currentName] || MessageConfig.pbGetSpeechFrame
-      @namebox.setSkin("Graphics/Windowskins/#{skin}")
-    end
+    skin = if USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX
+             MessageConfig.pbGetSpeechFrame
+           else
+             NAMEBOX_WINDOW_SKINS_FOR_NPC[@currentName] ||
+               (USE_TEXT_WINDOW_SKIN_AS_DEFAULT ? MessageConfig.pbGetSpeechFrame : DEFAULT_NAMEBOXWINSKIN)
+           end
+    @namebox.setSkin("Graphics/Windowskins/#{skin}")
 
     @namebox.resizeToFit(@namebox.text, Graphics.width)
     @namebox.x = NAMEBOX_X
