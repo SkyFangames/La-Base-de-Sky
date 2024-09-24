@@ -19,6 +19,8 @@
 - Agrega posibilidad de flag Kicking en el PBS de moves.txt y metodo kickingMove? para saber si es un movimiento de patadas
 - Correcciones en el PokeRadar
 - Cambia el precio de venta por defecto de 1/2 a 1/4 del precio de compra, de acuerdo a los cambios en BDSP y SV
+- Agrega opción en el NameBox para que el color del cuadro sea independiente del del text box y tambien definir distintos Skins para distintos NPCs
+- Agrega opción para recibir un color en el NameBox.show para cambiar el color del texto, este color tendrá precedencia sobre el indicado en NPCCOLORS
 - Cambios menores de traducciones
 
 ### AÑADIDOS V 1.0.8
