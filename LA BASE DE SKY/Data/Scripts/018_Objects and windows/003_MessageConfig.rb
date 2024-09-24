@@ -330,7 +330,7 @@ end
 #===============================================================================
 # Determine which text colours to use based on the darkness of the background
 #===============================================================================
-def getSkinColor(windowskin, color, isDarkSkin)
+def getSkinColor(windowskin, color, isDarkSkin, no_ctag = false)
   if !windowskin || windowskin.disposed? ||
      windowskin.width != 128 || windowskin.height != 128
     # Base color, shadow color (these are reversed on dark windowskins)
@@ -354,23 +354,28 @@ def getSkinColor(windowskin, color, isDarkSkin)
     ]
     if color == 0 || color > textcolors.length / 2   # No special colour, use default
       if isDarkSkin   # Dark background, light text
-        return shadowc3tag(MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR)
+        return no_ctag ? [MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR] : shadowctag(MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR)
+        # return shadowc3tag(MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR) 
       end
       # Light background, dark text
-      return shadowc3tag(MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR)
+      return no_ctag ? [MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR] : shadowctag(MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR)
+      # return shadowc3tag(MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR)
     end
     # Special colour as listed above
     if isDarkSkin && color != 12   # Dark background, light text
-      return shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
+      return no_ctag ? [textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)]] : shadowctag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
+      # return shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
     end
     # Light background, dark text
-    return shadowc3tag(textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1])
+    return no_ctag ? [textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1]] : shadowc3tag(textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1])
+    # return shadowc3tag(textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1])
   else   # VX windowskin
     color = 0 if color >= 32
     x = 64 + ((color % 8) * 8)
     y = 96 + ((color / 8) * 8)
     pixel = windowskin.get_pixel(x, y)
-    return shadowc3tag(pixel, pixel.get_contrast_color)
+    return no_ctag ? [pixel, pixel.get_contrast_color] : shadowc3tag(pixel, pixel.get_contrast_color)
+    # return shadowc3tag(pixel, pixel.get_contrast_color)
   end
 end
 
