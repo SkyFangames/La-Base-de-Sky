@@ -8,20 +8,22 @@
 
 ### AÑADIDOS V 1.0.9
 
-- Más validaciones para las animaciones de ataques
-- Mejoras en el movimiento del jugador, ahora se mueve con solo darle tap a las teclas
-- Correcciones en el precio de venta de los objetos
-- Mejoras en el PluginManager para que detecte cuando se agregan o eliminan carpetas
-- Corrección stats mega Scizor
-- Si se libera a un Pokémon con un objeto equipado, el objeto se guarda en la mochila
-- Cambios en el NPC configurador del random del mapa de Script
-- Agrega opción de usar las MOs sin aprenderlas
-- Agrega posibilidad de flag Kicking en el PBS de moves.txt y metodo kickingMove? para saber si es un movimiento de patadas
-- Correcciones en el PokeRadar
-- Cambia el precio de venta por defecto de 1/2 a 1/4 del precio de compra, de acuerdo a los cambios en BDSP y SV
-- Agrega opción en el NameBox para que el color del cuadro sea independiente del del text box y tambien definir distintos Skins para distintos NPCs
-- Agrega opción para recibir un color en el NameBox.show para cambiar el color del texto, este color tendrá precedencia sobre el indicado en NPCCOLORS
-- Cambios menores de traducciones
+- Más validaciones para las animaciones de ataques.
+- Mejoras en el movimiento del jugador, ahora se mueve con solo darle tap a las teclas.
+- Correcciones en el precio de venta de algunos objetos, de acorde a las nuevas generaciones.
+- Mejoras en el PluginManager para que detecte cuando se agregan o eliminan carpetas.
+- Corrección de stats de mega Scizor.
+- Agregado que si se libera a un Pokémon con un objeto equipado, el objeto se guarda en la mochila.
+- Cambios en el NPC configurador del random del mapa de Script.
+- Agrega opción de usar las MOs sin aprenderlas.
+- Agrega posibilidad de flag Kicking en el PBS de moves.txt y metodo kickingMove? para saber si es un movimiento de patadas.
+- Correcciones en el PokéRadar.
+- Cambia el precio de venta por defecto de 1/2 a 1/4 del precio de compra, de acuerdo a los cambios en BDSP y SV.
+- Agrega opción en el NameBox para que el color del cuadro sea independiente del del text box y tambien definir distintos Skins para distintos NPCs.
+- Agrega opción para recibir un color en el NameBox.show para cambiar el color del texto, este color tendrá precedencia sobre el indicado en NPCCOLORS.
+- Corrección en el tiempo mostrado al guardar partida, independientemente del turbo.
+- Cambios menores de traducciones.
+
 
 ### AÑADIDOS V 1.0.8
 
