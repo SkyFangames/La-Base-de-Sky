@@ -22,6 +22,7 @@
 - Agrega opción en el NameBox para que el color del cuadro sea independiente del del text box y tambien definir distintos Skins para distintos NPCs.
 - Agrega opción para recibir un color en el NameBox.show para cambiar el color del texto, este color tendrá precedencia sobre el indicado en NPCCOLORS.
 - Corrección en el tiempo mostrado al guardar partida, independientemente del turbo.
+- El PokéRadar ahora está ordenado por probabilidad de aparición
 - Cambios menores de traducciones.
 
 
