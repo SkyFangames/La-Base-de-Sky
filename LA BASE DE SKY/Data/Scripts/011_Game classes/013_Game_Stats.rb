@@ -172,7 +172,7 @@ class GameStats
 
   def play_time
     if $game_temp&.last_uptime_refreshed_play_time
-      now = System.uptime
+      now = System.real_uptime #uptime
       @play_time += now - $game_temp.last_uptime_refreshed_play_time
       $game_temp.last_uptime_refreshed_play_time = now
     end
