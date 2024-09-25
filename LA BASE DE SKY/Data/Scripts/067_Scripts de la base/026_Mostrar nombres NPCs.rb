@@ -147,7 +147,7 @@ module NameBox
   # Si USE_TEXT_WINDOW_SKIN_FOR_NAMEBOX es false, y no se encuentra al NPC en el hash NAMEBOX_WINDOW_SKINS_FOR_NPC,
   # Se verifica la siguiente constante si está en true se utilizará por defecto el Skin de la Text Box como skin de la NameBox
   # Si es false, se usará el skin definido en la constante DEFAULT_NAMEBOXWINSKIN
-  USE_TEXT_WINDOW_SKIN_AS_DEFAULT = false
+  USE_TEXT_WINDOW_SKIN_AS_DEFAULT = true
 
   # Nombre de la skin para el cuadro en "Graphics/Windowskins"
   DEFAULT_NAMEBOXWINSKIN = "speech hgss 2"
@@ -174,11 +174,6 @@ module NameBox
     @currentName.gsub!(/\\&/i,"o") if $player&.female?
     @currentName.gsub!(/\\&/i,"a") if $player&.male?
 
-    colors = nil
-    @currentName.gsub!(/\\c\[([0-9]+)\]/i) do
-      colors = getSkinColor(msgwindow.windowskin, $1.to_i, isDarkSkin, true)
-      next ''
-    end
     @namebox&.dispose
     @namebox = Window_AdvancedTextPokemon.new(@currentName)
     @namebox.visible = true
@@ -195,7 +190,7 @@ module NameBox
     @namebox.x = NAMEBOX_X
     @namebox.y = NAMEBOX_Y
     @namebox.z = NAMEBOX_Z if NAMEBOX_IN_TOP
-    setTextColor(colors)
+    setTextColor
   end
 
   # Muestra el NameBox (Debe estár integrada la llamada del Paso 1)
@@ -224,10 +219,10 @@ module NameBox
   end
 
   # Función interna que cambia el color del texto asociado al nombre actual
-  def self.setTextColor(colors = nil)
+  def self.setTextColor
     return unless @namebox
 
-    colors ||= NPCCOLORS[@currentName] || getDefaultTextColors(@namebox.windowskin)
+    colors = NPCCOLORS[@currentName] || getDefaultTextColors(@namebox.windowskin)
 
     @namebox.baseColor = colors[0]
     @namebox.shadowColor = colors[1]
