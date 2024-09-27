@@ -23,6 +23,7 @@
 - Agrega opción para recibir un color en el NameBox.show para cambiar el color del texto, este color tendrá precedencia sobre el indicado en NPCCOLORS.
 - Corrección en el tiempo mostrado al guardar partida, independientemente del turbo.
 - El PokéRadar ahora está ordenado por probabilidad de aparición
+- Opción para que los objetos consumibles, como bayas, gemas, banda focus, etc. se restauren luego del combate, esto viene por defecto desactivado, para activarlo hay que cambiar la constante `RESTORE_HELD_ITEMS_AFTER_BATTLE` a true
 - Cambios menores de traducciones.
 
 
