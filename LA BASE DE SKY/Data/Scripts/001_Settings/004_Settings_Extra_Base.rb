@@ -6,6 +6,11 @@
 #==============================================================================#
 
 module Settings
+
+  # Activa es to si quieres que los objetos consumibles
+  # como gemas, bayas, banda focus, etc. sean restaurados luego del combate
+  RESTORE_HELD_ITEMS_AFTER_BATTLE = false
+
   
   ################################################################################
   #  CONFIGURACIÓN DEL DELUXE BATTLE SCRIPT
