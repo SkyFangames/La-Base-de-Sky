@@ -728,7 +728,7 @@ def pbPokemonMart(stock, speech = nil, cantsell = false)
   commands[cmdBuy = commands.length]  = _INTL("Quiero comprar")
   commands[cmdSell = commands.length] = _INTL("Quiero vender") if !cantsell
   commands[cmdQuit = commands.length] = _INTL("No, gracias")
-  cmd = pbMessage(speech || _INTL("¡Bienvenido! ¿En qué te puedo ayudar"), commands, cmdQuit + 1)
+  cmd = pbMessage(speech || _INTL("¡Bienvenido! ¿En qué te puedo ayudar?"), commands, cmdQuit + 1)
   loop do
     if cmdBuy >= 0 && cmd == cmdBuy
       scene = PokemonMart_Scene.new
