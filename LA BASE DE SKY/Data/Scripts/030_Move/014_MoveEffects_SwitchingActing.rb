@@ -279,7 +279,7 @@ class Battle::Move::BindTarget < Battle::Move
     msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     case @id
     when :BIND
-      msg = _INTL("¡Atadura de {2} oprime a {1}!", target.pbThis(true), user.pbThis(true))
+      msg = _INTL("¡Atadura de {1} oprime a {2}!", user.pbThis(true), target.pbThis(true))
     when :CLAMP
       msg = _INTL("¡{1} atenazó a {2}!", user.pbThis(true), target.pbThis)
     when :FIRESPIN
