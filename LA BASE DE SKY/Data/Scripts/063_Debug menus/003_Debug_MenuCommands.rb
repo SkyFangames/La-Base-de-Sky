@@ -135,7 +135,7 @@ MenuHandlers.add(:debug_menu, :safari_zone_and_bug_contest, {
         end
       end
     else
-      pbMessage(_INTL("¡No estás en la Zona Safari 0 en un Concurso de Captura de Bichos!"))
+      pbMessage(_INTL("¡No estás en la Zona Safari o en un Concurso de Captura de Bichos!"))
     end
   }
 })
@@ -534,7 +534,7 @@ MenuHandlers.add(:debug_menu, :toggle_exp_all, {
 MenuHandlers.add(:debug_menu, :toggle_logging, {
   "name"        => _INTL("Alterna los log de los mensajes en batalla"),
   "parent"      => :battle_menu,
-  "description" => _INTL("Guarda los logs del debug para comhates en Data/debuglog.txt."),
+  "description" => _INTL("Guarda los logs del debug para combates en Data/debuglog.txt."),
   "effect"      => proc {
     $INTERNAL = !$INTERNAL
     pbMessage(_INTL("Hacer logs de Debug de combates en la carpeta Data.")) if $INTERNAL

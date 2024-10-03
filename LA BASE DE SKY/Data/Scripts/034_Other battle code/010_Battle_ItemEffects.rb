@@ -296,7 +296,7 @@ Battle::ItemEffects::HPHeal.add(:BERRYJUICE,
     if forced
       battle.pbDisplay(_INTL("¡{1} ha recuperado PS!", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("¡{1} ha reuperado PS con {2}!", battler.pbThis, itemName))
+      battle.pbDisplay(_INTL("¡{1} ha recuperado PS con {2}!", battler.pbThis, itemName))
     end
     next true
   }
@@ -391,7 +391,7 @@ Battle::ItemEffects::HPHeal.add(:ORANBERRY,
       PBDebug.log("[Item triggered] Forced consuming of #{itemName}")
       battle.pbDisplay(_INTL("¡{1} ha recuperado PS!", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!", battler.pbThis, itemName))
+      battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!", battler.pbThis, itemName))
     end
     next true
   }
@@ -1637,7 +1637,7 @@ Battle::ItemEffects::AfterMoveUseFromUser.add(:SHELLBELL,
     targets.each { |b| totalDamage += b.damageState.totalHPLost }
     next if totalDamage <= 0
     user.pbRecoverHP(totalDamage / 8)
-    battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!",
+    battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!",
        user.pbThis, user.itemName))
   }
 )
@@ -1872,7 +1872,7 @@ Battle::ItemEffects::EndOfRoundHealing.add(:BLACKSLUDGE,
       next if !battler.canHeal?
       battle.pbCommonAnimation("UseItem", battler)
       battler.pbRecoverHP(battler.totalhp / 16)
-      battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!",
+      battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!",
          battler.pbThis, battler.itemName))
     elsif battler.takesIndirectDamage?
       battle.pbCommonAnimation("UseItem", battler)
@@ -1888,7 +1888,7 @@ Battle::ItemEffects::EndOfRoundHealing.add(:LEFTOVERS,
     next if !battler.canHeal?
     battle.pbCommonAnimation("UseItem", battler)
     battler.pbRecoverHP(battler.totalhp / 16)
-    battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!",
+    battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!",
        battler.pbThis, battler.itemName))
   }
 )
