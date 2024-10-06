@@ -7938,7 +7938,7 @@ TotalPP = 10
 Target = UserSide
 Priority = 3
 FunctionCode = ProtectUserSideFromMultiTargetDamagingMoves
-Description = Proteje a todo tu bando de golpes que dan a múltiples objetivos. Falla si se usa repetidamente.
+Description = Protege a todo tu bando de golpes que dan a múltiples objetivos. Falla si se usa repetidamente.
 #-------------------------------
 [DOOMDESIRE]
 Name = Deseo Oculto
@@ -8252,7 +8252,7 @@ TotalPP = 10
 Target = User
 Priority = 4
 FunctionCode = ProtectUserFromDamagingMovesKingsShield
-Description = Proteje al usuario de cualquier daño y baja mucho el Ataque del rival si lo toca.
+Description = Protege al usuario de cualquier daño y baja mucho el Ataque del rival si lo toca.
 #-------------------------------
 [METALSOUND]
 Name = Eco Metálico
