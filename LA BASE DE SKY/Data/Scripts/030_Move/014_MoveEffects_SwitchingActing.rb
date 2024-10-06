@@ -901,7 +901,7 @@ class Battle::Move::DisableTargetStatusMoves < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Taunt] = 4
-    @battle.pbDisplay(_INTL("¡{1} se liberó de la Mofa!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} se dejó engañar por Mofa!", target.pbThis))
     target.pbItemStatusCureCheck
   end
 end
