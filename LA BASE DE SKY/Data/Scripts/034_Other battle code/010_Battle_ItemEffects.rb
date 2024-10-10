@@ -1314,7 +1314,7 @@ Battle::ItemEffects::OnBeingHit.add(:ABSORBBULB,
 
 Battle::ItemEffects::OnBeingHit.add(:AIRBALLOON,
   proc { |item, user, target, move, battle|
-    battle.pbDisplay(_INTL("¡{1} de {2} ha expotado!", target.pbThis, target.itemName))
+    battle.pbDisplay(_INTL("¡{1} de {2} ha explotado!", target.pbThis, target.itemName))
     target.pbConsumeItem(false, true)
     target.pbSymbiosis
   }

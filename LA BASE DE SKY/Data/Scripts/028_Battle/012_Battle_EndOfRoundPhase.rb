@@ -300,7 +300,7 @@ class Battle
       pbCommonAnimation("SaltCure", battler)
       fraction = (battler.pbHasType?(:STEEL) || battler.pbHasType?(:WATER)) ? 4 : 8
       battler.pbTakeEffectDamage(battler.totalhp / fraction) { |hp_lost|
-        pbDisplay(_INTL("{1} es dañado por la salazón!", battler.pbThis))
+        pbDisplay(_INTL("¡{1} es dañado por la salazón!", battler.pbThis))
       }
     end
   end
