@@ -9,7 +9,7 @@ class Swdfm_Exp_Screen
 	@values        = values
 	speed          = 200 - BAR_SPEED
 	speed          = speed.clamp(1, 200)
-	@total_frames  = (@values.max / speed).floor
+	@total_frames  = (@values.max / speed).floor if @values && !@values.empty?
 	@total_frames  = @total_frames.clamp(40 * FASTEST_TIME, 40 * SLOWEST_TIME)
     @sprites    = {}
     @width      = Graphics.width
