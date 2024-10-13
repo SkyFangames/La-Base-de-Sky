@@ -21,6 +21,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
           oldindex = @index
           @index = (@index - @column_max + @item_max) % @item_max
           if @index != oldindex
+            pbPlayCursorSE
             update_cursor_rect
           end
         end
@@ -30,6 +31,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
           oldindex = @index
           @index = (@index + @column_max) % @item_max
           if @index != oldindex
+            pbPlayCursorSE
             update_cursor_rect
           end
         end
