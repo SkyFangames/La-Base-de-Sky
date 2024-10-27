@@ -34,6 +34,18 @@ module Settings
   # A medida que se acercan a un entrenador se vuelven mas oscuras.
   MOSTRAR_BARRAS_ENTRENADORES = true
   
+  # Elige si cuando crees regalos misteriosos en el archivo MysteryGiftMaster.txt,
+  # estos datos estarán o no encriptados. No encriptarlos ayuda a poder abrir el
+  # archivo y ver el contenido desde cualquier editor de texto, pero en caso de que
+  # hayas creado alguno con contraseña, tus jugadores podrán ver el contenido.
+  # Lo recomendable es que cuando compartas tu juego borres los dos archivos txt
+  # de MysteryGiftMaster.txt y MysteryGiftMaster.txt que se generan en la carpeta
+  # principal del juego, pero si no te quieres preocupar por si se te olvida, deja
+  # esta opción en true.
+  # Ten en cuenta que si cambias esta opción deberás eliminar los dos archivos de
+  # la carpeta para no tener errores.
+  ENCRIPTAR_REGALOS_MISTERIOSOS_EN_MASTER = true
+
   #=============================================================================
 
   # La cantidad máxima de dinero que el jugador puede llegar a tener.

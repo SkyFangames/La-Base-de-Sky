@@ -9,6 +9,7 @@
 ### AÑADIDOS V 1.0.9
 
 - Más validaciones para las animaciones de ataques.
+- Se ha rehecho completamente el sistema de Regalo Misterioso. Ahora permite crear regalos por internet con contraseña, aparte de muchas mejoras.
 - Mejoras en el movimiento del jugador, ahora se mueve con solo darle tap a las teclas.
 - Correcciones en el precio de venta de algunos objetos, de acorde a las nuevas generaciones.
 - Mejoras en el PluginManager para que detecte cuando se agregan o eliminan carpetas.
