@@ -70,7 +70,7 @@ Description = Su sistema inmunitario evita el envenenamiento. Si un Pokémon con
 #-------------------------------
 [FLASHFIRE]
 Name = Absorbe Fuego
-Description = Si le alcanza un movimiento de tipo Fuego, éste no le afecta y recupera 1/4 de sus PS máximos. También funciona con movs. de estado.
+Description = Si le alcanza un movimiento de tipo Fuego, éste no le afecta y potencia en un 50% sus ataques de fuego. También funciona con movs. de estado.
 #-------------------------------
 [SHIELDDUST]
 Name = Polvo Escudo
