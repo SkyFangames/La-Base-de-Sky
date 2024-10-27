@@ -24,6 +24,7 @@
 - Corrección en el tiempo mostrado al guardar partida, independientemente del turbo.
 - El PokéRadar ahora está ordenado por probabilidad de aparición
 - Opción para que los objetos consumibles, como bayas, gemas, banda focus, etc. se restauren luego del combate, esto viene por defecto desactivado, para activarlo hay que cambiar la constante `RESTORE_HELD_ITEMS_AFTER_BATTLE` a true
+- Actualiza Ladrón a los cambios de 9na
 - Cambios menores de traducciones.
 
 
