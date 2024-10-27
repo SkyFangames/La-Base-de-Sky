@@ -52,7 +52,7 @@ if Settings::USE_NEW_EXP_SHARE
         alias initialize_old initialize
         def initialize(species,level,player=$player,withMoves=true, recheck_form = true)
             initialize_old(species, level, player, withMoves)
-            @expshare = true if $PokemonSystem.expshareon == 0 || !$PokemonSystem.expshareon
+            @expshare = true if $PokemonSystem.expshareon == 0 || $PokemonSystem.expshareon || $player.has_exp_all
         end 
     end
     
