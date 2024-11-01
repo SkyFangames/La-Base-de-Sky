@@ -161,6 +161,7 @@ class PokemonBag
     @registered_items.delete(item_data.id) if item_data
   end
 
+  
   #-----------------------------------------------------------------------------
 
   private
