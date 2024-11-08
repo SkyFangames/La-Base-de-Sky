@@ -1139,9 +1139,9 @@ Battle::AbilityEffects::MoveImmunity.add(:WINDRIDER,
           target.pbRaiseStatStageByCause(:ATTACK, 1, user, target.abilityName)
         end
       elsif Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("It doesn't affect {1}...", target.pbThis(true)))
+        battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true)))
       else
-        battle.pbDisplay(_INTL("{1}'s {2} made {3} ineffective!", target.pbThis, target.abilityName, move.name))
+        battle.pbDisplay(_INTL("¡{1} de {2} hizo inefectivo el {3}!", target.abilityName, target.pbThis, move.name))
       end
       battle.pbHideAbilitySplash(target)
     end
