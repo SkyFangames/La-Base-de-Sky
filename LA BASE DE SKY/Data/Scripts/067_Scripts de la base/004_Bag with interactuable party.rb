@@ -927,6 +927,7 @@ class PokemonBag_Scene
     end
   end
 
+
   def pbHardRefresh
     oldtext      = []
     lastselected = -1
@@ -1124,42 +1125,70 @@ class PokemonBag_Scene
               pbWait(0.1) {pbUpdate}
               @sprites["currentpocket"].x -= 2
             end
-          elsif Input.trigger?(Input::SPECIAL)   # Checking party
-            if $player.pokemon_count == 0
-              pbMessage(_INTL("No hay Pokémon."))
-            else
-              pbSEPlay("GUI storage show party panel")
-              itemwindow.party2sel = true
-              pbRefresh
-              pbDeactivateWindows(@sprites){pbChoosePoke(3, false)}
-              pbRefresh
-            end
+          elsif Input.trigger?(Input::SPECIAL)   # Search items
+            search = BagSearcher.new(thispocket, itemwindow, self)
+            # index = search.open_search_box
+            # if index
+            #   itemwindow.index = index
+            #   pbRefresh
+            # end
+            # if $player.pokemon_count == 0
+            #   pbMessage(_INTL("No hay Pokémon."))
+            # else
+            #   pbSEPlay("GUI storage show party panel")
+            #   itemwindow.party2sel = true
+            #   pbRefresh
+            #   pbDeactivateWindows(@sprites){pbChoosePoke(3, false)}
+            #   pbRefresh
+            # end
           elsif Input.trigger?(Input::ACTION)   # Start switching the selected item
-            if !@choosing && thispocket.length > 1 && itemwindow.index < thispocket.length &&
-               !Settings::BAG_POCKET_AUTO_SORT[itemwindow.pocket - 1]
-              itemwindow.sorting = true
-              swapinitialpos = itemwindow.index
-              pbPlayDecisionSE
+            # if !@choosing && thispocket.length > 1 && itemwindow.index < thispocket.length &&
+            #    !Settings::BAG_POCKET_AUTO_SORT[itemwindow.pocket - 1]
+            #   itemwindow.sorting = true
+            #   swapinitialpos = itemwindow.index
+            #   pbPlayDecisionSE
+            #   pbRefresh
+            # end
+            option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), [_INTL("Alfabeticamente"), _INTL("Por Tipo")], -1)
+            if option != -1
+              case option
+              when 0
+                sorted_pocket = thispocket.sort_by { |item| 
+                  natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+                }
+                if thispocket == sorted_pocket
+                  thispocket.reverse!
+                else
+                  thispocket.replace(sorted_pocket) 
+                end
+              when 1
+                order_array = GameData::Item.keys
+                echoln order_array
+                sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
+              end
+              thispocket = sorted_pocket
+              pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
               pbRefresh
             end
+
           elsif Input.trigger?(Input::BACK)   # Cancel the item screen
             pbPlayCloseMenuSE
             return nil
           elsif Input.trigger?(Input::USE)   # Choose selected item
             (itemwindow.item) ? pbPlayDecisionSE : pbPlayCloseMenuSE
             return itemwindow.item
-          elsif Input.trigger?(Input::AUX1) && thispocket.length > 1
-            sorted_pocket = thispocket.sort_by { |item| 
-              echoln item
-              natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
-            }
-            if thispocket == sorted_pocket
-              thispocket.reverse!
-            else
-              thispocket.replace(sorted_pocket) # Sort in place without a second sort
-            end
-            pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
-            pbRefresh
+          # elsif Input.trigger?(Input::AUX1) && thispocket.length > 1
+          #   sorted_pocket = thispocket.sort_by { |item| 
+          #     echoln item
+          #     natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+          #   }
+          #   if thispocket == sorted_pocket
+          #     thispocket.reverse!
+          #   else
+          #     thispocket.replace(sorted_pocket) # Sort in place without a second sort
+          #   end
+          #   pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
+          #   pbRefresh
           end
         end
       end
