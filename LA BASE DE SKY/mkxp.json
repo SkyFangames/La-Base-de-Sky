@@ -42,8 +42,8 @@
       "x": "JumpUp",
       "y": "JumpDown",
       "z": "Special",
-      "l": "(unused)",
-      "r": "(unused)"
+      "l": "AUX1",
+      "r": "AUX2"
     },
 
     // The name of this game's save folder. If undefined, the save folder's name
