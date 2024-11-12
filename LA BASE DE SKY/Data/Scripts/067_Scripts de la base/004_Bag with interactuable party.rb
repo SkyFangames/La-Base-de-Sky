@@ -1148,6 +1148,18 @@ class PokemonBag_Scene
           elsif Input.trigger?(Input::USE)   # Choose selected item
             (itemwindow.item) ? pbPlayDecisionSE : pbPlayCloseMenuSE
             return itemwindow.item
+          elsif Input.trigger?(Input::AUX1) && thispocket.length > 1
+            sorted_pocket = thispocket.sort_by { |item| 
+              echoln item
+              natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+            }
+            if thispocket == sorted_pocket
+              thispocket.reverse!
+            else
+              thispocket.replace(sorted_pocket) # Sort in place without a second sort
+            end
+            pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
+            pbRefresh
           end
         end
       end
