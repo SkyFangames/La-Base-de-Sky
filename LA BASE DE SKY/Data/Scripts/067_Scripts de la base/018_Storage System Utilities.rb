@@ -717,9 +717,9 @@ class PokemonStorageScene
     for i in 0...PokemonBox::BOX_SIZE
       boxpokesprite = @sprites["box"].getPokemon(i)
       if sels.include?(i)
-        boxpokesprite.make_green
+        boxpokesprite&.make_green
       else
-        boxpokesprite.make_clear
+        boxpokesprite&.make_clear
       end
     end
   end
@@ -851,7 +851,7 @@ class PokemonStorageScreen
       if box >= 0 && this_pkmn
         this_pkmn.formTime = nil if this_pkmn.respond_to?("formTime")
         this_pkmn.form     = 0 if this_pkmn.isSpecies?(:SHAYMIN)
-        this_pkmn.heal
+        this_pkmn.heal if Settings::HEAL_STORED_POKEMON
       end
       @storage[box,this_index] = this_pkmn
       if box==-1
