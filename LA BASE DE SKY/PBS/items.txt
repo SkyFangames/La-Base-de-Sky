@@ -4960,7 +4960,7 @@ Move = WATERFALL
 Description = Embiste con un gran impulso que puede amedrentar. También sirve para remontar cascadas.
 #-------------------------------
 [TM100]
-Name = TM100
+Name = MT100
 NamePlural = MT100s
 Pocket = 4
 Price = 2000
