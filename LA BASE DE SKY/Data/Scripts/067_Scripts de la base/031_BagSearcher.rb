@@ -17,15 +17,15 @@ class BagSearcher
 	end
 
 	def open_search_box(itemwindow)
-		on_input = ->(text, char = '') { search_by_name(text, char, itemwindow) }
-		term = pb_message_free_text_with_on_input(_INTL("¿Qué objeto desea buscar?"), "", false, 32, width = 240, on_input = on_input)
+		on_input = ->(text, char = '') { search_by_name(text, itemwindow, char) }
+		term = pb_message_free_text_with_on_input(_INTL("¿Qué objeto deseas buscar?"), "", false, 32, width = 240, on_input = on_input)
 
 		return false if ['', nil].include?(term)
 
-		search_by_name(term)
+		search_by_name(term, itemwindow)
 	end
 
-	def search_by_name(text, _char = '', itemwindow)
+	def search_by_name(text, itemwindow, _char = '')
 		index = search(text, @current_index, @pocket.length)
 		if index
 			@current_index = index
@@ -35,13 +35,13 @@ class BagSearcher
 		end
 
 		if @current_index.positive?
-				index = search(text, 0, @current_index)
-				if index
-					@current_index = index
-					itemwindow.index = index
-					@bag_instance.pbRefresh
-					return index
-				end
+			index = search(text, 0, @current_index)
+			if index
+				@current_index = index
+				itemwindow.index = index
+				@bag_instance.pbRefresh
+				return index
+			end
 		end
 		false
 	end
@@ -51,7 +51,7 @@ class BagSearcher
 				# next unless valid_item?(item[0])
 			return start_index + index if matches_name?(GameData::Item.get(item[0]).name, text)
 		end
-		false
+		0
 	end
 
 	def valid_item?(item)

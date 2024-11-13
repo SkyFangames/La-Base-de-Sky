@@ -206,6 +206,16 @@ module GameData
       return @show_quantity || !is_important?
     end
 
+    def self.from_pocket(pocket, keys_only = false)
+      items = []
+      GameData::Item.each { |item| 
+          if item.num_pocket == pocket
+            keys_only ? items.push(item.id) : items.push(item)
+          end
+       }
+       items
+    end
+
     def unlosable?(species, ability)
       return false if species == :ARCEUS && ability != :MULTITYPE
       return false if species == :SILVALLY && ability != :RKSSYSTEM
