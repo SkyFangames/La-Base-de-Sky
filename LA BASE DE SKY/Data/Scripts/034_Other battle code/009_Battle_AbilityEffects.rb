@@ -2057,8 +2057,10 @@ Battle::AbilityEffects::OnBeingHit.add(:ILLUSION,
   proc { |ability, user, target, move, battle|
     # NOTE: This intentionally doesn't show the ability splash.
     next if !target.effects[PBEffects::Illusion]
+    battle.pbCommonAnimation("Illusion", target)
     target.effects[PBEffects::Illusion] = nil
     battle.scene.pbChangePokemon(target, target.pokemon)
+    battle.pbCommonAnimation("Fade in", target)
     battle.pbDisplay(_INTL("¡La ilusión de {1} se ha desvanecido!", target.pbThis))
     battle.pbSetSeen(target)
   }

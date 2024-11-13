@@ -172,15 +172,15 @@ if Settings::USE_NEW_EXP_SHARE
                     end
                     # Gain EVs and Exp for all other Pokémon because of Exp All
                     if expAll
-                    showMessage = true
-                    eachInTeam(0, 0) do |pkmn, i|
-                        next if !pkmn.able?
-                        next if b.participants.include?(i) || expShare.include?(i) 
-                        pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!")) if showMessage
-                        showMessage = false
-                        pbGainEVsOne(i, b)
-                        pbGainExpOne(i, b, numPartic, expShare, expAll, false)
-                    end
+                        showMessage = true
+                        eachInTeam(0, 0) do |pkmn, i|
+                            next if !pkmn.able?
+                            next if b.participants.include?(i) || expShare.include?(i) 
+                            pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!")) if showMessage
+                            showMessage = false
+                            pbGainEVsOne(i, b)
+                            pbGainExpOne(i, b, numPartic, expShare, expAll, false)
+                        end
                     end
                 end
                 # Clear the participants array
