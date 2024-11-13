@@ -130,8 +130,6 @@ if Settings::USE_NEW_EXP_SHARE
         end
         
     end
-
-    if !MOSTRAR_PANEL_REP_EXP
         class Battle 
         ################################################################################
         # Experiencia en captura reducida
@@ -190,5 +188,5 @@ if Settings::USE_NEW_EXP_SHARE
                 end
             end
         end
-    end
+
 end
