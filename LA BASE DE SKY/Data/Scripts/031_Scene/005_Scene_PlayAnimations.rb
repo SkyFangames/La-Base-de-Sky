@@ -295,13 +295,21 @@ class Battle::Scene
   #=============================================================================
   # Shows stats windows upon a Pokémon levelling up
   #=============================================================================
+
+  def get_sign(value1, value2)
+    result = value1 - value2
+    return '+' if result > 0
+    return '-' if result < 0
+    return ''
+  end
+
   def pbLevelUp(pkmn, _battler, oldTotalHP, oldAttack, oldDefense, oldSpAtk, oldSpDef, oldSpeed)
-    hp_sign = pkmn.totalhp - oldTotalHP > 0 ? '+' : '-'
-    atk_sign = pkmn.attack - oldAttack > 0 ? '+' : '-'
-    def_sign = pkmn.defense - oldDefense ? '+' : '-'
-    spa_sign = pkmn.spatk - oldSpAtk > 0 ? '+' : '-'
-    spd_sign = pkmn.spdef - oldSpDef > 0 ? '+' : '-'
-    spe_sign = pkmn.speed - oldSpeed > 0 ? '+' : '-'
+    hp_sign  = get_sign(pkmn.totalhp, oldTotalHP)
+    atk_sign = get_sign(pkmn.attack,  oldAttack)
+    def_sign = get_sign(pkmn.defense, oldDefense)
+    spa_sign = get_sign(pkmn.spatk,   oldSpAtk)
+    spd_sign = get_sign(pkmn.spdef,   oldSpDef)
+    spe_sign = get_sign(pkmn.speed,   oldSpeed)
     pbTopRightWindow(
       _INTL("PS Máx.<r>#{hp_sign}{1}\nAtaque<r>#{atk_sign}{2}\nDefensa<r>#{def_sign}{3}\nAt. Esp.<r>#{spa_sign}{4}\nDef. Esp.<r>#{spd_sign}{5}\nVelocidad<r>#{spe_sign}{6}",
             pkmn.totalhp - oldTotalHP, pkmn.attack - oldAttack, pkmn.defense - oldDefense,
