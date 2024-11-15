@@ -207,7 +207,7 @@ class Battle::Battler
     # Check the stat stage
     if statStageAtMin?(stat)
       if showFailMsg
-        @battle.pbDisplay(_INTL("¡{2} de {1} no puede subir más!",
+        @battle.pbDisplay(_INTL("¡{2} de {1} no puede bajar más!",
                                 pbThis(true), GameData::Stat.get(stat).name))
       end
       return false
