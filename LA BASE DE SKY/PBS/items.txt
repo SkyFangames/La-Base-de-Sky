@@ -3635,6 +3635,16 @@ FieldUse = OnPokemon
 Flags = Fling_30
 Description = Caramelo energético que sube a un Pokémon de nivel.
 #-------------------------------
+[UNRARECANDY]
+Name = Caramelo Malo
+NamePlural = Caramelos Malos
+Pocket = 2
+Price = 5000
+BPPrice = 20
+FieldUse = OnPokemon
+Flags = Fling_30
+Description = Caramelo energético que baja a un Pokémon de nivel.
+#-------------------------------
 [MASTERBALL]
 Name = Master Ball
 NamePlural = Master Balls

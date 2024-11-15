@@ -959,6 +959,38 @@ ItemHandlers::UseOnPokemon.add(:RARECANDY, proc { |item, qty, pkmn, scene|
   next true
 })
 
+ItemHandlers::UseOnPokemonMaximum.add(:UNRARECANDY, proc { |item, pkmn|
+  next pkmn.level - 1
+})
+
+ItemHandlers::UseOnPokemon.add(:UNRARECANDY, proc { |item, qty, pkmn, scene|
+  if pkmn.shadowPokemon? || qty >= pkmn.level
+    scene.pbDisplay(_INTL("No tendría ningún efecto."))
+    next false
+  end
+  # if pkmn.level >= GameData::GrowthRate.max_level
+  # new_species = pkmn.check_evolution_on_level_up
+  # if !Settings::RARE_CANDY_USABLE_AT_MAX_LEVEL || !new_species
+  #   scene.pbDisplay(_INTL("No tendría ningún efecto."))
+  #   next false
+  # end
+  # # Check for evolution
+  # pbFadeOutInWithMusic do
+  #   evo = PokemonEvolutionScene.new
+  #   evo.pbStartScreen(pkmn, new_species)
+  #   evo.pbEvolution
+  #   evo.pbEndScreen
+  #   scene.pbRefresh if scene.is_a?(PokemonPartyScreen)
+  # end
+  # next true
+  # end
+  # Level down
+  pbSEPlay("Pkmn level up")
+  pbChangeLevel(pkmn, pkmn.level - qty, scene)
+  scene.pbHardRefresh
+  next true
+})
+
 ItemHandlers::UseOnPokemonMaximum.add(:EXPCANDYXS, proc { |item, pkmn|
   gain_amount = 100
   next ((pkmn.growth_rate.maximum_exp - pkmn.exp) / gain_amount.to_f).ceil
