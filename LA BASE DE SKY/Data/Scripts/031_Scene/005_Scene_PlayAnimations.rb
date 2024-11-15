@@ -298,8 +298,7 @@ class Battle::Scene
 
   def get_sign(value1, value2)
     result = value1 - value2
-    return '+' if result >= 0
-    return '-' if result < 0
+    result >= 0 ? '+' : '-'
   end
 
   def pbLevelUp(pkmn, _battler, oldTotalHP, oldAttack, oldDefense, oldSpAtk, oldSpDef, oldSpeed)
