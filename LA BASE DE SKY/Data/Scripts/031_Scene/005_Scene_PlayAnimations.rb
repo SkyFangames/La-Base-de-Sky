@@ -296,13 +296,19 @@ class Battle::Scene
   # Shows stats windows upon a Pokémon levelling up
   #=============================================================================
   def pbLevelUp(pkmn, _battler, oldTotalHP, oldAttack, oldDefense, oldSpAtk, oldSpDef, oldSpeed)
+    hp_sign = pkmn.totalhp - oldTotalHP > 0 ? '+' : '-'
+    atk_sign = pkmn.attack - oldAttack > 0 ? '+' : '-'
+    def_sign = pkmn.defense - oldDefense ? '+' : '-'
+    spa_sign = pkmn.spatk - oldSpAtk > 0 ? '+' : '-'
+    spd_sign = pkmn.spdef - oldSpDef > 0 ? '+' : '-'
+    spe_sign = pkmn.speed - oldSpeed > 0 ? '+' : '-'
     pbTopRightWindow(
-      _INTL("PS Máx.<r>+{1}\nAtaque<r>+{2}\nDefensa<r>+{3}\nAt. Esp.<r>+{4}\nDef. Esp.<r>+{5}\nVelocidad<r>+{6}",
+      _INTL("PS Máx.<r>#{hp_sign}{1}\nAtaque<r>#{atk_sign}{2}\nDefensa<r>#{def_sign}{3}\nAt. Esp.<r>#{spa_sign}{4}\nDef. Esp.<r>#{spd_sign}{5}\nVelocidad<r>#{spe_sign}{6}",
             pkmn.totalhp - oldTotalHP, pkmn.attack - oldAttack, pkmn.defense - oldDefense,
             pkmn.spatk - oldSpAtk, pkmn.spdef - oldSpDef, pkmn.speed - oldSpeed)
     )
     pbTopRightWindow(
-      _INTL("PS Máx.<r>+{1}\nAtaque<r>+{2}\nDefensa<r>+{3}\nAt. Esp.<r>+{4}\nDef. Esp.<r>+{5}\nVelocidad<r>+{6}",
+      _INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp.<r>{4}\nDef. Esp.<r>{5}\nVelocidad<r>{6}",
             pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed)
     )
   end
