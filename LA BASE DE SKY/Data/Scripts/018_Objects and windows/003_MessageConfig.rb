@@ -16,6 +16,8 @@ module MessageConfig
   SMALL_FONT_NAME          = "Power Green Small"
   SMALL_FONT_SIZE          = 21
   SMALL_FONT_Y_OFFSET      = 8
+  TINY_FONT_SIZE          = 15
+  TINY_FONT_Y_OFFSET      = 7
   NARROW_FONT_NAME         = "Power Green Narrow"
   NARROW_FONT_SIZE         = 27
   NARROW_FONT_Y_OFFSET     = 8
@@ -429,6 +431,12 @@ def pbSetSmallFont(bitmap)
   bitmap.font.name = MessageConfig.pbGetSmallFontName
   bitmap.font.size = MessageConfig::SMALL_FONT_SIZE
   bitmap.text_offset_y = MessageConfig::SMALL_FONT_Y_OFFSET
+end
+
+def pbSetTinyFont(bitmap)
+  bitmap.font.name = MessageConfig.pbGetSmallFontName
+  bitmap.font.size = MessageConfig::TINY_FONT_SIZE
+  bitmap.text_offset_y = MessageConfig::TINY_FONT_Y_OFFSET
 end
 
 # Sets a bitmap's font to the system narrow font.

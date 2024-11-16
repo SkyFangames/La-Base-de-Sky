@@ -674,6 +674,7 @@ class PokemonBag_Scene
     end
     
     @sprites["overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
+    @sprites["overlay_aux"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     pbSetSystemFont(@sprites["overlay"].bitmap)
     rbvar = 0
     
@@ -711,11 +712,22 @@ class PokemonBag_Scene
     pbBottomLeftLines(@sprites["msgwindow"], 2)
     
     pbUpdateAnnotation
+
     
     pbDeactivateWindows(@sprites)
     pbRefresh
     pbFadeInAndShow(@sprites)
     $game_temp.bag_scene = self if $bag.has?(:EGGHATCHER)
+
+    
+    ## Dibujar textos de Ordenar y Buscar
+    overlay_aux = @sprites["overlay_aux"].bitmap
+    pbSetTinyFont(overlay_aux)
+    pbDrawTextPositions(
+      overlay_aux,
+      [[_INTL("Z: Ordenar"), 232, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width],
+       [_INTL("D: Buscar"), 317, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width]]
+    )
   end
 
   def pbPocketColor
@@ -878,7 +890,7 @@ class PokemonBag_Scene
     # Draw the pocket name
     pbDrawTextPositions(
       overlay,
-      [[PokemonBag.pocket_names[@bag.last_viewed_pocket - 1], 297, 18, :center, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, true, Graphics.width]]
+      [[PokemonBag.pocket_names[@bag.last_viewed_pocket - 1], 297, 23, :center, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, true, Graphics.width]]
     )
     # Draw slider arrows
     showslider = false
