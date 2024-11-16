@@ -42,10 +42,6 @@ if Settings::USE_NEW_EXP_SHARE
         end
     }
     })
-
-    # class Trainer
-    #     attr_accessor(:expall)        # Mejora el Repartir experiencia
-    # end
     
     class Pokemon
         attr_accessor(:expshare)    # Repartir experiencia
@@ -62,7 +58,6 @@ if Settings::USE_NEW_EXP_SHARE
         alias initialize_old initialize
         def initialize(pokemon,index,viewport=nil)
             initialize_old(pokemon,index,viewport)
-            # @expicon = Sprite.new(viewport)
             if @pokemon.expshare
                 @expicon = ChangelingSprite.new(0, 0, viewport)
                 @expicon.addBitmap("expicon","Graphics/Pictures/expicon")
@@ -84,7 +79,7 @@ if Settings::USE_NEW_EXP_SHARE
         end
 
         def refresh_exp_icon
-            return if !@expicon || @expicon.disposed? #|| !@expicon.visible
+            return if !@expicon || @expicon.disposed?
             @expicon.x=self.x+226
             @expicon.y=self.y+68
             @expicon.color=self.color
@@ -156,19 +151,19 @@ if Settings::USE_NEW_EXP_SHARE
                 expShare = []
                 if !expAll
                     eachInTeam(0, 0) do |pkmn, i|
-                    next if !pkmn.able?
-                    next if (!pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE) && !pkmn.expshare
-                    expShare.push(i)
+                        next if !pkmn.able?
+                        next if (!pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE) && !pkmn.expshare
+                        expShare.push(i)
                     end
                 end
                 # Calculate EV and Exp gains for the participants
                 if numPartic > 0 || expShare.length > 0 || expAll
                     # Gain EVs and Exp for participants
                     eachInTeam(0, 0) do |pkmn, i|
-                    next if !pkmn.able?
-                    next unless b.participants.include?(i) || expShare.include?(i) 
-                    pbGainEVsOne(i, b)
-                    pbGainExpOne(i, b, numPartic, expShare, expAll, !pkmn.shadowPokemon?)
+                        next if !pkmn.able?
+                        next unless b.participants.include?(i) || expShare.include?(i) 
+                        pbGainEVsOne(i, b)
+                        pbGainExpOne(i, b, numPartic, expShare, expAll, !pkmn.shadowPokemon?)
                     end
                     # Gain EVs and Exp for all other Pokémon because of Exp All
                     if expAll
@@ -188,5 +183,4 @@ if Settings::USE_NEW_EXP_SHARE
                 end
             end
         end
-
 end
