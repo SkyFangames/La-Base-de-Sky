@@ -814,3 +814,5 @@ MultipleForms.register(:TERAPAGOS, {
   }
 })
 
+# Cambio de forma en base al género
+MultipleForms.copy(:ESPURR, :LECHONK, :OINKOLOGNE)

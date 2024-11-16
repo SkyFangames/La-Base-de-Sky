@@ -1401,6 +1401,27 @@ GameData::Evolution.register({
 })
 
 GameData::Evolution.register({
+  :id            => :LevelRecoilDamageForm0,
+  :parameter     => Integer,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+  if true #pkmn.evo_recoil_count >= parameter
+    pkmn.form = pkmn.gender if pkmn.form == 0
+    $game_variables[1] = pkmn.form
+    echoln "Forma cambiada a la #{pkmn.form} por evolucionar"
+    next true
+  end
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    pkmn.form = $game_variables[1]
+    echoln "Forzado cambio tras evo"
+    next false if evo_species != new_species || pkmn.evo_recoil_count < parameter
+    pkmn.evo_recoil_count = 0
+    next true
+  }
+})
+
+GameData::Evolution.register({
   :id            => :LevelWalk,
   :parameter     => Integer,
   :any_level_up  => true,   # Needs any level up
