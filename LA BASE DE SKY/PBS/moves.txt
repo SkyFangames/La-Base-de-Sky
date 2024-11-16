@@ -1069,7 +1069,7 @@ Accuracy = 100
 TotalPP = 20
 Target = AllNearFoes
 FunctionCode = FlinchTargetDoublePowerIfTargetInSky
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 20
 Description = Crea un violento tornado para hacer trizas al rival. Puede amedrentarlo.
 #-------------------------------
@@ -1663,7 +1663,7 @@ Accuracy = 100
 TotalPP = 30
 Target = NearOther
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 Description = El Pokémon que lo usa desata un vendaval feérico que arremete contra el objetivo.
 #-------------------------------
 [NATURESMADNESS]
@@ -2595,7 +2595,7 @@ Accuracy = 90
 TotalPP = 10
 Target = AllNearFoes
 FunctionCode = BurnTarget
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 10
 Description = Provoca un viento abrasador que puede quemar al objetivo.
 #-------------------------------
@@ -2882,7 +2882,7 @@ Accuracy = 70
 TotalPP = 10
 Target = Other
 FunctionCode = ConfuseTargetAlwaysHitsInRainHitsTargetInSky
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 30
 Description = Golpea al objetivo con un fuerte torbellino que envuelve al rival y puede confundirlo.
 #-------------------------------
@@ -3007,7 +3007,7 @@ Accuracy = 95
 TotalPP = 25
 Target = AllNearFoes
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing,Wind
 Description = Viento cortante que azota. Suele ser un golpe crítico.
 #-------------------------------
 [PLUCK]
@@ -3079,7 +3079,7 @@ Accuracy = 100
 TotalPP = 35
 Target = Other
 FunctionCode = DoublePowerIfTargetInSky
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 Description = Crea un tornado con las alas y lo lanza contra el objetivo.
 #-------------------------------
 [PECK]
@@ -3144,6 +3144,7 @@ Accuracy = 0
 TotalPP = 15
 Target = UserSide
 FunctionCode = StartUserSideDoubleSpeed
+Flags = Wind
 Description = Fuerte remolino que duplica la Velocidad de los Pokémon de tu equipo durante cuatro turnos.
 #-------------------------------
 [ASTRALBARRAGE]
@@ -3562,7 +3563,7 @@ Accuracy = 100
 TotalPP = 15
 Target = AllNearOthers
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 Description = El usuario desata un intenso vendaval de pétalos que daña a los Pokémon a su alrededor.
 #-------------------------------
 [APPLEACID]
@@ -4351,7 +4352,7 @@ Accuracy = 70
 TotalPP = 5
 Target = AllNearFoes
 FunctionCode = FreezeTargetAlwaysHitsInHail
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 10
 Description = Tormenta de hielo que puede llegar a congelar.
 #-------------------------------
@@ -4492,7 +4493,7 @@ Accuracy = 95
 TotalPP = 15
 Target = AllNearFoes
 FunctionCode = LowerTargetSpeed1
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 100
 Description = Ataque con aire helado que baja la Velocidad del objetivo.
 #-------------------------------
@@ -6620,7 +6621,7 @@ Accuracy = 0
 TotalPP = 20
 Target = NearOther
 Priority = -6
-FunctionCode = SwitchOutTargetStatusMove
+FunctionCode = SwitchOutTargetStatusMove,Wind
 Flags = CanMirrorMove
 Description = Se lleva al rival, que es cambiado por otro Pokémon. Si es un Pokémon salvaje, acaba el combate.
 #-------------------------------
@@ -7906,6 +7907,7 @@ Accuracy = 0
 TotalPP = 10
 Target = BothSides
 FunctionCode = StartSandstormWeather
+Flags = Wind
 Description = Tormenta de arena que dura cinco turnos y hiere a s, excepto a los de tipo Roca, Tierra y Acero.
 #-------------------------------
 [STEALTHROCK]
