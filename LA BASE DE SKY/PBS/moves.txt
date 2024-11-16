@@ -96,7 +96,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Cruza las guadañas o las garras para atacar al rival como si fueran unas tijeras.
 #-------------------------------
 [SIGNALBEAM]
@@ -209,7 +209,7 @@ Accuracy = 95
 TotalPP = 20
 Target = NearOther
 FunctionCode = PowerHigherWithConsecutiveUse
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Ataque con garras o guadañas que crece en intensidad si se usa repetidas veces.
 #-------------------------------
 [PINMISSILE]
@@ -503,7 +503,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Ataca al objetivo a la primera oportunidad. Suele ser crítico.
 #-------------------------------
 [SUCKERPUNCH]
@@ -958,7 +958,7 @@ Accuracy = 95
 TotalPP = 5
 Target = NearOther
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Desgarra al objetivo y el espacio a su alrededor. Suele ser crítico.
 #-------------------------------
 [DRAGONHAMMER]
@@ -1950,7 +1950,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = IgnoreTargetDefSpDefEvaStatStages
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = El usuario ataca con una espada, ignorando cualquier cambio en las características del objetivo.
 #-------------------------------
 [THUNDEROUSKICK]
@@ -1975,7 +1975,7 @@ Accuracy = 100
 TotalPP = 10
 Target = NearOther
 FunctionCode = UseTargetDefenseInsteadOfTargetSpDef
-Flags = CanProtect,CanMirrorMove,CannotMetronome
+Flags = CanProtect,CanMirrorMove,CannotMetronome,Slicing
 Description = Ensarta al objetivo con un sable, hiriéndolo con su místico poder.
 #-------------------------------
 [SKYUPPERCUT]
@@ -2969,7 +2969,7 @@ Accuracy = 95
 TotalPP = 15
 Target = Other
 FunctionCode = FlinchTarget
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Slicing
 EffectChance = 30
 Description = Ataca con una hoja de aire que incluso corta el cielo. También puede amedrentar al objetivo.
 #-------------------------------
@@ -2995,7 +2995,7 @@ Accuracy = 0
 TotalPP = 20
 Target = Other
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = El usuario lanza un ataque muy rápido e ineludible.
 #-------------------------------
 [AIRCUTTER]
@@ -3007,7 +3007,7 @@ Accuracy = 95
 TotalPP = 25
 Target = AllNearFoes
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Viento cortante que azota. Suele ser un golpe crítico.
 #-------------------------------
 [PLUCK]
@@ -3464,7 +3464,7 @@ Accuracy = 100
 TotalPP = 10
 Target = NearOther
 FunctionCode = TwoTurnAttackOneTurnInSun
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Dedica un turno a concentrar energía en forma de cuchilla con la que ataca en el segundo turno.
 #-------------------------------
 [PETALDANCE]
@@ -3550,7 +3550,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Acuchilla con una hoja fina. Suele dar un golpe crítico.
 #-------------------------------
 [PETALBLIZZARD]
@@ -3724,7 +3724,7 @@ Accuracy = 95
 TotalPP = 25
 Target = AllNearFoes
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Corta con hojas afiladas. Suele ser crítico.
 #-------------------------------
 [VINEWHIP]
@@ -5061,7 +5061,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Ataca con cuchillas o con pinzas. Suele ser un golpe crítico.
 #-------------------------------
 [SMELLINGSALTS]
@@ -5170,7 +5170,7 @@ Accuracy = 95
 TotalPP = 30
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Corta con garras, guadañas, etc. También sirve para cortar árboles finos.
 #-------------------------------
 [RAPIDSPIN]
@@ -6741,7 +6741,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = PoisonTarget
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 EffectChance = 10
 Description = Tajo que puede envenenar al objetivo. Suele ser crítico.
 #-------------------------------
@@ -7220,7 +7220,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Ataca al objetivo con cuchillas formadas por energía psíquica. Suele ser crítico.
 #-------------------------------
 [PSYBEAM]
@@ -7996,7 +7996,7 @@ Accuracy = 100
 TotalPP = 5
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome
+Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome,Slicing
 Description = El usuario se convierte en una espada gigante para rebanar al objetivo.
 #-------------------------------
 [IRONTAIL]
@@ -8494,7 +8494,7 @@ Accuracy = 95
 TotalPP = 10
 Target = NearOther
 FunctionCode = LowerTargetDefense1
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 EffectChance = 50
 Description = Una afilada vieira ataca al objetivo. También puede hacer disminuir su Defensa.
 #-------------------------------
