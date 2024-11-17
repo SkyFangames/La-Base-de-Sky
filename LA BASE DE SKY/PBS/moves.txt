@@ -8721,12 +8721,12 @@ Description = El usuario se protege en su coraza y sube la Defensa.
 Name = Garra Nociva
 Type = POISON
 Category = Physical
-Power = 60
+Power = 80
 Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = PoisonParalyzeOrSleepTarget
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove
 EffectChance = 50
 Description = Ataca al punto débil del objetivo con unas garras letales que pueden envenenarlo, paralizarlo o dormirlo.
 #-------------------------------
