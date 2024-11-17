@@ -712,13 +712,6 @@ class PokemonBag_Scene
     pbBottomLeftLines(@sprites["msgwindow"], 2)
     
     pbUpdateAnnotation
-
-    
-    pbDeactivateWindows(@sprites)
-    pbRefresh
-    pbFadeInAndShow(@sprites)
-    $game_temp.bag_scene = self if $bag.has?(:EGGHATCHER)
-
     
     ## Dibujar textos de Ordenar y Buscar
     overlay_aux = @sprites["overlay_aux"].bitmap
@@ -728,6 +721,14 @@ class PokemonBag_Scene
       [[_INTL("Z: Ordenar"), 232, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width],
        [_INTL("D: Buscar"), 317, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width]]
     )
+    
+    pbDeactivateWindows(@sprites)
+    pbRefresh
+    pbFadeInAndShow(@sprites)
+    $game_temp.bag_scene = self if $bag.has?(:EGGHATCHER)
+
+    
+
   end
 
   def pbPocketColor
