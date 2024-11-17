@@ -1211,7 +1211,7 @@ class Pokemon
   #-----------------------------------------------------------------------------
   def recoil_evolution(qty = 1)
     species_data.get_evolutions.each do |evo|
-      if evo[1] == :LevelRecoilDamage
+      if evo[1] == :LevelRecoilDamage || evo[1] == :LevelRecoilDamageForm0
         @evo_recoil_count = 0 if !@evo_recoil_count
         @evo_recoil_count += qty
         break
