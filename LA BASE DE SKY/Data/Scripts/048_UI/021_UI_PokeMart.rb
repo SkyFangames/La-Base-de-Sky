@@ -31,8 +31,7 @@ class PokemonMartAdapter
     item_name = item_data.name
     if item_data.is_machine?
       machine = item_data.move
-      item_name = item_data.is_HM? ? item_name.ljust(6) : item_name.ljust(5)
-      item_name = _INTL("{1} {2}", item_name, GameData::Move.get(machine).name)
+      item_name = _INTL("{1} {2}", item_name.ljust(8), GameData::Move.get(machine).name)
     end
     return item_name
   end
@@ -42,8 +41,7 @@ class PokemonMartAdapter
     item_name_plural = item_data.name_plural
     if item_data.is_machine?
       machine = item_data.move
-      item_name_plural = item_data.is_HM? ? item_name_plural.ljust(7) : item_name_plural.ljust(6)
-      item_name_plural = _INTL("{1} {2}", item_name_plural, GameData::Move.get(machine).name)
+      item_name_plural = _INTL("{1} {2}", item_name_plural.ljust(9), GameData::Move.get(machine).name)
     end
     return item_name_plural
   end
