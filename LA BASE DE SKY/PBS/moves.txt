@@ -48,7 +48,7 @@ Target = NearOther
 Priority = 2
 FunctionCode = FailsIfNotUserFirstTurn
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Movimiento de gran potencia que solo puede usarse en el primer turno del usuario.
+Description = Movimiento de gran potencia y prioridad que solo puede usarse en el primer turno del usuario.
 #-------------------------------
 [POLLENPUFF]
 Name = Bola de Polen
@@ -639,7 +639,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = HitOncePerUserTeamMember
 Flags = CanProtect,CanMirrorMove
-Description = Ataque de  el equipo Pokémon. Cuantos más haya, más veces ataca.
+Description = Ataque de el equipo Pokémon. Cuantos más haya, más veces ataca.
 #-------------------------------
 [FLING]
 Name = Lanzamiento
@@ -1564,7 +1564,7 @@ TotalPP = 5
 Target = AllNearOthers
 FunctionCode = UserFaintsPowersUpInMistyTerrainExplosive
 Flags = CanProtect,CanMirrorMove
-Description = Ataca a todos a su alrededor debilitándose. Duplica la potencia si hay campo de niebla.
+Description = Ataca a todos a su alrededor, pero se debilita. Aumenta su potencia en un 50% si hay un campo niebla.
 #-------------------------------
 [MOONBLAST]
 Name = Fuerza Lunar
