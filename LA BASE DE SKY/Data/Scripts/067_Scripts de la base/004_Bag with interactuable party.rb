@@ -1161,9 +1161,24 @@ class PokemonBag_Scene
                   sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
                 end
               when 2
-                sorted_pocket = thispocket.sort_by { |item| 
+                tms = []
+                trs = []
+                hms = []
+                sorted_pocket =  sorted_pocket = thispocket.sort_by { |item| 
                   natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
                 }
+                sorted_pocket.each do |item|
+                  item_data = GameData::Item.get(item[0])
+                  if item_data.is_TM?
+                    tms << item
+                  elsif item_data.is_TR? 
+                    trs << item
+                  elsif item_data.is_HM?
+                    hms << item
+                  end
+                end
+
+                sorted_pocket = tms + trs + hms
               end
               thispocket = sorted_pocket
               @bag.pockets[itemwindow.pocket] = thispocket
