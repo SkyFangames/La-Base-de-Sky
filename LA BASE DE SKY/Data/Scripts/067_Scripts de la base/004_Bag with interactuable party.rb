@@ -1171,13 +1171,13 @@ class PokemonBag_Scene
                 end
               when 1
                 if @bag.last_viewed_pocket == 4
-                  sorted_pocket = thispocket.sort_by { |item| GameData::Move.get(GameData::Item.get(item[0]).move).type }
+                  sorted_pocket = thispocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
                 else
                   order_array = GameData::Item.from_pocket(itemwindow.pocket, true)
                   sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
                 end
               when 2
-                sorted_pocket = thispocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
+                sorted_pocket = thispocket.sort_by { |item| GameData::Move.get(GameData::Item.get(item[0]).move).type }
               end
               thispocket = sorted_pocket
               @bag.pockets[itemwindow.pocket] = thispocket
