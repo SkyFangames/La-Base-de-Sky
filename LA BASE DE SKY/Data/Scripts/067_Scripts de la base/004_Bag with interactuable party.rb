@@ -1140,14 +1140,7 @@ class PokemonBag_Scene
             end
           elsif Input.trigger?(Input::SPECIAL)   # Search items
             BagSearcher.new(thispocket, itemwindow, self)
-          elsif Input.trigger?(Input::ACTION)   # Start switching the selected item
-            # if !@choosing && thispocket.length > 1 && itemwindow.index < thispocket.length &&
-            #    !Settings::BAG_POCKET_AUTO_SORT[itemwindow.pocket - 1]
-            #   itemwindow.sorting = true
-            #   swapinitialpos = itemwindow.index
-            #   pbPlayDecisionSE
-            #   pbRefresh
-            # end
+          elsif Input.trigger?(Input::ACTION) # Sort Items
             sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Alfabeticamente"), _INTL("Por Tipo"), _INTL("Por Número")] : [_INTL("Alfabeticamente"), _INTL("Por Tipo")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1
