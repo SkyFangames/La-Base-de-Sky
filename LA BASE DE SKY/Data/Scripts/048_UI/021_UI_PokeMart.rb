@@ -38,9 +38,11 @@ class PokemonMartAdapter
   end
 
   def getDisplayNamePlural(item)
-    item_name_plural = GameData::Item.get(item).name_plural
-    if GameData::Item.get(item).is_machine?
-      machine = GameData::Item.get(item).move
+    item_data = GameData::Item.get(item)
+    item_name_plural = item_data.name_plural
+    if item_data.is_machine?
+      machine = item_data.move
+      item_name_plural = item_data.is_HM? ? item_name_plural.ljust(7) : item_name_plural.ljust(6)
       item_name_plural = _INTL("{1} {2}", item_name_plural, GameData::Move.get(machine).name)
     end
     return item_name_plural
