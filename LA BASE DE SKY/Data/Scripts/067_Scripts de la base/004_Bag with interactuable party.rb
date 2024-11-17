@@ -1141,13 +1141,29 @@ class PokemonBag_Scene
           elsif Input.trigger?(Input::SPECIAL)   # Search items
             BagSearcher.new(thispocket, itemwindow, self)
           elsif Input.trigger?(Input::ACTION) # Sort Items
-            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Alfabeticamente"), _INTL("Por Tipo"), _INTL("Por Número")] : [_INTL("Alfabeticamente"), _INTL("Por Tipo")]
+            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Por Número"), _INTL("Alfabeticamente"), _INTL("Por Tipo")] : [_INTL("Alfabeticamente"), _INTL("Por Tipo")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1
               case option
               when 0
                 if @bag.last_viewed_pocket == 4
-                  sorted_pocket = thispocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
+                  tms = []
+                  trs = []
+                  hms = []
+                  sorted_pocket =  sorted_pocket = thispocket.sort_by { |item| 
+                    natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+                  }
+                  sorted_pocket.each do |item|
+                    item_data = GameData::Item.get(item[0])
+                    if item_data.is_TM?
+                      tms << item
+                    elsif item_data.is_TR? 
+                      trs << item
+                    elsif item_data.is_HM?
+                      hms << item
+                    end
+                  end
+                  sorted_pocket = tms + trs + hms
                 else
                   sorted_pocket = thispocket.sort_by { |item| 
                     natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
@@ -1161,24 +1177,7 @@ class PokemonBag_Scene
                   sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
                 end
               when 2
-                tms = []
-                trs = []
-                hms = []
-                sorted_pocket =  sorted_pocket = thispocket.sort_by { |item| 
-                  natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
-                }
-                sorted_pocket.each do |item|
-                  item_data = GameData::Item.get(item[0])
-                  if item_data.is_TM?
-                    tms << item
-                  elsif item_data.is_TR? 
-                    trs << item
-                  elsif item_data.is_HM?
-                    hms << item
-                  end
-                end
-
-                sorted_pocket = tms + trs + hms
+                sorted_pocket = thispocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
               end
               thispocket = sorted_pocket
               @bag.pockets[itemwindow.pocket] = thispocket
