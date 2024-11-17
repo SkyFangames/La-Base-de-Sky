@@ -14,4 +14,6 @@ Scripts.code-workspace
 LA BASE DE SKY/Data/messages_game.dat
 LA BASE DE SKY/Data/items.dat
 */.dat
+LA BASE DE SKY/Data/*.dat
 */PluginScripts.rxdata
+LA BASE DE SKY/Data/PluginScripts.rxdata
