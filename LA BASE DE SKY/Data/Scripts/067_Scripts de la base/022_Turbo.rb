@@ -63,10 +63,6 @@ module System
     return unscaled_uptime
   end
 
-  def self.real_uptime
-    return unscaled_uptime
-  end
-
   def self.uptime
     return (SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime) + $SpeedDiference
   end
