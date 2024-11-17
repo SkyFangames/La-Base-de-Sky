@@ -1148,16 +1148,29 @@ class PokemonBag_Scene
             #   pbPlayDecisionSE
             #   pbRefresh
             # end
-            option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), [_INTL("Alfabeticamente"), _INTL("Por Tipo")], -1)
+            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Alfabeticamente"), _INTL("Por Tipo"), _INTL("Por Número")] : [_INTL("Alfabeticamente"), _INTL("Por Tipo")]
+            option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1
               case option
               when 0
+                if @bag.last_viewed_pocket == 4
+                  sorted_pocket = thispocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
+                else
+                  sorted_pocket = thispocket.sort_by { |item| 
+                    natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+                  }
+                end
+              when 1
+                if @bag.last_viewed_pocket == 4
+                  sorted_pocket = thispocket.sort_by { |item| GameData::Move.get(GameData::Item.get(item[0]).move).type }
+                else
+                  order_array = GameData::Item.from_pocket(itemwindow.pocket, true)
+                  sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
+                end
+              when 2
                 sorted_pocket = thispocket.sort_by { |item| 
                   natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
                 }
-              when 1
-                order_array = GameData::Item.from_pocket(itemwindow.pocket, true)
-                sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
               end
               thispocket = sorted_pocket
               @bag.pockets[itemwindow.pocket] = thispocket
