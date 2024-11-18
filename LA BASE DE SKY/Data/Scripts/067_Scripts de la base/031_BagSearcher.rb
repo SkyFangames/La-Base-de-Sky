@@ -56,10 +56,6 @@ class BagSearcher
 		0
 	end
 
-	def valid_item?(item)
-		($player.seen?(item[:species]) && !item[:shift]) || $player.seen?(item[:species])
-	end
-
 	def matches_name?(item, text)
 		item.downcase.include?(text.downcase) ? true : false
 	end
