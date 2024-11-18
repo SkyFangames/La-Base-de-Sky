@@ -1,12 +1,8 @@
-	class Window_PokemonBag < Window_DrawableCommand
-		attr_reader :sprites
-	end
-
-	# Searches for a Item in the bag pocket based on the given text.
-	#
-	# @param text [String] The name of the Pokémon to search for.
-	# @param _char [String] (optional) The character to search for. Defaults to an empty string.
-	# @return [Boolean, nil] Returns `true` if the Pokémon is found and refreshes the dexlist. Returns `false` if no Pokémon is found.
+# Searches for a Item in the bag pocket based on the given text.
+#
+# @param text [String] The name of the Pokémon to search for.
+# @param _char [String] (optional) The character to search for. Defaults to an empty string.
+# @return [Boolean, nil] Returns `true` if the Pokémon is found and refreshes the dexlist. Returns `false` if no Pokémon is found.
 class BagSearcher
 	def initialize(pocket, itemwindow, bag)
 		@pocket = pocket
