@@ -51,7 +51,6 @@ class BagSearcher
 				# next unless valid_item?(item[0])
 			item_aux = GameData::Item.get(item[0])
 			item_name = item_aux.is_machine? ? "#{item_aux.name} #{GameData::Move.get(item_aux.move).name}" : item_aux.name
-			echoln "description #{item_name}"
 			return start_index + index if matches_name?(item_name, text)
 		end
 		0
@@ -62,8 +61,6 @@ class BagSearcher
 	end
 
 	def matches_name?(item, text)
-		echoln "item  #{item}"
-		echoln "text  #{text}"
 		item.downcase.include?(text.downcase) ? true : false
 	end
 end
