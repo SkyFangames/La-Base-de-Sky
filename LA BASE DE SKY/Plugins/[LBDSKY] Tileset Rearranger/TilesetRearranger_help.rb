@@ -7,19 +7,19 @@ class TilesetRearranger
     text = _INTL("Organizar Tileset")
     text += "\r\n"
     case @mode
-    when :swap       then text += _INTL("Mode: Swap tiles")
-    when :cut_insert then text += _INTL("Mode: Cut/insert tiles")
-    when :move_row   then text += _INTL("Mode: Move rows")
-    when :add_row    then text += _INTL("Mode: Insert new row")
-    when :erase      then text += _INTL("Mode: Erase unused tiles")
-    when :delete_row then text += _INTL("Mode: Delete row")
+    when :swap       then text += _INTL("Modo: Intercambiar tiles")
+    when :cut_insert then text += _INTL("Modo: Cortar/insertar tiles")
+    when :move_row   then text += _INTL("Modo: Mover filas")
+    when :add_row    then text += _INTL("Modo: Insertar nueva fila")
+    when :erase      then text += _INTL("Modo: Eliminar tiles no usados")
+    when :delete_row then text += _INTL("Modo: Eliminar fila")
     end
     if @height > 0
       text += "\r\n"
       if @height > MAX_TILESET_ROWS
-        text += _INTL("Height: {1}/{2} rows [!]", @height, MAX_TILESET_ROWS)
+        text += _INTL("Altura: {1}/{2} filas [!]", @height, MAX_TILESET_ROWS)
       else
-        text += _INTL("Height: {1}/{2} rows", @height, MAX_TILESET_ROWS)
+        text += _INTL("Altura: {1}/{2} filas", @height, MAX_TILESET_ROWS)
       end
     end
     @sprites["title"].text = text
