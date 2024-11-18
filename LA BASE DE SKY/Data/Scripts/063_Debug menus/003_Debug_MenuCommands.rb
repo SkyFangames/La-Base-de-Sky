@@ -162,7 +162,7 @@ MenuHandlers.add(:debug_menu, :edit_field_effects, {
         params = ChooseNumberParams.new
         params.setRange(0, 99999)
         params.setDefaultValue($PokemonGlobal.repel)
-        $PokemonGlobal.repel = pbMessageChooseNumber(_INTL("Elige el nivel del Pokémon."), params)
+        $PokemonGlobal.repel = pbMessageChooseNumber(_INTL("Elige los pasos de Repelente restantes."), params)
       when 1   # Strength used
         $PokemonMap.strengthUsed = !$PokemonMap.strengthUsed
       when 2   # Flash used
