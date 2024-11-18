@@ -48,7 +48,6 @@ class BagSearcher
 
 	def search(text, start_index, end_index)
 		@pocket[start_index...end_index].each_with_index do |item, index|
-				# next unless valid_item?(item[0])
 			item_aux = GameData::Item.get(item[0])
 			item_name = item_aux.is_machine? ? "#{item_aux.name} #{GameData::Move.get(item_aux.move).name}" : item_aux.name
 			return start_index + index if matches_name?(item_name, text)
