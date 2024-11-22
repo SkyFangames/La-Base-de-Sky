@@ -62,7 +62,7 @@ class Battle::Battler
       return false
     end
     # Weather immunity
-    if newStatus == :FROZEN && [:Sun, :HarshSun].include?(effectiveWeather)
+    if [:FROZEN, :FROSTBITE].include?(newStatus) && [:Sun, :HarshSun].include?(effectiveWeather)
       @battle.pbDisplay(_INTL("No afecta a {1}...", pbThis(true))) if showMessages
       return false
     end
@@ -103,7 +103,7 @@ class Battle::Battler
       hasImmuneType |= pbHasType?(:FIRE)
     when :PARALYSIS
       hasImmuneType |= pbHasType?(:ELECTRIC) && Settings::MORE_TYPE_EFFECTS
-    when :FROZEN
+    when :FROZEN || :FROSTBITE
       hasImmuneType |= pbHasType?(:ICE)
     end
     if hasImmuneType
@@ -134,11 +134,11 @@ class Battle::Battler
         msg = ""
         if Battle::Scene::USE_ABILITY_SPLASH
           case newStatus
-          when :SLEEP     then msg = _INTL("¡{1} permanece despierto!", pbThis)
-          when :POISON    then msg = _INTL("¡{1} no puede ser envenenado!", pbThis)
-          when :BURN      then msg = _INTL("¡{1} no puede ser quemado!", pbThis)
-          when :PARALYSIS then msg = _INTL("¡{1} no puede ser paralizado!", pbThis)
-          when :FROZEN    then msg = _INTL("¡{1} no puede ser congelado!", pbThis)
+          when :SLEEP                  then msg = _INTL("¡{1} permanece despierto!", pbThis)
+          when :POISON                 then msg = _INTL("¡{1} no puede ser envenenado!", pbThis)
+          when :BURN                   then msg = _INTL("¡{1} no puede ser quemado!", pbThis)
+          when :PARALYSIS              then msg = _INTL("¡{1} no puede ser paralizado!", pbThis)
+          when :FROZEN  || :FROSTBITE  then msg = _INTL("¡{1} no puede ser congelado!", pbThis)
           end
         elsif immAlly
           case newStatus
@@ -154,17 +154,17 @@ class Battle::Battler
           when :PARALYSIS
             msg = _INTL("¡{1} no puede ser paralizado por la habilidad {3} de {2}!",
                         pbThis, immAlly.pbThis(true), immAlly.abilityName)
-          when :FROZEN
+          when :FROZEN || :FROSTBITE
             msg = _INTL("¡{1} no puede ser congelado because of {2}'s {3}!",
                         pbThis, immAlly.pbThis(true), immAlly.abilityName)
           end
         else
           case newStatus
-          when :SLEEP     then msg = _INTL("¡{1} permanece despierto por la habilidad {2}!", pbThis, abilityName)
-          when :POISON    then msg = _INTL("¡La habilidad {1} de {2} previene envenenamiento!", pbThis, abilityName)
-          when :BURN      then msg = _INTL("¡La habilidad {1} de {2} previene quemaduras!", pbThis, abilityName)
-          when :PARALYSIS then msg = _INTL("¡La habilidad {1} de {2} previene paralisis!", pbThis, abilityName)
-          when :FROZEN    then msg = _INTL("¡La habilidad {1} de {2} previene congelación!", pbThis, abilityName)
+          when :SLEEP                 then msg = _INTL("¡{1} permanece despierto por la habilidad {2}!", pbThis, abilityName)
+          when :POISON                then msg = _INTL("¡La habilidad {1} de {2} previene envenenamiento!", pbThis, abilityName)
+          when :BURN                  then msg = _INTL("¡La habilidad {1} de {2} previene quemaduras!", pbThis, abilityName)
+          when :PARALYSIS             then msg = _INTL("¡La habilidad {1} de {2} previene paralisis!", pbThis, abilityName)
+          when :FROZEN || :FROSTBITE  then msg = _INTL("¡La habilidad {1} de {2} previene congelación!", pbThis, abilityName)
           end
         end
         @battle.pbDisplay(msg)
