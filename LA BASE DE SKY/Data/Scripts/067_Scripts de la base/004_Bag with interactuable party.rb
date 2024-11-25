@@ -992,10 +992,14 @@ class PokemonBag_Scene
       else
         for i in 0...Settings::MAX_PARTY_SIZE
           @sprites["pokemon#{i}"].text = annotations[i] if  annotations
+          @sprites["pokemon#{i}"].text_color = color_annotations[i] if annotations
         end
       end
       for i in 0...Settings::MAX_PARTY_SIZE
         @sprites["pokemon#{i}"].text = annotations[i] if  annotations
+        @sprites["pokemon#{i}"].text_color = color_annotations[i] if annotations
+
+
       end
     elsif @bag.last_viewed_pocket == 4 && item #TMs Pocket
       annotations = nil
