@@ -1013,7 +1013,7 @@ class PokemonBag_Scene
         $player.party.each_with_index do |pkmn, i|
           if pkmn.egg?
             annotations[i] = _INTL("NO APTO")
-            color_annotations[i] = nil
+            color_annotations[i] = true
           elsif pkmn.hasMove?(move)
             annotations[i] = _INTL("APRENDIDO")
             color_annotations[i] = false
