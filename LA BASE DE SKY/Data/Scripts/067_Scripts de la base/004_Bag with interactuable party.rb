@@ -479,8 +479,8 @@ class PokemonBagPartyPanel < Sprite
       @pkmnsprite.selected = self.selected
     end
     if @helditemsprite&.visible && !@helditemsprite.disposed?
-      @helditemsprite.x     = self.x + 66
-      @helditemsprite.y     = self.y + 30
+      @helditemsprite.x     = self.x + 76
+      @helditemsprite.y     = self.y + 40
       @helditemsprite.color = self.color
     end
     if @overlaysprite && !@overlaysprite.disposed?
