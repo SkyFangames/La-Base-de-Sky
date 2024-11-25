@@ -43,6 +43,8 @@ USER_DEFINED_NAMES = {
 # Remove the '#' from this line to use default encounter type names
 #USER_DEFINED_NAMES = nil
 
+SHOW_SHADOWS_FOR_UNSEEN_POKEMON = true
+
 # Method that returns whether a specific form has been seen (any gender)
 def seen_form_any_gender?(species, form)
   ret = false
@@ -166,12 +168,14 @@ class EncounterList_Scene
     i = 0
     enc_array, curr_key = getEncData
     enc_array.each do |s|
-      species_data = GameData::Species.get(s) # SI NO LO HE VISTO NI CAPTURADO
-      # if !$player.pokedex.owned?(s) && !seen_form_any_gender?(s, species_data.form)
-      #   @sprites["icon_#{i}"].pbSetParams(0, 0, 0, false)
-      if $player.has_pokedex && !$player.pokedex.species_in_unlocked_dex?(species_data) # SI NO LO HE CAPTURADO
+      species_data = GameData::Species.get(s) # SI NO LO HE CAPTURADO
+      if !$player.pokedex.owned?(s) && SHOW_SHADOWS_FOR_UNSEEN_POKEMON #&& !seen_form_any_gender?(s, species_data.form)
+        # @sprites["icon_#{i}"].pbSetParams(0, 0, 0, false)
         @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
         @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 255)
+      # elsif $player.has_pokedex && !$player.pokedex.species_in_unlocked_dex?(species_data) # SI NO LO HE CAPTURADO
+        # @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
+        # @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 255)
       else # SI YA LO TENGO
         @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
         @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 0)
