@@ -155,8 +155,8 @@ class Battle::Battler
             msg = _INTL("¡{1} no puede ser paralizado por la habilidad {3} de {2}!",
                         pbThis, immAlly.pbThis(true), immAlly.abilityName)
           when :FROZEN || :FROSTBITE
-            msg = _INTL("¡{1} no puede ser congelado because of {2}'s {3}!",
-                        pbThis, immAlly.pbThis(true), immAlly.abilityName)
+            msg = _INTL("¡{1} no puede ser congelado debido a {2} de {3}!",
+                        pbThis, immAlly.abilityName, immAlly.pbThis(true))
           end
         else
           case newStatus
