@@ -204,7 +204,12 @@ class EncounterList_Scene
     if encounters
       enc_array = encounters.map { |e| [e[1], e[0]] }
       # Ordena por probabilidad de aparición en orden descendente
-      enc_array.sort_by! { |e| [-e[1], e[0]] }
+      enc_array.sort_by! { |e| 
+        dexlist = pbGetDexList(e[0]) 
+        dexnum = dexlist[0][dexlist[1]][:number] 
+        [-e[1], dexnum] 
+      }
+
       # Nos quedamos solo con el ID de la especie
       enc_array.map! { |e| e[0] }
 
