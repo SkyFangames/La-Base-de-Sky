@@ -119,5 +119,9 @@ module Settings
     # "Ultraente" (según se define en pokemon.txt) tienen una IA más inteligente.
     # Su nivel de habilidad se establece en 32, que es un nivel de habilidad medio.
     SMARTER_WILD_LEGENDARY_POKEMON = true
-  end
+
+    # El mensaje del repartir experiencia será "¡Tus otros Pokémon también ganaron puntos de experiencia!"
+    # En lugar de mostrar cuanta experiencia ha ganado cada Pokémon que tenga el Repartir Experiencia activo.
+    GROUP_EXP_SHARE_MESSAGE = true
+end
   

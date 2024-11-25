@@ -31,12 +31,17 @@ class Battle
       end
       # Calculate EV and Exp gains for the participants
       if numPartic > 0 || expShare.length > 0 || expAll
+        unGroupMessage = !Settings::GROUP_EXP_SHARE_MESSAGE && expShare.length > 0 && expShare.length > b.participants.length ? true : false
         # Gain EVs and Exp for participants
         eachInTeam(0, 0) do |pkmn, i|
           next if !pkmn.able?
           next unless b.participants.include?(i) || expShare.include?(i)
+          showMessage = b.participants.include?(i) || unGroupMessage ? true : false
           pbGainEVsOne(i, b)
-          pbGainExpOne(i, b, numPartic, expShare, expAll, !pkmn.shadowPokemon?)
+          pbGainExpOne(i, b, numPartic, expShare, expAll, showMessage)
+        end
+        if !unGroupMessage
+          pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!"))
         end
         # Gain EVs and Exp for all other Pokémon because of Exp All
         if expAll
