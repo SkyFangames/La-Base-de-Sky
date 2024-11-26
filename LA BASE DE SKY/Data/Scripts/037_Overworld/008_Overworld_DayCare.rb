@@ -489,8 +489,22 @@ class DayCare
     day_care = $PokemonGlobal.day_care
     egg = day_care.generate_egg
     raise _INTL("No se puede generar el Huevo.") if egg.nil?
-    raise _INTL("No hay espacio en el equipo para el Huevo.") if $player.party_full?
-    $player.party.push(egg)
+    raise _INTL("No hay espacio en el equipo para el Huevo.") unless can_add_egg?
+    echoln $PokemonGlobal.eggs
+    if incubator_has_space?
+      ret = Kernel.pbConfirmMessage("¿Quieres agregar el Huevo a la incubadora?")
+      if ret == true
+        ret = addEgg(egg)
+      else
+        raise _INTL("Vuelve cuando quieras a retirar tu Huevo.")
+      end
+    else
+      if $player.party_full?
+        raise _INTL("No hay espacio en el equipo para el Huevo.")
+      else
+        $player.party.push(egg)
+      end
+    end
     day_care.reset_egg_counters
   end
 

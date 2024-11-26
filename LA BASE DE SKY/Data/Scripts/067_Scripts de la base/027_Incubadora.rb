@@ -276,6 +276,19 @@ def pbGenerateEgg(pkmn, text = "")
   return true
 end
 
+def can_add_egg?
+  echoln "can add egg? #{(!$player.party_full? || incubator_has_space?)}"
+  echoln "incubator space? #{incubator_has_space?}"
+  return true if !$player.party_full? || incubator_has_space?
+  return false
+end
+
+def incubator_has_space?
+  return false if !GameData::Item.exists?(:EGGHATCHER) || !$bag.has?(:EGGHATCHER) 
+  return true if !$PokemonGlobal.eggs
+  return $PokemonGlobal.eggs.include?(nil)
+end
+
 def addEgg(egg)
   if !$PokemonGlobal.eggs
     $PokemonGlobal.eggs ||= [nil,nil,nil,nil,nil,nil]
