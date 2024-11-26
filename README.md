@@ -29,7 +29,7 @@
 - El buscasalvajes ahora mostrara la silueta del Pokémon en negro para Pokémon no vistos, el icono en escala de grises para Pokémon vistos pero no capturados y el icono a color para los Pokémon capturados.
 - Correcciones al recibir Huevos ahora siempre ofrecerá meterlos a la incubadora si la tienes y esta tiene espacio disponible.
 - Correcciones para la congelación de Hisui.
-- Se incluye la Ruby Standard Library (RSL) esto es un compilado de librerias de código que podrán importar en sus scripts para facilitarse distintas cosas, por ejemplo puede importar la libreria de JSON para manejar este tipo de archivos con mayor facilidad. Pueden encontrar mas información [aquí](https://ruby-doc.org/stdlib-3.0.0/) 
+- Se incluye la Ruby Standard Library (RSL) esto es un compilado de librerias de código que podrán importar en sus scripts para facilitarse distintas cosas, por ejemplo puede importar la libreria de JSON para manejar este tipo de archivos con mayor facilidad. Pueden encontrar mas información [aquí](https://docs.ruby-lang.org/en/3.3/standard_library_rdoc.html#label-Ruby+Standard+Library)
 
 
 ### AÑADIDOS V 1.0.8
