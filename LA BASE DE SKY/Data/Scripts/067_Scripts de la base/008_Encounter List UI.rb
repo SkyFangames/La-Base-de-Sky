@@ -169,13 +169,14 @@ class EncounterList_Scene
     enc_array, curr_key = getEncData
     enc_array.each do |s|
       species_data = GameData::Species.get(s) # SI NO LO HE CAPTURADO
-      if !$player.pokedex.owned?(s) && SHOW_SHADOWS_FOR_UNSEEN_POKEMON #&& !seen_form_any_gender?(s, species_data.form)
-        # @sprites["icon_#{i}"].pbSetParams(0, 0, 0, false)
-        @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
-        @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 255)
-      # elsif $player.has_pokedex && !$player.pokedex.species_in_unlocked_dex?(species_data) # SI NO LO HE CAPTURADO
-        # @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
-        # @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 255)
+      if SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !seen_form_any_gender?(s, species_data.form)
+        @sprites["icon_#{i}"].pbSetParams(s,0,species_data.form,false)
+        @sprites["icon_#{i}"].color = Color.new(0, 0, 0)
+        @sprites["icon_#{i}"].visible = true
+      elsif SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !$player.owned?(species_data) # SI NO LO HE CAPTURADO
+        @sprites["icon_#{i}"].pbSetParams(s,0,species_data.form,false)
+        @sprites["icon_#{i}"].tone = Tone.new(0,0,0,255)
+        @sprites["icon_#{i}"].visible = true
       else # SI YA LO TENGO
         @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
         @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 0)
