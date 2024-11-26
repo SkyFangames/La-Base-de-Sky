@@ -18,7 +18,7 @@
 - Cambios en el NPC configurador del random del mapa de Scripts.
 - Agrega opción de usar las MOs sin aprenderlas.
 - Agrega posibilidad de flag Kicking en el PBS de moves.txt y metodo kickingMove? para saber si es un movimiento de patadas.
-- Correcciones en el PokéRadar.
+- Correcciones en el Buscasalvajes.
 - Cambia el precio de venta por defecto de 1/2 a 1/4 del precio de compra, de acuerdo a los cambios en BDSP y SV.
 - Agrega opción en el NameBox para que el color del cuadro sea independiente del del text box y tambien definir distintos Skins para distintos NPCs.
 - Corrección en el tiempo mostrado al guardar partida, independientemente del turbo.
@@ -26,6 +26,9 @@
 - Opción para que los objetos consumibles, como bayas, gemas, banda focus, etc. se restauren luego del combate, esto viene por defecto desactivado, para activarlo hay que cambiar la constante `RESTORE_HELD_ITEMS_AFTER_BATTLE` a true
 - Actualiza Ladrón a los cambios de 9na
 - Cambios menores de traducciones.
+- El buscasalvajes ahora mostrara la silueta del Pokémon en negro para Pokémon no vistos, el icono en escala de grises para Pokémon vistos pero no capturados y el icono a color para los Pokémon capturados.
+- Correcciones al recibir Huevos ahora siempre ofrecerá meterlos a la incubadora si la tienes y esta tiene espacio disponible.
+- Correcciones para la congelación de Hisui.
 
 
 ### AÑADIDOS V 1.0.8
