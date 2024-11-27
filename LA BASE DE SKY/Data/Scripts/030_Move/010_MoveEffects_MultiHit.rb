@@ -109,8 +109,8 @@ class Battle::Move::HitTwoToFiveTimes < Battle::Move
       5, 5, 5
     ]
     r = @battle.pbRandom(hitChances.length)
-    r = hitChances.length - (rand(2) + 1) if user.hasActiveItem?(:LOADEDDICE)
-    r = hitChances.length - 1 if user.hasActiveAbility?(:SKILLLINK)
+    return hitChances[hitChances.length - 1] if user.hasActiveAbility?(:SKILLLINK)
+    return hitChances.last(6).sample if user.hasActiveItem?(:LOADEDDICE)
     return hitChances[r]
   end
 end
