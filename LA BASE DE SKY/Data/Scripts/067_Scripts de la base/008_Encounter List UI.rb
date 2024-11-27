@@ -171,7 +171,6 @@ class EncounterList_Scene
     enc_array, curr_key = getEncData
     enc_array.each do |s|
       species_data = GameData::Species.get(s) # SI NO LO HE CAPTURADO
-      echoln "species: #{species_data.name} form: #{species_data.form}"	
       if SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !seen_form_any_gender?(s, species_data.form)
         @sprites["icon_#{i}"].pbSetParams(s,0,species_data.form,false)
         @sprites["icon_#{i}"].color = Color.new(0, 0, 0)
