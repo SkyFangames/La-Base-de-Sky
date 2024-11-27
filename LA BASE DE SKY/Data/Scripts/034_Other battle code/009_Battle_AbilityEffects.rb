@@ -516,9 +516,9 @@ Battle::AbilityEffects::StatusImmunity.add(:WATERVEIL,
   }
 )
 
-Battle::AbilityEffects::StatusImmunity.copy(:WATERVEIL, :THERMALEXCHANGE)
+Battle::AbilityEffects::StatusImmunity.copy(:WATERVEIL, :WATERBUBBLE, :THERMALEXCHANGE)
 
-Battle::AbilityEffects::StatusCure.copy(:WATERVEIL, :WATERBUBBLE, :THERMALEXCHANGE)
+# Battle::AbilityEffects::StatusCure.copy(:WATERVEIL, :WATERBUBBLE, :THERMALEXCHANGE)
 
 #===============================================================================
 # StatusImmunityNonIgnorable handlers
