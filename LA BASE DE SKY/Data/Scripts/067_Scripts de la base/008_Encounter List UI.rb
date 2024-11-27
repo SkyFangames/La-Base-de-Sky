@@ -101,6 +101,7 @@ class EncounterList_Scene
     @sprites["bg"].oy = @sprites["bg"].bitmap.height / 2
     @sprites["bg"].x = Graphics.width / 2
     @sprites["bg"].y = Graphics.height / 2
+    
 
     @sprites["base"] = IconSprite.new(0, 0, @viewport)
     @sprites["base"].setBitmap("Graphics/UI/EncounterUI/#{WINDOWSKIN}")
@@ -120,6 +121,7 @@ class EncounterList_Scene
     @w = (Graphics.width - @sprites["base"].bitmap.width) / 2
     @max_enc&.times do |i|
       @sprites["icon_#{i}"] = PokemonSpeciesIconSprite.new(nil, @viewport)
+      @default_color = @sprites["icon_#{i}"].color
       @sprites["icon_#{i}"].x = @w + 28 + 64 * (i % 7)
       @sprites["icon_#{i}"].y = @h + 100 + (i / 7) * 64
       @sprites["icon_#{i}"].visible = false
@@ -169,17 +171,18 @@ class EncounterList_Scene
     enc_array, curr_key = getEncData
     enc_array.each do |s|
       species_data = GameData::Species.get(s) # SI NO LO HE CAPTURADO
+      echoln "species: #{species_data.name} form: #{species_data.form}"	
       if SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !seen_form_any_gender?(s, species_data.form)
         @sprites["icon_#{i}"].pbSetParams(s,0,species_data.form,false)
         @sprites["icon_#{i}"].color = Color.new(0, 0, 0)
-        @sprites["icon_#{i}"].visible = true
       elsif SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !$player.owned?(species_data) # SI NO LO HE CAPTURADO
         @sprites["icon_#{i}"].pbSetParams(s,0,species_data.form,false)
         @sprites["icon_#{i}"].tone = Tone.new(0,0,0,255)
-        @sprites["icon_#{i}"].visible = true
+        @sprites["icon_#{i}"].color = @default_color
       else # SI YA LO TENGO
         @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
         @sprites["icon_#{i}"].tone = Tone.new(0, 0, 0, 0)
+        @sprites["icon_#{i}"].color = @default_color
       end
       @sprites["icon_#{i}"].visible = true
       i += 1
