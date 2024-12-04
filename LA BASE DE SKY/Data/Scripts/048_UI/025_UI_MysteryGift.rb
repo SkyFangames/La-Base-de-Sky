@@ -197,7 +197,7 @@ def pbManageMysteryGifts
       end
     elsif command == commands.length - 3   # Borrar los regalos recibidos
       if pbConfirmMessage(_INTL("¿Quieres eliminar el registro de tu jugaror de regalos misteriosos? Esto hará que puedas recibirlos todos de nuevo."))
-        $player.mystery_gifts
+        $player.mystery_gifts = []
         pbMessage(_INTL("Has eliminado correctamente los regalos recibidos."))
 
       end
