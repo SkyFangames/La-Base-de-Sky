@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Zip Folder
-      run: cd "LA BASE DE SKY" && ruby scripts_combine.rb && cd .. && zip -r LA_BASE_DE_SKY_V${{github.ref_name}}.zip . -i "LA BASE DE SKY/*" "README.md" -x "LA BASE DE SKY/rgss-compiler.json" "LA BASE DE SKY/.ruby-lsp/*"
+      run: cd "LA BASE DE SKY" && ruby scripts_combine.rb && rm -r Data/Scripts && cd .. && zip -r LA_BASE_DE_SKY_V${{github.ref_name}}.zip . -i "LA BASE DE SKY/*" "README.md" -x "LA BASE DE SKY/rgss-compiler.json" "LA BASE DE SKY/.ruby-lsp/*"
 
     - name: Release
       uses: softprops/action-gh-release@v2
