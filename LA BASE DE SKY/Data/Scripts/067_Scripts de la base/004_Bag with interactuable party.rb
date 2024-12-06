@@ -248,6 +248,24 @@ class Window_PokemonBag < Window_DrawableCommand
           showing_register_icon = true
         end
       end
+      if @bag.favourite?(item)
+        if !pbCanRegisterItem?(item) && !item_data.show_quantity?
+          pbDrawImagePositions(
+            self.contents,
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 30, rect.y + 13, 0, 0, -1, 24]]
+          )
+        elsif !pbCanRegisterItem?(item) && item_data.show_quantity?
+          pbDrawImagePositions(
+            self.contents,
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 75, rect.y + 13, 0, 0, -1, 24]]
+          )
+        else
+          pbDrawImagePositions(
+            self.contents,
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 95, rect.y + 13, 0, 0, -1, 24]]
+          )
+        end
+      end
       if item_data.show_quantity? && !showing_register_icon
         qty = (@filterlist) ? thispocket[@filterlist[@pocket][index]][1] : thispocket[index][1]
         qtytext = _ISPRINTF("x{1: 3d}", qty)
@@ -257,6 +275,7 @@ class Window_PokemonBag < Window_DrawableCommand
     end
     pbDrawTextPositions(self.contents, textpos)
   end
+
 
   def refresh
     @item_max = itemCount
@@ -1145,48 +1164,34 @@ class PokemonBag_Scene
           elsif Input.trigger?(Input::SPECIAL)   # Search items
             BagSearcher.new(thispocket, itemwindow, self)
           elsif Input.trigger?(Input::ACTION) # Sort Items
-            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Por Número"), _INTL("Alfabeticamente"), _INTL("Por Tipo")] : [_INTL("Alfabeticamente"), _INTL("Por Tipo")]
+            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Por Número"), _INTL("Favoritos primero"),_INTL("Alfabeticamente"), _INTL("Por Tipo")] : [_INTL("Alfabeticamente"), _INTL("Favoritos primero"), _INTL("Por Tipo")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1
               case option
               when 0
                 if @bag.last_viewed_pocket == 4
-                  tms = []
-                  trs = []
-                  hms = []
-                  sorted_pocket =  sorted_pocket = thispocket.sort_by { |item| 
-                    natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
-                  }
-                  sorted_pocket.each do |item|
-                    item_data = GameData::Item.get(item[0])
-                    if item_data.is_TM?
-                      tms << item
-                    elsif item_data.is_TR? 
-                      trs << item
-                    elsif item_data.is_HM?
-                      hms << item
-                    end
-                  end
-                  sorted_pocket = tms + trs + hms
+                  sorted_pocket = sort_pocket(:number, thispocket)             
                 else
-                  sorted_pocket = thispocket.sort_by { |item| 
-                    natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
-                  }
+                  sorted_pocket = sort_pocket(:name, thispocket)
                 end
               when 1
-                if @bag.last_viewed_pocket == 4
-                  sorted_pocket = thispocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
-                else
-                  order_array = GameData::Item.from_pocket(itemwindow.pocket, true)
-                  sorted_pocket = thispocket.sort_by { |item| order_array.index(item[0]) }
-                end
+                # Sort items by favorites first and then ask for a second sort method                if @bag.last_viewed_pocket == 4
+                sorted_pocket = sort_pocket(:favorite, thispocket)
               when 2
-                sorted_pocket = thispocket.sort_by { |item| GameData::Move.get(GameData::Item.get(item[0]).move).type }
+                if @bag.last_viewed_pocket == 4
+                  sorted_pocket = sort_pocket(:name, thispocket)
+                else
+                  sorted_pocket = sort_pocket(:type, thispocket, itemwindow.pocket)
+                end
+              when 3
+                sorted_pocket = sort_pocket(:type, thispocket)
               end
-              thispocket = sorted_pocket
-              @bag.pockets[itemwindow.pocket] = thispocket
-              pbRefresh
-              pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
+              if sorted_pocket && !sorted_pocket.empty?
+                thispocket = sorted_pocket
+                @bag.pockets[itemwindow.pocket] = thispocket
+                pbRefresh
+                pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
+              end
             end
           elsif Input.trigger?(Input::BACK)   # Cancel the item screen
             pbPlayCloseMenuSE
@@ -1198,6 +1203,58 @@ class PokemonBag_Scene
         end
       end
     }
+  end
+
+  def sort_pocket(sort_method, pocket, pocket_number = nil)
+    case sort_method
+    when :number
+      tms = []
+      trs = []
+      hms = []
+      sorted_pocket = pocket.sort_by { |item| 
+        natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+      }
+      sorted_pocket.each do |item|
+        item_data = GameData::Item.get(item[0])
+        if item_data.is_TM?
+          tms << item
+        elsif item_data.is_TR? 
+          trs << item
+        elsif item_data.is_HM?
+          hms << item
+        end
+      end
+      sorted_pocket = tms + trs + hms
+    when :favorite
+      if pocket.any? { |item| @bag.favourite?(item[0]) }
+        if @bag.last_viewed_pocket == 4
+          sorted_machines = sort_pocket(:number, pocket.select { |item| !@bag.favourite?(item[0]) })
+          favourites_in_pocket = pocket.select { |item| @bag.favourite?(item[0]) }
+          sorted_pocket = favourites_in_pocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) } + sorted_machines
+        else
+          favourites_in_pocket = pocket.select { |item| @bag.favourite?(item[0]) }
+          favourites_in_pocket.sort_by! { |item| natural_sort_key(GameData::Item.get(item[0]).name.downcase) }
+          not_favs = pocket - favourites_in_pocket
+          sorted_pocket = favourites_in_pocket + not_favs.sort_by { |item| natural_sort_key(GameData::Item.get(item[0]).name.downcase) }
+        end
+      end
+    when :name
+      if @bag.last_viewed_pocket == 4
+        sorted_pocket = pocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
+      else
+        sorted_pocket = pocket.sort_by { |item| 
+          natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+        }
+      end
+    when :type
+      if @bag.last_viewed_pocket == 4
+        sorted_pocket = pocket.sort_by { |item| GameData::Move.get(GameData::Item.get(item[0]).move).type }
+      else
+        order_array = GameData::Item.from_pocket(pocket_number, true)
+        sorted_pocket = pocket.sort_by { |item| order_array.index(item[0]) }
+      end
+    end
+    sorted_pocket
   end
 
   def pbSetHelpText(helptext)
@@ -1530,6 +1587,7 @@ class PokemonBagScreen
       cmdRead     = -1
       cmdUse      = -1
       cmdRegister = -1
+      cmdFavourite = -1
       cmdGive     = -1
       cmdToss     = -1
       cmdDebug    = -1
@@ -1549,6 +1607,11 @@ class PokemonBagScreen
         commands[cmdRegister = commands.length] = _INTL("No regis.")
       elsif pbCanRegisterItem?(item)
         commands[cmdRegister = commands.length] = _INTL("Registrar")
+      end
+      if @bag.favourite?(item)
+        commands[cmdFavourite = commands.length] = _INTL("No fav.")
+      else
+        commands[cmdFavourite = commands.length] = _INTL("Favorito")
       end
       commands[cmdDebug = commands.length]      = _INTL("Debug") if $DEBUG
       commands[commands.length]                 = _INTL("Cancelar")
@@ -1606,6 +1669,13 @@ class PokemonBagScreen
           @bag.unregister(item)
         else
           @bag.register(item)
+        end
+        @scene.pbRefresh
+      elsif cmdFavourite >= 0 && command == cmdFavourite   # Favourite item
+        if @bag.favourite?(item)
+          @bag.unfavourite(item)
+        else
+          @bag.favourite(item)
         end
         @scene.pbRefresh
       elsif cmdDebug >= 0 && command == cmdDebug   # Debug
