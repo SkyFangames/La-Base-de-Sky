@@ -191,6 +191,8 @@ class PokemonBag
     @favourite_items.delete(item_data.id) if item_data
   end
 
+
+  ### PREPARACION DE DETECTAR OBJETOS NUEVOS - AUN NO SE USA ###
   # Returns whether item is new.
   def new?(item)
     item_data = GameData::Item.try_get(item)
@@ -213,6 +215,7 @@ class PokemonBag
     @new_items ||= []
     @new_items.delete(item_data.id) if item_data
   end
+  ### PREPARACION DE DETECTAR OBJETOS NUEVOS - AUN NO SE USA ###
 
   #-----------------------------------------------------------------------------
 
