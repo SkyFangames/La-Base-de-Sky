@@ -277,8 +277,6 @@ def pbGenerateEgg(pkmn, text = "")
 end
 
 def can_add_egg?
-  echoln "can add egg? #{(!$player.party_full? || incubator_has_space?)}"
-  echoln "incubator space? #{incubator_has_space?}"
   return true if !$player.party_full? || incubator_has_space?
   return false
 end

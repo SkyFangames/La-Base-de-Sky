@@ -3,7 +3,6 @@ if Settings::RESTORE_HELD_ITEMS_AFTER_BATTLE
     alias pbConsumeItem_restore pbConsumeItem
     def pbConsumeItem(recoverable = true, symbiosis = true, belch = true)
       @battle.used_items << [self.pokemon, @item_id] if @battle.used_items && pbOwnedByPlayer?
-      echoln @battle.used_items
       pbConsumeItem_restore(recoverable, symbiosis, belch)
     end
   end
