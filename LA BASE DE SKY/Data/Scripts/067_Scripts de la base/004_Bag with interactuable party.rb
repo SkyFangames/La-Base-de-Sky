@@ -1166,30 +1166,16 @@ class PokemonBag_Scene
           elsif Input.trigger?(Input::SPECIAL)   # Search items
             BagSearcher.new(thispocket, itemwindow, self)
           elsif Input.trigger?(Input::ACTION) # Sort Items
+            sort_keys = @bag.last_viewed_pocket == 4 ? [:number, :name, :type] : [:type, :name]
             sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Número"),_INTL("Alfabeticamente"), _INTL("Tipo")] : [_INTL("Categoría"), _INTL("Alfabeticamente")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1
-              case option
-              when 0
-                if @bag.last_viewed_pocket == 4
-                  sorted_pocket = sort_pocket(:number, thispocket)             
-                else
-                  sorted_pocket = sort_pocket(:type, thispocket, itemwindow.pocket)
-                end
-              when 1
-                if @bag.last_viewed_pocket == 4
-                  sorted_pocket = sort_pocket(:name, thispocket)
-                else
-                  sorted_pocket = sort_pocket(:name, thispocket)
-                end
-              when 2
-                sorted_pocket = sort_pocket(:type, thispocket)
-              end
+              sorted_pocket = sort_pocket(sort_keys[option], thispocket)
               if sorted_pocket && !sorted_pocket.empty?
                 thispocket = sorted_pocket
                 @bag.pockets[itemwindow.pocket] = thispocket
+                pbPlayDecisionSE
                 pbRefresh
-                pbDisplay(_INTL("¡Se ha ordenado el bolsillo!"))
               end
             end
           elsif Input.trigger?(Input::BACK)   # Cancel the item screen
