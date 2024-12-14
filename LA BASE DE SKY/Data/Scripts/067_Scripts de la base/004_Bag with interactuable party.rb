@@ -1169,7 +1169,7 @@ class PokemonBag_Scene
             sort_keys = @bag.last_viewed_pocket == 4 ? [:number, :name, :type] : [:type, :name]
             sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Número"),_INTL("Alfabeticamente"), _INTL("Tipo")] : [_INTL("Categoría"), _INTL("Alfabeticamente")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
-            if option != -1
+            if option != -1 && option < sort_keys.length
               sorted_pocket = sort_pocket(sort_keys[option], thispocket)
               if sorted_pocket && !sorted_pocket.empty?
                 thispocket = sorted_pocket
