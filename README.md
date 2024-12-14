@@ -8,6 +8,7 @@
 
 ### AÑADIDOS V 1.0.9
 
+- Modificaciones de la mochila. Ahora incluye la posibilidad de ordenar los objetos, buscar uno escribiendo su nombre e incluso señalar objetos favoritos.
 - Más validaciones para las animaciones de ataques.
 - Se ha rehecho completamente el sistema de Regalo Misterioso. Ahora permite crear regalos por internet con contraseña, aparte de muchas mejoras.
 - Mejoras en el movimiento del jugador, ahora se mueve con solo darle tap a las teclas.
@@ -24,12 +25,14 @@
 - Corrección en el tiempo mostrado al guardar partida, independientemente del turbo.
 - El PokéRadar ahora está ordenado por probabilidad de aparición
 - Opción para que los objetos consumibles, como bayas, gemas, banda focus, etc. se restauren luego del combate, esto viene por defecto desactivado, para activarlo hay que cambiar la constante `RESTORE_HELD_ITEMS_AFTER_BATTLE` a true
-- Actualiza Ladrón a los cambios de 9na
-- Cambios menores de traducciones.
+- Actualiza Ladrón a los cambios de 9na.
+- Opción para liberar todos los Pokémon de una caja de una sola vez.
 - El buscasalvajes ahora mostrara la silueta del Pokémon en negro para Pokémon no vistos, el icono en escala de grises para Pokémon vistos pero no capturados y el icono a color para los Pokémon capturados.
 - Correcciones al recibir Huevos ahora siempre ofrecerá meterlos a la incubadora si la tienes y esta tiene espacio disponible.
 - Correcciones para la congelación de Hisui.
 - Se incluye la Ruby Standard Library (RSL) esto es un compilado de librerias de código que podrán importar en sus scripts para facilitarse distintas cosas, por ejemplo puede importar la libreria de JSON para manejar este tipo de archivos con mayor facilidad. Pueden encontrar mas información [aquí](https://ruby-doc.org/3.3.0/standard_library_rdoc.html)
+- Cambios menores de traducciones.
+- Pequeños arreglos menores.
 
 
 ### AÑADIDOS V 1.0.8
