@@ -1443,7 +1443,7 @@ GameData::Evolution.register({
 # Tracks steps taken to trigger walking evolutions for the lead Pokemon.
 #-------------------------------------------------------------------------------
 EventHandlers.add(:on_player_step_taken, :evolution_steps, proc {
-  $player.first_able_pokemon.walking_evolution if $player.party_count > 0
+  $player.first_able_pokemon.walking_evolution if $player.party_count > 0 && $player.first_able_pokemon
 })
 
 #-------------------------------------------------------------------------------
