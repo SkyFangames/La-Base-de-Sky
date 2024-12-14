@@ -1166,7 +1166,7 @@ class PokemonBag_Scene
           elsif Input.trigger?(Input::SPECIAL)   # Search items
             BagSearcher.new(thispocket, itemwindow, self)
           elsif Input.trigger?(Input::ACTION) # Sort Items
-            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Por Número"), _INTL("Favoritos primero"),_INTL("Alfabeticamente"), _INTL("Por Tipo")] : [_INTL("Alfabeticamente"), _INTL("Favoritos primero"), _INTL("Por Tipo")]
+            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Número"),_INTL("Alfabeticamente"), _INTL("Tipo")] : [_INTL("Categoría"), _INTL("Alfabeticamente")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1
               case option
@@ -1174,18 +1174,15 @@ class PokemonBag_Scene
                 if @bag.last_viewed_pocket == 4
                   sorted_pocket = sort_pocket(:number, thispocket)             
                 else
-                  sorted_pocket = sort_pocket(:name, thispocket)
+                  sorted_pocket = sort_pocket(:type, thispocket, itemwindow.pocket)
                 end
               when 1
-                # Sort items by favorites first and then ask for a second sort method                if @bag.last_viewed_pocket == 4
-                sorted_pocket = sort_pocket(:favorite, thispocket)
-              when 2
                 if @bag.last_viewed_pocket == 4
                   sorted_pocket = sort_pocket(:name, thispocket)
                 else
-                  sorted_pocket = sort_pocket(:type, thispocket, itemwindow.pocket)
+                  sorted_pocket = sort_pocket(:name, thispocket)
                 end
-              when 3
+              when 2
                 sorted_pocket = sort_pocket(:type, thispocket)
               end
               if sorted_pocket && !sorted_pocket.empty?
@@ -1208,54 +1205,66 @@ class PokemonBag_Scene
   end
 
   def sort_pocket(sort_method, pocket, pocket_number = nil)
+    # Separar favoritos y no favoritos
+    favourites_in_pocket = pocket.select { |item| @bag.favourite?(item[0]) }
+    not_favs = pocket - favourites_in_pocket
+    # Ordenar favoritos y no favoritos según el método elegido
+    sorted_favs = []
+    sorted_non_favs = []
     case sort_method
     when :number
       tms = []
       trs = []
       hms = []
-      sorted_pocket = pocket.sort_by { |item| 
+      sorted_non_favs = not_favs.sort_by { |item| 
         natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
       }
-      sorted_pocket.each do |item|
+      sorted_non_favs.each do |item|
         item_data = GameData::Item.get(item[0])
         if item_data.is_TM?
           tms << item
-        elsif item_data.is_TR? 
+        elsif item_data.is_TR?
           trs << item
         elsif item_data.is_HM?
           hms << item
         end
       end
-      sorted_pocket = tms + trs + hms
-    when :favorite
-      if pocket.any? { |item| @bag.favourite?(item[0]) }
-        if @bag.last_viewed_pocket == 4
-          sorted_machines = sort_pocket(:number, pocket.select { |item| !@bag.favourite?(item[0]) })
-          favourites_in_pocket = pocket.select { |item| @bag.favourite?(item[0]) }
-          sorted_pocket = favourites_in_pocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) } + sorted_machines
-        else
-          favourites_in_pocket = pocket.select { |item| @bag.favourite?(item[0]) }
-          favourites_in_pocket.sort_by! { |item| natural_sort_key(GameData::Item.get(item[0]).name.downcase) }
-          not_favs = pocket - favourites_in_pocket
-          sorted_pocket = favourites_in_pocket + not_favs.sort_by { |item| natural_sort_key(GameData::Item.get(item[0]).name.downcase) }
-        end
-      end
+      sorted_non_favs = tms + trs + hms
+      sorted_favs = favourites_in_pocket.sort_by { |item| 
+        natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+      }
     when :name
       if @bag.last_viewed_pocket == 4
-        sorted_pocket = pocket.sort_by { |item| natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) }
+        sorted_favs = favourites_in_pocket.sort_by { |item| 
+          natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) 
+        }
+        sorted_non_favs = not_favs.sort_by { |item| 
+          natural_sort_key(GameData::Move.get(GameData::Item.get(item[0]).move).name.downcase) 
+        }
       else
-        sorted_pocket = pocket.sort_by { |item| 
+        sorted_favs = favourites_in_pocket.sort_by { |item| 
+          natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
+        }
+        sorted_non_favs = not_favs.sort_by { |item| 
           natural_sort_key(GameData::Item.get(item[0]).name.downcase) 
         }
       end
     when :type
       if @bag.last_viewed_pocket == 4
-        sorted_pocket = pocket.sort_by { |item| GameData::Move.get(GameData::Item.get(item[0]).move).type }
+        sorted_favs = favourites_in_pocket.sort_by { |item| 
+          GameData::Move.get(GameData::Item.get(item[0]).move).type 
+        }
+        sorted_non_favs = not_favs.sort_by { |item| 
+          GameData::Move.get(GameData::Item.get(item[0]).move).type 
+        }
       else
         order_array = GameData::Item.from_pocket(pocket_number, true)
-        sorted_pocket = pocket.sort_by { |item| order_array.index(item[0]) }
+        sorted_favs = favourites_in_pocket.sort_by { |item| order_array.index(item[0]) }
+        sorted_non_favs = not_favs.sort_by { |item| order_array.index(item[0]) }
       end
     end
+    # Combinar favoritos y no favoritos
+    sorted_pocket = sorted_favs + sorted_non_favs
     sorted_pocket
   end
 
