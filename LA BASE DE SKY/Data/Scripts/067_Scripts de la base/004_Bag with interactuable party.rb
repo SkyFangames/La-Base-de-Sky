@@ -228,10 +228,17 @@ class Window_PokemonBag < Window_DrawableCommand
         baseColor   = Color.new(78, 86, 100)
         shadowColor = Color.new(157, 171, 178)
       end
-      textpos.push(
-        [@adapter.getDisplayName(item), rect.x, rect.y + 4, :left, baseColor, shadowColor]
-      )
       item_data = GameData::Item.get(item)
+      if item_data.is_machine?
+        textpos.push(
+          [@adapter.getDisplayNameMachineNumber(item), rect.x, rect.y + 4, :left, baseColor, shadowColor],
+          [@adapter.getDisplayNameMachineName(item), rect.x+70, rect.y + 4, :left, baseColor, shadowColor]
+        )
+      else
+        textpos.push(
+          [@adapter.getDisplayName(item), rect.x, rect.y + 4, :left, baseColor, shadowColor]
+        )
+      end
       showing_register_icon = false
       if item_data.is_important?
         if @bag.registered?(item)
@@ -249,20 +256,20 @@ class Window_PokemonBag < Window_DrawableCommand
         end
       end
       if @bag.favourite?(item)
-        if !pbCanRegisterItem?(item) && !item_data.show_quantity?
+        if !pbCanRegisterItem?(item) && !item_data.show_quantity? && !item_data.is_key_item? 
           pbDrawImagePositions(
             self.contents,
             [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 30, rect.y + 13, 0, 0, -1, 24]]
           )
-        elsif !pbCanRegisterItem?(item) && item_data.show_quantity?
+        elsif item_data.is_key_item?
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 75, rect.y + 13, 0, 0, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 92, rect.y + 13, 0, 0, -1, 24]]
           )
         else
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 95, rect.y + 13, 0, 0, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 88, rect.y + 13, 0, 0, -1, 24]]
           )
         end
       end
@@ -730,8 +737,6 @@ class PokemonBag_Scene
     @sprites["msgwindow"].letterbyletter = true
     pbBottomLeftLines(@sprites["msgwindow"], 2)
     
-    pbUpdateAnnotation
-    
     ## Dibujar textos de Ordenar y Buscar
     overlay_aux = @sprites["overlay_aux"].bitmap
     pbSetTinyFont(overlay_aux)
@@ -740,14 +745,11 @@ class PokemonBag_Scene
       [[_INTL("Z: Ordenar"), 232, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width],
        [_INTL("D: Buscar"), 317, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width]]
     )
-    
+    pbUpdateAnnotation
     pbDeactivateWindows(@sprites)
     pbRefresh
     pbFadeInAndShow(@sprites)
     $game_temp.bag_scene = self if $bag.has?(:EGGHATCHER)
-
-    
-
   end
 
   def pbPocketColor
