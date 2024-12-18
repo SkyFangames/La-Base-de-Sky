@@ -237,10 +237,6 @@ class PokemonSummary_Scene
       }
     when :legacy
       dorefresh = show_legacy if defined?(show_legacy)
-    when :EVRedirector
-      dorefresh = pbReorganizeEVs(@pokemon) if defined?(pbReorganizeEVs) && !@pokemon.egg?
-    when :IVRedirector 
-      dorefresh = pbReorganizeEVs(@pokemon, :IV) if defined?(pbReorganizeEVs) && !@pokemon.egg?
     else
       cmd = command_list[command][0]
       if cmd.is_a?(String)
