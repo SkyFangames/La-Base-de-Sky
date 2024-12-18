@@ -97,7 +97,7 @@ class PokemonSummary_Scene
     end
     drawFormattedTextEx(@sprites["overlay"].bitmap, 232, 86, 268, memo)
   end
-  
+
   #-----------------------------------------------------------------------------
   # Rewritten so that the commands that appear in the Options menu are now
   # determined by which options are set in each page handler.
@@ -107,6 +107,7 @@ class PokemonSummary_Scene
     dorefresh = false
     commands = {}
     options = UIHandlers.get_info(:summary, @page_id, :options)
+    options_labels = UIHandlers.get_info(:summary, @page_id, :options_labels)
     options.each do |cmd|
       case cmd
       when :item
@@ -121,6 +122,7 @@ class PokemonSummary_Scene
       when :mark     then commands[cmd] = _INTL("Marcas")
       when :ability  then commands[cmd] = _INTL("Ver Habilidad")
       when :legacy   then commands[cmd] = _INTL("Histórico") if (!@pokemon.egg? && defined?(show_legacy))
+      when Symbol then commands[cmd] = options_labels[cmd] if options_labels[cmd]
       when String    then commands[cmd] = _INTL("#{cmd}")
       end
     end
@@ -235,6 +237,10 @@ class PokemonSummary_Scene
       }
     when :legacy
       dorefresh = show_legacy if defined?(show_legacy)
+    when :EVRedirector
+      dorefresh = pbReorganizeEVs(@pokemon) if defined?(pbReorganizeEVs) && !@pokemon.egg?
+    when :IVRedirector 
+      dorefresh = pbReorganizeEVs(@pokemon, :IV) if defined?(pbReorganizeEVs) && !@pokemon.egg?
     else
       cmd = command_list[command][0]
       if cmd.is_a?(String)
