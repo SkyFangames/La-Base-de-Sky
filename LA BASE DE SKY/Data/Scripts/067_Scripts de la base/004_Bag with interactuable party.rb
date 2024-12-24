@@ -970,7 +970,7 @@ class PokemonBag_Scene
         oldtext.push(@sprites["pokemon#{i}"].text)
       end
       lastselected = i if @sprites["pokemon#{i}"]&.selected
-      @sprites["pokemon#{i}"].dispose
+      @sprites["pokemon#{i}"]&.dispose
     end
     lastselected = @party.length - 1 if lastselected >= @party.length
     lastselected = 0 if lastselected < 0
