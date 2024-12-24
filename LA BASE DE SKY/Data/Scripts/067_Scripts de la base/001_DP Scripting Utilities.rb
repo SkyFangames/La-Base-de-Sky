@@ -1,3 +1,11 @@
+$:.push File.join(Dir.pwd, "Ruby Library 3.3.0")
+
+require 'json'
+
+def json_remove_comments(json_str)
+  json_str.gsub(/\/\/.*$/, '').gsub(/\/\*.*?\*\//m, '')
+end
+
 # Helper function to remove accents from a string using Unicode normalization
 def remove_accents(str)
   str.unicode_normalize(:nfd).gsub(/\p{Mn}/, '') # Decompose characters and remove non-spacing marks

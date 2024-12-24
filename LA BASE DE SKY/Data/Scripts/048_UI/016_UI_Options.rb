@@ -1,6 +1,7 @@
 #===============================================================================
 #
 #===============================================================================
+# require_relative 'Ruby Library 3.3.0/json'
 class PokemonSystem
   attr_accessor :textspeed
   attr_accessor :battlescene
@@ -15,6 +16,7 @@ class PokemonSystem
   attr_accessor :bgmvolume
   attr_accessor :sevolume
   attr_accessor :textinput
+  attr_accessor :vsync
 
   def initialize
     @textspeed     = 2     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
@@ -30,6 +32,114 @@ class PokemonSystem
     @bgmvolume     = 80    # Volume of background music and ME
     @sevolume      = 100   # Volume of sound effects
     @textinput     = 0     # Text input mode (0=cursor, 1=keyboard)
+    @vsync         = vsync_initial_value?
+  end
+
+  def vsync_initial_value?
+    return 1 unless File.exist?("mkxp.json")
+    file_content = File.read("mkxp.json")
+    clean_json_string = json_remove_comments(file_content)
+    # Parse JSON content
+    begin
+      config = JSON.parse(clean_json_string)
+
+      # Check the vsync value
+      vsync_value = config['vsync']
+      return vsync_value == true ? 0 : 1
+    rescue JSON::ParserError => e
+      echoln "Error parsing JSON: #{e.message}"
+    end
+  end
+
+  def update_vsync(vsync_value)
+    # file_path = "mkxp.json"
+    # vsync_value = vsync_value == 1 ? false : true
+    # vsync_str = vsync_value ? 'true' : 'false'
+  
+    # # Read the file line-by-line to preserve comments and order
+    # updated_lines = File.readlines(file_path).map do |line|
+    #   # Update the "vsync" value
+    #   if line.match?(/"vsync":\s*(true|false)/)
+    #     line.sub(/"vsync":\s*(true|false)/, "\"vsync\": #{vsync_str}")
+    #   # Update the "syncToRefreshrate" value
+    #   elsif line.match?(/"syncToRefreshrate":\s*(true|false)/)
+    #     line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{vsync_str}")
+    #   # Update or comment/uncomment the "fixedFramerate" value
+    #   elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
+    #     "//#{line.strip}" # Comment out the line if vsync is true
+    #   elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
+    #     line.sub(/\/\/\s*/, '') # Uncomment the line if vsync is false
+    #   else
+    #     line # Keep the line unchanged
+    #   end
+    # end
+  
+    # # Write the updated lines back to the file
+    # File.open(file_path, 'w') do |file|
+    #   file.puts(updated_lines)
+    # end
+    file_path = "mkxp.json"
+    vsync_value = vsync_value == 1 ? false : true
+    vsync_str = vsync_value ? 'true' : 'false'
+  
+    # Read the file line-by-line to preserve comments and order
+    lines = File.readlines(file_path)
+    
+    commented = false
+    updated_lines = lines.map.with_index do |line, index|
+      # Update the "vsync" value
+      if line.match?(/"vsync":\s*(true|false)/)
+        line.sub(/"vsync":\s*(true|false)/, "\"vsync\": #{vsync_str}")
+      # Update the "syncToRefreshrate" value
+      elsif line.match?(/"syncToRefreshrate":\s*(true|false)/)
+        line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{vsync_str}#{ vsync_str == 'true' ? '' : ',' }")
+      # Comment out the "fixedFramerate" line if vsync is true
+      elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
+        commented = true
+        "//#{line.strip}" # Comment out the line if vsync is true
+      # Uncomment the "fixedFramerate" line if vsync is false
+      elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
+        line.sub(/\/\/\s*/, '') # Uncomment the line if vsync is false
+      else
+        line # Keep the line unchanged
+      end
+    end
+  
+    if commented
+      # Handle the case where the "syncToRefreshrate" line is the last in the file
+      # Backtrack to find the first uncommented line that is not a closing brace
+      updated_lines.reverse_each.with_index do |line, i|
+        # Skip commented lines or closing braces
+        next if line.strip.start_with?("//") || line.strip == "}"
+
+        # If the line has a trailing comma, remove it
+        if line.strip.end_with?(",")
+          updated_lines[-(i+1)] = line.sub(/,$/, '') # Remove the comma
+          break # Stop after the first uncommented line with a comma
+        end
+      end
+    end
+  
+    # Write the updated lines back to the file
+    File.open(file_path, 'w') do |file|
+      file.puts(updated_lines)
+    end
+
+
+    # Handle game restart after vsync value change
+    if Kernel.pbConfirmMessageSerious("Cambiar el valor del vsync requiere reiniciar el juego.\nSe te ofrecerá la opción de guardar antes del reinicio.\n¿Deseas reiniciar ahora?")
+      if $player && pbConfirmMessage("¿Quieres guardar antes de salir?")
+        pbSaveScreen
+      end
+
+      # Launch Game.exe and immediately exit the current process
+      Thread.new do
+        system('start "" "Game.exe"')
+      end
+
+      sleep(0.1) # Give the thread some time to execute
+      Kernel.exit!
+    end
   end
 end
 
@@ -274,6 +384,7 @@ class PokemonOption_Scene
     # Get all options
     @options = []
     @hashes = []
+    $PokemonSystem.vsync = $PokemonSystem.vsync_initial_value?
     MenuHandlers.each_available(:options_menu) do |option, hash, name|
       @options.push(
         hash["type"].new(name, hash["parameters"], hash["get_proc"], hash["set_proc"])
@@ -540,6 +651,20 @@ MenuHandlers.add(:options_menu, :screen_size, {
     next if $PokemonSystem.screensize == value
     $PokemonSystem.screensize = value
     pbSetResizeFactor($PokemonSystem.screensize)
+  }
+})
+
+MenuHandlers.add(:options_menu, :vsync, {
+  "name"        => _INTL("VSync"),
+  "order"       => 130,
+  "type"        => EnumOption,
+  "parameters"  => [_INTL("Activado"), _INTL("Desactivado")],
+  "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego, se te ofrecerá guardar antes de reiniciar."),
+  "get_proc"    => proc { next $PokemonSystem.vsync },
+  "set_proc"    => proc { |value, _scene|
+    next if $PokemonSystem.vsync == value
+    $PokemonSystem.vsync = value
+    $PokemonSystem.update_vsync($PokemonSystem.vsync)
   }
 })
 
