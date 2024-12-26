@@ -113,7 +113,7 @@ class SpeciesIntro
 
   def create_picture_icon(bitmap)
     ret = PictureWindow.new(bitmap)
-    if PluginManager.installed?("Sprites Animados")
+    if PluginManager.installed?("Sprites Animados") || PluginManager.installed?("[DBK] Animated Pokémon System")
       ret.width = ret.height
       ret.zoom_x = ret.zoom_x * 2
       ret.zoom_y = ret.zoom_y * 2
