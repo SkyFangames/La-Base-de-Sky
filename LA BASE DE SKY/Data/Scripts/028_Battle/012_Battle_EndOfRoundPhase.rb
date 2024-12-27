@@ -831,4 +831,4 @@ class Battle
     @field.effects[PBEffects::FusionFlare] = false
     @endOfRound = false
   end
-
+end
