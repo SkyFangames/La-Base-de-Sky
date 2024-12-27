@@ -29,7 +29,6 @@ class Battle::Battler
   end
 
   def pbCanInflictStatus?(newStatus, user, showMessages, move = nil, ignoreStatus = false)
-    originalStatus = newStatus
     case newStatus
       when :FROZEN then newStatus = :FROSTBITE if Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE
     end
