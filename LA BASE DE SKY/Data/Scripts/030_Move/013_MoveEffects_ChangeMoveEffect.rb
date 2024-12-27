@@ -757,6 +757,7 @@ class Battle::Move::UseLastMoveUsed < Battle::Move
       "StarmobilePoisonTarget",                # Noxious Torque
       "StarmobileSleepTarget",                 # Wicked Torque
       "ProtectUserBurningBulwark",             # Burning Bulwark
+      "ProtectUserFromDamagingMovesSilkTrap",  # Silk Trap
       "TerapagosCategoryDependsOnHigherDamage" # Tera Starstorm
     ]
     if Settings::MECHANICS_GENERATION >= 6
@@ -969,6 +970,8 @@ class Battle::Move::UseRandomMove < Battle::Move
       "ProtectUserFromDamagingMovesObstruct",              # Obstruct
       "ProtectUserFromTargetingMovesSpikyShield",          # Spiky Shield
       "ProtectUserBanefulBunker",                          # Baneful Bunker
+      "ProtectUserFromDamagingMovesSilkTrap",              # Silk Trap
+      "ProtectUserBurningBulwark",                         # Burning Bulwark
       # Moves that call other moves
       "UseLastMoveUsedByTarget",                           # Mirror Move
       "UseLastMoveUsed",                                   # Copycat
@@ -1061,6 +1064,8 @@ class Battle::Move::UseRandomMoveFromUserParty < Battle::Move
       "ProtectUserFromDamagingMovesObstruct",              # Obstruct           # Not listed on Bulbapedia
       "ProtectUserFromTargetingMovesSpikyShield",          # Spiky Shield
       "ProtectUserBanefulBunker",                          # Baneful Bunker
+      "ProtectUserFromDamagingMovesSilkTrap",              # Silk Trap
+      "ProtectUserBurningBulwark",                         # Burning Bulwark
       # Moves that call other moves
       "UseLastMoveUsedByTarget",                           # Mirror Move
       "UseLastMoveUsed",                                   # Copycat
