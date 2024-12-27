@@ -52,32 +52,6 @@ class PokemonSystem
   end
 
   def update_vsync(vsync_value)
-    # file_path = "mkxp.json"
-    # vsync_value = vsync_value == 1 ? false : true
-    # vsync_str = vsync_value ? 'true' : 'false'
-  
-    # # Read the file line-by-line to preserve comments and order
-    # updated_lines = File.readlines(file_path).map do |line|
-    #   # Update the "vsync" value
-    #   if line.match?(/"vsync":\s*(true|false)/)
-    #     line.sub(/"vsync":\s*(true|false)/, "\"vsync\": #{vsync_str}")
-    #   # Update the "syncToRefreshrate" value
-    #   elsif line.match?(/"syncToRefreshrate":\s*(true|false)/)
-    #     line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{vsync_str}")
-    #   # Update or comment/uncomment the "fixedFramerate" value
-    #   elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
-    #     "//#{line.strip}" # Comment out the line if vsync is true
-    #   elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
-    #     line.sub(/\/\/\s*/, '') # Uncomment the line if vsync is false
-    #   else
-    #     line # Keep the line unchanged
-    #   end
-    # end
-  
-    # # Write the updated lines back to the file
-    # File.open(file_path, 'w') do |file|
-    #   file.puts(updated_lines)
-    # end
     file_path = "mkxp.json"
     vsync_value = vsync_value == 1 ? false : true
     vsync_str = vsync_value ? 'true' : 'false'
