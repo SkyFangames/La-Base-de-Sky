@@ -9845,4 +9845,16 @@ FunctionCode = BadPoisonTarget
 Flags = CanProtect,CanMirrorMove
 EffectChance = 50
 Description = Apresa al objetivo con una cadena para minarle las fuerzas. Puede envenenar gravemente.
-
+#-------------------------------
+[TERABLAST]
+Name = Teraexplosión
+Type = NORMAL
+Category = Special
+Power = 80
+Accuracy = 100
+TotalPP = 10
+Target = NearOther
+FunctionCode = None
+Flags = Contact,CanProtect,CanMirrorMove
+Description = Movimiento cuyo tipo varia al del usuario en caso de que éste haya teracristalizado.
+#-------------------------------
