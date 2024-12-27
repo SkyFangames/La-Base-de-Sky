@@ -7,7 +7,7 @@
 ### [DESCARGAR BASE](https://skyfangames.blogspot.com/2024/01/base-de-sky.html)
 
 
-### AÑADIDOS V 1.0.9
+### AÑADIDOS V 1.1.0
 
 - Modificaciones de la mochila. Ahora incluye la posibilidad de ordenar los objetos, buscar uno escribiendo su nombre e incluso señalar objetos favoritos.
 - Más validaciones para las animaciones de ataques.
