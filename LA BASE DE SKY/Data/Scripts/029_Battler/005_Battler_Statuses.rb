@@ -228,16 +228,8 @@ class Battle::Battler
        !(user && user.hasActiveAbility?(:INFILTRATOR))
       return false
     end
-    return true
-  end
-  
-  #-----------------------------------------------------------------------------
-  # Aliased to check if Synchronize should fail to pass Drowsy/Frostbite.
-  #-----------------------------------------------------------------------------
-  alias paldea_pbCanSynchronizeStatus? pbCanSynchronizeStatus?
-  def pbCanSynchronizeStatus?(newStatus, target)
-    ret = paldea_pbCanSynchronizeStatus?(newStatus, target)
-    return false if !ret
+    
+    # Cambios de 9na
     return false if newStatus == :FROSTBITE && pbHasType?(:ICE)
     case newStatus
     when :FROSTBITE then newStatus = :FROZEN
