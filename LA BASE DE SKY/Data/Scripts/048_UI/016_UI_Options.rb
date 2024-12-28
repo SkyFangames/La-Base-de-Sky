@@ -17,6 +17,7 @@ class PokemonSystem
   attr_accessor :sevolume
   attr_accessor :textinput
   attr_accessor :vsync
+  attr_accessor :autotile_animations
 
   def initialize
     @textspeed     = 2     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
@@ -33,6 +34,7 @@ class PokemonSystem
     @sevolume      = 100   # Volume of sound effects
     @textinput     = 0     # Text input mode (0=cursor, 1=keyboard)
     @vsync         = vsync_initial_value?
+    @autotile_animations = 0
   end
 
   def vsync_initial_value?
@@ -641,4 +643,17 @@ MenuHandlers.add(:options_menu, :vsync, {
     $PokemonSystem.update_vsync($PokemonSystem.vsync)
   }
 })
+
+MenuHandlers.add(:options_menu, :autotile_animations, {
+  "name"        => _INTL("Animaciones de mapas"),
+  "order"       => 140,
+  "type"        => EnumOption,
+  "parameters"  => [_INTL("Activadas"), _INTL("Desactivadas")],
+  "description" => _INTL("Activa o desactiva las animaciones de los mapas."),
+  "get_proc"    => proc { next $PokemonSystem.autotile_animations || 0 },
+  "set_proc"    => proc { |value, _scene| 
+    $PokemonSystem.autotile_animations = value
+  }
+})
+
 
