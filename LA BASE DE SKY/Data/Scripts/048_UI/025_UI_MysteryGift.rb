@@ -319,9 +319,7 @@ def pbDownloadMysteryGift(trainer)
     when 1
       # Buscar regalos con contraseña
       pbDownloadGiftWithPassword(trainer)
-    when 2
-      break
-    when -1
+    when 2 || -1
       break
     end
   end
@@ -432,7 +430,7 @@ def pbDownloadGiftWithPassword(trainer)
     if gift.length == 5 && gift[4] == password  # gift[4] es la contraseña
       regalos_pass.push(gift)
       gift_found = gift
-      break
+      # break
     end
   end
   # Verificar si se encontró un regalo con la contraseña proporcionada
