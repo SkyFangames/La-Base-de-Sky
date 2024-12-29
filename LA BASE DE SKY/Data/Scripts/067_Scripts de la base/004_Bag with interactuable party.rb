@@ -702,7 +702,6 @@ class PokemonBag_Scene
     @sprites["overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     @sprites["overlay_aux"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     pbSetSystemFont(@sprites["overlay"].bitmap)
-    rbvar = 0
     
     @sprites["pocketicon"] = BitmapSprite.new(130, 52, @viewport)
     @sprites["pocketicon"].x = 372
@@ -1845,7 +1844,6 @@ end
 def pbBagUseItem(bag, item, scene, screen, chosen, bagscene=nil)
   itm     = GameData::Item.get(item)
   useType = itm.field_use
-  found   = false
   pkmn    = $player.party[chosen]
   if itm.is_machine?    # TM, HM or TR
     if $player.pokemon_count == 0
