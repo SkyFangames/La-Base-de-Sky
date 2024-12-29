@@ -109,12 +109,18 @@
 class OpenStruct
   VERSION = "0.6.0"
 
-  HAS_PERFORMANCE_WARNINGS = begin
-    Warning[:performance]
-    true
+  begin 
+    HAS_PERFORMANCE_WARNINGS = defined?(Warning) && Warning.respond_to?(:[]) 
   rescue NoMethodError, ArgumentError
-    false
+    HAS_PERFORMANCE_WARNINGS = false
   end
+
+  # HAS_PERFORMANCE_WARNINGS = begin
+  #   Warning[:performance]
+  #   true
+  # rescue NoMethodError, ArgumentError
+  #   false
+  # end
   private_constant :HAS_PERFORMANCE_WARNINGS
 
   #

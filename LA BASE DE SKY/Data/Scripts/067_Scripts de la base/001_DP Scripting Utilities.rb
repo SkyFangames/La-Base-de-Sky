@@ -8,7 +8,7 @@ end
 
 # Helper function to remove accents from a string using Unicode normalization
 def remove_accents(str)
-  str.unicode_normalize(:nfd).gsub(/\p{Mn}/, '') # Decompose characters and remove non-spacing marks
+  str.unicode_normalize(:nfd).gsub(/[^\u0000-\u007F]/, '') # Remove non-ASCII characters after normalization
 end
   
 # Natural sort comparison method
