@@ -1170,7 +1170,7 @@ class PokemonBag_Scene
             sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Número"),_INTL("Alfabeticamente"), _INTL("Tipo")] : [_INTL("Categoría"), _INTL("Alfabeticamente")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1 && option < sort_keys.length
-              sorted_pocket = sort_pocket(sort_keys[option], thispocket)
+              sorted_pocket = sort_pocket(sort_keys[option], thispocket, itemwindow.pocket)
               if sorted_pocket && !sorted_pocket.empty?
                 thispocket = sorted_pocket
                 @bag.pockets[itemwindow.pocket] = thispocket
@@ -1244,7 +1244,7 @@ class PokemonBag_Scene
           GameData::Move.get(GameData::Item.get(item[0]).move).type 
         }
       else
-        order_array = GameData::Item.from_pocket(pocket_number, true)
+        order_array = GameData::Item.from_pocket(pocket_number)
         sorted_favs = favourites_in_pocket.sort_by { |item| order_array.index(item[0]) }
         sorted_non_favs = not_favs.sort_by { |item| order_array.index(item[0]) }
       end
