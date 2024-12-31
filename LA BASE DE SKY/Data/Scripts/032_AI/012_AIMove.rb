@@ -71,6 +71,9 @@ class Battle::AI::AIMove
       ret = Battle::AbilityEffects.triggerPriorityChange(user.ability, user.battler, @move, ret)
       user.battler.effects[PBEffects::Prankster] = false   # Untrigger this
     end
+    if user.item_active?
+      ret = Battle::ItemEffects.triggerPriorityChange(user.item, user.battler, @move, ret)
+    end
     return ret
   end
 

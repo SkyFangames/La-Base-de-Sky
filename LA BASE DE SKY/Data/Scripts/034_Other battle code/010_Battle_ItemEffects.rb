@@ -10,6 +10,7 @@ module Battle::ItemEffects
   # Battler's status problem
   StatusCure                      = ItemHandlerHash.new
   # Priority and turn order
+  PriorityChange                  = ItemHandlerHash.new
   PriorityBracketChange           = ItemHandlerHash.new
   PriorityBracketUse              = ItemHandlerHash.new
   # Move usage failures
@@ -93,6 +94,10 @@ module Battle::ItemEffects
   end
 
   #=============================================================================
+
+  def self.triggerPriorityChange(item, battler, move, priority)
+    return trigger(PriorityChange, item, battler, move, priority, ret: priority)
+  end
 
   def self.triggerPriorityBracketChange(item, battler, battle)
     return trigger(PriorityBracketChange, item, battler, battle, ret: 0)
@@ -639,6 +644,11 @@ Battle::ItemEffects::StatusCure.add(:RAWSTBERRY,
     next true
   }
 )
+
+#===============================================================================
+# PriorityChange handlers
+#===============================================================================
+# There aren't any!
 
 #===============================================================================
 # PriorityBracketChange handlers

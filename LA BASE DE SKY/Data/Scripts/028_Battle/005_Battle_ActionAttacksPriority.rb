@@ -158,6 +158,9 @@ class Battle
             if b.abilityActive?
               pri = Battle::AbilityEffects.triggerPriorityChange(b.ability, b, move, pri)
             end
+            if b.itemActive?
+              pri = Battle::ItemEffects.triggerPriorityChange(b.item, b, move, pri)
+            end
             entry[5] = pri
             @choices[b.index][4] = pri
           end
@@ -194,6 +197,9 @@ class Battle
           pri = move.pbPriority(entry[0])
           if entry[0].abilityActive?
             pri = Battle::AbilityEffects.triggerPriorityChange(entry[0].ability, entry[0], move, pri)
+          end
+          if entry[0].itemActive?
+            pri = Battle::ItemEffects.triggerPriorityChange(entry[0].item, entry[0], move, pri)
           end
           needRearranging = true if pri != entry[5]
           entry[5] = pri
