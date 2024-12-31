@@ -270,7 +270,7 @@ end
 # prevents Pokémon from falling asleep. Affects non-airborne Pokémon only.
 # (Electric Terrain)
 #===============================================================================
-class Battle::Move::StartElectricTerrain < Battle::Move
+class Battle::Move::StartElectricTerrain < Battle::Move::TerrainMove
   def initialize(battle, move)
     super
     @terrainType = :Electric
@@ -282,7 +282,7 @@ end
 # Pokémon at the end of each round. Affects non-airborne Pokémon only.
 # (Grassy Terrain)
 #===============================================================================
-class Battle::Move::StartGrassyTerrain < Battle::Move
+class Battle::Move::StartGrassyTerrain < Battle::Move::TerrainMove
   def initialize(battle, move)
     super
     @terrainType = :Grassy
@@ -294,7 +294,7 @@ end
 # protects Pokémon from status problems. Affects non-airborne Pokémon only.
 # (Misty Terrain)
 #===============================================================================
-class Battle::Move::StartMistyTerrain < Battle::Move
+class Battle::Move::StartMistyTerrain < Battle::Move::TerrainMove
   def initialize(battle, move)
     super
     @terrainType = :Misty
@@ -306,7 +306,7 @@ end
 # prevents Pokémon from being hit by >0 priority moves. Affects non-airborne
 # Pokémon only. (Psychic Terrain)
 #===============================================================================
-class Battle::Move::StartPsychicTerrain < Battle::Move
+class Battle::Move::StartPsychicTerrain < Battle::Move::TerrainMove
   def initialize(battle, move)
     super
     @terrainType = :Psychic
