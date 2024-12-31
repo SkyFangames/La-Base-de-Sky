@@ -271,16 +271,9 @@ end
 # (Electric Terrain)
 #===============================================================================
 class Battle::Move::StartElectricTerrain < Battle::Move
-  def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == :Electric
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    @battle.pbStartTerrain(user, :Electric)
+  def initialize(battle, move)
+    super
+    @terrainType = :Electric
   end
 end
 
@@ -290,16 +283,9 @@ end
 # (Grassy Terrain)
 #===============================================================================
 class Battle::Move::StartGrassyTerrain < Battle::Move
-  def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == :Grassy
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    @battle.pbStartTerrain(user, :Grassy)
+  def initialize(battle, move)
+    super
+    @terrainType = :Grassy
   end
 end
 
@@ -309,16 +295,9 @@ end
 # (Misty Terrain)
 #===============================================================================
 class Battle::Move::StartMistyTerrain < Battle::Move
-  def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == :Misty
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    @battle.pbStartTerrain(user, :Misty)
+  def initialize(battle, move)
+    super
+    @terrainType = :Misty
   end
 end
 
@@ -328,16 +307,9 @@ end
 # Pokémon only. (Psychic Terrain)
 #===============================================================================
 class Battle::Move::StartPsychicTerrain < Battle::Move
-  def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == :Psychic
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    @battle.pbStartTerrain(user, :Psychic)
+  def initialize(battle, move)
+    super
+    @terrainType = :Psychic
   end
 end
 
