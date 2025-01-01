@@ -34,6 +34,7 @@
 - Se incluye la Ruby Standard Library (RSL) esto es un compilado de librerias de código que podrán importar en sus scripts para facilitarse distintas cosas, por ejemplo puede importar la libreria de JSON para manejar este tipo de archivos con mayor facilidad. Pueden encontrar mas información [aquí](https://ruby-doc.org/3.3.0/standard_library_rdoc.html)
 - Corrección de crash al agregar huevos teniendo la incubadora registrada.
 - Agrega opción de desactivar el vsync al menú de opciones.
+- Corrección del movimiento Throat Chop
 - Cambios menores de traducciones.
 - Pequeños arreglos menores.
 
