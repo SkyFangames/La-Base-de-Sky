@@ -38,7 +38,7 @@ class PokemonSystem
   end
 
   def vsync_initial_value?
-    return 1 unless File.exist?("mkxp.json")
+    return 1 if !File.exist?("mkxp.json") || $joiplay
     file_content = File.read("mkxp.json")
     clean_json_string = json_remove_comments(file_content)
     # Parse JSON content
@@ -635,6 +635,7 @@ MenuHandlers.add(:options_menu, :vsync, {
   "order"       => 130,
   "type"        => EnumOption,
   "parameters"  => [_INTL("Activado"), _INTL("Desactivado")],
+  "condition"   => proc { next !$joiplay },
   "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego, se te ofrecerá guardar antes de reiniciar."),
   "get_proc"    => proc { next $PokemonSystem.vsync },
   "set_proc"    => proc { |value, _scene|
