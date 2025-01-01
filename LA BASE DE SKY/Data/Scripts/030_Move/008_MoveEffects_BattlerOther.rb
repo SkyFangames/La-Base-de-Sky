@@ -981,12 +981,7 @@ class Battle::Move::SetTargetAbilityToSimple < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
       return true
     end
-    return false
-  end
-  
-  alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
-  def pbFailsAgainstTarget?(user, target, show_message)
-    ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
+    ret = false
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
       @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
       return true
@@ -1025,17 +1020,11 @@ class Battle::Move::SetTargetAbilityToInsomnia < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
       return true
     end
-    return false
-  end
-  
-  alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
-  def pbFailsAgainstTarget?(user, target, show_message)
-    ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
-    if !ret && target.hasActiveItem?(:ABILITYSHIELD)
+    if target.hasActiveItem?(:ABILITYSHIELD)
       @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
       return true
     end
-    return ret
+    return false
   end
 
   def pbEffectAgainstTarget(user, target)
@@ -1118,17 +1107,11 @@ class Battle::Move::SetTargetAbilityToUserAbility < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
       return true
     end
-    return false
-  end
-  
-  alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
-  def pbFailsAgainstTarget?(user, target, show_message)
-    ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
-    if !ret && target.hasActiveItem?(:ABILITYSHIELD)
+    if target.hasActiveItem?(:ABILITYSHIELD)
       @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
       return true
     end
-    return ret
+    return false
   end
 
   def pbEffectAgainstTarget(user, target)
@@ -1184,17 +1167,11 @@ class Battle::Move::UserTargetSwapAbilities < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
       return true
     end
-    return false
-  end
-  
-  alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
-  def pbFailsAgainstTarget?(user, target, show_message)
-    ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
-    if !ret && target.hasActiveItem?(:ABILITYSHIELD)
+    if target.hasActiveItem?(:ABILITYSHIELD)
       @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
       return true
     end
-    return ret
+    return false
   end
 
   def pbEffectAgainstTarget(user, target)
@@ -1238,17 +1215,11 @@ class Battle::Move::NegateTargetAbility < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
       return true
     end
-    return false
-  end
-  
-  alias paldea_pbFailsAgainstTarget? pbFailsAgainstTarget?
-  def pbFailsAgainstTarget?(user, target, show_message)
-    ret = paldea_pbFailsAgainstTarget?(user, target, show_message)
-    if !ret && target.hasActiveItem?(:ABILITYSHIELD)
+    if target.hasActiveItem?(:ABILITYSHIELD)
       @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
       return true
     end
-    return ret
+    return false
   end
 
   def pbEffectAgainstTarget(user, target)

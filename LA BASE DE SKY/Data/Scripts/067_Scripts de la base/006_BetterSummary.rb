@@ -204,7 +204,7 @@ class PokemonSummary_Scene
         pbDrawImagePositions(overlay, imagepos)
         pbDrawTextPositions(overlay, textpos)
       end
-    end
+  end
     
     def pbChooseMoveToForget(move_to_learn)
         new_move = (move_to_learn) ? Pokemon::Move.new(move_to_learn) : nil
@@ -246,7 +246,7 @@ class PokemonSummary_Scene
           end
         end
         return (selmove == Pokemon::MAX_MOVES) ? -1 : selmove
-      end
+    end
 
       if !PluginManager.installed?("Modular UI Scenes")
         def pbScene
@@ -333,7 +333,7 @@ class PokemonSummary_Scene
         base=Color.new(248,248,248)
         shadow=Color.new(176,176,176)
         shadow2=Color.new(104,104,104)
-        statshadows=[]
+        # statshadows=[]
         pbSetSystemFont(overlay)
         abilityname=pokemon.ability.name
         abilitydesc=pokemon.ability.description

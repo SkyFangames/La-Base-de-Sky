@@ -16,7 +16,7 @@ class PokemonStorageScene
     pbDrawTextPositions(
       overlay,
       [[_INTL("Equipo: {1}", (@storage.party.length rescue 0)), 270, 334, :center, buttonbase, buttonshadow, :outline],
-       [_INTL("Salir"), 446+102, 334, :center, buttonbase, buttonshadow, :outline]]
+       [_INTL("Salir"), 447, 334, :center, buttonbase, buttonshadow, :outline]]
     )
     pokemon = nil
     if @screen.pbHeldPokemon
@@ -44,8 +44,8 @@ class PokemonStorageScene
       elsif pokemon.female?
         textstrings.push([_INTL("♀"), 148, 14, :left, Color.new(248, 56, 32), Color.new(224, 152, 144)])
       end
-      imagepos.push([_INTL("Graphics/UI/Storage/overlay_lv"), 6246, 240])
-      textstrings.push([pokemon.level.to_s, 90, 238, :left, base, shadow])
+      imagepos.push([_INTL("Graphics/UI/Storage/overlay_lv"), 6, 246])
+      textstrings.push([pokemon.level.to_s, 30, 240, :left, base, shadow])
       if pokemon.ability
         textstrings.push([pokemon.ability.name, 86, 312, :center, base, shadow])
       else

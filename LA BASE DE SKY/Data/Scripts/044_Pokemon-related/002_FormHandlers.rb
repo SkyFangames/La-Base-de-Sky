@@ -755,7 +755,7 @@ MultipleForms.register(:RATTATA, {
 MultipleForms.copy(:RATTATA, :SANDSHREW, :VULPIX, :DIGLETT, :MEOWTH, :GEODUDE,
                    :GRIMER, :PONYTA, :FARFETCHD, :CORSOLA, :ZIGZAGOON,
                    :DARUMAKA, :YAMASK, :STUNFISK, :SLOWPOKE, :ARTICUNO, :ZAPDOS,
-                   :MOLTRES)
+                   :MOLTRES, :WOOPER, :TAUROS )
 
 #===============================================================================
 # Regional forms
@@ -814,3 +814,5 @@ MultipleForms.register(:TERAPAGOS, {
   }
 })
 
+# Cambio de forma en base al género
+MultipleForms.copy(:ESPURR, :LECHONK, :OINKOLOGNE, :BASCULEGION)

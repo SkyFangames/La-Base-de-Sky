@@ -135,7 +135,7 @@ MenuHandlers.add(:debug_menu, :safari_zone_and_bug_contest, {
         end
       end
     else
-      pbMessage(_INTL("¡No estás en la Zona Safari 0 en un Concurso de Captura de Bichos!"))
+      pbMessage(_INTL("¡No estás en la Zona Safari o en un Concurso de Captura de Bichos!"))
     end
   }
 })
@@ -162,7 +162,7 @@ MenuHandlers.add(:debug_menu, :edit_field_effects, {
         params = ChooseNumberParams.new
         params.setRange(0, 99999)
         params.setDefaultValue($PokemonGlobal.repel)
-        $PokemonGlobal.repel = pbMessageChooseNumber(_INTL("Elige el nivel del Pokémon."), params)
+        $PokemonGlobal.repel = pbMessageChooseNumber(_INTL("Elige los pasos de Repelente restantes."), params)
       when 1   # Strength used
         $PokemonMap.strengthUsed = !$PokemonMap.strengthUsed
       when 2   # Flash used
@@ -534,7 +534,7 @@ MenuHandlers.add(:debug_menu, :toggle_exp_all, {
 MenuHandlers.add(:debug_menu, :toggle_logging, {
   "name"        => _INTL("Alterna los log de los mensajes en batalla"),
   "parent"      => :battle_menu,
-  "description" => _INTL("Guarda los logs del debug para comhates en Data/debuglog.txt."),
+  "description" => _INTL("Guarda los logs del debug para combates en Data/debuglog.txt."),
   "effect"      => proc {
     $INTERNAL = !$INTERNAL
     pbMessage(_INTL("Hacer logs de Debug de combates en la carpeta Data.")) if $INTERNAL
@@ -1292,7 +1292,7 @@ MenuHandlers.add(:debug_menu, :animation_organiser, {
 })
 
 MenuHandlers.add(:debug_menu, :import_animations, {
-  "name"        => _INTL("Exportar animaciones de combate"),
+  "name"        => _INTL("Importar animaciones de combate"),
   "parent"      => :editors_menu,
   "description" => _INTL("Importar todas las animaciones de combate de la carpeta \"Animations\"."),
   "effect"      => proc {

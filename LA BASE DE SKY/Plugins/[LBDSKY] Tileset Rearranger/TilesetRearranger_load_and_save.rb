@@ -95,7 +95,7 @@ class TilesetRearranger
 
   def save_tileset
     if @height > MAX_TILESET_ROWS
-      pbMessage(_INTL("This tileset is too tall ({1} rows) and cannot be saved. Please shrink it to at most {2} rows tall.",
+      pbMessage(_INTL("Este tileset es demasiado grande ({1} filas) y no se puede guardar. Por favor, acórtalo a como mucho {2} filas de alto.",
                       @height, MAX_TILESET_ROWS))
       return
     end
@@ -129,7 +129,7 @@ class TilesetRearranger
       end
     end
     load_tileset(@tileset_id)
-    pbMessage(_INTL("Changes saved. To ensure that they are applied properly, close and reopen RPG Maker XP."))
+    pbMessage(_INTL("Cambios guardados. Para asegurarte de que se aplican correctamente, cierra y abre el RPG Maker XP."))
   end
 
   # Generate and save new tileset graphic.

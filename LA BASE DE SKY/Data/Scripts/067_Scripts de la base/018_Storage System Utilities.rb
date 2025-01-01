@@ -717,9 +717,9 @@ class PokemonStorageScene
     for i in 0...PokemonBox::BOX_SIZE
       boxpokesprite = @sprites["box"].getPokemon(i)
       if sels.include?(i)
-        boxpokesprite.make_green
+        boxpokesprite&.make_green
       else
-        boxpokesprite.make_clear
+        boxpokesprite&.make_clear
       end
     end
   end
@@ -783,7 +783,7 @@ class PokemonStorageScreen
   def pbBoxCommands
     c_consts = [:JUMP]
 	c_consts.push(:SWAP) if CAN_SWAP_BOXES
-	c_consts.push(:WALL, :NAME, :CANCEL)
+	c_consts.push(:WALL, :NAME, :RELEASE, :CANCEL)
     commands = [
       _INTL("Saltar")
 	]
@@ -791,6 +791,7 @@ class PokemonStorageScreen
     commands.push(
       _INTL("Fondo"),
       _INTL("Nombre"),
+      _INTL("Liberar Caja"),
       _INTL("Cancelar")
     )
     command = pbShowCommands(_INTL("¿Qué quieres hacer?"), commands)
@@ -814,9 +815,39 @@ class PokemonStorageScreen
       @scene.pbChangeBackground(papers[1][wpaper]) if wpaper >= 0
     when :NAME
       @scene.pbBoxName(_INTL("¿Nombre de la Caja?"), 0, 12)
+    when :RELEASE
+      pbReleaseBox(@storage.currentBox)
     end
   end
   
+  def pbReleaseBox(box)
+    released_count = 0
+    stored_items = 0
+    if pbConfirmMessageSerious(_INTL("¿Quieres liberar a todos los Pokémon de la Caja?"))
+      for i in 0...@storage.maxPokemon(box)
+        pokemon = @storage[box, i]
+        next if !pokemon || pokemon.egg? || pokemon.mail || pokemon.cannot_release
+        if pokemon.hasItem? # Recupera el objeto equipado si lleva alguno.
+          stored_items += 1
+          $bag.add(pokemon.item_id)
+        end
+        @storage.pbDelete(box, i)
+        @scene.pbHardRefresh
+        released_count += 1
+        pbWait(0.20)
+      end
+      if released_count > 0
+        pbDisplay(_INTL("¡Has liberado {1} Pokémon de esta caja!", released_count))
+      else
+        pbDisplay(_INTL("No hay Pokémon válidos para liberar en esta caja."))
+      end
+      if stored_items > 0
+        pbDisplay(_INTL("Se ha#{stored_items > 1 ? 'n' : ''} guardado #{stored_items} objeto#{ stored_items > 1 ? 's' : '' } en tu mochila"))
+      end
+    end
+    @scene.pbRefresh
+  end
+
   #===============================================================================
   # ***Additional methods***
   #===============================================================================
@@ -851,7 +882,7 @@ class PokemonStorageScreen
       if box >= 0 && this_pkmn
         this_pkmn.formTime = nil if this_pkmn.respond_to?("formTime")
         this_pkmn.form     = 0 if this_pkmn.isSpecies?(:SHAYMIN)
-        this_pkmn.heal
+        this_pkmn.heal if Settings::HEAL_STORED_POKEMON
       end
       @storage[box,this_index] = this_pkmn
       if box==-1

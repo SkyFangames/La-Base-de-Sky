@@ -5,6 +5,8 @@ class PokemonBag
   attr_accessor :last_viewed_pocket
   attr_accessor :last_pocket_selections
   attr_reader   :registered_items
+  attr_reader   :new_items
+  attr_reader   :favourite_items
   attr_reader   :ready_menu_selection
 
   def self.pocket_names
@@ -20,6 +22,9 @@ class PokemonBag
     (0..PokemonBag.pocket_count).each { |i| @pockets[i] = [] }
     reset_last_selections
     @registered_items = []
+
+    @favourite_items = []
+    @new_items = []
     @ready_menu_selection = [0, 0, 1]   # Used by the Ready Menu to remember cursor positions
   end
 
@@ -95,6 +100,7 @@ class PokemonBag
     if ret && Settings::BAG_POCKET_AUTO_SORT[pocket - 1]
       @pockets[pocket].sort! { |a, b| GameData::Item.keys.index(a[0]) <=> GameData::Item.keys.index(b[0]) }
     end
+    mark_as_new(item) if ret && !new?(item) && has?(item)
     return ret
   end
 
@@ -160,6 +166,56 @@ class PokemonBag
     item_data = GameData::Item.try_get(item)
     @registered_items.delete(item_data.id) if item_data
   end
+
+
+  # Returns whether item has been marked as favourite.
+  def favourite?(item)
+    item_data = GameData::Item.try_get(item)
+    return false if !item_data
+    @favourite_items ||= []
+    return @favourite_items.include?(item_data.id)
+  end
+
+  # Marks the item as favourite.
+  def favourite(item)
+    item_data = GameData::Item.try_get(item)
+    return if !item_data
+    @favourite_items ||= []
+    @favourite_items.push(item_data.id) if !@favourite_items.include?(item_data.id)
+  end
+
+  # unmarks the item as favourite.
+  def unfavourite(item)
+    item_data = GameData::Item.try_get(item)
+    @favourite_items ||= []
+    @favourite_items.delete(item_data.id) if item_data
+  end
+
+
+  ### PREPARACION DE DETECTAR OBJETOS NUEVOS - AUN NO SE USA ###
+  # Returns whether item is new.
+  def new?(item)
+    item_data = GameData::Item.try_get(item)
+    return false if !item_data
+    @new_items ||= []
+    return @new_items.include?(item_data.id)
+  end
+
+  # Marks the item as new.
+  def mark_as_new(item)
+    item_data = GameData::Item.try_get(item)
+    return if !item_data
+    @new_items ||= []
+    @new_items.push(item_data.id) if !@new_items.include?(item_data.id)
+  end
+
+  # unmarks the item as new.
+  def unmark_as_new(item)
+    item_data = GameData::Item.try_get(item)
+    @new_items ||= []
+    @new_items.delete(item_data.id) if item_data
+  end
+  ### PREPARACION DE DETECTAR OBJETOS NUEVOS - AUN NO SE USA ###
 
   #-----------------------------------------------------------------------------
 
@@ -325,6 +381,7 @@ module ItemStorageHelper
       break
     end
     items.compact!
+    $bag.unmark_as_new(item) if ret
     return ret
   end
 end

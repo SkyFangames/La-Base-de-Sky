@@ -261,10 +261,12 @@ class Battle::Move
           oldHP += b.damageState.hpLost
         end
         effectiveness = 0
-        if Effectiveness.resistant?(b.damageState.typeMod)
-          effectiveness = 1
-        elsif Effectiveness.super_effective?(b.damageState.typeMod)
-          effectiveness = 2
+        if !self.is_a?(Battle::Move::FixedDamageMove)
+          if Effectiveness.resistant?(b.damageState.typeMod)
+            effectiveness = 1
+          elsif Effectiveness.super_effective?(b.damageState.typeMod)
+            effectiveness = 2
+          end
         end
         animArray.push([b, oldHP, effectiveness])
       end

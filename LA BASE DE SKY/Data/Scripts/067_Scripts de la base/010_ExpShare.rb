@@ -42,17 +42,13 @@ if Settings::USE_NEW_EXP_SHARE
         end
     }
     })
-
-    # class Trainer
-    #     attr_accessor(:expall)        # Mejora el Repartir experiencia
-    # end
     
     class Pokemon
         attr_accessor(:expshare)    # Repartir experiencia
         alias initialize_old initialize
         def initialize(species,level,player=$player,withMoves=true, recheck_form = true)
             initialize_old(species, level, player, withMoves)
-            @expshare = true if $PokemonSystem.expshareon == 0 || !$PokemonSystem.expshareon
+            @expshare = true if $PokemonSystem.expshareon == 0 || $PokemonSystem.expshareon || $player.has_exp_all
         end 
     end
     
@@ -62,7 +58,6 @@ if Settings::USE_NEW_EXP_SHARE
         alias initialize_old initialize
         def initialize(pokemon,index,viewport=nil)
             initialize_old(pokemon,index,viewport)
-            # @expicon = Sprite.new(viewport)
             if @pokemon.expshare
                 @expicon = ChangelingSprite.new(0, 0, viewport)
                 @expicon.addBitmap("expicon","Graphics/Pictures/expicon")
@@ -84,7 +79,7 @@ if Settings::USE_NEW_EXP_SHARE
         end
 
         def refresh_exp_icon
-            return if !@expicon || @expicon.disposed? #|| !@expicon.visible
+            return if !@expicon || @expicon.disposed?
             @expicon.x=self.x+226
             @expicon.y=self.y+68
             @expicon.color=self.color
@@ -130,8 +125,6 @@ if Settings::USE_NEW_EXP_SHARE
         end
         
     end
-
-    if !MOSTRAR_PANEL_REP_EXP
         class Battle 
         ################################################################################
         # Experiencia en captura reducida
@@ -158,31 +151,36 @@ if Settings::USE_NEW_EXP_SHARE
                 expShare = []
                 if !expAll
                     eachInTeam(0, 0) do |pkmn, i|
-                    next if !pkmn.able?
-                    next if (!pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE) && !pkmn.expshare
-                    expShare.push(i)
+                        next if !pkmn.able?
+                        next if (!pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE) && !pkmn.expshare
+                        expShare.push(i)
                     end
                 end
                 # Calculate EV and Exp gains for the participants
                 if numPartic > 0 || expShare.length > 0 || expAll
+                    unGroupMessage = !Settings::GROUP_EXP_SHARE_MESSAGE && expShare.length > 0 && expShare.length > b.participants.length ? true : false
                     # Gain EVs and Exp for participants
                     eachInTeam(0, 0) do |pkmn, i|
-                    next if !pkmn.able?
-                    next unless b.participants.include?(i) || expShare.include?(i) 
-                    pbGainEVsOne(i, b)
-                    pbGainExpOne(i, b, numPartic, expShare, expAll, !pkmn.shadowPokemon?)
+                      next if !pkmn.able?
+                      next unless b.participants.include?(i) || expShare.include?(i)
+                      showMessage = b.participants.include?(i) || unGroupMessage ? true : false
+                      pbGainEVsOne(i, b)
+                      pbGainExpOne(i, b, numPartic, expShare, expAll, showMessage)
+                    end
+                    if !unGroupMessage
+                      pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!"))
                     end
                     # Gain EVs and Exp for all other Pokémon because of Exp All
                     if expAll
-                    showMessage = true
-                    eachInTeam(0, 0) do |pkmn, i|
-                        next if !pkmn.able?
-                        next if b.participants.include?(i) || expShare.include?(i) 
-                        pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!")) if showMessage
-                        showMessage = false
-                        pbGainEVsOne(i, b)
-                        pbGainExpOne(i, b, numPartic, expShare, expAll, false)
-                    end
+                        showMessage = true
+                        eachInTeam(0, 0) do |pkmn, i|
+                            next if !pkmn.able?
+                            next if b.participants.include?(i) || expShare.include?(i) 
+                            pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!")) if showMessage
+                            showMessage = false
+                            pbGainEVsOne(i, b)
+                            pbGainExpOne(i, b, numPartic, expShare, expAll, false)
+                        end
                     end
                 end
                 # Clear the participants array
@@ -190,5 +188,4 @@ if Settings::USE_NEW_EXP_SHARE
                 end
             end
         end
-    end
 end

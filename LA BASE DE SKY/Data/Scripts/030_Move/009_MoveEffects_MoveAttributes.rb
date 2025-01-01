@@ -1025,7 +1025,7 @@ class Battle::Move::HoopaRemoveProtectionsBypassSubstituteLowerUserDef1 < Battle
   end
 
   def pbEffectAgainstTarget(user, target)
-  target.effects[PBEffects::BurningBulwark]           = false
+    target.effects[PBEffects::BurningBulwark]         = false
     target.effects[PBEffects::SilkTrap]         	    = false
     target.effects[PBEffects::BanefulBunker]          = false
     target.effects[PBEffects::KingsShield]            = false

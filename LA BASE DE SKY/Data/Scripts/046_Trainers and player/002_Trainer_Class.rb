@@ -10,7 +10,7 @@ class Trainer
 
   def inspect
     str = super.chop
-    party_str = @party.map { |p| p.species_data.species }.inspect
+    party_str = @party.map { |pkmn| pkmn.species_data.species }.inspect
     str << sprintf(" %s @party=%s>", self.full_name, party_str)
     return str
   end
@@ -54,11 +54,11 @@ class Trainer
   #=============================================================================
 
   def pokemon_party
-    return @party.find_all { |p| p && !p.egg? }
+    return @party.find_all { |pkmn| pkmn && !pkmn.egg? }
   end
 
   def able_party
-    return @party.find_all { |p| p && !p.egg? && !p.fainted? }
+    return @party.find_all { |pkmn| pkmn && !pkmn.egg? && !pkmn.fainted? }
   end
 
   def party_count
@@ -67,13 +67,13 @@ class Trainer
 
   def pokemon_count
     ret = 0
-    @party.each { |p| ret += 1 if p && !p.egg? }
+    @party.each { |pkmn| ret += 1 if pkmn && !pkmn.egg? }
     return ret
   end
 
   def able_pokemon_count
     ret = 0
-    @party.each { |p| ret += 1 if p && !p.egg? && !p.fainted? }
+    @party.each { |pkmn| ret += 1 if pkmn && !pkmn.egg? && !pkmn.fainted? }
     return ret
   end
 
@@ -87,15 +87,15 @@ class Trainer
   end
 
   def first_party
-    return @party[0]
+    return @party.first
   end
 
   def first_pokemon
-    return pokemon_party[0]
+    return pokemon_party.first
   end
 
   def first_able_pokemon
-    return able_party[0]
+    return able_party.first
   end
 
   def last_party
@@ -103,13 +103,13 @@ class Trainer
   end
 
   def last_pokemon
-    p = pokemon_party
-    return (p.length > 0) ? p[p.length - 1] : nil
+    pkmn = pokemon_party
+    return (pkmn.length > 0) ? pkmn[pkmn.length - 1] : nil
   end
 
   def last_able_pokemon
-    p = able_party
-    return (p.length > 0) ? p[p.length - 1] : nil
+    pkmn = able_party
+    return (pkmn.length > 0) ? pkmn[pkmn.length - 1] : nil
   end
 
   def remove_pokemon_at_index(index)
@@ -179,21 +179,21 @@ class Trainer
   # Returns true if there is a Pokémon of the given species in the trainer's
   # party. You may also specify a particular form it should be.
   def has_species?(species, form = -1)
-    return pokemon_party.any? { |p| p&.isSpecies?(species) && (form < 0 || p.form == form) }
+    return pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) }
   end
 
   # Returns whether there is a fatefully met Pokémon of the given species in the
   # trainer's party.
   def has_fateful_species?(species)
-    return pokemon_party.any? { |p| p&.isSpecies?(species) && p.obtain_method == 4 }
+    return pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && pkmn.obtain_method == 4 }
   end
 
   # Returns whether there is a Pokémon with the given type in the trainer's
-  # party.
-  def has_pokemon_of_type?(type)
+  # party. excluded_pokemon is an array of Pokemon objects to ignore.
+  def has_pokemon_of_type?(type, excluded_pokemon = [])
     return false if !GameData::Type.exists?(type)
     type = GameData::Type.get(type).id
-    return pokemon_party.any? { |p| p&.hasType?(type) }
+    return pokemon_party.any? { |pkmn| pkmn&.hasType?(type) && !excluded_pokemon.include?(pkmn) }
   end
 
   def find_pokemon_of_type(type, all = false)

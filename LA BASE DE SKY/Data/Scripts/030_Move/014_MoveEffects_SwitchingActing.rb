@@ -279,13 +279,13 @@ class Battle::Move::BindTarget < Battle::Move
     msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     case @id
     when :BIND
-      msg = _INTL("¡Atadura de {2} oprime a {1}!", target.pbThis(true), user.pbThis(true))
+      msg = _INTL("¡Atadura de {1} oprime a {2}!", user.pbThis, target.pbThis(true))
     when :CLAMP
-      msg = _INTL("¡{2} atenazó a {1}!", user.pbThis(true), target.pbThis)
+      msg = _INTL("¡{1} atenazó a {2}!", user.pbThis, target.pbThis(true))
     when :FIRESPIN
       msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     when :INFESTATION
-      msg = _INTL("¡{2} es presa del acoso de  {1}!", target.pbThis(true), user.pbThis)
+      msg = _INTL("¡{1} es presa del acoso de  {2}!", target.pbThis, user.pbThis(true))
     when :MAGMASTORM
       msg = _INTL("¡Lluvia Ígnea atrapó a {1}!", target.pbThis(true))
     when :SANDTOMB
@@ -901,7 +901,7 @@ class Battle::Move::DisableTargetStatusMoves < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Taunt] = 4
-    @battle.pbDisplay(_INTL("¡{1} se liberó de la Mofa!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} se dejó engañar por Mofa!", target.pbThis))
     target.pbItemStatusCureCheck
   end
 end
@@ -937,8 +937,8 @@ class Battle::Move::DisableTargetSoundMoves < Battle::Move
     if target.effects[PBEffects::ThroatChop] == 0
       @battle.pbDisplay(_INTL("¡El efecto de {1} previene a {2} de usar ciertos movimientos!",
                               @name, target.pbThis(true)))
+      target.effects[PBEffects::ThroatChop] = 2
     end
-    target.effects[PBEffects::ThroatChop] = 3
   end
 end
 

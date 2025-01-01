@@ -1141,7 +1141,7 @@ class PokemonSummary_Scene
           redraw = true
         end
       elsif Input.trigger?(Input::ACTION)
-        if index < 6 && markings[index] > 0
+        if index < 6 && markings && markings[index] && markings[index] > 0
           pbPlayDecisionSE
           markings[index] = 0
           redraw = true

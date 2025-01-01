@@ -443,7 +443,7 @@ class Interpreter
     if sell_price >= 0   # 0=can't sell
       $game_temp.mart_prices[item][1] = sell_price
     elsif buy_price > 0
-      $game_temp.mart_prices[item][1] = buy_price / 2
+      $game_temp.mart_prices[item][1] = buy_price / Settings::ITEM_SELL_PRICE_DIVISOR
     end
   end
 

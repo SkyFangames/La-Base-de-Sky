@@ -7,6 +7,9 @@ LA BASE DE SKY/Data/Armors.rxdata
 LA BASE DE SKY/Data/Skills.rxdata
 LA BASE DE SKY/Data/States.rxdata
 LA BASE DE SKY/Data/Weapons.rxdata
-LA BASE DE SKY V1.0.6.zip
 LA BASE DE SKY/rgss-compiler.json
 LA BASE DE SKY/Data/Animations.rxdata
+Scripts.code-workspace
+**/*.dat
+LA BASE DE SKY\Data\*.dat
+LA BASE DE SKY/Data/PluginScripts.rxdata

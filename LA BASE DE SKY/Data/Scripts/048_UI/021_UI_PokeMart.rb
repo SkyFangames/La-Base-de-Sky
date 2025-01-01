@@ -27,21 +27,43 @@ class PokemonMartAdapter
   end
 
   def getDisplayName(item)
-    item_name = GameData::Item.get(item).name
-    if GameData::Item.get(item).is_machine?
-      machine = GameData::Item.get(item).move
-      item_name = _INTL("{1} {2}", item_name, GameData::Move.get(machine).name)
+    item_data = GameData::Item.get(item)
+    item_name = item_data.name
+    if item_data.is_machine?
+      machine = item_data.move
+      item_name = _INTL("{1} {2}", item_name.ljust(8), GameData::Move.get(machine).name)
     end
     return item_name
   end
 
   def getDisplayNamePlural(item)
-    item_name_plural = GameData::Item.get(item).name_plural
-    if GameData::Item.get(item).is_machine?
-      machine = GameData::Item.get(item).move
-      item_name_plural = _INTL("{1} {2}", item_name_plural, GameData::Move.get(machine).name)
+    item_data = GameData::Item.get(item)
+    item_name_plural = item_data.name_plural
+    if item_data.is_machine?
+      machine = item_data.move
+      item_name_plural = _INTL("{1} {2}", item_name_plural.ljust(9), GameData::Move.get(machine).name)
     end
     return item_name_plural
+  end
+
+  def getDisplayNameMachineNumber(item)
+    item_data = GameData::Item.get(item)
+    item_name = item_data.name
+    if item_data.is_machine?
+      machine = item_data.move
+      item_name = _INTL("{1}", item_name)
+    end
+    return item_name
+  end
+
+  def getDisplayNameMachineName(item)
+    item_data = GameData::Item.get(item)
+    item_name = item_data.name
+    if item_data.is_machine?
+      machine = item_data.move
+      item_name = _INTL("{1}", GameData::Move.get(machine).name)
+    end
+    return item_name
   end
 
   def getDescription(item)
@@ -728,7 +750,7 @@ def pbPokemonMart(stock, speech = nil, cantsell = false)
   commands[cmdBuy = commands.length]  = _INTL("Quiero comprar")
   commands[cmdSell = commands.length] = _INTL("Quiero vender") if !cantsell
   commands[cmdQuit = commands.length] = _INTL("No, gracias")
-  cmd = pbMessage(speech || _INTL("¡Bienvenido! ¿En qué te puedo ayudar"), commands, cmdQuit + 1)
+  cmd = pbMessage(speech || _INTL("¡Bienvenido! ¿En qué te puedo ayudar?"), commands, cmdQuit + 1)
   loop do
     if cmdBuy >= 0 && cmd == cmdBuy
       scene = PokemonMart_Scene.new

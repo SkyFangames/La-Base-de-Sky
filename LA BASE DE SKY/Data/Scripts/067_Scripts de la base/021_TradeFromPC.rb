@@ -34,7 +34,6 @@ def pbChooseTradablePokemonPC(variableNumber, nameVarNumber, wanted, ableProc = 
     })
   }
   pbSet(variableNumber, chosen)
-  echoln chosen
   if chosen.nil?
     # No Pokémon was chosen, so reset the variables and do not proceed with the trade
     pbSet(nameVarNumber, "")
@@ -50,7 +49,6 @@ end
 def pbStartTradePC(newpoke, nickname = nil, trainerName = nil, trainerGender = 0)
   pos_pokemon_pc = pbGet(1)
   myPokemon = $PokemonStorage[pos_pokemon_pc[0], pos_pokemon_pc[1]]
-  echoln myPokemon
   $stats.trade_count += 1 
   yourPokemon = nil
   resetmoves = true

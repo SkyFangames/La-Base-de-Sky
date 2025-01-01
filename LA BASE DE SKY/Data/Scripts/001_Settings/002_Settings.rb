@@ -34,6 +34,18 @@ module Settings
   # A medida que se acercan a un entrenador se vuelven mas oscuras.
   MOSTRAR_BARRAS_ENTRENADORES = true
   
+  # Elige si cuando crees regalos misteriosos en el archivo MysteryGiftMaster.txt,
+  # estos datos estarán o no encriptados. No encriptarlos ayuda a poder abrir el
+  # archivo y ver el contenido desde cualquier editor de texto, pero en caso de que
+  # hayas creado alguno con contraseña, tus jugadores podrán ver el contenido.
+  # Lo recomendable es que cuando compartas tu juego borres los dos archivos txt
+  # de MysteryGiftMaster.txt y MysteryGiftMaster.txt que se generan en la carpeta
+  # principal del juego, pero si no te quieres preocupar por si se te olvida, deja
+  # esta opción en true.
+  # Ten en cuenta que si cambias esta opción deberás eliminar los dos archivos de
+  # la carpeta para no tener errores.
+  ENCRIPTAR_REGALOS_MISTERIOSOS_EN_MASTER = true
+
   #=============================================================================
 
   # La cantidad máxima de dinero que el jugador puede llegar a tener.
@@ -112,6 +124,10 @@ module Settings
   # compres de una sola vez (true) o que te den 1 sola Honor Ball cuando compras
   # 10 o más Poké Balls (false). 
   MORE_BONUS_PREMIER_BALLS                   = (MECHANICS_GENERATION >= 8)
+
+  # El valor por defecto de venta de un objeto en las tiendas, es el precio de compra dividido por este número
+  ITEM_SELL_PRICE_DIVISOR                    = MECHANICS_GENERATION >= 9 ? 4 : 2
+
   # El número de pasos permitodos en la Zona Safari antes de que te echen
   # (0 = infinito).
   SAFARI_STEPS                               = 600

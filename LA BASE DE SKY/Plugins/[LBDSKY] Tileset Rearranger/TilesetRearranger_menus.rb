@@ -75,10 +75,10 @@ class TilesetRearranger
           map_names.push(sprintf("%03d: %s", map_id, @map_names[map_id]))
         end
         map_names.sort!
-        map_names.insert(0, _ISPRINTF("Maps using tileset {1:03d}: {2:s}:", @tileset_id, @tilesets_data[@tileset_id].name))
+        map_names.insert(0, _ISPRINTF("Mapas usando el tileset {1:03d}: {2:s}:", @tileset_id, @tilesets_data[@tileset_id].name))
         pbShowCommands(nil, map_names, -1)
       else
-        pbMessage(_ISPRINTF("No maps use tileset {1:03d}: {2:s}.", @tileset_id, @tilesets_data[@tileset_id].name))
+        pbMessage(_ISPRINTF("Ningún mapa usa el tileset {1:03d}: {2:s}.", @tileset_id, @tilesets_data[@tileset_id].name))
       end
     when 5   # Change tileset
       choose_tileset

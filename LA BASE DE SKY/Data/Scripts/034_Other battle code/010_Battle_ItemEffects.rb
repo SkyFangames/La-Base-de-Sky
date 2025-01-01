@@ -10,6 +10,7 @@ module Battle::ItemEffects
   # Battler's status problem
   StatusCure                      = ItemHandlerHash.new
   # Priority and turn order
+  PriorityChange                  = ItemHandlerHash.new
   PriorityBracketChange           = ItemHandlerHash.new
   PriorityBracketUse              = ItemHandlerHash.new
   # Move usage failures
@@ -93,6 +94,10 @@ module Battle::ItemEffects
   end
 
   #=============================================================================
+
+  def self.triggerPriorityChange(item, battler, move, priority)
+    return trigger(PriorityChange, item, battler, move, priority, ret: priority)
+  end
 
   def self.triggerPriorityBracketChange(item, battler, battle)
     return trigger(PriorityBracketChange, item, battler, battle, ret: 0)
@@ -296,7 +301,7 @@ Battle::ItemEffects::HPHeal.add(:BERRYJUICE,
     if forced
       battle.pbDisplay(_INTL("¡{1} ha recuperado PS!", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("¡{1} ha reuperado PS con {2}!", battler.pbThis, itemName))
+      battle.pbDisplay(_INTL("¡{1} ha recuperado PS con {2}!", battler.pbThis, itemName))
     end
     next true
   }
@@ -391,7 +396,7 @@ Battle::ItemEffects::HPHeal.add(:ORANBERRY,
       PBDebug.log("[Item triggered] Forced consuming of #{itemName}")
       battle.pbDisplay(_INTL("¡{1} ha recuperado PS!", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!", battler.pbThis, itemName))
+      battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!", battler.pbThis, itemName))
     end
     next true
   }
@@ -639,6 +644,11 @@ Battle::ItemEffects::StatusCure.add(:RAWSTBERRY,
     next true
   }
 )
+
+#===============================================================================
+# PriorityChange handlers
+#===============================================================================
+# There aren't any!
 
 #===============================================================================
 # PriorityBracketChange handlers
@@ -1314,7 +1324,7 @@ Battle::ItemEffects::OnBeingHit.add(:ABSORBBULB,
 
 Battle::ItemEffects::OnBeingHit.add(:AIRBALLOON,
   proc { |item, user, target, move, battle|
-    battle.pbDisplay(_INTL("¡{1} de {2} ha expotado!", target.pbThis, target.itemName))
+    battle.pbDisplay(_INTL("¡{1} de {2} ha explotado!", target.pbThis, target.itemName))
     target.pbConsumeItem(false, true)
     target.pbSymbiosis
   }
@@ -1637,7 +1647,7 @@ Battle::ItemEffects::AfterMoveUseFromUser.add(:SHELLBELL,
     targets.each { |b| totalDamage += b.damageState.totalHPLost }
     next if totalDamage <= 0
     user.pbRecoverHP(totalDamage / 8)
-    battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!",
+    battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!",
        user.pbThis, user.itemName))
   }
 )
@@ -1872,7 +1882,7 @@ Battle::ItemEffects::EndOfRoundHealing.add(:BLACKSLUDGE,
       next if !battler.canHeal?
       battle.pbCommonAnimation("UseItem", battler)
       battler.pbRecoverHP(battler.totalhp / 16)
-      battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!",
+      battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!",
          battler.pbThis, battler.itemName))
     elsif battler.takesIndirectDamage?
       battle.pbCommonAnimation("UseItem", battler)
@@ -1888,7 +1898,7 @@ Battle::ItemEffects::EndOfRoundHealing.add(:LEFTOVERS,
     next if !battler.canHeal?
     battle.pbCommonAnimation("UseItem", battler)
     battler.pbRecoverHP(battler.totalhp / 16)
-    battle.pbDisplay(_INTL("¡{1} ha reuperado unos pocos PS con {2}!",
+    battle.pbDisplay(_INTL("¡{1} ha recuperado unos pocos PS con {2}!",
        battler.pbThis, battler.itemName))
   }
 )

@@ -408,29 +408,31 @@ class Pokemon
   end
   
   #-----------------------------------------------------------------------------
-  # Default Legacy data.
+  # Legacy data.
   #-----------------------------------------------------------------------------
   def legacy_data
-    if !@legacy_data
-      @legacy_data = {
-        :party_time     => 0,
-        :item_count     => 0,
-        :move_count     => 0,
-        :egg_count      => 0,
-        :trade_count    => 0,
-        :defeated_count => 0,
-        :fainted_count  => 0,
-        :supereff_count => 0,
-        :critical_count => 0,
-        :retreat_count  => 0,
-        :trainer_count  => 0,
-        :leader_count   => 0,
-        :legend_count   => 0,
-        :champion_count => 0,
-        :loss_count     => 0
-      }
-    end
+    resetLegacyData if !@legacy_data
     return @legacy_data
+  end
+
+  def resetLegacyData
+    @legacy_data = {
+      :party_time     => 0,
+      :item_count     => 0,
+      :move_count     => 0,
+      :egg_count      => 0,
+      :trade_count    => 0,
+      :defeated_count => 0,
+      :fainted_count  => 0,
+      :supereff_count => 0,
+      :critical_count => 0,
+      :retreat_count  => 0,
+      :trainer_count  => 0,
+      :leader_count   => 0,
+      :legend_count   => 0,
+      :champion_count => 0,
+      :loss_count     => 0
+    }
   end
   
   #-----------------------------------------------------------------------------
@@ -441,6 +443,6 @@ class Pokemon
     enhanced_initialize(*args)
     @shiny_leaf = 0
     @last_update_time = 0.0
-    legacy_data
+    resetLegacyData
   end
 end

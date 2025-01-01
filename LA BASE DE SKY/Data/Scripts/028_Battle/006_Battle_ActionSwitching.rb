@@ -86,15 +86,9 @@ class Battle
       return false
     end
     # Check whether battler can switch out
-    return pbCanSwitchOut?(idxBattler, partyScene)
-  end
-  
-  #-----------------------------------------------------------------------------
-  # Aliased to ensure Pokemon affected by Commander cannot switch out for any reason.
-  #-----------------------------------------------------------------------------
-  alias paldea_pbCanSwitch? pbCanSwitch?
-  def pbCanSwitch?(idxBattler, idxParty = -1, partyScene = nil)
-    ret = paldea_pbCanSwitch?(idxBattler, idxParty, partyScene)
+    ret = pbCanSwitchOut?(idxBattler, partyScene)
+    
+    # Commander switch
     if ret && @battlers[idxBattler].effects[PBEffects::Commander]
       partyScene&.pbDisplay(_INTL("¡{1} no puede ser cambiado!", battler.pbThis))
       return false
@@ -102,7 +96,6 @@ class Battle
     return ret
   end
   
-
   def pbCanChooseNonActive?(idxBattler)
     pbParty(idxBattler).each_with_index do |_pkmn, i|
       return true if pbCanSwitchIn?(idxBattler, i)

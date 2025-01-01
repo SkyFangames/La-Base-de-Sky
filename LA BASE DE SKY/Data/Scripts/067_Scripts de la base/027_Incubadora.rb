@@ -250,7 +250,8 @@ def takeEgg(egg,index)
 end
 
 def pbGenerateEgg(pkmn, text = "")
-  return false if !pkmn || $player.party_full?
+  return false if !pkmn || !(GameData::Item.exists?(:EGGHATCHER) && $bag.has?(:EGGHATCHER))  && $player.party_full?
+  # return false if !pkmn || $player.party_full?
   pkmn = Pokemon.new(pkmn, Settings::EGG_LEVEL) if !pkmn.is_a?(Pokemon)
   # Set egg's details
   pkmn.name           = _INTL("Huevo")
@@ -264,11 +265,26 @@ def pbGenerateEgg(pkmn, text = "")
       ret = addEgg(pkmn)
       if ret == true
         return true
+      else
+        return false if $player.party_full?  
       end
+    else
+      return false if $player.party_full?
     end
   end
   pbStorePokemon(pkmn)
   return true
+end
+
+def can_add_egg?
+  return true if !$player.party_full? || incubator_has_space?
+  return false
+end
+
+def incubator_has_space?
+  return false if !GameData::Item.exists?(:EGGHATCHER) || !$bag.has?(:EGGHATCHER) 
+  return true if !$PokemonGlobal.eggs
+  return $PokemonGlobal.eggs.include?(nil)
 end
 
 def addEgg(egg)

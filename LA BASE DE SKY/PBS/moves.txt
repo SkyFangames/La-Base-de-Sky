@@ -48,7 +48,7 @@ Target = NearOther
 Priority = 2
 FunctionCode = FailsIfNotUserFirstTurn
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Movimiento de gran potencia que solo puede usarse en el primer turno del usuario.
+Description = Movimiento de gran potencia y prioridad que solo puede usarse en el primer turno del usuario.
 #-------------------------------
 [POLLENPUFF]
 Name = Bola de Polen
@@ -96,7 +96,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Cruza las guadañas o las garras para atacar al rival como si fueran unas tijeras.
 #-------------------------------
 [SIGNALBEAM]
@@ -209,7 +209,7 @@ Accuracy = 95
 TotalPP = 20
 Target = NearOther
 FunctionCode = PowerHigherWithConsecutiveUse
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Ataque con garras o guadañas que crece en intensidad si se usa repetidas veces.
 #-------------------------------
 [PINMISSILE]
@@ -503,7 +503,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Ataca al objetivo a la primera oportunidad. Suele ser crítico.
 #-------------------------------
 [SUCKERPUNCH]
@@ -639,7 +639,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = HitOncePerUserTeamMember
 Flags = CanProtect,CanMirrorMove
-Description = Ataque de  el equipo Pokémon. Cuantos más haya, más veces ataca.
+Description = Ataque de todo el equipo Pokémon. Cuantos más haya, más veces ataca.
 #-------------------------------
 [FLING]
 Name = Lanzamiento
@@ -958,7 +958,7 @@ Accuracy = 95
 TotalPP = 5
 Target = NearOther
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Desgarra al objetivo y el espacio a su alrededor. Suele ser crítico.
 #-------------------------------
 [DRAGONHAMMER]
@@ -1069,7 +1069,7 @@ Accuracy = 100
 TotalPP = 20
 Target = AllNearFoes
 FunctionCode = FlinchTargetDoublePowerIfTargetInSky
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 20
 Description = Crea un violento tornado para hacer trizas al rival. Puede amedrentarlo.
 #-------------------------------
@@ -1564,7 +1564,7 @@ TotalPP = 5
 Target = AllNearOthers
 FunctionCode = UserFaintsPowersUpInMistyTerrainExplosive
 Flags = CanProtect,CanMirrorMove
-Description = Ataca a todos a su alrededor debilitándose. Duplica la potencia si hay campo de niebla.
+Description = Ataca a todos a su alrededor, pero se debilita. Aumenta su potencia en un 50% si hay un campo niebla.
 #-------------------------------
 [MOONBLAST]
 Name = Fuerza Lunar
@@ -1663,7 +1663,7 @@ Accuracy = 100
 TotalPP = 30
 Target = NearOther
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 Description = El Pokémon que lo usa desata un vendaval feérico que arremete contra el objetivo.
 #-------------------------------
 [NATURESMADNESS]
@@ -1840,7 +1840,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = CrashDamageIfFailsUnusableInGravity
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Salta muy alto y lanza una patada. Si falla, dañará al usuario.
 #-------------------------------
 [CLOSECOMBAT]
@@ -1938,7 +1938,7 @@ Accuracy = 95
 TotalPP = 10
 Target = NearOther
 FunctionCode = CrashDamageIfFailsUnusableInGravity
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Da un salto y pega una patada. Si falla, dañará al usuario.
 #-------------------------------
 [SACREDSWORD]
@@ -1950,7 +1950,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = IgnoreTargetDefSpDefEvaStatStages
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = El usuario ataca con una espada, ignorando cualquier cambio en las características del objetivo.
 #-------------------------------
 [THUNDEROUSKICK]
@@ -1962,7 +1962,7 @@ Accuracy = 100
 TotalPP = 10
 Target = NearOther
 FunctionCode = LowerTargetDefense1
-Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome
+Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome,Kicking
 EffectChance = 100
 Description = El usuario arremete contra el rival con una poderosa patada que siempre baja la Defensa.
 #-------------------------------
@@ -1975,7 +1975,7 @@ Accuracy = 100
 TotalPP = 10
 Target = NearOther
 FunctionCode = UseTargetDefenseInsteadOfTargetSpDef
-Flags = CanProtect,CanMirrorMove,CannotMetronome
+Flags = CanProtect,CanMirrorMove,CannotMetronome,Slicing
 Description = Ensarta al objetivo con un sable, hiriéndolo con su místico poder.
 #-------------------------------
 [SKYUPPERCUT]
@@ -2084,7 +2084,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = LowerTargetSpeed1
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 100
 Description = Un veloz ataque a los pies que reduce la Velocidad del objetivo.
 #-------------------------------
@@ -2136,7 +2136,7 @@ Accuracy = 85
 TotalPP = 15
 Target = NearOther
 FunctionCode = FlinchTarget
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 30
 Description = Una patada rápida y circular. También puede amedrentar al objetivo.
 #-------------------------------
@@ -2225,7 +2225,7 @@ Accuracy = 100
 TotalPP = 30
 Target = NearOther
 FunctionCode = HitTwoTimes
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Una patada doble. Golpea dos veces.
 #-------------------------------
 [ARMTHRUST]
@@ -2249,7 +2249,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = HitThreeTimesPowersUpWithEachHit
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patea hasta tres veces seguidas y cada vez más fuerte.
 #-------------------------------
 [COUNTER]
@@ -2286,7 +2286,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = PowerHigherWithTargetWeight
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patada baja. Cuanto más pesa el objetivo, más daño causa.
 #-------------------------------
 [REVERSAL]
@@ -2595,7 +2595,7 @@ Accuracy = 90
 TotalPP = 10
 Target = AllNearFoes
 FunctionCode = BurnTarget
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 10
 Description = Provoca un viento abrasador que puede quemar al objetivo.
 #-------------------------------
@@ -2621,7 +2621,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = BurnTarget
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Kicking
 EffectChance = 10
 Description = Patada que suele ser un golpe crítico y puede causar quemaduras.
 #-------------------------------
@@ -2882,7 +2882,7 @@ Accuracy = 70
 TotalPP = 10
 Target = Other
 FunctionCode = ConfuseTargetAlwaysHitsInRainHitsTargetInSky
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 30
 Description = Golpea al objetivo con un fuerte torbellino que envuelve al rival y puede confundirlo.
 #-------------------------------
@@ -2969,7 +2969,7 @@ Accuracy = 95
 TotalPP = 15
 Target = Other
 FunctionCode = FlinchTarget
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Slicing
 EffectChance = 30
 Description = Ataca con una hoja de aire que incluso corta el cielo. También puede amedrentar al objetivo.
 #-------------------------------
@@ -2995,7 +2995,7 @@ Accuracy = 0
 TotalPP = 20
 Target = Other
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = El usuario lanza un ataque muy rápido e ineludible.
 #-------------------------------
 [AIRCUTTER]
@@ -3007,7 +3007,7 @@ Accuracy = 95
 TotalPP = 25
 Target = AllNearFoes
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing,Wind
 Description = Viento cortante que azota. Suele ser un golpe crítico.
 #-------------------------------
 [PLUCK]
@@ -3079,7 +3079,7 @@ Accuracy = 100
 TotalPP = 35
 Target = Other
 FunctionCode = DoublePowerIfTargetInSky
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 Description = Crea un tornado con las alas y lo lanza contra el objetivo.
 #-------------------------------
 [PECK]
@@ -3144,6 +3144,7 @@ Accuracy = 0
 TotalPP = 15
 Target = UserSide
 FunctionCode = StartUserSideDoubleSpeed
+Flags = Wind
 Description = Fuerte remolino que duplica la Velocidad de los Pokémon de tu equipo durante cuatro turnos.
 #-------------------------------
 [ASTRALBARRAGE]
@@ -3464,7 +3465,7 @@ Accuracy = 100
 TotalPP = 10
 Target = NearOther
 FunctionCode = TwoTurnAttackOneTurnInSun
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Dedica un turno a concentrar energía en forma de cuchilla con la que ataca en el segundo turno.
 #-------------------------------
 [PETALDANCE]
@@ -3550,7 +3551,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Acuchilla con una hoja fina. Suele dar un golpe crítico.
 #-------------------------------
 [PETALBLIZZARD]
@@ -3562,7 +3563,7 @@ Accuracy = 100
 TotalPP = 15
 Target = AllNearOthers
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 Description = El usuario desata un intenso vendaval de pétalos que daña a los Pokémon a su alrededor.
 #-------------------------------
 [APPLEACID]
@@ -3673,7 +3674,7 @@ Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = LowerTargetAttack1
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 100
 Description = Lanza una patada con la fuerza del trópico que golpea al rival y reduce su Ataque.
 #-------------------------------
@@ -3724,7 +3725,7 @@ Accuracy = 95
 TotalPP = 25
 Target = AllNearFoes
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Corta con hojas afiladas. Suele ser crítico.
 #-------------------------------
 [VINEWHIP]
@@ -4351,7 +4352,7 @@ Accuracy = 70
 TotalPP = 5
 Target = AllNearFoes
 FunctionCode = FreezeTargetAlwaysHitsInHail
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 10
 Description = Tormenta de hielo que puede llegar a congelar.
 #-------------------------------
@@ -4492,7 +4493,7 @@ Accuracy = 95
 TotalPP = 15
 Target = AllNearFoes
 FunctionCode = LowerTargetSpeed1
-Flags = CanProtect,CanMirrorMove
+Flags = CanProtect,CanMirrorMove,Wind
 EffectChance = 100
 Description = Ataque con aire helado que baja la Velocidad del objetivo.
 #-------------------------------
@@ -4555,7 +4556,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = HitThreeTimesPowersUpWithEachHit
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patea hasta tres veces seguidas y cada vez más fuerte.
 #-------------------------------
 [SHEERCOLD]
@@ -4727,7 +4728,7 @@ Accuracy = 75
 TotalPP = 5
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 Description = Patada de extrema fuerza.
 #-------------------------------
 [MULTIATTACK]
@@ -5061,7 +5062,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Ataca con cuchillas o con pinzas. Suele ser un golpe crítico.
 #-------------------------------
 [SMELLINGSALTS]
@@ -5170,7 +5171,7 @@ Accuracy = 95
 TotalPP = 30
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 Description = Corta con garras, guadañas, etc. También sirve para cortar árboles finos.
 #-------------------------------
 [RAPIDSPIN]
@@ -6620,7 +6621,7 @@ Accuracy = 0
 TotalPP = 20
 Target = NearOther
 Priority = -6
-FunctionCode = SwitchOutTargetStatusMove
+FunctionCode = SwitchOutTargetStatusMove,Wind
 Flags = CanMirrorMove
 Description = Se lleva al rival, que es cambiado por otro Pokémon. Si es un Pokémon salvaje, acaba el combate.
 #-------------------------------
@@ -6741,7 +6742,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = PoisonTarget
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 EffectChance = 10
 Description = Tajo que puede envenenar al objetivo. Suele ser crítico.
 #-------------------------------
@@ -7220,7 +7221,7 @@ Accuracy = 100
 TotalPP = 20
 Target = NearOther
 FunctionCode = None
-Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = CanProtect,CanMirrorMove,HighCriticalHitRate,Slicing
 Description = Ataca al objetivo con cuchillas formadas por energía psíquica. Suele ser crítico.
 #-------------------------------
 [PSYBEAM]
@@ -7906,6 +7907,7 @@ Accuracy = 0
 TotalPP = 10
 Target = BothSides
 FunctionCode = StartSandstormWeather
+Flags = Wind
 Description = Tormenta de arena que dura cinco turnos y hiere a s, excepto a los de tipo Roca, Tierra y Acero.
 #-------------------------------
 [STEALTHROCK]
@@ -7938,7 +7940,7 @@ TotalPP = 10
 Target = UserSide
 Priority = 3
 FunctionCode = ProtectUserSideFromMultiTargetDamagingMoves
-Description = Proteje a todo tu bando de golpes que dan a múltiples objetivos. Falla si se usa repetidamente.
+Description = Protege a todo tu bando de golpes que dan a múltiples objetivos. Falla si se usa repetidamente.
 #-------------------------------
 [DOOMDESIRE]
 Name = Deseo Oculto
@@ -7996,7 +7998,7 @@ Accuracy = 100
 TotalPP = 5
 Target = NearOther
 FunctionCode = None
-Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome
+Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome,Slicing
 Description = El usuario se convierte en una espada gigante para rebanar al objetivo.
 #-------------------------------
 [IRONTAIL]
@@ -8252,7 +8254,7 @@ TotalPP = 10
 Target = User
 Priority = 4
 FunctionCode = ProtectUserFromDamagingMovesKingsShield
-Description = Proteje al usuario de cualquier daño y baja mucho el Ataque del rival si lo toca.
+Description = Protege al usuario de cualquier daño y baja mucho el Ataque del rival si lo toca.
 #-------------------------------
 [METALSOUND]
 Name = Eco Metálico
@@ -8494,7 +8496,7 @@ Accuracy = 95
 TotalPP = 10
 Target = NearOther
 FunctionCode = LowerTargetDefense1
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Slicing
 EffectChance = 50
 Description = Una afilada vieira ataca al objetivo. También puede hacer disminuir su Defensa.
 #-------------------------------
@@ -8719,12 +8721,12 @@ Description = El usuario se protege en su coraza y sube la Defensa.
 Name = Garra Nociva
 Type = POISON
 Category = Physical
-Power = 60
+Power = 80
 Accuracy = 100
 TotalPP = 15
 Target = NearOther
 FunctionCode = PoisonParalyzeOrSleepTarget
-Flags = Contact,CanProtect,CanMirrorMove,HighCriticalHitRate
+Flags = Contact,CanProtect,CanMirrorMove
 EffectChance = 50
 Description = Ataca al punto débil del objetivo con unas garras letales que pueden envenenarlo, paralizarlo o dormirlo.
 #-------------------------------
@@ -9058,7 +9060,7 @@ Accuracy = 90
 TotalPP = 10
 Target = NearOther
 FunctionCode = CrashDamageIfFailsConfuseTarget
-Flags = Contact,CanProtect,CanMirrorMove
+Flags = Contact,CanProtect,CanMirrorMove,Kicking
 EffectChance = 30
 Description = Lanza una patada al aire y golpea con el talón. Si falla, se hiere a sí mismo. Puede confundir. 
 #-------------------------------
@@ -9843,4 +9845,16 @@ FunctionCode = BadPoisonTarget
 Flags = CanProtect,CanMirrorMove
 EffectChance = 50
 Description = Apresa al objetivo con una cadena para minarle las fuerzas. Puede envenenar gravemente.
-
+#-------------------------------
+[TERABLAST]
+Name = Teraexplosión
+Type = NORMAL
+Category = Special
+Power = 80
+Accuracy = 100
+TotalPP = 10
+Target = NearOther
+FunctionCode = None
+Flags = Contact,CanProtect,CanMirrorMove
+Description = Movimiento cuyo tipo varia al del usuario en caso de que éste haya teracristalizado.
+#-------------------------------

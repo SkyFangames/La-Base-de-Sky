@@ -199,7 +199,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   attr_reader :battler
   attr_reader :shiftMode
 
-  GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON = true
+  GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON = false
 
   # If true, displays graphics from Graphics/UI/Battle/overlay_fight.png
   #     and Graphics/UI/Battle/cursor_fight.png.

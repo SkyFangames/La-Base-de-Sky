@@ -1939,6 +1939,7 @@ class PokemonStorageScreen
       _INTL("Saltar"),
       _INTL("Fondo"),
       _INTL("Nombre"),
+      _INTL("Liberar Caja"),
       _INTL("Cancelar")
     ]
     command = pbShowCommands(_INTL("¿Qué hacer con?"), commands)
@@ -1959,7 +1960,37 @@ class PokemonStorageScreen
       @scene.pbChangeBackground(papers[1][wpaper]) if wpaper >= 0
     when 2
       @scene.pbBoxName(_INTL("¿Nombre de la caja?"), 0, 12)
+    when 3
+      pbReleaseBox(@storage.currentBox)
     end
+  end
+
+  def pbReleaseBox(box)
+    released_count = 0
+    stored_items = 0
+    if pbConfirmMessageSerious(_INTL("¿Quieres liberar a todos los Pokémon de la Caja?"))
+      for i in 0...@storage.maxPokemon(box)
+        pokemon = @storage[box, i]
+        next if !pokemon || pokemon.egg? || pokemon.mail || pokemon.cannot_release
+        if pokemon.hasItem? # Recupera el objeto equipado si lleva alguno.
+          stored_items += 1
+          $bag.add(pokemon.item_id)
+        end
+        @storage.pbDelete(box, i)
+        @scene.pbHardRefresh
+        released_count += 1
+        pbWait(0.20)
+      end
+      if released_count > 0
+        pbDisplay(_INTL("¡Has liberado {1} Pokémon de esta caja!", released_count))
+      else
+        pbDisplay(_INTL("No hay Pokémon válidos para liberar en esta caja."))
+      end
+      if stored_items > 0
+        pbDisplay(_INTL("Se ha#{stored_items > 1 ? 'n' : ''} guardado #{stored_items} objeto#{ stored_items > 1 ? 's' : '' } en tu mochila"))
+      end
+    end
+    @scene.pbRefresh
   end
 
   def pbChoosePokemon(_party = nil)

@@ -720,15 +720,9 @@ class Battle
     else
       pbPlayer.pokedex.register_defeated(battler.species)
     end
-  end
-  
-  #-----------------------------------------------------------------------------
-  # Adds counter for Bisharp -> Kingambit evolution method.
-  #-----------------------------------------------------------------------------
-  alias paldea_pbSetDefeated pbSetDefeated
-  def pbSetDefeated(battler)
-    paldea_pbSetDefeated(battler)
-    return if !battler || !@internalBattle || battler.lastFoeAttacker.empty?
+
+    # Add counter for evolution method Bisharp -> Kingambit
+    return if battler.lastFoeAttacker.empty?
     attacker = @battlers[battler.lastFoeAttacker.last]
     return if !attacker.pbOwnedByPlayer?
     return if attacker.species != battler.species

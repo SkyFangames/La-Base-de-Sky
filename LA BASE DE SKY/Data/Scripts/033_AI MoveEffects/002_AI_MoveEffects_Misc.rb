@@ -945,7 +945,8 @@ Battle::AI::Handlers::GeneralMoveScore.add(:protect_after_glaive_rush,
         "ProtectUserFromTargetingMovesSpikyShield",
         "ProtectUserSideFromDamagingMovesIfUserFirstTurn",
         "ProtectUserFromTargetingMovesSpikyShield",
-        "ProtectUserBurningBulwark"
+        "ProtectUserBurningBulwark",
+        "ProtectUserFromDamagingMovesSilkTrap"
       ]
       half_protect_moves = [
         "ProtectUserSideFromPriorityMoves",

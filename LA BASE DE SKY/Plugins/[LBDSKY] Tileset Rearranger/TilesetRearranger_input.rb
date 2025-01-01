@@ -143,8 +143,8 @@ class TilesetRearranger
         clear_selection
         draw_help_text
       elsif ![:swap, :cut_insert, :erase].include?(@mode) || @selected_x < 0
-        save_tileset if pbConfirmMessageSerious(_INTL("Save changes?"))
-        return false if pbConfirmMessage(_INTL("Exit from the editor?"))
+        save_tileset if pbConfirmMessageSerious(_INTL("¿Guardar cambios?"))
+        return false if pbConfirmMessage(_INTL("¿Salir del editor?"))
       end
     elsif Input.trigger?(Input::ACTION)   # Z: Toggle mode
       if [:swap, :cut_insert].include?(@mode) && @selected_width > 0

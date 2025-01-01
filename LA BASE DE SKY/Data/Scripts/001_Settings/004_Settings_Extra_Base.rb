@@ -6,6 +6,11 @@
 #==============================================================================#
 
 module Settings
+
+  # Activa es to si quieres que los objetos consumibles
+  # como gemas, bayas, banda focus, etc. sean restaurados luego del combate
+  RESTORE_HELD_ITEMS_AFTER_BATTLE = false
+
   
   ################################################################################
   #  CONFIGURACIÓN DEL DELUXE BATTLE SCRIPT
@@ -205,111 +210,6 @@ CAN_BOX_POUR     = true
 #===============================================================================
 FRONTSPRITE_SCALE = 1 #2
 BACKSPRITE_SCALE  = 1 #3
-
-
-################################################################################
-#  PANEL DE EXPERIENCIA MÚLTIPLE
-################################################################################
-# Mostrar un panel con todos los Pokémon que ganan experiencia tras el combate.
-
-MOSTRAR_PANEL_REP_EXP = true
-
-
-# Los colores del texto utilizados en el panel
-PANEL_BASE_COLOUR   = Color.new(80, 80, 88)
-PANEL_SHADOW_COLOUR = Color.new(160, 160, 168)
-
-class Swdfm_Exp_Screen
-  # El ancho en píxeles entre el lado izquierdo/derecho de la pantalla y el lado
-  # izquierdo/derecho del panel
-  BORDER_WIDTH      = 64
-  # La altura en píxeles entre la parte superior/inferior de la pantalla y la 
-  # parte superior/inferior del panel
-  BORDER_HEIGHT     = 64
-  # Color es el borde del panel
-  PANEL_EDGE_COLOUR = Color.new(57, 69, 81)
-  PANEL_EDGE_SIZE   = 8
-  # Color principal del panel
-  PANEL_FILL_COLOUR = Color.new(206, 206, 206)
-  # Color es el borde de las barras de experiencia
-  EXP_EDGE_COLOUR   = PANEL_EDGE_COLOUR
-  # Color de relleno de la barra de experiencia (sin experiencia)
-  EXP_FILL_COLOUR   = PANEL_FILL_COLOUR
-  # Color es la experiencia en la barra de experiencia
-  EXP_EXP_COLOUR    = Color.new(68, 223, 250)
-  # La altura en píxeles de la barra de experiencia
-  EXP_BAR_HEIGHT    = 24
-  # (¡Bastante complicado!)
-  # La mitad de la diferencia, en píxeles, entre 1/3 del ancho del panel y el 
-  # ancho de una barra de experiencia
-  # Básicamente, hazlo más pequeño para una barra de experiencia más ancha
-  EXP_WIDTH_GAP     = 16
-  # El tamaño, en píxeles, del borde de cada barra de experiencia
-  EXP_BAR_EDGE_SIZE = 4
-  # Tiempo más corto (En segundos, asumiendo 40fps) que tarda en animarse la 
-  # barra de experiencia
-  FASTEST_TIME      = 0.4
-  # El tiempo más largo (En segundos, asumiendo 40fps) que tarda en  animarse
-  # la barra de experiencia
-  SLOWEST_TIME      = 2.3
-  # Tiempo (En segundos, asumiendo 40fps) permanece allí la cantidad 
-  # de experiencia ganada
-  ANNOUCE_TIME      = 1
-  # En experiencia por fotograma, asumiendo 40fps, qué tan rápido es la barra
-  # Cualquier valor menor que 0 se trata como 0
-  # Cualquier valor mayor que 199 se trata como 199
-  BAR_SPEED         = 100
-  # Píxeles A LA IZQUIERDA del lado derecho de la barra es el punto medio del 
-  # Nivel del Pokémon
-  LEVEL_X           = 64
-  # Píxeles ARRIBA de la barra está el Nivel del Pokémon
-  LEVEL_Y           = 48
-  # Píxeles A LA DERECHA del lado izquierdo de la barra está el lado izquierdo
-  # del Pokémon
-  POKE_X            = 0
-  # Píxeles DEBAJO de donde estaría el Pokémon si estuviera encima de la parte
-  # superior de la barra está el Pokémon
-  # (No estoy seguro por qué cambiarías esto, pero está aquí)
-  POKE_Y            = 0
-  # Píxeles a la derecha del punto medio de la barra está la experiencia anunciada
-  EXP_X             = 0
-  # Píxeles DEBAJO del lado inferior de la barra está la experiencia anunciada
-  EXP_Y             = 4
-  # Decide las posiciones de dónde van las barras
-  # (Mejor dejar esto como está)
-  #...
-  # Pero si quieres modificar esto, aquí tienes una breve explicación
-  # Los decimales aquí explican dónde está el punto medio de la barra en relación 
-  # con la pantalla [ancho, altura].
-  # Por ejemplo, un valor de 0.5 significa que la barra está a la mitad de la pantalla. 
-  # 0.33 significa que la barra está a un tercio de la pantalla.
-  CO_ORDINATES = [
-    [[0.5, 0.5]],   # Grupo de 1: 1er Pokémon
-    [[0.33, 0.5],   # Grupo de 2: 1er Pokémon
-    [0.67, 0.5]], 
-    [[0.25, 0.5],   # Equipo de 3, 1er Pokémon
-    [0.5,  0.5],   #             2do Pokémon
-    [0.75, 0.5]],  #             3er Pokémon
-    [[0.33, 0.25],  # Equipo de 4, 1er Pokémon
-    [0.67, 0.25],  #             2do Pokémon
-    [0.33, 0.67],  #             3er Pokémon
-    [0.67, 0.67]], #             4to Pokémon
-    [[0.25, 0.25],  # Equipo de 5, 1er Pokémon
-    [0.5,  0.25],  #             2do Pokémon
-    [0.75, 0.25],  #             3er Pokémon
-    [0.33, 0.67],  #             4to Pokémon
-    [0.67, 0.67]], #             5to Pokémon
-    [[0.18, 0.25],  # Equipo de 6, 1er Pokémon
-    [0.5,  0.25],  #             2do Pokémon
-    [0.82, 0.25],  #             3er Pokémon
-    [0.18, 0.67],  #             4to Pokémon
-    [0.5,  0.67],  #             5to Pokémon
-    [0.82, 0.67]]  #             6to Pokémon
-  ]
-  # Cuántos píxeles se arrastra hacia abajo todo en la pantalla (excepto el panel 
-  # de fondo)
-  MOVE_DOWN_PIXELS = 16
-end
 
 
 ################################################################################

@@ -39,7 +39,7 @@ module Input
     if $CanToggle && trigger?(Input::ALT)
       $GameSpeed += 1
       if $GameSpeed >= SPEEDUP_STAGES.size
-        $GameSpeed = 0
+        $GameSpeed = 0 
         $SpeedDiference += (System.real_uptime * SPEEDUP_STAGES[-1])
       end
       # $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
@@ -79,6 +79,7 @@ end
 #   $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
 #   $CanToggle = true if $PokemonSystem.only_speedup_battles == 0
 # })
+
 
 #===============================================================================#
 # Can only change speed in battle during command phase (prevents weird animation glitches)

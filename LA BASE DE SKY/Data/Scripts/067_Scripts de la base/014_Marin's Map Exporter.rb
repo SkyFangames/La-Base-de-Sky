@@ -55,7 +55,7 @@ def pbExportAMap
         exported_file = pbExportMap(mapid, options)
         msgwindow.setText(_INTL("El mapa se ha exportado como #{exported_file}"))
         60.times { Graphics.update; Input.update }
-        pbDisposeMessageWindow(msgwindow)
+        #pbDisposeMessageWindow(msgwindow)
         break
       elsif cmd == 1
         if cmds[1].split("")[1] == " "
