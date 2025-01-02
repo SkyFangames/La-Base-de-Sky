@@ -346,11 +346,11 @@ module Settings
   CAN_FLY_FROM_TOWN_MAP = true
 
   # Desactivar si no quieres mostrar las MOs en el menú del equipo.
-  SHOW_HMS_IN_PARTY_MENU = false
+  SHOW_HMS_IN_PARTY_MENU = true
 
 
   # Desactivar si no quieres mostrar las MOs en el menú de la D (Objetos registrados).
-  SHOW_HMS_IN_SPECIAL_MENU = false
+  SHOW_HMS_IN_SPECIAL_MENU = true
 
   #=============================================================================
   
