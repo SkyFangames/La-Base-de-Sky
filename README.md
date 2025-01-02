@@ -6,6 +6,9 @@
 
 ### [DESCARGAR BASE](https://skyfangames.blogspot.com/2024/01/base-de-sky.html)
 
+### AÑADIDOS V 1.1.1
+
+- Agrega una opción para no mostrar las MOs en el menú del equipo ni en el menú de objetos registrados
 
 ### AÑADIDOS V 1.1.0
 
