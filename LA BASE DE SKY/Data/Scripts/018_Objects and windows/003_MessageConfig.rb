@@ -16,8 +16,8 @@ module MessageConfig
   SMALL_FONT_NAME          = "Power Green Small"
   SMALL_FONT_SIZE          = 21
   SMALL_FONT_Y_OFFSET      = 8
-  TINY_FONT_SIZE          = 15
-  TINY_FONT_Y_OFFSET      = 7
+  TINY_FONT_SIZE           = 15
+  TINY_FONT_Y_OFFSET       = 7
   NARROW_FONT_NAME         = "Power Green Narrow"
   NARROW_FONT_SIZE         = 27
   NARROW_FONT_Y_OFFSET     = 8
