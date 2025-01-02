@@ -345,6 +345,13 @@ module Settings
   # si el jugador puede usar Vuelo de forma normal.
   CAN_FLY_FROM_TOWN_MAP = true
 
+  # Desactivar si no quieres mostrar las MOs en el menú del equipo.
+  SHOW_HMS_IN_PARTY_MENU = false
+
+
+  # Desactivar si no quieres mostrar las MOs en el menú de la D (Objetos registrados).
+  SHOW_HMS_IN_SPECIAL_MENU = false
+
   #=============================================================================
   
   # Par de IDs de mapas, en los que el mensaje con el nombre de la zona no se 

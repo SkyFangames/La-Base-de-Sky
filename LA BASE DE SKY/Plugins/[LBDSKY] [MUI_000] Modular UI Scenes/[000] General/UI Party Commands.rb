@@ -76,12 +76,14 @@ class PokemonPartyScreen
       command_list.push(_INTL("Cancelar"))
       if !pkmn.egg? && show_field_moves
         insert_index = ($DEBUG) ? 2 : 1
-        pkmn.moves.each_with_index do |move, i|
-          next if !HiddenMoveHandlers.hasHandler(move.id) &&
-                  ![:MILKDRINK, :SOFTBOILED].include?(move.id)
-          command_list.insert(insert_index, [move.name, :Blue])
-          commands.insert(insert_index, i)
-          insert_index += 1
+        if Settings::SHOW_HMS_IN_PARTY_MENU
+          pkmn.moves.each_with_index do |move, i|
+            next if !HiddenMoveHandlers.hasHandler(move.id) &&
+                    ![:MILKDRINK, :SOFTBOILED].include?(move.id)
+            command_list.insert(insert_index, [move.name, :Blue])
+            commands.insert(insert_index, i)
+            insert_index += 1
+          end
         end
       end
       choice = @scene.pbShowCommands(_INTL("¿Qué hacer con {1}?", pkmn.name), command_list)

@@ -303,14 +303,16 @@ end
 # Using a registered item
 #===============================================================================
 def pbUseKeyItem
-  moves = [:CUT, :DEFOG, :DIG, :DIVE, :FLASH, :FLY, :HEADBUTT, :ROCKCLIMB,
-           :ROCKSMASH, :SECRETPOWER, :STRENGTH, :SURF, :SWEETSCENT, :TELEPORT,
-           :WATERFALL, :WHIRLPOOL]
   real_moves = []
-  moves.each do |move|
-    $player.party.each_with_index do |pkmn, i|
-      next if pkmn.egg? || !pkmn.hasMove?(move)
-      real_moves.push([move, i]) if pbCanUseHiddenMove?(pkmn, move, false)
+  if Settings::SHOW_HMS_IN_SPECIAL_MENU
+    moves = [:CUT, :DEFOG, :DIG, :DIVE, :FLASH, :FLY, :HEADBUTT, :ROCKCLIMB,
+            :ROCKSMASH, :SECRETPOWER, :STRENGTH, :SURF, :SWEETSCENT, :TELEPORT,
+            :WATERFALL, :WHIRLPOOL]  
+    moves.each do |move|
+      $player.party.each_with_index do |pkmn, i|
+        next if pkmn.egg? || !pkmn.hasMove?(move)
+        real_moves.push([move, i]) if pbCanUseHiddenMove?(pkmn, move, false)
+      end
     end
   end
   real_items = []
