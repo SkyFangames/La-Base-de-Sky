@@ -356,16 +356,16 @@ def getSkinColor(windowskin, color, isDarkSkin, no_ctag = false)
     ]
     if color == 0 || color > textcolors.length / 2   # No special colour, use default
       if isDarkSkin   # Dark background, light text
-        return no_ctag ? [MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR] : shadowctag(MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR)
+        return no_ctag ? [MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR] : shadowc3tag(MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR)
         # return shadowc3tag(MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR) 
       end
       # Light background, dark text
-      return no_ctag ? [MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR] : shadowctag(MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR)
+      return no_ctag ? [MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR] : shadowc3tag(MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR)
       # return shadowc3tag(MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR)
     end
     # Special colour as listed above
     if isDarkSkin && color != 12   # Dark background, light text
-      return no_ctag ? [textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)]] : shadowctag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
+      return no_ctag ? [textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)]] : shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
       # return shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
     end
     # Light background, dark text
