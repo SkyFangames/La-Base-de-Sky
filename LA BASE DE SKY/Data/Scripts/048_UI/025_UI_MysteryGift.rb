@@ -319,7 +319,7 @@ def pbDownloadMysteryGift(trainer)
     when 1
       # Buscar regalos con contraseña
       pbDownloadGiftWithPassword(trainer)
-    when 2 || -1
+    when 2, -1
       break
     end
   end
