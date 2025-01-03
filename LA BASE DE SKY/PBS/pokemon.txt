@@ -19094,7 +19094,7 @@ Category = Púgil
 Pokedex = Usa hábilmente sus robustas pinzas tanto para atacar como para defenderse. Las peleas entre congéneres parecen combates de boxeo.
 Generation = 7
 WildItemUncommon = ASPEARBERRY
-Evolutions = CRABOMINABLE,LocationFlag,IceRock
+Evolutions = CRABOMINABLE,LocationFlag,IceRock,CRABOMINABLE,Item,ICESTONE
 #-------------------------------
 [CRABOMINABLE]
 Name = Crabominable
