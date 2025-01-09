@@ -228,3 +228,23 @@ MOSTRAR_PASOS_HUEVO = false
 ################################################################################
 
 MAPAS_SIN_REFLEJO = []
+
+
+################################################################################
+# LISTADO DE POKÉMON CON FORMAS REGIONALES
+# Los Pokémon que estén en el listado de abajo son los que el cambia formas
+# podrá cambiar
+################################################################################
+REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NINETALES,:DIGLETT,:DUGTRIO,
+                    :MEOWTH,:PERSIAN,:GEODUDE,:GRAVELER,:GOLEM,:PONYTA,:RAPIDASH,:SLOWPOKE,:SLOWBRO,:FARFETCHD,:GRIMER,:MUK,
+                    :EXEGGUTOR,:MAROWAK,:WEEZING,:MRMIME,:ARTICUNO,:ZAPDOS,:MOLTRES,:SLOWKING,:CORSOLA,
+                    :ZIGZAGOON,:LINOONE, :DARUMAKA,:DARMANITAN,:YAMASK,:STUNFISK,:LYCANROC, :GROWLITHE,:ARCANINE,
+                    :VOLTORB,:ELECTRODE,:TAUROS,:CYNDAQUIL,:QUILAVA,:TYPHLOSION,:WOOPER,:QWILFISH,:SNEASEL,:OSHAWOTT,:DEWOTT,:SAMUROTT,
+                    :PETILIL,:LILLIGANT,:ZORUA,:ZOROARK,:RUFFLET,:BRAVIARY,:GOOMY,:SLIGGOO,:GOODRA,:BERGMITE,:AVALUGG,:ROWLET,:DARTRIX,:DECIDUEYE]
+
+#######################################################################################
+# LISTADO DE FORMAS DE POKÉMON NO PERMITIDAS
+# Este listado es para configurar determinadas formas de Pokémon del listado de arriba
+# Para que el cambia formas no las muestre
+########################################################################################
+FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
