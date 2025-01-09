@@ -36,7 +36,7 @@ module Input
   def self.update
     update_KGC_ScreenCapture
     pbScreenCapture if trigger?(Input::F8)
-    if $CanToggle && trigger?(Input::ALT)
+    if $CanToggle && (trigger?(Input::ALT) || trigger?(Input::AUX1))
       $GameSpeed += 1
       if $GameSpeed >= SPEEDUP_STAGES.size
         $GameSpeed = 0 
