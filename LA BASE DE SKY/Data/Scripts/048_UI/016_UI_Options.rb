@@ -634,7 +634,7 @@ MenuHandlers.add(:options_menu, :vsync, {
   "name"        => _INTL("VSync"),
   "order"       => 130,
   "type"        => EnumOption,
-  "parameters"  => [_INTL("Activado"), _INTL("Desactivado")],
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
   "condition"   => proc { next !$joiplay },
   "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego, se te ofrecerá guardar antes de reiniciar."),
   "get_proc"    => proc { next $PokemonSystem.vsync },
@@ -649,7 +649,7 @@ MenuHandlers.add(:options_menu, :autotile_animations, {
   "name"        => _INTL("Animaciones de mapas"),
   "order"       => 140,
   "type"        => EnumOption,
-  "parameters"  => [_INTL("Activadas"), _INTL("Desactivadas")],
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
   "description" => _INTL("Activa o desactiva las animaciones de los mapas."),
   "get_proc"    => proc { next $PokemonSystem.autotile_animations || 0 },
   "set_proc"    => proc { |value, _scene| 
