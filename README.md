@@ -12,6 +12,8 @@
 - Agrega un script para cambiar a los Pokémon a sus formas regionales, en el mapa "Afueras Zona Safari" hay un NPC de ejemplo.
 - Corrige ratio de captura Gimmighoul forma andante.
 - Agrega la Q (AUX1) como otra opción para activar el turbo ya que ésta sí es remapeable en el menú de F1.
+- Mejoras en el script del vsync
+- Agrega opcion para que en la dex salgan las siluetas en negro para los Pokémon no vistos.
 - Correccion de errores.
 
 ### AÑADIDOS V 1.1.0
