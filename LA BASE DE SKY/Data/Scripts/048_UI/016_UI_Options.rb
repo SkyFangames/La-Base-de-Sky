@@ -103,11 +103,10 @@ class PokemonSystem
 
 
     # Handle game restart after vsync value change
-    if Kernel.pbConfirmMessageSerious("Cambiar el valor del vsync requiere reiniciar el juego.\nSe te ofrecerá la opción de guardar antes del reinicio.\n¿Deseas reiniciar ahora?")
-      if $player && pbConfirmMessage("¿Quieres guardar antes de salir?")
-        pbSaveScreen
-      end
 
+    message = $player ? "Cambiar el valor del vsync requiere reiniciar el juego.\nPodrás guardar antes de reiniciar.\n¿Deseas reiniciar ahora?" : "Cambiar el valor del vsync requiere reiniciar el juego.\n¿Deseas reiniciar ahora?"
+    if Kernel.pbConfirmMessageSerious(message)
+      pbSaveScreen if $player
       # Launch Game.exe and immediately exit the current process
       Thread.new do
         system('start "" "Game.exe"')
@@ -636,7 +635,7 @@ MenuHandlers.add(:options_menu, :vsync, {
   "type"        => EnumOption,
   "parameters"  => [_INTL("Sí"), _INTL("No")],
   "condition"   => proc { next !$joiplay },
-  "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego, se te ofrecerá guardar antes de reiniciar."),
+  "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego"),
   "get_proc"    => proc { next $PokemonSystem.vsync },
   "set_proc"    => proc { |value, _scene|
     next if $PokemonSystem.vsync == value
