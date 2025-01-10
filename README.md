@@ -8,9 +8,10 @@
 
 ### AÑADIDOS V 1.1.1
 
-- Agrega una opción para no mostrar las MOs en el menú del equipo ni en el menú de objetos registrados
+- Agrega una opción para no mostrar las MOs en el menú del equipo ni en el menú de objetos registrados.
 - Agrega un script para cambiar a los Pokémon a sus formas regionales, en el mapa "Afueras Zona Safari" hay un NPC de ejemplo.
-- Correccion de errores
+- Corrige ratio de captura Gimmighoul forma andante.
+- Correccion de errores.
 
 ### AÑADIDOS V 1.1.0
 
