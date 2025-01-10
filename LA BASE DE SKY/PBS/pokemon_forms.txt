@@ -2758,7 +2758,7 @@ Color = White
 #-------------------------------
 [GIMMIGHOUL,1]
 FormName = Forma Andante
-CatchRate = 0
+CatchRate = 45
 Abilities = RUNAWAY
 Height = 0.1
 Weight = 0.1
