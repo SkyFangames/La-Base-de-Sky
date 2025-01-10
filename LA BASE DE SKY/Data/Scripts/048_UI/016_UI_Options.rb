@@ -103,16 +103,20 @@ class PokemonSystem
 
 
     # Handle game restart after vsync value change
-
-    message = $player ? "Cambiar el valor del vsync requiere reiniciar el juego.\nPodrás guardar antes de reiniciar.\n¿Deseas reiniciar ahora?" : "Cambiar el valor del vsync requiere reiniciar el juego.\n¿Deseas reiniciar ahora?"
+    echoln "is windows #{System.is_really_windows?} -- is linux #{System.is_really_linux?}"
+    message = $player ? _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\nPodrás guardar antes de reiniciar.\n¿Deseas reiniciar ahora?") : _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\n¿Deseas reiniciar ahora?")
     if Kernel.pbConfirmMessageSerious(message)
       pbSaveScreen if $player
-      # Launch Game.exe and immediately exit the current process
-      Thread.new do
-        system('start "" "Game.exe"')
+      if System.is_really_windows?
+        # Launch Game.exe and immediately exit the current process
+        Thread.new do
+          system('start "" "Game.exe"')
+        end
+        sleep(0.1) # Give the thread some time to execute
+      else
+        pbMessage("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente")
       end
-
-      sleep(0.1) # Give the thread some time to execute
+      
       Kernel.exit!
     end
   end
