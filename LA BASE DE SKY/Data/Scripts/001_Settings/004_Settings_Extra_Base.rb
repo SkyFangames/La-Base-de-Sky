@@ -83,6 +83,9 @@ module Settings
   # Si agregan paginas nuevas a la pokédex en medio, cambiar esto
   ADVANCED_DEX_PAGE = 4
 
+  # # Mostrar Siluetas para los Pokemon no vistos en la dex
+  SHOW_SILHOUETTES_IN_DEX = true
+
 
   
 ################################################################################
@@ -248,3 +251,5 @@ REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NI
 # Para que el cambia formas no las muestre
 ########################################################################################
 FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
+
+
