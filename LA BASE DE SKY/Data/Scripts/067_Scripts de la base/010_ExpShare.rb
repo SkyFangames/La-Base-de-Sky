@@ -10,6 +10,16 @@
 #-------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------#
 if Settings::USE_NEW_EXP_SHARE
+
+    class PokemonGlobalMetadata
+        attr_accessor :expshare_enabled
+        alias initialize_expshare initialize
+        def initialiaze
+            initialize_expshare
+            @expshare_enabled = Settings::EXPSHARE_ENABLED
+        end
+    end
+
     class PokemonSystem
         attr_accessor :expshareon
     end
@@ -18,6 +28,7 @@ if Settings::USE_NEW_EXP_SHARE
     "name"        => _INTL("Rep Exp al capturar"),
     "order"       => 40,
     "type"        => EnumOption,
+    "condition"   => proc { next $PokemonGlobal.expshare_enabled },
     "parameters"  => [_INTL("Sí"), _INTL("No")],
     "description" => _INTL("Si quieres que los Pokémon capturados tengan el repartir experiencia activado."),
     "get_proc"    => proc { next $PokemonSystem.expshareon },
@@ -29,6 +40,7 @@ if Settings::USE_NEW_EXP_SHARE
     MenuHandlers.add(:party_menu, :expshare, {
     "name"      => _INTL("Repartir Exp."),
     "order"     => 70,
+    "condition" => proc { next $PokemonGlobal.expshare_enabled },
     "effect"    => proc { |screen, party, party_idx|
         pokemon = party[party_idx]
         if pokemon.expshare
@@ -42,13 +54,18 @@ if Settings::USE_NEW_EXP_SHARE
         end
     }
     })
+
+    def toggle_expshare
+        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED
+        $PokemonGlobal.expshare_enabled = !$PokemonGlobal.expshare_enabled
+    end
     
     class Pokemon
         attr_accessor(:expshare)    # Repartir experiencia
         alias initialize_old initialize
         def initialize(species,level,player=$player,withMoves=true, recheck_form = true)
             initialize_old(species, level, player, withMoves)
-            @expshare = true if $PokemonSystem.expshareon == 0 || $PokemonSystem.expshareon || $player.has_exp_all
+            @expshare = true if (($PokemonSystem.expshareon == 0 || $PokemonSystem.expshareon) && $PokemonGlobal.expshare_enabled) || $player.has_exp_all
         end 
     end
     
