@@ -4,7 +4,7 @@
 
 
 class Pokemon
-    def get_egg_moves_sky()
+    def get_egg_moves_full()
         especie = self.species_data
         return especie.egg_moves if !especie.egg_moves.empty?
         prevo = especie.get_previous_species
@@ -14,7 +14,7 @@ class Pokemon
 
     def can_learn_egg_move?
         return false if egg? || shadowPokemon?
-        return !get_egg_moves_sky().empty?
+        return !get_egg_moves_full().empty?
     end
 end
 
@@ -163,41 +163,41 @@ class EggMoveLearner_Scene
       @typebitmap.dispose
       @viewport.dispose
     end
+end
+  
+#===============================================================================
+# Screen class for handling game logic
+#===============================================================================
+class EggMoveLearnerScreen
+  def initialize(scene)
+    @scene = scene
   end
-  
-  #===============================================================================
-  # Screen class for handling game logic
-  #===============================================================================
-  class EggMoveLearnerScreen
-    def initialize(scene)
-      @scene = scene
-    end
-  
-    def pbGetLearnableEggMoves(pkmn)
-      return [] if !pkmn || pkmn.egg? || pkmn.shadowPokemon?
-      return pkmn.get_egg_moves_sky()
-    end
-  
-    def pbStartScreen(pkmn)
-      moves = pbGetLearnableEggMoves(pkmn)
-      @scene.pbStartScene(pkmn, moves)
-      loop do
-        move = @scene.pbChooseMove
-        if move
-          if @scene.pbConfirm(_INTL("¿Enseñar {1}?", GameData::Move.get(move).name))
-            if pbLearnMove(pkmn, move)
-              $stats.moves_taught_by_reminder += 1
-              @scene.pbEndScene
-              return true
-            end
+
+  def pbGetLearnableEggMoves(pkmn)
+    return [] if !pkmn || pkmn.egg? || pkmn.shadowPokemon?
+    return pkmn.get_egg_moves_full()
+  end
+
+  def pbStartScreen(pkmn)
+    moves = pbGetLearnableEggMoves(pkmn)
+    @scene.pbStartScene(pkmn, moves)
+    loop do
+      move = @scene.pbChooseMove
+      if move
+        if @scene.pbConfirm(_INTL("¿Enseñar {1}?", GameData::Move.get(move).name))
+          if pbLearnMove(pkmn, move)
+            $stats.moves_taught_by_reminder += 1
+            @scene.pbEndScene
+            return true
           end
-        elsif @scene.pbConfirm(_INTL("¿Dejar de enseñarle un movimiento a {1}?", pkmn.name))
-          @scene.pbEndScene
-          return false
         end
+      elsif @scene.pbConfirm(_INTL("¿Dejar de enseñarle un movimiento a {1}?", pkmn.name))
+        @scene.pbEndScene
+        return false
       end
     end
   end
+end
   
 
 
@@ -209,5 +209,5 @@ def pbLearnEggMoveScreen(pkmn)
       retval = screen.pbStartScreen(pkmn)
     end
     return retval
-  end
+end
   
