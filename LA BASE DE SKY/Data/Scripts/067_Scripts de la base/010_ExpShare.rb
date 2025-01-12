@@ -58,6 +58,7 @@ if Settings::USE_NEW_EXP_SHARE
     def toggle_expshare
         $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED
         $PokemonGlobal.expshare_enabled = !$PokemonGlobal.expshare_enabled
+        $player.party.each { |pokemon| pokemon.expshare = expshare_enabled }
     end
     
     class Pokemon

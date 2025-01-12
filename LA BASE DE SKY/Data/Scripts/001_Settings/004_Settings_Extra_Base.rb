@@ -31,6 +31,9 @@ module Settings
   # Activa el nuevo repartir experiencia que se puede activar para cada pokemon del equipo.
   USE_NEW_EXP_SHARE = true
 
+  ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida
+  EXPSHARE_ENABLED = false
+
 
   
 ################################################################################
@@ -253,5 +256,3 @@ REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NI
 FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
 
 
-## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida
-EXPSHARE_ENABLED = true
