@@ -32,7 +32,7 @@ module Settings
   USE_NEW_EXP_SHARE = true
 
   ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida
-  EXPSHARE_ENABLED = false
+  EXPSHARE_ENABLED = true
 
 
   
