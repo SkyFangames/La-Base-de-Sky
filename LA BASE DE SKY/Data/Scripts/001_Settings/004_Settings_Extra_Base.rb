@@ -11,6 +11,10 @@ module Settings
   # como gemas, bayas, banda focus, etc. sean restaurados luego del combate
   RESTORE_HELD_ITEMS_AFTER_BATTLE = false
 
+  # Lista de objetos consumibles que NO serán recuperados luego del combate
+  # el formato es [:IDOBJETO] por ejemplo [:SITRUSBERRY]
+  RESTORE_HELD_ITEMS_BLACKLIST = []
+
   
   ################################################################################
   #  CONFIGURACIÓN DEL DELUXE BATTLE SCRIPT
