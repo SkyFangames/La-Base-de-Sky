@@ -57,7 +57,6 @@ class PokemonSummary_Scene
     ]
     # Draw all text
     pbDrawTextPositions(overlay, textpos)
-    typebitmap = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
     hiddenpower = pbHiddenPower(@pokemon)
     type_number = GameData::Type.get(hiddenpower[0]).icon_position
     type_rect = Rect.new(0, type_number * 28, 64, 28)
