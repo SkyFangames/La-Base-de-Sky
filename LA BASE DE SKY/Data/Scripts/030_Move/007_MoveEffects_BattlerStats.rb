@@ -1978,6 +1978,13 @@ end
 # Lowers the target's Defense by 1 stage. May cause flinching.
 #-------------------------------------------------------------------------------
 class Battle::Move::LowerTargetDefense1FlinchTarget < Battle::Move
+  attr_reader :statDown
+
+  def initialize(battle, move)
+    super
+    @statDown = [:DEFENSE, 1]
+  end
+  
   def flinchingMove?; return true; end
 
   def pbAdditionalEffect(user, target)
