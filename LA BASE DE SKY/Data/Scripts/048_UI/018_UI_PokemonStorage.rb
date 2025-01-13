@@ -1121,6 +1121,7 @@ class PokemonStorageScene
     else
       @sprites["box"].grabPokemon(selected[1], @sprites["arrow"])
     end
+    @grabber.carrying = true
     while @sprites["arrow"].grabbing?
       Graphics.update
       Input.update
@@ -1162,6 +1163,7 @@ class PokemonStorageScene
     else
       @sprites["box"].setPokemon(selected[1], heldpokesprite)
     end
+    @grabber.carrying = false
     @boxForMosaic = @storage.currentBox
     @selectionForMosaic = selected[1]
   end

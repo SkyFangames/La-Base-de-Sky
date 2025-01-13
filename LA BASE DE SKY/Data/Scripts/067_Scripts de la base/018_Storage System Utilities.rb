@@ -173,7 +173,7 @@ class StorageGrabber
   
   def contains_an_egg?
     for i in @carried_mons
-      return true if i[0].egg?
+      return true if i[0]&.egg?
     end
     return false
   end
@@ -243,7 +243,6 @@ class PokemonBoxIcon < IconSprite
   def update_21
     do_colours
     if releasing?
-      time_now = System.uptime
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
       self.opacity = lerp(255, 0, 1.5, @release_timer_start, System.uptime)
@@ -669,11 +668,11 @@ class PokemonStorageScene
     @storage.maxBoxes.times do |i|
       box = @storage[i]
       if box
-	    if swapping  && i == @storage.currentBox
+        if swapping  && i == @storage.currentBox
           commands.push("No intercambiar")
-		  next
-		end
-		commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
+          next
+        end
+		    commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
       end
     end
     return pbShowCommands(msg, commands, @storage.currentBox)
