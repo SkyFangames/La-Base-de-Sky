@@ -319,14 +319,14 @@ class PokemonBoxArrow < Sprite
       if @placingState <= 4 * Graphics.frame_rate / 20
         @handsprite.changeBitmap("fist" + b)
         self.y = @spriteY + (4.0 * @placingState * 20 / Graphics.frame_rate)
-		@placingState += 1
+		    @placingState += 1
       elsif @placingState <= 8 * Graphics.frame_rate / 20
         @holding = false
         @heldpkmn = nil
         @handsprite.changeBitmap("grab" + b)
         self.y = @spriteY + (4 * ((8 * Graphics.frame_rate / 20) - @placingState) * 20 / Graphics.frame_rate)
-		@placingState += 1
-	  else
+		    @placingState += 1
+      else
         @placingState = 0
       end
     elsif holding?
@@ -462,10 +462,10 @@ class PokemonStorageScene
         selection = PokemonBox::BOX_SIZE - (PokemonBox::BOX_WIDTH / 3)   # 28
       else
         selection -= PokemonBox::BOX_WIDTH
-		if skip && selection < 0
-          selection += PokemonBox::BOX_SIZE
-		elsif selection < 0
-          selection = -1
+        if skip && selection < 0
+              selection += PokemonBox::BOX_SIZE
+        elsif selection < 0
+              selection = -1
         end
       end
     when Input::DOWN
