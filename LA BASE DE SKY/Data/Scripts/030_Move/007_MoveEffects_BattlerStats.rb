@@ -1250,51 +1250,51 @@ class Battle::Move::LowerTargetEvasion1RemoveSideEffects < Battle::Move::TargetS
     end
     if target.pbOwnSide.effects[PBEffects::AuroraVeil] > 0
       target.pbOwnSide.effects[PBEffects::AuroraVeil] = 0
-      @battle.pbDisplay(_INTL("El efecto de Velo Aurora en {1} se ha disipado.", target.pbTeam))
+      @battle.pbDisplay(_INTL("El efecto de Velo Aurora en {1} se ha disipado.", target.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::LightScreen] > 0
       target.pbOwnSide.effects[PBEffects::LightScreen] = 0
-      @battle.pbDisplay(_INTL("El efecto de Pantalla de Luz en {1} se ha disipado.", target.pbTeam))
+      @battle.pbDisplay(_INTL("El efecto de Pantalla de Luz en {1} se ha disipado.", target.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::Reflect] > 0
       target.pbOwnSide.effects[PBEffects::Reflect] = 0
-      @battle.pbDisplay(_INTL("El efecto de Reflejo en {1} se ha disipado.", target.pbTeam))
+      @battle.pbDisplay(_INTL("El efecto de Reflejo en {1} se ha disipado.", target.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::Mist] > 0
       target.pbOwnSide.effects[PBEffects::Mist] = 0
-      @battle.pbDisplay(_INTL("El efecto de Neblina en {1} se ha disipado.", target.pbTeam))
+      @battle.pbDisplay(_INTL("El efecto de Neblina en {1} se ha disipado.", target.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::Safeguard] > 0
       target.pbOwnSide.effects[PBEffects::Safeguard] = 0
-      @battle.pbDisplay(_INTL("El efecto de Velo Sagrado en {1} se ha disipado.", target.pbTeam))
+      @battle.pbDisplay(_INTL("El efecto de Velo Sagrado en {1} se ha disipado.", target.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::StealthRock] ||
        (Settings::MECHANICS_GENERATION >= 6 &&
        target.pbOpposingSide.effects[PBEffects::StealthRock])
       target.pbOwnSide.effects[PBEffects::StealthRock]      = false
       target.pbOpposingSide.effects[PBEffects::StealthRock] = false if Settings::MECHANICS_GENERATION >= 6
-      @battle.pbDisplay(_INTL("Las piedras puntiagudas lanzadas a {1} han desaparecido.", user.pbTeam))
+      @battle.pbDisplay(_INTL("Las piedras puntiagudas lanzadas a {1} han desaparecido.", user.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::Spikes] > 0 ||
        (Settings::MECHANICS_GENERATION >= 6 &&
        target.pbOpposingSide.effects[PBEffects::Spikes] > 0)
       target.pbOwnSide.effects[PBEffects::Spikes]      = 0
       target.pbOpposingSide.effects[PBEffects::Spikes] = 0 if Settings::MECHANICS_GENERATION >= 6
-      @battle.pbDisplay(_INTL("Las púas lanzadas a {1} han desaparecido.", user.pbTeam))
+      @battle.pbDisplay(_INTL("Las púas lanzadas a {1} han desaparecido.", user.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0 ||
        (Settings::MECHANICS_GENERATION >= 6 &&
        target.pbOpposingSide.effects[PBEffects::ToxicSpikes] > 0)
       target.pbOwnSide.effects[PBEffects::ToxicSpikes]      = 0
       target.pbOpposingSide.effects[PBEffects::ToxicSpikes] = 0 if Settings::MECHANICS_GENERATION >= 6
-      @battle.pbDisplay(_INTL("Las púas tóxicas lanzadas a {1} han desaparecido.", user.pbTeam))
+      @battle.pbDisplay(_INTL("Las púas tóxicas lanzadas a {1} han desaparecido.", user.pbTeam(true)))
     end
     if target.pbOwnSide.effects[PBEffects::StickyWeb] ||
        (Settings::MECHANICS_GENERATION >= 6 &&
        target.pbOpposingSide.effects[PBEffects::StickyWeb])
       target.pbOwnSide.effects[PBEffects::StickyWeb]      = false
       target.pbOpposingSide.effects[PBEffects::StickyWeb] = false if Settings::MECHANICS_GENERATION >= 6
-      @battle.pbDisplay(_INTL("La red viscosa lanzada a {1} ha desaparecido.", user.pbTeam))
+      @battle.pbDisplay(_INTL("La red viscosa lanzada a {1} ha desaparecido.", user.pbTeam(true)))
     end
     if Settings::MECHANICS_GENERATION >= 8 && @battle.field.terrain != :None
       case @battle.field.terrain
@@ -1841,7 +1841,7 @@ class Battle::Move::StartUserSideImmunityToStatStageLowering < Battle::Move
 
   def pbEffectGeneral(user)
     user.pbOwnSide.effects[PBEffects::Mist] = 5
-    @battle.pbDisplay(_INTL("¡Neblina ha cubierto a {1}!", user.pbTeam))
+    @battle.pbDisplay(_INTL("¡Neblina ha cubierto a {1}!", user.pbTeam(true)))
   end
 end
 

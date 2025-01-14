@@ -440,22 +440,22 @@ class Battle
   def pbEOREndSideEffects(side, priority)
     # Reflect
     pbEORCountDownSideEffect(side, PBEffects::Reflect,
-                             _INTL("El efecto de Reflejo en {1} se ha disipado.", @battlers[side].pbTeam))
+                             _INTL("El efecto de Reflejo en {1} se ha disipado.", @battlers[side].pbTeam(true)))
     # Light Screen
     pbEORCountDownSideEffect(side, PBEffects::LightScreen,
-                             _INTL("El efecto de Pantalla de Luz en {1} se ha disipado.", @battlers[side].pbTeam))
+                             _INTL("El efecto de Pantalla de Luz en {1} se ha disipado.", @battlers[side].pbTeam(true)))
     # Safeguard
     pbEORCountDownSideEffect(side, PBEffects::Safeguard,
-                             _INTL("El efecto de Velo Sagrado en {1} se ha disipado.", @battlers[side].pbTeam))
+                             _INTL("El efecto de Velo Sagrado en {1} se ha disipado.", @battlers[side].pbTeam(true)))
     # Mist
     pbEORCountDownSideEffect(side, PBEffects::Mist,
-                             _INTL("El efecto de Neblina en {1} se ha disipado.", @battlers[side].pbTeam))
+                             _INTL("El efecto de Neblina en {1} se ha disipado.", @battlers[side].pbTeam(true)))
     # Tailwind
     pbEORCountDownSideEffect(side, PBEffects::Tailwind,
-                             _INTL("Ha cesado el Viento Afín de {1}.", @battlers[side].pbTeam))
+                             _INTL("Ha cesado el Viento Afín de {1}.", @battlers[side].pbTeam(true)))
     # Lucky Chant
     pbEORCountDownSideEffect(side, PBEffects::LuckyChant,
-                             _INTL("El conjuro de {1} se ha desvanecido.", @battlers[side].pbTeam))
+                             _INTL("El conjuro de {1} se ha desvanecido.", @battlers[side].pbTeam(true)))
     # Pledge Rainbow
     pbEORCountDownSideEffect(side, PBEffects::Rainbow,
                              _INTL("El arcoiris sobre {1} ha desaparecido.", @battlers[side].pbTeam(true)))
@@ -467,7 +467,7 @@ class Battle
                              _INTL("El pantano que rodeaba a {1} ha desaparecido!", @battlers[side].pbTeam(true)))
     # Aurora Veil
     pbEORCountDownSideEffect(side, PBEffects::AuroraVeil,
-                             _INTL("El efecto de Velo Aurora en {1} se ha disipado.", @battlers[side].pbTeam))
+                             _INTL("El efecto de Velo Aurora en {1} se ha disipado.", @battlers[side].pbTeam(true)))
   end
 
   #=============================================================================
