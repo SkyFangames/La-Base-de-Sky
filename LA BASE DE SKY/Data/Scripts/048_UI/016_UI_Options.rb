@@ -57,51 +57,39 @@ class PokemonSystem
     file_path = "mkxp.json"
     vsync_value = vsync_value == 1 ? false : true
     vsync_str = vsync_value ? 'true' : 'false'
-  
+    sync_to_refresh_str = vsync_str
+
     # Read the file line-by-line to preserve comments and order
     lines = File.readlines(file_path)
     
-    commented = false
-    updated_lines = lines.map.with_index do |line, index|
+    updated_lines = lines.map do |line|
       # Update the "vsync" value
       if line.match?(/"vsync":\s*(true|false)/)
         line.sub(/"vsync":\s*(true|false)/, "\"vsync\": #{vsync_str}")
       # Update the "syncToRefreshrate" value
       elsif line.match?(/"syncToRefreshrate":\s*(true|false)/)
-        line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{vsync_str}#{ vsync_str == 'true' ? '' : ',' }")
-      # Comment out the "fixedFramerate" line if vsync is true
-      elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
-        commented = true
-        "//#{line.strip}" # Comment out the line if vsync is true
-      # Uncomment the "fixedFramerate" line if vsync is false
-      elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
-        line.sub(/\/\/\s*/, '') # Uncomment the line if vsync is false
-      else
-        line # Keep the line unchanged
-      end
-    end
-  
-    if commented
-      # Handle the case where the "syncToRefreshrate" line is the last in the file
-      # Backtrack to find the first uncommented line that is not a closing brace
-      updated_lines.reverse_each.with_index do |line, i|
-        # Skip commented lines or closing braces
-        next if line.strip.start_with?("//") || line.strip == "}"
-
-        # If the line has a trailing comma, remove it
-        if line.strip.end_with?(",")
-          updated_lines[-(i+1)] = line.sub(/,$/, '') # Remove the comma
-          break # Stop after the first uncommented line with a comma
+        if vsync_value
+          # Set to true with a trailing comma
+          line.sub(/"syncToRefreshrate":\s*(true|false),?/, "\"syncToRefreshrate\": #{sync_to_refresh_str}")
+        else
+          # Set to false without a trailing comma
+          line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{sync_to_refresh_str},")
         end
+      # Comment out "fixedFramerate" if vsync is true
+      elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
+        "//#{line.strip}" # Comment out the line
+      # Uncomment "fixedFramerate" if vsync is false
+      elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
+        line.sub(/\/\/\s*/, '') # Uncomment the line
+      else
+        line # Return the line unchanged
       end
     end
-  
+    
     # Write the updated lines back to the file
     File.open(file_path, 'w') do |file|
       file.puts(updated_lines)
     end
-
-
     # Handle game restart after vsync value change
     message = $player ? _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\nPodrás guardar antes de reiniciar.\n¿Deseas reiniciar ahora?") : _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\n¿Deseas reiniciar ahora?")
     if Kernel.pbConfirmMessageSerious(message)
