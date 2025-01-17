@@ -141,12 +141,12 @@ class StorageGrabber
   def pour(count)
     return if count == 0
     to_del = get_new_carried_mons(0)
-	to_del = to_del.sort{ |a, b| a[0] <=> b[0] }
-	ret = @carried_mons.clone
-	count.times do
-	  ret.pop
-	end
-	@carried_mons = ret
+	  to_del = to_del.sort{ |a, b| a[0] <=> b[0] }
+	  ret = @carried_mons.clone
+    count.times do
+      ret.pop
+    end
+  	@carried_mons = ret
   end
   
   #===============================================================================
@@ -898,21 +898,37 @@ class PokemonStorageScreen
   #===============================================================================
   def pbPour(selected)
     box = @storage.currentBox
-	mons_to_place = @scene.grabber.carried_mons.clone
-	count = 0
-	for i in 0...PokemonBox::BOX_SIZE
-	  next if @storage[box, i]
-	  m_t_p = mons_to_place.pop
-	  @storage[box, i] = m_t_p[0]
-	  count += 1
-	  break if mons_to_place.empty?
-	end
-	emptied = mons_to_place.empty?
-	@scene.grabber.pour(count)
+    mons_to_place = @scene.grabber.carried_mons.clone
+    count = 0
+    placed = false
+    if !mons_to_place.empty?
+      for i in 0...PokemonBox::BOX_SIZE
+        next if @storage[box, i]
+        m_t_p = mons_to_place.pop
+        next unless m_t_p && !m_t_p.empty?
+        @storage[box, i] = m_t_p[0]
+        count += 1
+        break if mons_to_place.empty?
+      end
+    elsif @heldpkmn
+      for i in 0...PokemonBox::BOX_SIZE
+        next if @storage[box, i]
+        @storage[box, i] = @heldpkmn
+        count += 1
+        placed = true
+        break
+      end
+    end
+    emptied = mons_to_place.empty? || placed
     @scene.refresh_box_sprites
     @scene.pbRefresh
-	@heldpkmn = nil if emptied
-	return emptied
+    @heldpkmn = nil if emptied
+    if emptied && @scene.sprites["arrow"]&.holding?
+      @scene.sprites["arrow"]&.deleteSprite
+      @scene.sprites["arrow"]&.update 
+    end
+    @scene.grabber.pour(count)
+	  return emptied
   end
   
   #===============================================================================

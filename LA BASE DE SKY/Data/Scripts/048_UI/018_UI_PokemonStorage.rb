@@ -581,6 +581,7 @@ end
 #===============================================================================
 class PokemonStorageScene
   attr_reader :quickswap
+  attr_accessor :sprites
 
   MARK_WIDTH  = 16
   MARK_HEIGHT = 16
@@ -1121,6 +1122,11 @@ class PokemonStorageScene
       @sprites["box"].grabPokemon(selected[1], @sprites["arrow"])
     end
     @grabber.carrying = true
+    @grabber.setPivot(selected[1])
+    @grabber.do_with(selected[1])
+    # @grabber.setPivot(selected[1])
+    # @grabber.do_with(selected[1])
+    # @grabber.pack_up(@storage, selected[0])
     while @sprites["arrow"].grabbing?
       Graphics.update
       Input.update
