@@ -636,7 +636,7 @@ MenuHandlers.add(:options_menu, :vsync, {
 })
 
 MenuHandlers.add(:options_menu, :autotile_animations, {
-  "name"        => _INTL("Animaciones de mapas"),
+  "name"        => _INTL("Anim. de mapas"),
   "order"       => 140,
   "type"        => EnumOption,
   "parameters"  => [_INTL("Sí"), _INTL("No")],
