@@ -29,7 +29,7 @@ if Settings::USE_NEW_EXP_SHARE
     "name"        => _INTL("Rep Exp al capturar"),
     "order"       => 40,
     "type"        => EnumOption,
-    "condition"   => proc { next $PokemonGlobal.expshare_enabled },
+    "condition"   => proc { next expshare_enabled? },
     "parameters"  => [_INTL("Sí"), _INTL("No")],
     "description" => _INTL("Si quieres que los Pokémon capturados tengan el repartir experiencia activado."),
     "get_proc"    => proc { next $PokemonSystem.expshareon },
@@ -41,20 +41,20 @@ if Settings::USE_NEW_EXP_SHARE
     MenuHandlers.add(:party_menu, :expshare, {
     "name"      => _INTL("Repartir Exp."),
     "order"     => 70,
-    "condition" => proc { next $PokemonGlobal.expshare_enabled },
+    "condition" => proc { next expshare_enabled? },
     "effect"    => proc { |screen, party, party_idx|
-        pokemon = party[party_idx]
-        if pokemon.expshare
-            if pbConfirmMessage(_INTL("¿Quieres desactivar el Repartir Experiencia en este Pokémon?"))
-                pokemon.expshare=false
-            end
-        else
-            if pbConfirmMessage(_INTL("¿Quieres activar el Repartir Experiencia en este Pokémon?"))
-                pokemon.expshare=true
-            end
-        end
-    }
+            pokemon = party[party_idx]
+            var_msg = pokemon.expshare ? _INTL("desactivar") : _INTL("activar")
+            pokemon.expshare = !pokemon.expshare if pbConfirmMessage(_INTL("¿Quieres {1} el Repartir Experiencia en este Pokémon?", var_msg))
+        }   
     })
+
+
+    def expshare_enabled?
+        return false unless $PokemonGlobal
+        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED
+        $PokemonGlobal.expshare_enabled
+    end
 
     def toggle_expshare
         $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED
