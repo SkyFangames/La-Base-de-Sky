@@ -1171,8 +1171,9 @@ ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
     for i in abils
       ability_commands.push(GameData::Ability.get(i[0]).name + ((i[1] < 2) ? "" : " (H)"))
     end
+    ability_commands << _INTL("Cancelar")
     cmd= pbMessage("¿Qué habilidad quieres para tu Pokémon?",ability_commands,-1,nil,0)
-    next false if cmd == -1
+    next false if cmd == -1 || cmd == abils.length
     if oldabil == abils[cmd][1]
       scene.pbDisplay("Tu Pokémon ya posee esa habilidad.") 
       next false
