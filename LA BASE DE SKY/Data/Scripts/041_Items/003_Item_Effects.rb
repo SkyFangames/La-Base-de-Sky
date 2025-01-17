@@ -1165,7 +1165,6 @@ ItemHandlers::UseOnPokemon.add(:ABILITYPATCH, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
-  if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}?", pkmn.name))
     oldabil=pkmn.ability_index
     abils = pkmn.getAbilityList
     ability_commands = []
@@ -1184,7 +1183,6 @@ ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
     scene.pbRefresh
     scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, newabilname))
     next true
-  end
 })
 
 ItemHandlers::UseOnPokemon.add(:GRACIDEA, proc { |item, qty, pkmn, scene|
