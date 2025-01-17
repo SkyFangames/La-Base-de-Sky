@@ -1124,9 +1124,6 @@ class PokemonStorageScene
     @grabber.carrying = true
     @grabber.setPivot(selected[1])
     @grabber.do_with(selected[1])
-    # @grabber.setPivot(selected[1])
-    # @grabber.do_with(selected[1])
-    # @grabber.pack_up(@storage, selected[0])
     while @sprites["arrow"].grabbing?
       Graphics.update
       Input.update
@@ -1230,6 +1227,23 @@ class PokemonStorageScene
       end
     end
     return pbShowCommands(msg, commands, @storage.currentBox)
+  end
+
+  def pbChooseBoxWithSpace(msg, min_space = 1)
+    commands = []
+    box_num = []
+    @storage.maxBoxes.times do |i|
+      box = @storage[i]
+      if box
+        next if box.length - min_space <= box.nitems && i != @storage.currentBox
+        box_num << i
+        commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
+      end
+    end
+    chosen_box = pbShowCommands(msg, commands, @storage.currentBox)
+    echoln "chosen_box #{chosen_box}"
+    return chosen_box if chosen_box == -1
+    return box_num[chosen_box]
   end
 
   def pbBoxName(helptext, minchars, maxchars)
@@ -1789,6 +1803,7 @@ class PokemonStorageScreen
   end
 
   def pbPlace(selected)
+    echoln "pbPlace 1810"
     box = selected[0]
     index = selected[1]
     if @storage[box, index]
@@ -1815,6 +1830,7 @@ class PokemonStorageScreen
     @storage.party.compact! if box == -1
     @scene.pbRefresh
     @heldpkmn = nil
+    @scene.grabber.clear
   end
 
   def pbSwap(selected)

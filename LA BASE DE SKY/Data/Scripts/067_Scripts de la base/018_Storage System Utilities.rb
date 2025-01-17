@@ -553,6 +553,7 @@ class PokemonStorageScene
           pbSetMosaic(selection)
         end
       elsif Input.trigger?(Input::ACTION) && @command == 0   # Organize only
+        echoln "t #{t} carrying #{@grabber.carrying}" 
         if !t && !@grabber.carrying
           pbPlayDecisionSE
           pbSetQuickSwap(!@quickswap)
@@ -897,8 +898,11 @@ class PokemonStorageScreen
   # Puts all held Pokemon into available slots in a box
   #===============================================================================
   def pbPour(selected)
-    box = @storage.currentBox
+    # box = @storage.currentBox
     mons_to_place = @scene.grabber.carried_mons.clone
+    needed_space = mons_to_place.size > 0 ?  mons_to_place.size : 1
+    box = @scene.pbChooseBoxWithSpace("¿Dejar en qué caja?", needed_space)
+    return false if box < 0
     count = 0
     placed = false
     if !mons_to_place.empty?
@@ -926,6 +930,7 @@ class PokemonStorageScreen
     if emptied && @scene.sprites["arrow"]&.holding?
       @scene.sprites["arrow"]&.deleteSprite
       @scene.sprites["arrow"]&.update 
+      @scene.grabber.carrying = false
     end
     @scene.grabber.pour(count)
 	  return emptied
