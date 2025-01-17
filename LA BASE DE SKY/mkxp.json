@@ -36,14 +36,14 @@
     // have no other use.
     //
     "bindingNames": {
-      "c": "Use",
-      "b": "Back",
-      "a": "Action",
-      "x": "JumpUp",
-      "y": "JumpDown",
-      "z": "Special",
-      "l": "AUX1",
-      "r": "AUX2"
+      "c": "Use (C)",
+      "b": "Back (X)",
+      "a": "Action (Z)",
+      "x": "JumpUp (A)",
+      "y": "JumpDown (S)",
+      "z": "Special (D)",
+      "l": "AUX1 (Q)",
+      "r": "AUX2 (W)"
     },
 
     // The name of this game's save folder. If undefined, the save folder's name
