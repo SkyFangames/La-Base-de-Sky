@@ -77,7 +77,7 @@ if Settings::USE_NEW_EXP_SHARE
         alias initialize_old initialize
         def initialize(pokemon,index,viewport=nil)
             initialize_old(pokemon,index,viewport)
-            if @pokemon.expshare
+            if @pokemon.expshare && !@pokemon.egg?
                 @expicon = ChangelingSprite.new(0, 0, viewport)
                 @expicon.addBitmap("expicon","Graphics/Pictures/expicon")
                 @expicon.z=self.z+3 # For compatibility with RGSS2
@@ -92,7 +92,7 @@ if Settings::USE_NEW_EXP_SHARE
         end
 
         def draw_exp_icon
-            return if !@pokemon.expshare
+            return if !@pokemon.expshare || @pokemon.egg?
             pbDrawImagePositions(@overlaysprite.bitmap, 
             [["Graphics/Pictures/expicon", 226, 70, 0, 0]])
         end
