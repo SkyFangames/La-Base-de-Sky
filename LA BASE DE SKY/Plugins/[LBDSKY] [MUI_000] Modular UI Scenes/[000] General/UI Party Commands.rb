@@ -165,7 +165,7 @@ class PokemonEvolutionScene
     new_pkmn.markings   = []
     new_pkmn.poke_ball  = :POKEBALL
     new_pkmn.item       = nil
-	if PluginManager.installed?("[MUI] Enhanced Pokemon UI")
+    if PluginManager.installed?("[MUI] Enhanced Pokemon UI")
       new_pkmn.shiny_leaf = 0
       new_pkmn.resetLegacyData
       new_pkmn.legacy_data.each_key do |key|
