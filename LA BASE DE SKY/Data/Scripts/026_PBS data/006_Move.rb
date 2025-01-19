@@ -110,102 +110,87 @@ module GameData
     end
 
     def display_type(pkmn, move = nil)
-=begin
-      case @function_code
-      when "TypeDependsOnUserIVs"
-        return pbHiddenPower(pkmn)[0]
-      when "TypeAndPowerDependOnUserBerry"
-        type_array = {
-          :NORMAL   => [:CHILANBERRY],
-          :FIRE     => [:CHERIBERRY,  :BLUKBERRY,   :WATMELBERRY, :OCCABERRY],
-          :WATER    => [:CHESTOBERRY, :NANABBERRY,  :DURINBERRY,  :PASSHOBERRY],
-          :ELECTRIC => [:PECHABERRY,  :WEPEARBERRY, :BELUEBERRY,  :WACANBERRY],
-          :GRASS    => [:RAWSTBERRY,  :PINAPBERRY,  :RINDOBERRY,  :LIECHIBERRY],
-          :ICE      => [:ASPEARBERRY, :POMEGBERRY,  :YACHEBERRY,  :GANLONBERRY],
-          :FIGHTING => [:LEPPABERRY,  :KELPSYBERRY, :CHOPLEBERRY, :SALACBERRY],
-          :POISON   => [:ORANBERRY,   :QUALOTBERRY, :KEBIABERRY,  :PETAYABERRY],
-          :GROUND   => [:PERSIMBERRY, :HONDEWBERRY, :SHUCABERRY,  :APICOTBERRY],
-          :FLYING   => [:LUMBERRY,    :GREPABERRY,  :COBABERRY,   :LANSATBERRY],
-          :PSYCHIC  => [:SITRUSBERRY, :TAMATOBERRY, :PAYAPABERRY, :STARFBERRY],
-          :BUG      => [:FIGYBERRY,   :CORNNBERRY,  :TANGABERRY,  :ENIGMABERRY],
-          :ROCK     => [:WIKIBERRY,   :MAGOSTBERRY, :CHARTIBERRY, :MICLEBERRY],
-          :GHOST    => [:MAGOBERRY,   :RABUTABERRY, :KASIBBERRY,  :CUSTAPBERRY],
-          :DRAGON   => [:AGUAVBERRY,  :NOMELBERRY,  :HABANBERRY,  :JABOCABERRY],
-          :DARK     => [:IAPAPABERRY, :SPELONBERRY, :COLBURBERRY, :ROWAPBERRY, :MARANGABERRY],
-          :STEEL    => [:RAZZBERRY,   :PAMTREBERRY, :BABIRIBERRY],
-          :FAIRY    => [:ROSELIBERRY, :KEEBERRY]
-        }
-        if pkmn.hasItem?
-          type_array.each do |type, items|
-            return type if items.include?(pkmn.item_id) && GameData::Type.exists?(type)
+      if Settings::SHOW_MODIFIED_MOVE_PROPERTIES
+        case @function_code
+        when "TypeDependsOnUserIVs"
+          return pbHiddenPower(pkmn)[0]
+        when "TypeAndPowerDependOnUserBerry"
+          item_data = pkmn.item
+          if item_data
+            item_data.flags.each do |flag|
+              next if !flag[/^NaturalGift_(\w+)_(?:\d+)$/i]
+              typ = $~[1].to_sym
+              ret = typ if GameData::Type.exists?(typ)
+              break
+            end
           end
-        end
-      when "TypeDependsOnUserPlate"
-        item_types = {
-          :FISTPLATE   => :FIGHTING,
-          :SKYPLATE    => :FLYING,
-          :TOXICPLATE  => :POISON,
-          :EARTHPLATE  => :GROUND,
-          :STONEPLATE  => :ROCK,
-          :INSECTPLATE => :BUG,
-          :SPOOKYPLATE => :GHOST,
-          :IRONPLATE   => :STEEL,
-          :FLAMEPLATE  => :FIRE,
-          :SPLASHPLATE => :WATER,
-          :MEADOWPLATE => :GRASS,
-          :ZAPPLATE    => :ELECTRIC,
-          :MINDPLATE   => :PSYCHIC,
-          :ICICLEPLATE => :ICE,
-          :DRACOPLATE  => :DRAGON,
-          :DREADPLATE  => :DARK,
-          :PIXIEPLATE  => :FAIRY
-        }
-        if pkmn.hasItem?
-          item_types.each do |item, item_type|
-            return item_type if pkmn.item_id == item && GameData::Type.exists?(item_type)
+          return :NORMAL
+        when "TypeDependsOnUserPlate"
+          item_types = {
+            :FISTPLATE   => :FIGHTING,
+            :SKYPLATE    => :FLYING,
+            :TOXICPLATE  => :POISON,
+            :EARTHPLATE  => :GROUND,
+            :STONEPLATE  => :ROCK,
+            :INSECTPLATE => :BUG,
+            :SPOOKYPLATE => :GHOST,
+            :IRONPLATE   => :STEEL,
+            :FLAMEPLATE  => :FIRE,
+            :SPLASHPLATE => :WATER,
+            :MEADOWPLATE => :GRASS,
+            :ZAPPLATE    => :ELECTRIC,
+            :MINDPLATE   => :PSYCHIC,
+            :ICICLEPLATE => :ICE,
+            :DRACOPLATE  => :DRAGON,
+            :DREADPLATE  => :DARK,
+            :PIXIEPLATE  => :FAIRY
+          }
+          if pkmn.hasItem?
+            item_types.each do |item, item_type|
+              return item_type if pkmn.item_id == item && GameData::Type.exists?(item_type)
+            end
           end
-        end
-      when "TypeDependsOnUserMemory"
-        item_types = {
-          :FIGHTINGMEMORY => :FIGHTING,
-          :FLYINGMEMORY   => :FLYING,
-          :POISONMEMORY   => :POISON,
-          :GROUNDMEMORY   => :GROUND,
-          :ROCKMEMORY     => :ROCK,
-          :BUGMEMORY      => :BUG,
-          :GHOSTMEMORY    => :GHOST,
-          :STEELMEMORY    => :STEEL,
-          :FIREMEMORY     => :FIRE,
-          :WATERMEMORY    => :WATER,
-          :GRASSMEMORY    => :GRASS,
-          :ELECTRICMEMORY => :ELECTRIC,
-          :PSYCHICMEMORY  => :PSYCHIC,
-          :ICEMEMORY      => :ICE,
-          :DRAGONMEMORY   => :DRAGON,
-          :DARKMEMORY     => :DARK,
-          :FAIRYMEMORY    => :FAIRY
-        }
-        if pkmn.hasItem?
-          item_types.each do |item, item_type|
-            return item_type if pkmn.item_id == item && GameData::Type.exists?(item_type)
+        when "TypeDependsOnUserMemory"
+          item_types = {
+            :FIGHTINGMEMORY => :FIGHTING,
+            :FLYINGMEMORY   => :FLYING,
+            :POISONMEMORY   => :POISON,
+            :GROUNDMEMORY   => :GROUND,
+            :ROCKMEMORY     => :ROCK,
+            :BUGMEMORY      => :BUG,
+            :GHOSTMEMORY    => :GHOST,
+            :STEELMEMORY    => :STEEL,
+            :FIREMEMORY     => :FIRE,
+            :WATERMEMORY    => :WATER,
+            :GRASSMEMORY    => :GRASS,
+            :ELECTRICMEMORY => :ELECTRIC,
+            :PSYCHICMEMORY  => :PSYCHIC,
+            :ICEMEMORY      => :ICE,
+            :DRAGONMEMORY   => :DRAGON,
+            :DARKMEMORY     => :DARK,
+            :FAIRYMEMORY    => :FAIRY
+          }
+          if pkmn.hasItem?
+            item_types.each do |item, item_type|
+              return item_type if pkmn.item_id == item && GameData::Type.exists?(item_type)
+            end
           end
-        end
-      when "TypeDependsOnUserDrive"
-        item_types = {
-          :SHOCKDRIVE => :ELECTRIC,
-          :BURNDRIVE  => :FIRE,
-          :CHILLDRIVE => :ICE,
-          :DOUSEDRIVE => :WATER
-        }
-        if pkmn.hasItem?
-          item_types.each do |item, item_type|
-            return item_type if pkmn.item_id == item && GameData::Type.exists?(item_type)
+        when "TypeDependsOnUserDrive"
+          item_types = {
+            :SHOCKDRIVE => :ELECTRIC,
+            :BURNDRIVE  => :FIRE,
+            :CHILLDRIVE => :ICE,
+            :DOUSEDRIVE => :WATER
+          }
+          if pkmn.hasItem?
+            item_types.each do |item, item_type|
+              return item_type if pkmn.item_id == item && GameData::Type.exists?(item_type)
+            end
           end
+        when "TypeIsUserFirstType"
+          return pkmn.types[0]
         end
-      when "TypeIsUserFirstType"
-        return pkmn.types[0]
       end
-=end
       return @type
     end
 
@@ -398,6 +383,51 @@ module GameData
         return dmgs[ppLeft]
       end
 =end
+      return @power
+    end
+
+    def display_power(pkmn, move = nil)
+      if Settings::SHOW_MODIFIED_MOVE_PROPERTIES
+        case @function_code
+        when "TypeDependsOnUserIVs"
+          return pbHiddenPower(pkmn)[1]
+        when "TypeAndPowerDependOnUserBerry"
+          item_data = pkmn.item
+          if item_data
+            item_data.flags.each do |flag|
+              return [$~[1].to_i, 10].max if flag[/^NaturalGift_(?:\w+)_(\d+)$/i]
+            end
+          end
+          return 1
+        when "ThrowUserItemAtTarget"
+          item_data = pkmn.item
+          if item_data
+            item_data.flags.each do |flag|
+              return [$~[1].to_i, 10].max if flag[/^Fling_(\d+)$/i]
+            end
+            return 10
+          end
+          return 0
+        when "PowerHigherWithUserHP"
+          return [150 * pkmn.hp / pkmn.totalhp, 1].max
+        when "PowerLowerWithUserHP"
+          n = 48 * pkmn.hp / pkmn.totalhp
+          return 200 if n < 2
+          return 150 if n < 5
+          return 100 if n < 10
+          return 80 if n < 17
+          return 40 if n < 33
+          return 20
+        when "PowerHigherWithUserHappiness"
+          return [(pkmn.happiness * 2 / 5).floor, 1].max
+        when "PowerLowerWithUserHappiness"
+          return [((255 - pkmn.happiness) * 2 / 5).floor, 1].max
+        when "PowerHigherWithLessPP"
+          dmgs = [200, 80, 60, 50, 40]
+          ppLeft = [[(move&.pp || @total_pp) - 1, 0].max, dmgs.length - 1].min
+          return dmgs[ppLeft]
+        end
+      end
       return @power
     end
 
