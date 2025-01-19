@@ -335,8 +335,7 @@ class ChangelingSprite < Sprite
   end
 
   def addBitmap(key, path)
-    @bitmaps[key]&.dispose
-    @bitmaps[key] = AnimatedBitmap.new(path)
+    add_bitmap(key.to_sym, path)
   end
 
   def change_bitmap(mode)
@@ -357,8 +356,7 @@ class ChangelingSprite < Sprite
   end
 
   def changeBitmap(key)
-    @current_bitmap = @bitmaps[key]
-    self.bitmap = @current_bitmap.bitmap if @current_bitmap
+    change_bitmap(key.to_sym)
   end
 
   def dispose
