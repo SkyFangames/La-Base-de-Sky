@@ -120,8 +120,7 @@ module GameData
             item_data.flags.each do |flag|
               next if !flag[/^NaturalGift_(\w+)_(?:\d+)$/i]
               typ = $~[1].to_sym
-              ret = typ if GameData::Type.exists?(typ)
-              break
+              return typ if GameData::Type.exists?(typ)
             end
           end
           return :NORMAL
