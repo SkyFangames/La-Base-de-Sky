@@ -12,7 +12,7 @@ module UI::LoadSaveDataMixin
     ret = SaveData.read_from_file(directory + filename)
     if !SaveData.valid?(ret)
       if File.file?(directory + filename + ".bak")
-        show_message(_INTL("The save file is corrupt. A backup will be loaded."))
+        show_message(_INTL("La partida está corrupta. Se cargará un archivo de respaldo."))
         ret = load_save_file(directory, filename + ".bak")
       end
       if prompt_corrupted_save_deletion(filename)
@@ -26,18 +26,18 @@ module UI::LoadSaveDataMixin
   end
 
   def prompt_corrupted_save_deletion(filename)
-    show_message(_INTL("The save file is corrupt, or is incompatible with this game.") + "\1")
+    show_message(_INTL("La partida está corrupta, o es incompatible con este juego.") + "\1")
     pbPlayDecisionSE
-    return show_confirm_serious_message(_INTL("Do you want to delete the save file and start anew?"))
+    return show_confirm_serious_message(_INTL("¿Quieres borrar la partida e iniciar de nuevo?"))
   end
 
   def delete_save_data(filename)
     begin
       SaveData.delete_file(filename)
       yield if block_given?
-      show_message(_INTL("The save file was deleted."))
+      show_message(_INTL("La partida fue eliminada."))
     rescue SystemCallError
-      show_message(_INTL("The save file could not be deleted."))
+      show_message(_INTL("La partida no pudo ser eliminada."))
     end
   end
 end
@@ -268,13 +268,13 @@ class UI::LoadContinuePanel < UI::LoadPanel
     map_name = map_name.gsub(/\\v\[(\d+)\]/) { |num| @save_data[:variables][$~[1].to_i].to_s }
     draw_text(map_name, 18, 114, theme: gender_theme)
     # Gym Badges
-    draw_text(_INTL("Badges:"), 18, 146)
+    draw_text(_INTL("Medallas:"), 18, 146)
     draw_text(@save_data[:player].badge_count.to_s, 156, 146, theme: gender_theme)
     # Pokédex owned count
     draw_text(_INTL("Pokédex:"), 18, 178)
     draw_text(@save_data[:player].pokedex.seen_count.to_s, 156, 178, theme: gender_theme)
     # Time played
-    draw_text(_INTL("Time played:"), 18, 210)
+    draw_text(_INTL("Tiempo de juego:"), 18, 210)
     play_time = @save_data[:stats]&.play_time.to_i || 0
     hour = (play_time / 60) / 60
     min  = (play_time / 60) % 60
@@ -626,10 +626,10 @@ class UI::Load < UI::BaseScreen
   end
 
   def prompt_save_deletion(filename)
-    if show_confirm_serious_message(_INTL("Delete this save file?"))
-      show_message(_INTL("Once a save file has been deleted, there is no way to recover it.") + "\1")
+    if show_confirm_serious_message(_INTL("¿Quieres eliminar esta partida?"))
+      show_message(_INTL("Una vez eliminada, no podrá ser recuperada.") + "\1")
       pbPlayDecisionSE
-      if show_confirm_serious_message(_INTL("Delete the save file anyway?"))
+      if show_confirm_serious_message(_INTL("¿Desea eliminar el archivo de todas formas?"))
         delete_save_data(filename) {
           @save_data.delete_if { |save| save[0] == filename }
           @visuals.refresh_after_save_file_deleted
@@ -726,7 +726,7 @@ UIActionHandlers.add(UI::Load::SCREEN_ID, :delete_save, {
 #       UI::Load.
 #===============================================================================
 MenuHandlers.add(:load_screen, :continue, {
-  "name"      => _INTL("Continue"),
+  "name"      => _INTL("Continuar"),
   "order"     => 10,
   "condition" => proc { |screen| next screen.save_data && !screen.save_data.empty? }
 })
@@ -735,31 +735,31 @@ MenuHandlers.add(:load_screen, :continue, {
 #       have unlocked it. Whether it is shown depends on the selected save file,
 #       and its visibility is toggled elsewhere because of that.
 MenuHandlers.add(:load_screen, :mystery_gift, {
-  "name"      => _INTL("Mystery Gift"),
+  "name"      => _INTL("Regalo Misterioso"),
   "order"     => 20,
   "condition" => proc { |screen| next screen.save_data && !screen.save_data.empty? }
 })
 
 MenuHandlers.add(:load_screen, :new_game, {
-  "name"      => _INTL("New Game"),
+  "name"      => _INTL("Nuevo Juego"),
   "order"     => 30
 })
 
 MenuHandlers.add(:load_screen, :options, {
-  "name"      => _INTL("Options"),
+  "name"      => _INTL("Opciones"),
   "order"     => 40
 })
 
 # TODO: Put language in the options screen?
 MenuHandlers.add(:load_screen, :language, {
-  "name"      => _INTL("Language"),
+  "name"      => _INTL("Idioma"),
   "order"     => 50,
   "condition" => proc { |screen| next Settings::LANGUAGES.length >= 2 }
 })
 
 
 MenuHandlers.add(:load_screen, :delete_save, {
-  "name"      => _INTL("Delete Save"),
+  "name"      => _INTL("Eliminar Partida"),
   "order"     => 60,
   "condition" => proc { |screen| next screen.save_data && !screen.save_data.empty? }
 })
@@ -772,6 +772,6 @@ MenuHandlers.add(:load_screen, :debug, {
 })
 
 MenuHandlers.add(:load_screen, :quit_game, {
-  "name"      => _INTL("Quit Game"),
+  "name"      => _INTL("Cerrar Juego"),
   "order"     => 9999
 })

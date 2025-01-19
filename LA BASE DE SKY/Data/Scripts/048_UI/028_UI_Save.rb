@@ -327,15 +327,15 @@ class UI::SavePanel < UI::SpriteContainer
               hour = (delta_time / 60) / 60
               min  = (delta_time / 60) % 60
               if hour > 0
-                draw_text(_INTL("Play time since save: {1}h {2}m", hour, min), 8, 4)
+                draw_text(_INTL("Tiempo de juego desde el guardado: {1}h {2}m", hour, min), 8, 4)
               else
-                draw_text(_INTL("Play time since save: {1}m", min), 8, 4)
+                draw_text(_INTL("Tiempo de juego desde el guardado: {1}m", min), 8, 4)
               end
             else
-              draw_text(_INTL("Alternate version of your adventure!"), 8, 4)
+              draw_text(_INTL("¡Versión alternativa de tu aventura!"), 8, 4)
             end
           else
-            draw_text(_INTL("Different adventure!"), 8, 4)
+            draw_text(_INTL("¡Otra aventura!"), 8, 4)
           end
         end
         if @save_data[@index]
@@ -349,7 +349,7 @@ class UI::SavePanel < UI::SpriteContainer
           date_text = save_time.strftime("%-d/%-m/%Y")
         end
         time_text = save_time.strftime("%H:%M")
-        draw_text(_INTL("Last saved on {1} at {2}", date_text, time_text), 8, 4)
+        draw_text(_INTL("Último guardado el {1} a las {2}", date_text, time_text), 8, 4)
       end
     end
   
@@ -391,7 +391,7 @@ class UI::SavePanel < UI::SpriteContainer
     #-----------------------------------------------------------------------------
   
     def navigate
-      help_text = _INTL("Choose a file to save in.")
+      help_text = _INTL("Elija el archivo donde guardar la partida.")
       help_window = Window_AdvancedTextPokemon.newWithSize(
         help_text, 0, 0, Graphics.width, 96, @viewport
       )
@@ -465,10 +465,10 @@ class UI::SavePanel < UI::SpriteContainer
   
     def prompt_overwrite_save_file(slot_index)
       if different_adventure?(slot_index)
-        show_message(_INTL("WARNING!") + "\1")
-        show_message(_INTL("There is a different game file that is already saved.") + "\1")
-        show_message(_INTL("If you save now, the other file's adventure, including items and Pokémon, will be entirely lost.") + "\1")
-        if !show_confirm_serious_message(_INTL("Are you sure you want to save now and overwrite the other save file?"))
+        show_message(_INTL("¡ADVERTENCIA!") + "\1")
+        show_message(_INTL("Ya hay una partida guardada.") + "\1")
+        show_message(_INTL("Si guardas ahora, la otra partida, incluyendo sus objetos y Pokémon, se perderán completamente.") + "\1")
+        if !show_confirm_serious_message(_INTL("¿Estás seguro de que deseas guardar ahora y sobreescribir la otra partida?"))
           return false
         end
       end
@@ -490,14 +490,14 @@ class UI::SavePanel < UI::SpriteContainer
         @save_data[slot_index] = [file, this_save_data]
         @visuals.set_index(slot_index, true)
         # Announce the save success
-        show_message(_INTL("{1} saved the game.", $player.name)) {
+        show_message(_INTL("{1} guardó la partida.", $player.name)) {
           # TODO: Stop SE.
           pbMEPlay("GUI save game")
           # TODO: Wait for ME to finish playing, then auto-close the message.
         }
         @result = true
       else
-        show_message(_INTL("Save failed."))
+        show_message(_INTL("Falló el guardado."))
         # TODO: Auto-close this message.
         @result = false
       end
@@ -522,7 +522,7 @@ class UI::SavePanel < UI::SpriteContainer
     def main
       start_screen
       # If the player doesn't want to save, just exit the screen
-      if !show_confirm_message(_INTL("Would you like to save the game?"))
+      if !show_confirm_message(_INTL("¿Quieres guardar la partida?"))
         end_screen
         return false
       end
@@ -542,15 +542,15 @@ class UI::SavePanel < UI::SpriteContainer
           command = @visuals.navigate
           break if command == :quit
           if !@save_data[index] ||
-             show_confirm_message(_INTL("Do you want to overwrite this save file?"))
+             show_confirm_message(_INTL("¿Deseas sobreescribir la partida?"))
             if different_adventure?(index)
-              show_message(_INTL("WARNING!") + "\1")
+              show_message(_INTL("¡ADVERTENCIA!") + "\1")
               pbPlayDecisionSE
-              show_message(_INTL("This save file is a different adventure.") + "\1")
+              show_message(_INTL("Esta partida contiene una aventura diferente.") + "\1")
               pbPlayDecisionSE
-              show_message(_INTL("If you save now, that adventure, including items and Pokémon, will be entirely lost.") + "\1")
+              show_message(_INTL("Si guardas ahora, la otra partida, incluyendo sus objetos y Pokémon, se perderán completamente.") + "\1")
               pbPlayDecisionSE
-              next if !show_confirm_serious_message(_INTL("Are you sure you want to overwrite it?"))
+              next if !show_confirm_serious_message(_INTL("¿Estás seguro de que deseas guardar ahora y sobreescribir la otra partida?"))
             end
             file_number = get_save_file_number(index)
             save_game(file_number)
@@ -584,7 +584,7 @@ class UI::SavePanel < UI::SpriteContainer
   def pbEmergencySave
     oldscene = $scene
     $scene = nil
-    pbMessage(_INTL("The script is taking too long. The game will restart."))
+    pbMessage(_INTL("El script está tardando demasiado. El juego se reiniciará."))
     return if !$player
     filename_number = $stats.save_filename_number || -1
     filename = SaveData.filename_from_index(filename_number)
@@ -600,10 +600,10 @@ class UI::SavePanel < UI::SpriteContainer
       end
     end
     if Game.save(filename_number)
-      pbMessage("\\se[]" + _INTL("The game was saved.") + "\\me[GUI save game]\\wtnp[20]")
-      pbMessage("\\se[]" + _INTL("The previous save file has been backed up.") + "\\wtnp[20]")
+      pbMessage("\\se[]" + _INTL("Se ha guardado la partida.") + "\\me[GUI save game]\\wtnp[20]")
+      pbMessage("\\se[]" + _INTL("Se respaldó el archivo de guardado antiguo.") + "\\wtnp[20]")
     else
-      pbMessage("\\se[]" + _INTL("Save failed.") + "\\wtnp[30]")
+      pbMessage("\\se[]" + _INTL("El guardado falló.") + "\\wtnp[30]")
     end
     $scene = oldscene
   end
