@@ -52,7 +52,7 @@ class UI::LoadPanel < UI::SpriteContainer
   TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
     :default => [Color.new(88, 88, 80), Color.new(168, 184, 184)]   # Base and shadow colour
   }
-  PANEL_WIDTH  = 400
+  PANEL_WIDTH  = 410
   PANEL_HEIGHT = 46
 
   def initialize(label, viewport)
@@ -127,8 +127,8 @@ class UI::LoadContinuePanel < UI::LoadPanel
     :male    => [Color.new(0, 112, 248), Color.new(120, 184, 232)],
     :female  => [Color.new(232, 32, 16), Color.new(248, 168, 184)]
   }
-  PANEL_WIDTH  = 392
-  PANEL_HEIGHT = 238
+  PANEL_WIDTH  = 410
+  PANEL_HEIGHT = 239
 
   def initialize(label, save_data, slot_index, total_slots, viewport)
     @save_data   = save_data
@@ -188,10 +188,8 @@ class UI::LoadContinuePanel < UI::LoadPanel
 
   def panel_srcs
     return {
-      :default  => [graphics_folder + "panels_new", 0, 0,
-                    self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
-      :selected => [graphics_folder + "panels_new", 0, self.class::PANEL_HEIGHT,
-                    self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
+      :default  => [graphics_folder + "panels_new", 0, 0, self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
+      :selected => [graphics_folder + "panels_new", 0, self.class::PANEL_HEIGHT, self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
     }
   end
 
@@ -307,7 +305,7 @@ class UI::LoadVisuals < UI::BaseVisuals
   attr_reader :save_data
 
   GRAPHICS_FOLDER    = "Load/"   # Subfolder in Graphics/UI
-  PANEL_SPACING_EDGE = 0
+  PANEL_SPACING_EDGE = 2
   PANEL_SPACING      = PANEL_SPACING_EDGE * 2
 
   # save_data here is an array of [save filename, save data hash]. It has been
