@@ -97,37 +97,41 @@ class PokemonSaveScreen
     return @scene.pbConfirm(text)
   end
 
-  def pbSaveScreen
-    ret = false
-    @scene.pbStartScreen
-    if pbConfirmMessage(_INTL("¿Quieres guardar la partida?"))
-      if SaveData.exists? && $game_temp.begun_new_game
-        pbMessage(_INTL("¡AVISO!") + "\1")
-        pbMessage(_INTL("Tienes ya un archivo de guardado de una partida diferente.") + "\1")
-        pbMessage(_INTL("Si guardas ahora, todos los datos de la otra partida se perderán para siempre.") + "\1")
-        if !pbConfirmMessageSerious(_INTL("¿Estás seguro de que quieres guardar la partida y sobreescribir el otro archivo?"))
-          pbSEPlay("GUI save choice")
-          @scene.pbEndScreen
-          return false
-        end
-      end
-      $game_temp.begun_new_game = false
-      pbSEPlay("GUI save choice")
-      if Game.save
-        pbMessage("\\se[]" + _INTL("{1} guardó la partida.", $player.name) + "\\me[GUI save game]\\wtnp[20]")
-        ret = true
-      else
-        pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
-        ret = false
-      end
-    else
-      pbSEPlay("GUI save choice")
-    end
-    @scene.pbEndScreen
-    return ret
-  end
-end
 
+  def pbSaveScreen
+    return UI::Save.new.main
+  end
+#   def pbSaveScreen
+#     ret = false
+#     @scene.pbStartScreen
+#     if pbConfirmMessage(_INTL("¿Quieres guardar la partida?"))
+#       if SaveData.exists? && $game_temp.begun_new_game
+#         pbMessage(_INTL("¡AVISO!") + "\1")
+#         pbMessage(_INTL("Tienes ya un archivo de guardado de una partida diferente.") + "\1")
+#         pbMessage(_INTL("Si guardas ahora, todos los datos de la otra partida se perderán para siempre.") + "\1")
+#         if !pbConfirmMessageSerious(_INTL("¿Estás seguro de que quieres guardar la partida y sobreescribir el otro archivo?"))
+#           pbSEPlay("GUI save choice")
+#           @scene.pbEndScreen
+#           return false
+#         end
+#       end
+#       $game_temp.begun_new_game = false
+#       pbSEPlay("GUI save choice")
+#       if Game.save
+#         pbMessage("\\se[]" + _INTL("{1} guardó la partida.", $player.name) + "\\me[GUI save game]\\wtnp[20]")
+#         ret = true
+#       else
+#         pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
+#         ret = false
+#       end
+#     else
+#       pbSEPlay("GUI save choice")
+#     end
+#     @scene.pbEndScreen
+#     return ret
+#   end
+# end
+end
 #===============================================================================
 #
 #===============================================================================
@@ -137,4 +141,3 @@ def pbSaveScreen
   ret = screen.pbSaveScreen
   return ret
 end
-

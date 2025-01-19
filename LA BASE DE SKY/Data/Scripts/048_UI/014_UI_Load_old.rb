@@ -222,6 +222,9 @@ class PokemonLoadScreen
   #     @save_data = {}
   #   end
   # end
+  def initialize(scene)
+    @scene = scene
+  end
 
   # @param file_path [String] file to load save data from
   # @return [Hash] save data
@@ -276,6 +279,10 @@ class PokemonLoadScreen
     rescue SystemCallError
       pbMessage(_INTL("No se han podido borrar todos los datos guardados."))
     end
+  end
+
+  def pbStartLoadScreen
+    UI::Load.new.main
   end
 
   # def pbStartLoadScreen
