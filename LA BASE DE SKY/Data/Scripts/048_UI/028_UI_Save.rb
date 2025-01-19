@@ -175,13 +175,13 @@ class UI::SavePanel < UI::SpriteContainer
       map_name = map_name.gsub(/\\v\[(\d+)\]/) { |num| @save_data[:variables][$~[1].to_i].to_s }
       draw_text(map_name, 14, 78)
       # Gym Badges
-      draw_text(_INTL("Badges:"), 14, 110, theme: :white)
+      draw_text(_INTL("Medallas:"), 14, 110, theme: :white)
       draw_text(@save_data[:player].badge_count.to_s, 222, 110, align: :right)
       # Pokédex owned count
       draw_text(_INTL("Pokédex:"), 14, 142, theme: :white)
       draw_text(@save_data[:player].pokedex.seen_count.to_s, 222, 142, align: :right)
       # Time played
-      draw_text(_INTL("Play time:"), 14, 174, theme: :white)
+      draw_text(_INTL("Tiempo:"), 14, 174, theme: :white)
       play_time = @save_data[:stats]&.real_play_time.to_i || 0
       hour = (play_time / 60) / 60
       min  = (play_time / 60) % 60
@@ -191,9 +191,9 @@ class UI::SavePanel < UI::SpriteContainer
       if save_time
         save_time = Time.at(save_time)
         if System.user_language[3..4] == "US"   # If the user is in the United States
-          save_text = save_time.strftime("%-m/&-d/%Y")
+          save_text = save_time.strftime("%m/&d/%Y")
         else
-          save_text = save_time.strftime("%-d/%-m/%Y")
+          save_text = save_time.strftime("%d/%m/%Y")
         end
         draw_text(save_text, PANEL_WIDTH - 14, 174, align: :right)
       else
@@ -241,12 +241,12 @@ class UI::SavePanel < UI::SpriteContainer
       # Continue panel to left
       if !@save_data.empty?
         previous_index = this_index - 1
-        @sprites[:continue_previous] = create_slot_panel(this_index - 1)
+        @sprites[:continue_previous] = create_slot_panel(previous_index)
         @sprites[:continue_previous].x = @sprites[:continue].x - @sprites[:continue].width - PANEL_SPACING
         @sprites[:continue_previous].visible = false
         # Continue panel to right
         next_index = this_index + 1
-        @sprites[:continue_next] = create_slot_panel(this_index + 1)
+        @sprites[:continue_next] = create_slot_panel(next_index)
         @sprites[:continue_next].x = @sprites[:continue].x + @sprites[:continue].width + PANEL_SPACING
         @sprites[:continue_next].visible = false
       end
@@ -344,9 +344,9 @@ class UI::SavePanel < UI::SpriteContainer
       elsif $stats.save_count > 0 && $stats.real_time_saved
         save_time = Time.at($stats.real_time_saved)
         if System.user_language[3..4] == "US"   # If the user is in the United States
-          date_text = save_time.strftime("%-m/&-d/%Y")
+          date_text = save_time.strftime("%m/%d/%Y")
         else
-          date_text = save_time.strftime("%-d/%-m/%Y")
+          date_text = save_time.strftime("%d/%m/%Y")
         end
         time_text = save_time.strftime("%H:%M")
         draw_text(_INTL("Último guardado el {1} a las {2}", date_text, time_text), 8, 4)

@@ -52,8 +52,8 @@ class UI::LoadPanel < UI::SpriteContainer
   TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
     :default => [Color.new(88, 88, 80), Color.new(168, 184, 184)]   # Base and shadow colour
   }
-  PANEL_WIDTH  = 392
-  PANEL_HEIGHT = 56
+  PANEL_WIDTH  = 400
+  PANEL_HEIGHT = 46
 
   def initialize(label, viewport)
     @label    = label
@@ -93,9 +93,9 @@ class UI::LoadPanel < UI::SpriteContainer
 
   def panel_srcs
     return {
-      :default  => [graphics_folder + "panels", 0, UI::LoadContinuePanel::PANEL_HEIGHT * 2,
+      :default  => [graphics_folder + "panels_new", 0, UI::LoadContinuePanel::PANEL_HEIGHT * 2,
                     self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
-      :selected => [graphics_folder + "panels", 0, (UI::LoadContinuePanel::PANEL_HEIGHT * 2) + self.class::PANEL_HEIGHT,
+      :selected => [graphics_folder + "panels_new", 0, (UI::LoadContinuePanel::PANEL_HEIGHT * 2) + self.class::PANEL_HEIGHT,
                     self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
     }
   end
@@ -111,7 +111,7 @@ class UI::LoadPanel < UI::SpriteContainer
 
   def refresh
     super
-    draw_text(@label, 18, 18)
+    draw_text(@label, 30, 15)
   end
 end
 
@@ -128,7 +128,7 @@ class UI::LoadContinuePanel < UI::LoadPanel
     :female  => [Color.new(232, 32, 16), Color.new(248, 168, 184)]
   }
   PANEL_WIDTH  = 392
-  PANEL_HEIGHT = 242
+  PANEL_HEIGHT = 238
 
   def initialize(label, save_data, slot_index, total_slots, viewport)
     @save_data   = save_data
@@ -188,9 +188,9 @@ class UI::LoadContinuePanel < UI::LoadPanel
 
   def panel_srcs
     return {
-      :default  => [graphics_folder + "panels", 0, 0,
+      :default  => [graphics_folder + "panels_new", 0, 0,
                     self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
-      :selected => [graphics_folder + "panels", 0, self.class::PANEL_HEIGHT,
+      :selected => [graphics_folder + "panels_new", 0, self.class::PANEL_HEIGHT,
                     self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
     }
   end
@@ -274,7 +274,7 @@ class UI::LoadContinuePanel < UI::LoadPanel
     draw_text(_INTL("Pokédex:"), 18, 178)
     draw_text(@save_data[:player].pokedex.seen_count.to_s, 156, 178, theme: gender_theme)
     # Time played
-    draw_text(_INTL("Tiempo de juego:"), 18, 210)
+    draw_text(_INTL("Tiempo:"), 18, 210)
     play_time = @save_data[:stats]&.play_time.to_i || 0
     hour = (play_time / 60) / 60
     min  = (play_time / 60) % 60
@@ -283,11 +283,11 @@ class UI::LoadContinuePanel < UI::LoadPanel
     save_time = @save_data[:stats]&.real_time_saved
     if save_time
       save_time = Time.at(save_time)
-      if System.user_language[3..4] == "US"   # If the user is in the United States
-        save_text = save_time.strftime("%-m/&-d/%Y")
-      else
-        save_text = save_time.strftime("%-d/%-m/%Y")
-      end
+      # if System.user_language[3..4] == "US"   # If the user is in the United States
+        # save_text = save_time.strftime("%m/%d/%Y")
+      # else
+        save_text = save_time.strftime("%d/%m/%Y")
+      # end
       draw_text(save_text, PANEL_WIDTH - 18, 210, align: :right, theme: gender_theme)
     end
   end
@@ -333,15 +333,15 @@ class UI::LoadVisuals < UI::BaseVisuals
     this_slot_index = @slot_index
     @sprites[:continue] = create_continue_panel(this_slot_index)
     # Continue panel to left
-    if @save_data.length >= 2
-      previous_slot_index = this_slot_index - 1
-      @sprites[:continue_previous] = create_continue_panel(previous_slot_index)
-      @sprites[:continue_previous].x = @sprites[:continue].x - @sprites[:continue].width - PANEL_SPACING
-      # Continue panel to right
-      next_slot_index = this_slot_index + 1
-      @sprites[:continue_next] = create_continue_panel(next_slot_index)
-      @sprites[:continue_next].x = @sprites[:continue].x + @sprites[:continue].width + PANEL_SPACING
-    end
+    # if @save_data.length >= 2
+    #   previous_slot_index = this_slot_index - 1
+    #   @sprites[:continue_previous] = create_continue_panel(previous_slot_index)
+    #   @sprites[:continue_previous].x = @sprites[:continue].x - @sprites[:continue].width - PANEL_SPACING
+    #   # Continue panel to right
+    #   next_slot_index = this_slot_index + 1
+    #   @sprites[:continue_next] = create_continue_panel(next_slot_index)
+    #   @sprites[:continue_next].x = @sprites[:continue].x + @sprites[:continue].width + PANEL_SPACING
+    # end
   end
 
   def initialize_other_panels
