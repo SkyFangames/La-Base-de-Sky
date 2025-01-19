@@ -575,8 +575,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
         elsif @textchars[@curchar] == "\1"
           @pausing = true if @curchar < @numtextchars - 1
           self.startPause
-          refresh
         end
+        refresh
       end
     end
   end
@@ -847,12 +847,11 @@ class SpriteWindow_Selectable < SpriteWindow_Base
     if item < 0 || item >= @item_max || item < self.top_item ||
        item > self.top_item + self.page_item_max
       return Rect.new(0, 0, 0, 0)
-    else
-      cursor_width = (self.width - self.borderX - ((@column_max - 1) * @column_spacing)) / @column_max
-      x = item % @column_max * (cursor_width + @column_spacing)
-      y = (item / @column_max * @row_height) - @virtualOy
-      return Rect.new(x, y, cursor_width, @row_height)
     end
+    cursor_width = (self.width - self.borderX - ((@column_max - 1) * @column_spacing)) / @column_max
+    x = item % @column_max * (cursor_width + @column_spacing)
+    y = (item / @column_max * @row_height) - @virtualOy
+    return Rect.new(x, y, cursor_width, @row_height)
   end
 
   def refresh; end
@@ -966,7 +965,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
     new_top_row = [[new_top_row, self.row_max - self.page_row_max].min, 0].max
     if self.top_row != new_top_row
       self.top_row = new_top_row
-#      dorefresh = true
+      dorefresh = true
     end
     # End of code
     cursor_width = (self.width - self.borderX) / @column_max
@@ -1261,19 +1260,6 @@ end
 class Window_AdvancedCommandPokemon < Window_DrawableCommand
   attr_reader :commands
 
-  def textWidth(bitmap, text)
-    dims = [nil, 0]
-    chars = getFormattedText(bitmap, 0, 0,
-                             Graphics.width - self.borderX - SpriteWindow_Base::TEXT_PADDING - 16,
-                             -1, text, self.rowHeight, true, true)
-    chars.each do |ch|
-      dims[0] = dims[0] ? [dims[0], ch[1]].min : ch[1]
-      dims[1] = [dims[1], ch[1] + ch[3]].max
-    end
-    dims[0] = 0 if !dims[0]
-    return dims[1] - dims[0]
-  end
-
   def initialize(commands, width = nil)
     @starting = true
     @commands = []
@@ -1341,11 +1327,60 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
     end
   end
 
+  def textWidth(bitmap, text)
+    dims = [nil, 0]
+    chars = getFormattedText(bitmap, 0, 0,
+                             Graphics.width - self.borderX - SpriteWindow_Base::TEXT_PADDING - 16,
+                             -1, text, self.rowHeight, true, true)
+    chars.each do |ch|
+      dims[0] = dims[0] ? [dims[0], ch[1]].min : ch[1]
+      dims[1] = [dims[1], ch[1] + ch[3]].max
+    end
+    dims[0] = 0 if !dims[0]
+    return dims[1] - dims[0]
+  end
+
+  def getAutoDims(commands, dims, width = nil)
+    rowMax = ((commands.length + self.columns - 1) / self.columns).to_i
+    windowheight = (rowMax * self.rowHeight)
+    windowheight += self.borderY
+    if !width || width < 0
+      width = 0
+      tmp_bitmap = Bitmap.new(1, 1)
+      pbSetSystemFont(tmp_bitmap)
+      commands.each do |cmd|
+        txt = toUnformattedText(cmd).gsub(/\n/, "")
+        txt_width = tmp_bitmap.text_size(txt).width
+        check_text = cmd
+        while check_text[FORMATREGEXP]
+          if $~[2].downcase == "icon" && $~[3]
+            check_text = $~.post_match
+            filename = $~[4].sub(/\s+$/, "")
+            temp_graphic = Bitmap.new("Graphics/Icons/#{filename}")
+            txt_width += temp_graphic.width
+            temp_graphic.dispose
+          else
+            check_text = $~.post_match
+          end
+        end
+        width = [width, txt_width].max
+      end
+      # one 16 to allow cursor
+      width += 16 + 16 + SpriteWindow_Base::TEXT_PADDING
+      tmp_bitmap.dispose
+    end
+    # Store suggested width and height of window
+    dims[0] = [self.borderX + 1,
+               (width * self.columns) + self.borderX + ((self.columns - 1) * self.columnSpacing)].max
+    dims[1] = [self.borderY + 1, windowheight].max
+    dims[1] = [dims[1], Graphics.height].min
+  end
+
   def resizeToFit(commands, width = nil)
     dims = []
     getAutoDims(commands, dims, width)
     self.width = dims[0]
-    self.height = dims[1] - 6
+    self.height = dims[1]
   end
 
   def itemCount

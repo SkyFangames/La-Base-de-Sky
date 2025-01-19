@@ -1,27 +1,27 @@
-def pbEmergencySave
-  oldscene = $scene
-  $scene = nil
-  pbMessage(_INTL("El script está tardando mucho. Se va a reiniciar el juego."))
-  return if !$player
-  if SaveData.exists?
-    File.open(SaveData::FILE_PATH, "rb") do |r|
-      File.open(SaveData::FILE_PATH + ".bak", "wb") do |w|
-        loop do
-          s = r.read(4096)
-          break if !s
-          w.write(s)
-        end
-      end
-    end
-  end
-  if Game.save
-    pbMessage("\\se[]" + _INTL("Se ha guardado la partida.") + "\\me[GUI save game]\\wtnp[20]")
-    pbMessage("\\se[]" + _INTL("Se ha hecho una copia del anterior archivo de guardado.") + "\\wtnp[20]")
-  else
-    pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
-  end
-  $scene = oldscene
-end
+# def pbEmergencySave
+#   oldscene = $scene
+#   $scene = nil
+#   pbMessage(_INTL("El script está tardando mucho. Se va a reiniciar el juego."))
+#   return if !$player
+#   if SaveData.exists?
+#     File.open(SaveData::FILE_PATH, "rb") do |r|
+#       File.open(SaveData::FILE_PATH + ".bak", "wb") do |w|
+#         loop do
+#           s = r.read(4096)
+#           break if !s
+#           w.write(s)
+#         end
+#       end
+#     end
+#   end
+#   if Game.save
+#     pbMessage("\\se[]" + _INTL("Se ha guardado la partida.") + "\\me[GUI save game]\\wtnp[20]")
+#     pbMessage("\\se[]" + _INTL("Se ha hecho una copia del anterior archivo de guardado.") + "\\wtnp[20]")
+#   else
+#     pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
+#   end
+#   $scene = oldscene
+# end
 
 #===============================================================================
 #

@@ -419,3 +419,12 @@ SaveData.register_conversion(:v21_add_bump_stat) do
   end
 end
 
+SaveData.register_conversion(:v22_add_adventure_magic_number) do
+  essentials_version 22
+  display_title "Adding adventure ID"
+  to_value :game_system do |game_system|
+    game_system.instance_eval do
+      @adventure_magic_number ||= rand(2**32)
+    end
+  end
+end

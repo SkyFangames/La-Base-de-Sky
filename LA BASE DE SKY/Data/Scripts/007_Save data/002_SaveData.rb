@@ -5,16 +5,31 @@
 # @see SaveData.register_conversion
 module SaveData
   # Contiene la ruta del archivo de guardado.
-  FILE_PATH = if File.directory?(System.data_directory)
-                System.data_directory + "/Game.rxdata"
-              else
-                "./Game.rxdata"
-              end
+  DIRECTORY      = (File.directory?(System.data_directory)) ? System.data_directory : "./"
+  FILENAME_REGEX = /Game(\d*)\.rxdata$/
+  # FILE_PATH = if File.directory?(System.data_directory)
+  #               System.data_directory + "/Game.rxdata"
+  #             else
+  #               "./Game.rxdata"
+  #             end
 
-  # @return [Boolean] si el archivo de guardado existe
+  # @return [Boolean] si algún archivo de guardado existe
   def self.exists?
-    return File.file?(FILE_PATH)
+    return !all_save_files.empty?
   end
+
+    # @return [Array] listado de los nombres de todos los archivos de guardado
+    def self.all_save_files
+      files = Dir.get(DIRECTORY, "*", false)
+      ret = []
+      files.each do |file|
+        next if !file[FILENAME_REGEX]
+        ret.push([$~[1].to_i, file])
+      end
+      ret.sort! { |a, b| a[0] <=> b[0] }
+      ret.map! { |val| val[1] }
+      return ret
+    end
 
   # Obtiene los datos de guardado del archivo proporcionado.
   # Devuelve un Array en el caso de un archivo de guardado anterior a la 
@@ -45,7 +60,7 @@ module SaveData
   def self.read_from_file(file_path)
     validate file_path => String
     save_data = get_data_from_file(file_path)
-    save_data = to_hash_format(save_data) if save_data.is_a?(Array)
+    save_data = to_hash_format(save_data) if save_data.is_a?(Array)  # Pre-v19 save file support
     if !save_data.empty? && run_conversions(save_data)
       File.open(file_path, "wb") { |file| Marshal.dump(save_data, file) }
     end
@@ -65,9 +80,14 @@ module SaveData
   # Elimina el archivo de guardado (y un posible archivo de respaldo .bak 
   # si existe)
   # @raise [Error::ENOENT]
-  def self.delete_file
-    File.delete(FILE_PATH)
-    File.delete(FILE_PATH + ".bak") if File.file?(FILE_PATH + ".bak")
+  def self.delete_file(filename)
+    File.delete(DIRECTORY + filename)
+    File.delete(DIRECTORY + filename + ".bak") if File.file?(DIRECTORY + filename + ".bak")
+  end
+  
+  def self.filename_from_index(index = 0)
+    return "Game.rxdata" if index <= 0
+    return "Game#{index}.rxdata"
   end
 
   # Convierte los datos de formato anterior a la versión 19 al nuevo formato.
