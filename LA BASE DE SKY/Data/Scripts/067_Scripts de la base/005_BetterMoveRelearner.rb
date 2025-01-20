@@ -46,7 +46,7 @@ class MoveRelearner_Scene
       overlay.blt(type_x, 70, @typebitmap.bitmap, type_rect)
     end
     textpos = [
-      [_INTL("¿Enseñar qué movimiento?"), 16, 14, :left, Color.new(88, 88, 80), Color.new(168, 184, 184)]
+      [_INTL("¿Enseñar movimiento?"), 16, 14, :left, Color.new(88, 88, 80), Color.new(168, 184, 184)]
     ]
     imagepos = []
     yPos = 88
