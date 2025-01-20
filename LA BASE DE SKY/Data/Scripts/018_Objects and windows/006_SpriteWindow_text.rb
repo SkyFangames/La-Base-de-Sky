@@ -237,7 +237,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     dims = [0, 0]
     cwidth = (maxwidth < 0) ? Graphics.width : maxwidth
     chars = getFormattedTextForDims(self.contents, 0, 0,
-                                    cwidth - self.borderX - 2 - 6, -1, text, @lineHeight, true)
+                                    cwidth - self.borderX - SpriteWindow_Base::TEXT_PADDING, -1, text, @lineHeight, true)
     chars.each do |ch|
       dims[0] = [dims[0], ch[1] + ch[3]].max
       dims[1] = [dims[1], ch[2] + ch[4]].max
