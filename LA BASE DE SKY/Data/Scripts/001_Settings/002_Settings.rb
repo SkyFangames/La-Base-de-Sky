@@ -241,6 +241,9 @@ module Settings
   # IMPORTANTE: tienes que tener un Pokémon en el equipo que pueda aprender el movimiento, pero no es necesario enseñarselo.
   USE_HM_WITHOUT_LEARNING_THEM = false
 
+  # Las MOs se pueden olvidar
+  CAN_FORGET_HMS = true 
+
   #=============================================================================
 
   # Los nombres de cada bolsillo de la Mochila.

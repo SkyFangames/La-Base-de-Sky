@@ -196,7 +196,7 @@ class PokemonSummary_Scene
       loop do
         ret = pbChooseMoveToForget(nil)
         break if ret < 0
-        break if $DEBUG || !@pokemon.moves[ret].hidden_move?
+        break if $DEBUG || !@pokemon.moves[ret].hidden_move? || Settings::CAN_FORGET_HMS
         pbMessage(_INTL("MO no pueden ser olvidadas en este momento.")) { pbUpdate }
       end
       if ret >= 0
