@@ -88,12 +88,12 @@ module GameData
     def initialize(hash)
       @id                = hash[:id]
       @trainer_type      = hash[:trainer_type]
-      @real_name         = hash[:real_name]       || ""
-      @version           = hash[:version]         || 0
-      @items             = hash[:items]           || []
-      @real_lose_text    = hash[:real_lose_text]  || "..."
-      @real_lose_text_f  = hash[:real_lose_text_f]  || "..."
-      @pokemon           = hash[:pokemon]         || []
+      @real_name         = hash[:real_name]        || ""
+      @version           = hash[:version]          || 0
+      @items             = hash[:items]            || []
+      @real_lose_text    = hash[:real_lose_text]   || "..."
+      @real_lose_text_f  = hash[:real_lose_text_f] || @real_lose_text 
+      @pokemon           = hash[:pokemon]          || []
       @pokemon.each do |pkmn|
         GameData::Stat.each_main do |s|
           pkmn[:iv][s.id] ||= 0 if pkmn[:iv]
@@ -111,7 +111,9 @@ module GameData
     # @return [String] the translated in-battle lose message of this trainer
     def lose_text
       speech = $player&.female? ? MessageTypes::TRAINER_SPEECHES_LOSE_F : MessageTypes::TRAINER_SPEECHES_LOSE
-      return pbGetMessageFromHash(speech, $player&.female? ? @real_lose_text_f : @real_lose_text)
+      text = $player&.female? && !nil_or_empty?(@real_lose_text_f) ? @real_lose_text_f : @real_lose_text
+      echoln "lose_text #{text}"
+      return pbGetMessageFromHash(speech, text)
     end
 
     # Creates a battle-ready version of a trainer's data.

@@ -805,6 +805,7 @@ module Compiler
           section_name = $~[1]
           section_line = line
           if data_hash
+            echoln "hash #{data_hash}"
             validate_compiled_trainer(data_hash)
             GameData::Trainer.register(data_hash)
           end
