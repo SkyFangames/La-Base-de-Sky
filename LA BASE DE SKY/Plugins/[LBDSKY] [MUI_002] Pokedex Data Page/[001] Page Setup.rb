@@ -188,7 +188,7 @@ class PokemonPokedexInfo_Scene
         next if !$player.pokedex.seen_form?(@species, sp.form, sp.form) && !Settings::DEX_SHOWS_ALL_FORMS
         ret.push([sp.form_name, sp.form, sp.form])
       else
-        g = [_INTL("macho"), _INTL("Hembra")]
+        g = [_INTL("Macho"), _INTL("Hembra")]
         2.times do |real_gndr|
           next if !$player.pokedex.seen_form?(@species, real_gndr, sp.form) && !Settings::DEX_SHOWS_ALL_FORMS
           form_name = (sp.form_name) ? sp.form_name + " " + g[real_gndr] : g[real_gndr]
