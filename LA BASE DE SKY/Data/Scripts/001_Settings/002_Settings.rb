@@ -244,6 +244,8 @@ module Settings
   # Las MOs se pueden olvidar
   CAN_FORGET_HMS = true 
 
+  INCUBATOR_CHOOSE_EGG_FROM_PC = true
+
   #=============================================================================
 
   # Los nombres de cada bolsillo de la Mochila.
