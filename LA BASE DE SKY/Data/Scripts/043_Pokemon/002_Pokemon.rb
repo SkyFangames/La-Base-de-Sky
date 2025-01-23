@@ -382,6 +382,11 @@ class Pokemon
     return species_data.single_gendered?
   end
 
+  def changeGender
+    return if singleGendered?
+    self.male? ? self.makeFemale : self.makeMale
+  end
+
   #=============================================================================
   # Shininess
   #=============================================================================
@@ -1328,6 +1333,17 @@ class Pokemon
     end
   end
 end
+
+def change_pokemon_gender
+  pbChoosePokemon(1, 2, proc { |pkmn|
+    !pkmn.egg? && !pkmn.shadowPokemon? && !pkmn.singleGendered?
+  })
+  return false if $game_variables[1] == -1
+  pokemon = pbGetPokemon(1)
+  pokemon.changeGender
+  return true
+end
+
 
 ################################################################################
 # 

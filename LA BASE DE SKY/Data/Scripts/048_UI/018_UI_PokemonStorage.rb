@@ -31,7 +31,6 @@ class PokemonBoxIcon < IconSprite
     super
     self.color = Color.new(0, 0, 0, 0)
     if releasing?
-      time_now = System.uptime
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
       self.opacity = lerp(255, 0, 1.5, @release_timer_start, System.uptime)
@@ -582,6 +581,7 @@ end
 #===============================================================================
 class PokemonStorageScene
   attr_reader :quickswap
+  attr_accessor :sprites
 
   MARK_WIDTH  = 16
   MARK_HEIGHT = 16
@@ -1121,6 +1121,9 @@ class PokemonStorageScene
     else
       @sprites["box"].grabPokemon(selected[1], @sprites["arrow"])
     end
+    @grabber.carrying = true
+    @grabber.setPivot(selected[1])
+    @grabber.do_with(selected[1])
     while @sprites["arrow"].grabbing?
       Graphics.update
       Input.update
@@ -1162,6 +1165,7 @@ class PokemonStorageScene
     else
       @sprites["box"].setPokemon(selected[1], heldpokesprite)
     end
+    @grabber.carrying = false
     @boxForMosaic = @storage.currentBox
     @selectionForMosaic = selected[1]
   end
@@ -1223,6 +1227,23 @@ class PokemonStorageScene
       end
     end
     return pbShowCommands(msg, commands, @storage.currentBox)
+  end
+
+  def pbChooseBoxWithSpace(msg, min_space = 1)
+    commands = []
+    box_num = []
+    @storage.maxBoxes.times do |i|
+      box = @storage[i]
+      if box
+        next if box.length - min_space <= box.nitems && i != @storage.currentBox
+        box_num << i
+        commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
+      end
+    end
+    chosen_box = pbShowCommands(msg, commands, @storage.currentBox)
+    echoln "chosen_box #{chosen_box}"
+    return chosen_box if chosen_box == -1
+    return box_num[chosen_box]
   end
 
   def pbBoxName(helptext, minchars, maxchars)
@@ -1808,6 +1829,7 @@ class PokemonStorageScreen
     @storage.party.compact! if box == -1
     @scene.pbRefresh
     @heldpkmn = nil
+    @scene.grabber.clear
   end
 
   def pbSwap(selected)

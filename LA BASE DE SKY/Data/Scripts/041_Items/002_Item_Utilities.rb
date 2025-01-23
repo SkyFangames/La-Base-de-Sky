@@ -149,7 +149,7 @@ def pbChangeLevel(pkmn, new_level, scene)
   pkmn.level = new_level
   pkmn.calc_stats
   pkmn.hp = 1 if new_level > old_level && pkmn.species_data.base_stats[:HP] == 1
-  scene.pbRefresh
+  scene&.pbRefresh
   if old_level > new_level
     if scene.is_a?(PokemonPartyScreen)
       scene.pbDisplay(_INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
@@ -197,7 +197,7 @@ def pbChangeLevel(pkmn, new_level, scene)
         evo.pbStartScreen(pkmn, new_species)
         evo.pbEvolution
         evo.pbEndScreen
-        scene.pbRefresh if scene.is_a?(PokemonPartyScreen)
+        scene&.pbRefresh if scene.is_a?(PokemonPartyScreen)
       end
     end
   end

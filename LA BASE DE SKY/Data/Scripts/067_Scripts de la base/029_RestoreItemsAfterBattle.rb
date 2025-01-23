@@ -19,7 +19,7 @@ if Settings::RESTORE_HELD_ITEMS_AFTER_BATTLE
     def pbRestoreUsedItems
       @used_items.each do |obj|
         pokemon = obj[0]
-        next unless pokemon && pokemon.item.nil?
+        next if !pokemon || !pokemon.item.nil? || Settings::RESTORE_HELD_ITEMS_BLACKLIST.include?(obj[1])
 
         item = obj[1]
         pokemon.item = item

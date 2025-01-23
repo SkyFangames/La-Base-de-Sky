@@ -1121,7 +1121,6 @@ ItemHandlers::UseOnPokemon.add(:TAMATOBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UseOnPokemon.add(:ABILITYCAPSULE, proc { |item, qty, pkmn, scene|
-  if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}?", pkmn.name))
     abils = pkmn.getAbilityList
     abil1 = nil
     abil2 = nil
@@ -1134,47 +1133,47 @@ ItemHandlers::UseOnPokemon.add(:ABILITYCAPSULE, proc { |item, qty, pkmn, scene|
       next false
     end
     newabil = (pkmn.ability_index + 1) % 2
-    newabilname = GameData::Ability.get((newabil == 0) ? abil1 : abil2).name
-    pkmn.ability_index = newabil
-    pkmn.ability = nil
-    scene.pbRefresh
-    scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, newabilname))
-    next true
-  end
-  next false
+    new_ability_name = GameData::Ability.get((newabil == 0) ? abil1 : abil2).name
+    if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}? Su nueva habilidad será {2}.", pkmn.name, new_ability_name))
+      pkmn.ability_index = newabil
+      pkmn.ability = nil
+      scene.pbRefresh
+      scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, new_ability_name))
+      next true
+    end
+    next false
 })
 
 ItemHandlers::UseOnPokemon.add(:ABILITYPATCH, proc { |item, qty, pkmn, scene|
-  if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}?", pkmn.name))
     current_abi = pkmn.ability_index
     abils = pkmn.getAbilityList
     new_ability_id = nil
     abils.each { |a| new_ability_id = a[0] if (current_abi < 2 && a[1] == 2) || (current_abi == 2 && a[1] == 0) }
-    if !new_ability_id || pkmn.hasHiddenAbility? || pkmn.isSpecies?(:ZYGARDE)
+    if !new_ability_id || pkmn.isSpecies?(:ZYGARDE)
       scene.pbDisplay(_INTL("No tendría ningún efecto."))
       next false
     end
     new_ability_name = GameData::Ability.get(new_ability_id).name
-    pkmn.ability_index = current_abi < 2 ? 2 : 0
-    pkmn.ability = nil
-    scene.pbRefresh
-    scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, new_ability_name))
-    next true
-  end
-  next false
+    if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}? Su nueva habilidad será {2}.", pkmn.name, new_ability_name))
+      pkmn.ability_index = current_abi < 2 ? 2 : 0
+      pkmn.ability = nil
+      scene.pbRefresh
+      scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, new_ability_name))
+      next true
+    end
+    next false
 })
 
 ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
-  if scene.pbConfirm(_INTL("¿Quieres cambiar la Habilidad de {1}?", pkmn.name))
     oldabil=pkmn.ability_index
     abils = pkmn.getAbilityList
     ability_commands = []
-    abil_cmd = 0
     for i in abils
       ability_commands.push(GameData::Ability.get(i[0]).name + ((i[1] < 2) ? "" : " (H)"))
     end
+    ability_commands << _INTL("Cancelar")
     cmd= pbMessage("¿Qué habilidad quieres para tu Pokémon?",ability_commands,-1,nil,0)
-    next false if cmd == -1
+    next false if cmd == -1 || cmd == abils.length
     if oldabil == abils[cmd][1]
       scene.pbDisplay("Tu Pokémon ya posee esa habilidad.") 
       next false
@@ -1185,7 +1184,6 @@ ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
     scene.pbRefresh
     scene.pbDisplay(_INTL("¡La Habilidad de {1} cambió! ¡Su Habilidad ahora es {2}!", pkmn.name, newabilname))
     next true
-  end
 })
 
 ItemHandlers::UseOnPokemon.add(:GRACIDEA, proc { |item, qty, pkmn, scene|

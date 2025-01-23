@@ -10,14 +10,9 @@ class Battle::Battler
   #       cured.
   def pbHasStatus?(checkStatus)
     ret = false
-    if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, checkStatus)
-      ret = true
-    end
+    ret = true if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, checkStatus)
     return ret if ret
-    case checkStatus
-      when :FROZEN
-        return true if @status == :FROSTBITE && Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE
-    end
+    return true if @status == checkStatus || (checkStatus == :FROZEN && @status == :FROSTBITE && Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE)
     return ret
   end
 

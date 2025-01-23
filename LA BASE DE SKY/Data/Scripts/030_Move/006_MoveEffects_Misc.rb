@@ -852,7 +852,7 @@ class Battle::Move::DamageTargetAddSpikesToFoeSide < Battle::Move
     return if target.pbOwnSide.effects[PBEffects::Spikes] == 3
     target.pbOwnSide.effects[PBEffects::Spikes] += 1
     @battle.pbAnimation(:SPIKES, user, target)
-    @battle.pbDisplay(_INTL("Spikes were scattered all around {1}'s feet!", user.pbOpposingTeam(true)))
+    @battle.pbDisplay(_INTL("¡Hay púas esparcidas alrededor de los pies de {1}!", user.pbOpposingTeam(true)))
   end
 end
 
@@ -866,6 +866,6 @@ class Battle::Move::DamageTargetAddStealthRocksToFoeSide < Battle::Move
     return if target.pbOwnSide.effects[PBEffects::StealthRock]
     target.pbOwnSide.effects[PBEffects::StealthRock] = true
     @battle.pbAnimation(:STEALTHROCK, user, target)
-    @battle.pbDisplay(_INTL("Pointed stones float in the air around {1}!", user.pbOpposingTeam(true)))
+    @battle.pbDisplay(_INTL("¡Piedras puntiagudas flotan en el aire alrededor de {1}!", user.pbOpposingTeam(true)))
   end
 end

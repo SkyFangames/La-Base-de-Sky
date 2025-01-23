@@ -148,9 +148,9 @@ module GameData
       # Determines the species name.
       if GameData::Species.exists?(species)
         prefix = ""
-        if @id.to_s.include?("female")
+        if @id.to_s.downcase.include?("female")
           prefix = " siendo hembra"
-        elsif @id.to_s.include?("male")
+        elsif @id.to_s.downcase.include?("male")
           prefix = " siendo macho"
         end
         form = false if evo == :MOTHIM

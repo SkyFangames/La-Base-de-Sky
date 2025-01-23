@@ -3549,27 +3549,27 @@ Battle::AbilityEffects::OnSwitchIn.add(:SCREENCLEANER,
     battle.pbShowAbilitySplash(battler)
     if battler.pbOpposingSide.effects[PBEffects::AuroraVeil] > 0
       battler.pbOpposingSide.effects[PBEffects::AuroraVeil] = 0
-      battle.pbDisplay(_INTL("¡El efecto de Velo Aurora en el {1} se ha disipado!", battler.pbOpposingTeam))
+      battle.pbDisplay(_INTL("¡El efecto de Velo Aurora en el {1} se ha disipado!", battler.pbOpposingTeam(true)))
     end
     if battler.pbOpposingSide.effects[PBEffects::LightScreen] > 0
       battler.pbOpposingSide.effects[PBEffects::LightScreen] = 0
-      battle.pbDisplay(_INTL("¡El efecto de Pantalla de Luz en el {1} se ha disipado!", battler.pbOpposingTeam))
+      battle.pbDisplay(_INTL("¡El efecto de Pantalla de Luz en el {1} se ha disipado!", battler.pbOpposingTeam(true)))
     end
     if battler.pbOpposingSide.effects[PBEffects::Reflect] > 0
       battler.pbOpposingSide.effects[PBEffects::Reflect] = 0
-      battle.pbDisplay(_INTL("¡El efecto de Reflejo en el {1} se ha disipado!", battler.pbOpposingTeam))
+      battle.pbDisplay(_INTL("¡El efecto de Reflejo en el {1} se ha disipado!", battler.pbOpposingTeam(true)))
     end
     if battler.pbOwnSide.effects[PBEffects::AuroraVeil] > 0
       battler.pbOwnSide.effects[PBEffects::AuroraVeil] = 0
-      battle.pbDisplay(_INTL("¡El efecto de Velo Aurora en el {1} se ha disipado!", battler.pbTeam))
+      battle.pbDisplay(_INTL("¡El efecto de Velo Aurora en el {1} se ha disipado!", battler.pbTeam(true)))
     end
     if battler.pbOwnSide.effects[PBEffects::LightScreen] > 0
       battler.pbOwnSide.effects[PBEffects::LightScreen] = 0
-      battle.pbDisplay(_INTL("¡El efecto de Pantalla de Luz en el {1} se ha disipado!", battler.pbTeam))
+      battle.pbDisplay(_INTL("¡El efecto de Pantalla de Luz en el {1} se ha disipado!", battler.pbTeam(true)))
     end
     if battler.pbOwnSide.effects[PBEffects::Reflect] > 0
       battler.pbOwnSide.effects[PBEffects::Reflect] = 0
-      battle.pbDisplay(_INTL("¡El efecto de Reflejo en el {1} se ha disipado!", battler.pbTeam))
+      battle.pbDisplay(_INTL("¡El efecto de Reflejo en el {1} se ha disipado!", battler.pbTeam(true)))
     end
     battle.pbHideAbilitySplash(battler)
   }

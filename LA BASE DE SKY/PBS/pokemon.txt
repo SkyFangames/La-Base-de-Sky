@@ -1373,7 +1373,7 @@ Category = Gato Araña
 Pokedex = Retrae sus afiladas uñas en las zarpas y camina a hurtadillas. Así pasa inadvertido. No se sabe por qué, pero adora las monedas brillantes que resplandecen.
 Generation = 1
 WildItemUncommon = QUICKCLAW
-Evolutions = PERSIAN,Level,28,PERRSERKER,None,
+Evolutions = PERSIAN,Level,28
 #-------------------------------
 [PERSIAN]
 Name = Persian
@@ -19094,7 +19094,7 @@ Category = Púgil
 Pokedex = Usa hábilmente sus robustas pinzas tanto para atacar como para defenderse. Las peleas entre congéneres parecen combates de boxeo.
 Generation = 7
 WildItemUncommon = ASPEARBERRY
-Evolutions = CRABOMINABLE,LocationFlag,IceRock
+Evolutions = CRABOMINABLE,LocationFlag,IceRock,CRABOMINABLE,Item,ICESTONE
 #-------------------------------
 [CRABOMINABLE]
 Name = Crabominable

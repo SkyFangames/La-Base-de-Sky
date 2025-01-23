@@ -32,7 +32,6 @@ class Battle::Scene::Animation::ArceusTransform < Battle::Scene::Animation
 
   def createProcesses
     batSprite = @sprites["pokemon_#{@index}"]
-    ballPos = Battle::Scene.pbBattlerPosition(@index, batSprite.sideSize)
     delay = 0
     battlerX = batSprite.x
     battlerY = batSprite.y-100

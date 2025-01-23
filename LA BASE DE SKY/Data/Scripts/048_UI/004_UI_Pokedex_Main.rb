@@ -443,8 +443,8 @@ class PokemonPokedex_Scene
     overlay.clear
     base   = Color.new(88, 88, 80)
     shadow = Color.new(168, 184, 184)
-    iconspecies = @sprites["pokedex"].species
-    iconspecies = nil if !$player.seen?(iconspecies)
+    iconspecies = @sprites["pokedex"].species 
+    iconspecies = nil if !$player.seen?(iconspecies) && !Settings::SHOW_SILHOUETTES_IN_DEX
     # Write various bits of text
     dexname = _INTL("Pokédex")
     if $player.pokedex.dexes_count > 1
@@ -456,7 +456,7 @@ class PokemonPokedex_Scene
     textpos = [
       [dexname, (Graphics.width / 2)+40, 10, :center, Color.new(248, 248, 248), Color.black]
     ]
-    textpos.push([GameData::Species.get(iconspecies).name, 112, 58, :center, base, shadow]) if iconspecies
+    textpos.push([GameData::Species.get(iconspecies).name, 112, 58, :center, base, shadow]) if (Settings::SHOW_SILHOUETTES_IN_DEX && $player.seen?(iconspecies)) || (!Settings::SHOW_SILHOUETTES_IN_DEX && iconspecies)
     if @searchResults
       textpos.push([_INTL("Resultados:"), 112, 314, :center, base, shadow])
       textpos.push([@dexlist.length.to_s, 112, 346, :center, base, shadow])
@@ -788,8 +788,17 @@ class PokemonPokedex_Scene
   end
 
   def setIconBitmap(species)
-    gender, form, _shiny = $player.pokedex.last_form_seen(species)
-    @sprites["icon"].setSpeciesBitmap(species, gender, form, false)
+    gender, form, shiny = $player.pokedex.last_form_seen(species)
+    @sprites["icon"].setSpeciesBitmap(species, gender, form, shiny)
+    if Settings::SHOW_SILHOUETTES_IN_DEX
+      # species_id = (species) ? GameData::Species.get_species_form(species, form).id : nil
+      # @sprites["icon"].pbSetDisplay([112, 196, 224, 216], species_id)
+      if !$player.seen?(@sprites["pokedex"].species)
+        @sprites["icon"].tone = Tone.new(-255,-255,-255,255)
+      else
+        @sprites["icon"].tone = Tone.new(0,0,0,0)
+      end
+    end
   end
 
   def pbSearchDexList(params)

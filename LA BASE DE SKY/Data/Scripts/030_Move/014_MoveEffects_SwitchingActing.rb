@@ -785,7 +785,7 @@ class Battle::Move::DisableTargetUsingSameMoveConsecutively < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Torment] = true
-    @battle.pbDisplay(_INTL("¡{1} se dejó engañar por Mofa!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} es víctima de un Tormento!", target.pbThis))
     target.pbItemStatusCureCheck
   end
 end

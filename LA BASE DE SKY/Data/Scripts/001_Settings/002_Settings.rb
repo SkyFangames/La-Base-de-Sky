@@ -241,6 +241,9 @@ module Settings
   # IMPORTANTE: tienes que tener un Pokémon en el equipo que pueda aprender el movimiento, pero no es necesario enseñarselo.
   USE_HM_WITHOUT_LEARNING_THEM = false
 
+  # Las MOs se pueden olvidar
+  CAN_FORGET_HMS = true 
+
   #=============================================================================
 
   # Los nombres de cada bolsillo de la Mochila.
@@ -344,6 +347,13 @@ module Settings
   # Si el jugador puede hacer Vuelo mientras mira el mapa. Esto solo se permite
   # si el jugador puede usar Vuelo de forma normal.
   CAN_FLY_FROM_TOWN_MAP = true
+
+  # Desactivar si no quieres mostrar las MOs en el menú del equipo.
+  SHOW_HMS_IN_PARTY_MENU = true
+
+
+  # Desactivar si no quieres mostrar las MOs en el menú de la D (Objetos registrados).
+  SHOW_HMS_IN_SPECIAL_MENU = true
 
   #=============================================================================
   
@@ -643,7 +653,7 @@ end
 module Essentials
   VERSION = "21.1"
   ERROR_TEXT = ""
-  MKXPZ_VERSION = "2.4.2/c9378cf"
+  MKXPZ_VERSION = "2.4.2/e19a1bc"
 end
 
 

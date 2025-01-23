@@ -3580,6 +3580,14 @@ BPPrice = 200
 FieldUse = OnPokemon
 Description = Parche que permite cambiar la habilidad normal de un Pokémon por la oculta.
 #-------------------------------
+[SUPERCAPSULE]
+Name = Super Cápsula
+NamePlural = Super Cápsulas
+Pocket = 2
+Price = 10000
+FieldUse = OnPokemon
+Description = Una cápsula especial que permite a un Pokémon cambiar de habilidad entre todas las que tiene.
+#-------------------------------
 [EXPCANDYXS]
 Name = Caramelo Exp. XS
 NamePlural = Caramelos Exp. XS
@@ -6774,14 +6782,6 @@ Price = 0
 FieldUse = Direct
 Flags = KeyItem
 Description = Un repelente que nunca se gasta. Puedes activarlo y desactivarlo.
-#-------------------------------
-[SUPERCAPSULE]
-Name = Super Cápsula
-NamePlural = Super Cápsulas
-Pocket = 2
-Price = 10000
-FieldUse = OnPokemon
-Description = Una cápsula especial que permite a un Pokémon cambiar de habilidad entre todas las que tiene.
 #-------------------------------
 [RADAR]
 Name = Buscasalvajes

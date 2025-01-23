@@ -1148,17 +1148,17 @@ Color = Red
 [CHERRIM,1]
 FormName = Forma Soleada
 Color = Pink
-Pokedex = After absorbing plenty of sunlight, Cherrim takes this form. It's full of energy while it's like this, and its liveliness will go on until sundown.
+Pokedex = Después de absorber mucha luz solar, Cherrim toma esta forma. Está lleno de energía mientras está así, y su vivacidad durará hasta el atardecer.
 #-------------------------------
 [SHELLOS,1]
 FormName = Forma Mar Este
 Color = Blue
-Pokedex = Its appearance changes depending on the environment. One theory suggests that living in cold seas causes Shellos to take on this form.
+Pokedex = Su apariencia cambia según el entorno. Una teoría sugiere que vivir en mares fríos hace que Shellos adopte esta forma.
 #-------------------------------
 [GASTRODON,1]
 FormName = Forma Mar Este
 Color = Blue
-Pokedex = Its body is covered in a sticky slime. It's very susceptible to dehydration, so it can't spend too much time on land.
+Pokedex = Su cuerpo está cubierto de una baba pegajosa. Es muy susceptible a la deshidratación, por lo que no puede pasar demasiado tiempo en tierra.
 #-------------------------------
 [LOPUNNY,1]
 FormName = Mega Lopunny
@@ -1814,19 +1814,19 @@ Shape = BipedalTail
 FormName = Estilo Animado
 Types = ELECTRIC,FLYING
 Color = Yellow
-Pokedex = It creates an electric charge by rubbing its feathers together. It dances over to its enemies and delivers shocking electrical punches.
+Pokedex = Crea una carga eléctrica al frotar sus plumas. Baila hacia sus enemigos y les lanza impactantes golpes eléctricos.
 #-------------------------------
 [ORICORIO,2]
 FormName = Estilo Plácido
 Types = PSYCHIC,FLYING
 Color = Pink
-Pokedex = This Oricorio relaxes by swaying gently. This increases its psychic energy, which it then fires at its enemies.
+Pokedex = Este Oricorio se relaja balanceándose suavemente. Esto aumenta su energía psíquica, que luego dispara a sus enemigos.
 #-------------------------------
 [ORICORIO,3]
 FormName = Estilo Refinado
 Types = GHOST,FLYING
 Color = Purple
-Pokedex = It summons the dead with its dreamy dancing. From their malice, it draws power with which to curse its enemies.
+Pokedex = Convoca a los muertos con su danza de ensueño. De su malicia extrae poder para maldecir a sus enemigos.
 #-------------------------------
 [ROCKRUFF,2]
 Abilities = OWNTEMPO
@@ -2758,7 +2758,7 @@ Color = White
 #-------------------------------
 [GIMMIGHOUL,1]
 FormName = Forma Andante
-CatchRate = 0
+CatchRate = 45
 Abilities = RUNAWAY
 Height = 0.1
 Weight = 0.1

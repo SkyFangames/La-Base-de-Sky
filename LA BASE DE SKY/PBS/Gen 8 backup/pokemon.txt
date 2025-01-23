@@ -1373,7 +1373,7 @@ Category = Scratch Cat
 Pokedex = Meowth withdraw their sharp claws into their paws to silently sneak about. For some reason, this Pokémon loves shiny coins that glitter with light.
 Generation = 1
 WildItemUncommon = QUICKCLAW
-Evolutions = PERSIAN,Level,28,PERRSERKER,None,
+Evolutions = PERSIAN,Level,28
 #-------------------------------
 [PERSIAN]
 Name = Persian
