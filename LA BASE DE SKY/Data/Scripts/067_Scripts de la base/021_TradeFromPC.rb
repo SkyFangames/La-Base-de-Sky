@@ -70,20 +70,20 @@ def pbStartTradePC(newpoke, nickname = nil, trainerName = nil, trainerGender = 0
 
   if PluginManager.installed?("Charms Case")
       tradingCharmIV = CharmCaseSettings::TRADING_CHARM_IV
-        if $player.activeCharm?(:TRADINGCHARM)
-          unless yourPokemon.tradingCharmStatsIncreased
-            GameData::Stat.each_main do |s|
-              stat_id = s.id
-              # Adds 5 IVs to each stat.
-              yourPokemon.iv[stat_id] = [yourPokemon.iv[stat_id] + tradingCharmIV, 31].min if yourPokemon.iv[stat_id]
+      if $player.activeCharm?(:TRADINGCHARM)
+        unless yourPokemon.tradingCharmStatsIncreased
+          GameData::Stat.each_main do |s|
+            stat_id = s.id
+            # Adds 5 IVs to each stat.
+            yourPokemon.iv[stat_id] = [yourPokemon.iv[stat_id] + tradingCharmIV, 31].min if yourPokemon.iv[stat_id]
           end
-            # Set the attribute to track the stat increase
-            yourPokemon.tradingCharmStatsIncreased = true
+          # Set the attribute to track the stat increase
+          yourPokemon.tradingCharmStatsIncreased = true
         end
         if rand(100) < CharmCaseSettings::TRADING_CHARM_SHINY
           yourPokemon.shiny = true
         end
-    end
+      end
   end
 		
   pbFadeOutInWithMusic {
