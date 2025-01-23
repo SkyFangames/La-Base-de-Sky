@@ -929,16 +929,20 @@ module Compiler
     # Get trainer names and lose texts for translating
     trainer_names = []
     lose_texts = []
+    lose_texts_f = []
     pokemon_nicknames = []
     GameData::Trainer.each do |trainer|
       trainer_names.push(trainer.real_name)
       lose_texts.push(trainer.real_lose_text)
+      lose_text_f = !nil_or_empty?(trainer&.real_lose_text_f) ? trainer&.real_lose_text_f : trainer.real_lose_text
+      lose_texts_f.push(lose_text_f) 
       trainer.pokemon.each do |pkmn|
         pokemon_nicknames.push(pkmn[:real_name]) if !nil_or_empty?(pkmn[:real_name])
       end
     end
     MessageTypes.setMessagesAsHash(MessageTypes::TRAINER_NAMES, trainer_names)
     MessageTypes.setMessagesAsHash(MessageTypes::TRAINER_SPEECHES_LOSE, lose_texts)
+    MessageTypes.setMessagesAsHash(MessageTypes::TRAINER_SPEECHES_LOSE_F, lose_texts_f)
     MessageTypes.setMessagesAsHash(MessageTypes::POKEMON_NICKNAMES, pokemon_nicknames)
   end
 

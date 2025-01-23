@@ -497,7 +497,8 @@ def pbTrainerBattleEditor
             tr_data.trainer_type,
             tr_data.real_name,
             tr_data.version,
-            tr_data.real_lose_text
+            tr_data.real_lose_text,
+            tr_data.real_lose_text_f
           ]
           Settings::MAX_PARTY_SIZE.times do |i|
             data.push(tr_data.pokemon[i])
