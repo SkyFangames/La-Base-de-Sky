@@ -364,7 +364,7 @@ class PokemonStorageScreen
         pokemon = @storage[selected[0], selected[1]]
         next if !pokemon
         commands = [
-          _INTL("Intercambiar"),
+          _INTL("Elegir"),
           _INTL("Datos"),
         ]
         commands.push(_INTL("Debug")) if $DEBUG
