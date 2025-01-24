@@ -1,6 +1,20 @@
-# Usando mkxp-z v2.4.2/c9378cf - built 2023-07-07
-# https://github.com/mkxp-z/mkxp-z/actions/runs/5482601942
+# Usando mkxp-z v2.4.2/e19a1bc - built 2024-12-05
+# https://github.com/mkxp-z/mkxp-z/actions/runs/12173899671
 $VERBOSE = nil
+
+# Define Encoding if it's not already defined
+unless defined?(Encoding) 
+  module Encoding
+    UTF_8 = "UTF-8".freeze
+    def self.find(name)
+      # Mimic Encoding.find behavior
+      return UTF_8 if name == "UTF-8"
+      raise ArgumentError, "unknown encoding: #{name}"
+    end
+  end
+end
+
+
 Font.default_shadow = false if Font.respond_to?(:default_shadow)
 Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8

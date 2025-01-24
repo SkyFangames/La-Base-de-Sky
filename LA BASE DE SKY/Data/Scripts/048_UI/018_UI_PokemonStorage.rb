@@ -1803,7 +1803,6 @@ class PokemonStorageScreen
   end
 
   def pbPlace(selected)
-    echoln "pbPlace 1810"
     box = selected[0]
     index = selected[1]
     if @storage[box, index]

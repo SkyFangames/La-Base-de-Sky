@@ -8,6 +8,14 @@
 
 ### AÑADIDOS V 1.1.1
 
+- Múltiples correcciones de bugs
+- Agrega una opcion para que las MOs sean olvidables
+- Opcion para activar el expshare por evento y no al inicio de la partida
+- Actualización del MK
+- Corrección de errores en joiplay
+- Cambios de textos para que se adapten mejor a la UI
+- Mejoras en el scripts_combine y scripts_extract
+- La tecla SPECIAL (D) también cerrará el menu de objetos registrados basicamente conviertiendo la D en un toggle de este menú
                                                
 
 ### AÑADIDOS V 1.1.0
