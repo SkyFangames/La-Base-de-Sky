@@ -553,7 +553,6 @@ class PokemonStorageScene
           pbSetMosaic(selection)
         end
       elsif Input.trigger?(Input::ACTION) && @command == 0   # Organize only
-        echoln "t #{t} carrying #{@grabber.carrying}" 
         if !t && !@grabber.carrying
           pbPlayDecisionSE
           pbSetQuickSwap(!@quickswap)
