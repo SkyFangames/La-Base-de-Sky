@@ -5934,7 +5934,7 @@ TotalPP = 20
 Target = User
 Priority = 2
 FunctionCode = RedirectAllMovesToUser
-Description = Llama la atención para concentrar s los ataques de todos los del equipo rival hacia sí mismo.
+Description = Llama la atención para concentrar los ataques de todos los del equipo rival hacia sí mismo.
 #-------------------------------
 [FORESIGHT]
 Name = Profecía
