@@ -254,9 +254,10 @@ end
 
 def pbGetMapNameFromId(id)
   name = GameData::MapMetadata.try_get(id)&.name
-  if nil_or_empty?(name)
-    name = pbGetBasicMapNameFromId(id)
-    name.gsub!(/\\PN/, $player.name) if $player
+  name = pbGetBasicMapNameFromId(id) if nil_or_empty?(name)
+  name = name.gsub(/\\PN/, $player.name) if $player
+  if $game_variables
+    name = name.gsub(/\\v\[(\d+)\]/) { |num| $game_variables[$~[1].to_i].to_s }
   end
   return name
 end
@@ -753,7 +754,7 @@ end
 
 def pbShowCommands(msgwindow, commands = nil, cmdIfCancel = 0, defaultCmd = 0)
   return 0 if !commands
-  cmdwindow = Window_CommandPokemonEx.new(commands)
+  cmdwindow = Window_AdvancedCommandPokemon.new(commands)
   cmdwindow.z = 99999
   cmdwindow.visible = true
   cmdwindow.resizeToFit(cmdwindow.commands)
@@ -793,7 +794,7 @@ def pbShowCommandsWithHelp(msgwindow, commands, help, cmdIfCancel = 0, defaultCm
   oldlbl = msgwin.letterbyletter
   msgwin.letterbyletter = false
   if commands
-    cmdwindow = Window_CommandPokemonEx.new(commands)
+    cmdwindow = Window_AdvancedCommandPokemon.new(commands)
     cmdwindow.z = 99999
     cmdwindow.visible = true
     cmdwindow.resizeToFit(cmdwindow.commands)

@@ -123,5 +123,13 @@ module Settings
     # El mensaje del repartir experiencia será "¡Tus otros Pokémon también ganaron puntos de experiencia!"
     # En lugar de mostrar cuanta experiencia ha ganado cada Pokémon que tenga el Repartir Experiencia activo.
     GROUP_EXP_SHARE_MESSAGE = true
+
+
+    # Whether a move's power/type/category/etc. as shown in battle, the summary
+    # screen and the Move Reminder screen will appear as their calculated values
+    # (true) or their values from the PBS file moves.txt (false). For example, if
+    # this is true, Judgment's displayed type will depend on the Plate being held
+    # by the Pokémon that knows it.
+    SHOW_MODIFIED_MOVE_PROPERTIES = true
 end
   

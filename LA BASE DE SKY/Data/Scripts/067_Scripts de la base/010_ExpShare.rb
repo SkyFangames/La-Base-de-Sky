@@ -79,7 +79,7 @@ if Settings::USE_NEW_EXP_SHARE
             initialize_old(pokemon,index,viewport)
             if @pokemon.expshare && !@pokemon.egg?
                 @expicon = ChangelingSprite.new(0, 0, viewport)
-                @expicon.addBitmap("expicon","Graphics/Pictures/expicon")
+                @expicon.add_bitmap(:expicon,"Graphics/Pictures/expicon")
                 @expicon.z=self.z+3 # For compatibility with RGSS2
             end
         end

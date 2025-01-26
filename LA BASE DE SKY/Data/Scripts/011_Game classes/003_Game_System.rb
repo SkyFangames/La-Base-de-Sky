@@ -33,10 +33,16 @@ class Game_System
     @message_frame      = 0
     @save_count         = 0
     @magic_number       = 0
+    @adventure_magic_number = rand(2**32)
     @autoscroll_x_speed = 0
     @autoscroll_y_speed = 0
     @bgm_position       = 0
     @bgs_position       = 0
+  end
+
+  def adventure_magic_number
+    @adventure_magic_number ||= rand(2**32)
+    return @adventure_magic_number
   end
 
   #-----------------------------------------------------------------------------

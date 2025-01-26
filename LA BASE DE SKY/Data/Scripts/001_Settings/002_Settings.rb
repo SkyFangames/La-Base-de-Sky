@@ -33,6 +33,15 @@ module Settings
   # Muestra unas barras negras en los marcos superirores e inferiores 
   # A medida que se acercan a un entrenador se vuelven mas oscuras.
   MOSTRAR_BARRAS_ENTRENADORES = true
+
+  # :one, :adventure, :multiple
+  # Para multipartidas
+  SAVE_SLOTS = :multiple
+  
+  # Whether the game will skip the Continue/New Game screen and go straight into
+  # a saved game (if there is one) or start a new game (if there isn't). Only
+  # applies to playing in Debug mode.
+  SKIP_CONTINUE_SCREEN = false
   
   # Elige si cuando crees regalos misteriosos en el archivo MysteryGiftMaster.txt,
   # estos datos estarán o no encriptados. No encriptarlos ayuda a poder abrir el
