@@ -6,6 +6,12 @@
 
 ### [DESCARGAR BASE](https://skyfangames.blogspot.com/2024/01/base-de-sky.html)
 
+### AÑADIDOS V 1.1.2
+
+- Agrega funcionalidad de multipartidas.
+- Refactoriza el BetterMoveRelearner.
+- Agrega opcion de LoseText_F en el PBS de los trainers, este texto será usado cuando un trainer pierda cuando el jugador esté con el personajes femenino.
+
 ### AÑADIDOS V 1.1.1
 
 - Múltiples correcciones de bugs
