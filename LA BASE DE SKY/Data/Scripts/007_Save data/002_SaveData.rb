@@ -7,11 +7,6 @@ module SaveData
   # Contiene la ruta del archivo de guardado.
   DIRECTORY      = (File.directory?(System.data_directory)) ? System.data_directory : "./"
   FILENAME_REGEX = /Game(\d*)\.rxdata$/
-  # FILE_PATH = if File.directory?(System.data_directory)
-  #               System.data_directory + "/Game.rxdata"
-  #             else
-  #               "./Game.rxdata"
-  #             end
 
   # @return [Boolean] si algún archivo de guardado existe
   def self.exists?
@@ -81,8 +76,10 @@ module SaveData
   # si existe)
   # @raise [Error::ENOENT]
   def self.delete_file(filename)
-    File.delete(DIRECTORY + filename)
-    File.delete(DIRECTORY + filename + ".bak") if File.file?(DIRECTORY + filename + ".bak")
+    path = File.join(DIRECTORY, filename)
+    path_bak = path + ".bak"
+    File.delete(path)
+    File.delete(path_bak) if File.file?(path_bak)
   end
   
   def self.filename_from_index(index = 0)
@@ -104,4 +101,3 @@ module SaveData
     return hash
   end
 end
-
