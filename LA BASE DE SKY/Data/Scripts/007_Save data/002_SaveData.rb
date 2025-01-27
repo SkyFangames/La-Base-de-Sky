@@ -13,18 +13,33 @@ module SaveData
     return !all_save_files.empty?
   end
 
-    # @return [Array] listado de los nombres de todos los archivos de guardado
-    def self.all_save_files
-      files = Dir.get(DIRECTORY, "*", false)
-      ret = []
-      files.each do |file|
-        next if !file[FILENAME_REGEX]
-        ret.push([$~[1].to_i, file])
-      end
-      ret.sort! { |a, b| a[0] <=> b[0] }
-      ret.map! { |val| val[1] }
-      return ret
+  # @return [Array] listado de los nombres de todos los archivos de guardado
+  def self.all_save_files
+    files = Dir.get(DIRECTORY, "*", false)
+    ret = []
+    files.each do |file|
+      next if !file[FILENAME_REGEX]
+      ret.push([$~[1].to_i, file])
     end
+    ret.sort! { |a, b| a[0] <=> b[0] }
+    ret.map! { |val| val[1] }
+    return ret
+  end
+
+  def self.rename_save_files
+    files = Dir.get(DIRECTORY, "*", false)
+    files.each do |file|
+      next if !file.end_with?(".rxdata") || file.start_with?("Game")
+      old_path = File.join(DIRECTORY, file)
+      max_index = SaveData.get_max_index
+      new_path = File.join(DIRECTORY, filename_from_index(max_index+1))
+      begin
+        File.rename(old_path, new_path)
+      rescue SystemCallError
+        # Failed to rename file, skip it
+      end
+    end
+  end
 
   # Obtiene los datos de guardado del archivo proporcionado.
   # Devuelve un Array en el caso de un archivo de guardado anterior a la 
@@ -85,6 +100,20 @@ module SaveData
   def self.filename_from_index(index = 0)
     return "Game.rxdata" if index <= 0
     return "Game#{index}.rxdata"
+  end
+
+  def self.get_max_index
+    files = Dir.get(DIRECTORY, "Game*.rxdata", false)
+    echoln "files #{files}"
+    max_index = 0
+    files.each do |f|
+      next if f.end_with?(".bak")
+      filename = File.basename(f)
+      next unless filename =~ FILENAME_REGEX
+      index = $1.to_i
+      max_index = index if index > max_index
+    end
+    return max_index
   end
 
   # Convierte los datos de formato anterior a la versión 19 al nuevo formato.

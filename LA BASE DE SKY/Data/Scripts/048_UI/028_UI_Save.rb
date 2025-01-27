@@ -11,8 +11,8 @@ class UI::SavePanel < UI::SpriteContainer
     :male    => [Color.new(0, 112, 248), Color.new(120, 184, 232)],
     :female  => [Color.new(232, 32, 16), Color.new(248, 168, 184)]
   }
-  PANEL_WIDTH  = 384
-  PANEL_HEIGHT = 204
+  PANEL_WIDTH  = 410
+  PANEL_HEIGHT = 239
 
   def initialize(save_data, viewport)
     @save_data = save_data
@@ -157,7 +157,7 @@ class UI::SavePanel < UI::SpriteContainer
 
   def draw_save_file_text
     if !@save_data
-      draw_text(_INTL("Create a new save file"), width / 2, (height / 2) - 10, align: :center)
+      draw_text(_INTL("Guardar en un nuevo archivo"), width / 2, (height / 2) - 10, align: :center)
       return
     end
     gender_theme = :default
@@ -175,13 +175,13 @@ class UI::SavePanel < UI::SpriteContainer
     map_name = map_name.gsub(/\\v\[(\d+)\]/) { |num| @save_data[:variables][$~[1].to_i].to_s }
     draw_text(map_name, 14, 78)
     # Gym Badges
-    draw_text(_INTL("Medallas:"), 14, 110, theme: :white)
+    draw_text(_INTL("Medallas:"), 18, 110, theme: :white)
     draw_text(@save_data[:player].badge_count.to_s, 222, 110, align: :right)
     # Pokédex owned count
-    draw_text(_INTL("Pokédex:"), 14, 142, theme: :white)
+    draw_text(_INTL("Pokédex:"), 18, 142, theme: :white)
     draw_text(@save_data[:player].pokedex.seen_count.to_s, 222, 142, align: :right)
     # Time played
-    draw_text(_INTL("Tiempo:"), 14, 174, theme: :white)
+    draw_text(_INTL("Tiempo:"), 18, 174, theme: :white)
     play_time = @save_data[:stats]&.real_play_time.to_i || 0
     hour = (play_time / 60) / 60
     min  = (play_time / 60) % 60
@@ -191,7 +191,7 @@ class UI::SavePanel < UI::SpriteContainer
     if save_time
       save_time = Time.at(save_time)
       if System.user_language[3..4] == "US"   # If the user is in the United States
-        save_text = save_time.strftime("%m/&d/%Y")
+        save_text = save_time.strftime("%m/%d/%Y")
       else
         save_text = save_time.strftime("%d/%m/%Y")
       end
@@ -218,7 +218,7 @@ class UI::SaveVisuals < UI::BaseVisuals
   TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
     :default => [Color.new(80, 80, 88), Color.new(176, 192, 192)]   # Base and shadow colour
   }
-  PANEL_SPACING   = 8
+  PANEL_SPACING   = 2
 
   # save_data here is an array of [save filename, save data hash]. It has been
   # compacted.
@@ -283,6 +283,7 @@ class UI::SaveVisuals < UI::BaseVisuals
     # Show the newly selected slot's information in the Continue panel
     this_save_data = (@save_data[@index]) ? @save_data[@index][1] : nil
     @sprites[:continue].set_data(this_save_data)
+    
     # Show the newly adjacent slots' information in the adjacent Continue panels
     prev_index = @index - 1
     prev_index += @save_data.length + 1 if prev_index < 0
@@ -331,11 +332,7 @@ class UI::SaveVisuals < UI::BaseVisuals
             else
               draw_text(_INTL("Tiempo de juego desde el guardado: {1}m", min), 8, 4)
             end
-          else
-            draw_text(_INTL("¡Versión alternativa de tu aventura!"), 8, 4)
           end
-        else
-          draw_text(_INTL("¡Otra aventura!"), 8, 4)
         end
       end
       if @save_data[@index]
@@ -476,7 +473,7 @@ class UI::Save < UI::BaseScreen
   end
 
   # NOTE: Save filenames are "Game#.rxdata" where "#" is slot_index, except for
-  #       0 which just produces "Game.rzdata". This is to support old save
+  #       0 which just produces "Game.rxdata". This is to support old save
   #       files which are that name.
   def save_game(file_number)
     # TODO: I don't know about this "GUI save choice" being here.

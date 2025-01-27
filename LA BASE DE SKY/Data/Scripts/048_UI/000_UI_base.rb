@@ -443,7 +443,7 @@ module UI
       @sprites[:speech_box].visible = true
       @sprites[:speech_box].text    = text
       position_speech_box(text)
-      using(cmd_window = Window_CommandPokemon.new([_INTL("Yes"), _INTL("No")])) do
+      using(cmd_window = Window_CommandPokemon.new([_INTL("Sí"), _INTL("No")])) do
         cmd_window.z       = @viewport.z + 1
         cmd_window.visible = false
         pbBottomRight(cmd_window)
@@ -477,7 +477,7 @@ module UI
       @sprites[:speech_box].visible = true
       @sprites[:speech_box].text    = text
       position_speech_box(text)
-      using(cmd_window = Window_CommandPokemon.new([_INTL("No"), _INTL("Yes")])) do
+      using(cmd_window = Window_CommandPokemon.new([_INTL("No"), _INTL("Sí")])) do
         cmd_window.z       = @viewport.z + 1
         cmd_window.visible = false
         pbBottomRight(cmd_window)

@@ -170,7 +170,7 @@ module SaveData
   def self.get_conversions(save_data)
     conversions_to_run = []
     versions = {
-      essentials: save_data[:essentials_version] || "18.1",
+      essentials: save_data[:essentials_version] || "21.1",
       game:       save_data[:game_version] || "0.0.0"
     }
     [:essentials, :game].each do |trigger_type|
@@ -196,7 +196,7 @@ module SaveData
     validate save_data => Hash
     conversions_to_run = self.get_conversions(save_data)
     return false if conversions_to_run.none?
-    filepath = SaveData::DIRECTORY + SaveData.filename_from_index(save_data[:stats].save_filename_number || 0)
+    filepath = File.join(SaveData::DIRECTORY, SaveData.filename_from_index(save_data[:stats].save_filename_number || 0))
     File.open(filepath + ".bak", "wb") { |f| Marshal.dump(save_data, f) }
     Console.echo_h1(_INTL("Converting save file"))
     conversions_to_run.each do |conversion|

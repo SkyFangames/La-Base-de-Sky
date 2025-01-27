@@ -1,6 +1,8 @@
 module UI::LoadSaveDataMixin
   def load_all_save_data
     @save_data = []
+    # Renombra los archivos de guardado del Plugin de AutoMultiSave
+    SaveData.rename_save_files 
     files = SaveData.all_save_files
     files.each do |file|
       this_save_data = load_save_file(SaveData::DIRECTORY, file)
@@ -93,9 +95,9 @@ class UI::LoadPanel < UI::SpriteContainer
 
   def panel_srcs
     return {
-      :default  => [graphics_folder + "panels_new", 0, UI::LoadContinuePanel::PANEL_HEIGHT * 2,
+      :default  => [File.join(graphics_folder, "panels_new"), 0, UI::LoadContinuePanel::PANEL_HEIGHT * 2,
                     self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
-      :selected => [graphics_folder + "panels_new", 0, (UI::LoadContinuePanel::PANEL_HEIGHT * 2) + self.class::PANEL_HEIGHT,
+      :selected => [File.join(graphics_folder, "panels_new"), 0, (UI::LoadContinuePanel::PANEL_HEIGHT * 2) + self.class::PANEL_HEIGHT,
                     self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
     }
   end
@@ -188,8 +190,8 @@ class UI::LoadContinuePanel < UI::LoadPanel
 
   def panel_srcs
     return {
-      :default  => [graphics_folder + "panels_new", 0, 0, self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
-      :selected => [graphics_folder + "panels_new", 0, self.class::PANEL_HEIGHT, self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
+      :default  => [File.join(graphics_folder, "panels_new"), 0, 0, self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT],
+      :selected => [File.join(graphics_folder, "panels_new"), 0, self.class::PANEL_HEIGHT, self.class::PANEL_WIDTH, self.class::PANEL_HEIGHT]
     }
   end
 
@@ -264,15 +266,15 @@ class UI::LoadContinuePanel < UI::LoadPanel
     map_name = pbGetMapNameFromId(map_id)
     map_name = map_name.gsub(/\\PN/, @save_data[:player].name)
     map_name = map_name.gsub(/\\v\[(\d+)\]/) { |num| @save_data[:variables][$~[1].to_i].to_s }
-    draw_text(map_name, 18, 114, theme: gender_theme)
+    draw_text(map_name, 20, 114, theme: gender_theme)
     # Gym Badges
-    draw_text(_INTL("Medallas:"), 18, 146)
+    draw_text(_INTL("Medallas:"), 20, 146)
     draw_text(@save_data[:player].badge_count.to_s, 156, 146, theme: gender_theme)
     # Pokédex owned count
-    draw_text(_INTL("Pokédex:"), 18, 178)
+    draw_text(_INTL("Pokédex:"), 20, 178)
     draw_text(@save_data[:player].pokedex.seen_count.to_s, 156, 178, theme: gender_theme)
     # Time played
-    draw_text(_INTL("Tiempo:"), 18, 210)
+    draw_text(_INTL("Tiempo:"), 20, 210)
     play_time = @save_data[:stats]&.play_time.to_i || 0
     hour = (play_time / 60) / 60
     min  = (play_time / 60) % 60
