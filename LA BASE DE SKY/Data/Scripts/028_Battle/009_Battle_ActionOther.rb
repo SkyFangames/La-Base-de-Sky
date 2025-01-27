@@ -81,7 +81,9 @@ class Battle
         @mega_rings.each { |item| return GameData::Item.get(item).name if $bag.has?(item) }
       else
         trainer_items = pbGetOwnerItems(idxBattler)
-        @mega_rings.each { |item| return GameData::Item.get(item).name if trainer_items&.include?(item) }
+        if trainer_items
+          @mega_rings.each { |item| return GameData::Item.get(item).name if trainer_items.include?(item) }
+        end
       end
     end
     return _INTL("Mega-aro")
@@ -197,4 +199,3 @@ class Battle
     pbDisplay(_INTL("¡{1} ha experimentado una Regresión Primigenea y ha recobrado su apariencia primitiva!", battler.pbThis))
   end
 end
-

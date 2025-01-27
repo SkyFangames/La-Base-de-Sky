@@ -28,17 +28,18 @@ class GameStats
   attr_accessor :eggs_hatched
   attr_accessor :evolution_count, :evolutions_cancelled
   attr_accessor :trade_count
+  attr_accessor :pokemon_release_count
   attr_accessor :moves_taught_by_item, :moves_taught_by_tutor, :moves_taught_by_reminder
   attr_accessor :day_care_deposits, :day_care_levels_gained
   attr_accessor :pokerus_infections
   attr_accessor :shadow_pokemon_purified
   # Battles
-  attr_accessor :wild_battles_won, :wild_battles_lost   # Lost includes fled from
+  attr_accessor :wild_battles_won, :wild_battles_lost, :wild_battles_fled   # Fled counts both player and wild Pokémon fleeing
   attr_accessor :trainer_battles_won, :trainer_battles_lost
   attr_accessor :total_exp_gained
   attr_accessor :battle_money_gained, :battle_money_lost
   attr_accessor :blacked_out_count
-  attr_accessor :mega_evolution_count
+  attr_accessor :mega_evolution_count, :primal_reversion_count
   attr_accessor :failed_poke_ball_count
   # Currency
   attr_accessor :money_spent_at_marts
@@ -103,6 +104,7 @@ class GameStats
     @evolution_count               = 0
     @evolutions_cancelled          = 0
     @trade_count                   = 0
+    @pokemon_release_count         = 0
     @moves_taught_by_item          = 0
     @moves_taught_by_tutor         = 0
     @moves_taught_by_reminder      = 0
@@ -113,6 +115,7 @@ class GameStats
     # Battles
     @wild_battles_won              = 0
     @wild_battles_lost             = 0
+    @wild_battles_fled             = 0
     @trainer_battles_won           = 0
     @trainer_battles_lost          = 0
     @total_exp_gained              = 0
@@ -120,6 +123,7 @@ class GameStats
     @battle_money_lost             = 0
     @blacked_out_count             = 0
     @mega_evolution_count          = 0
+    @primal_reversion_count        = 0
     @failed_poke_ball_count        = 0
     # Currency
     @money_spent_at_marts          = 0
@@ -208,4 +212,3 @@ end
 class Game_Temp
   attr_accessor :last_uptime_refreshed_play_time
 end
-

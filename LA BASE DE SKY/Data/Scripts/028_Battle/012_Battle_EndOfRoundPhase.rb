@@ -180,6 +180,7 @@ class Battle
     priority.each do |battler|
       next if !battler.effects[PBEffects::Ingrain]
       next if !battler.canHeal?
+      pbCommonAnimation("Ingrain", battler)
       hpGain = battler.totalhp / 16
       hpGain = (hpGain * 1.3).floor if battler.hasActiveItem?(:BIGROOT)
       battler.pbRecoverHP(hpGain)
@@ -271,6 +272,7 @@ class Battle
     priority.each do |battler|
       battler.effects[PBEffects::Nightmare] = false if !battler.asleep?
       next if !battler.effects[PBEffects::Nightmare] || !battler.takesIndirectDamage?
+      pbCommonAnimation("Nightmare", battler)
       battler.pbTakeEffectDamage(battler.totalhp / 4) do |hp_lost|
         pbDisplay(_INTL("¡{1} está inmerso en una pesadilla!", battler.pbThis))
       end
@@ -717,7 +719,7 @@ class Battle
     # Effects that apply to a battler that wear off after a number of rounds
     pbEOREndBattlerEffects(priority)
     # Check for end of battle (i.e. because of Perish Song)
-    if @decision > 0
+    if decided?
       pbGainExp
       return
     end
@@ -744,12 +746,12 @@ class Battle
       end
     end
     pbGainExp
-    return if @decision > 0
+    return if decided?
     # Form checks
     priority.each { |battler| battler.pbCheckForm(true) }
     # Switch Pokémon in if possible
     pbEORSwitch
-    return if @decision > 0
+    return if decided?
     # In battles with at least one side of size 3+, move battlers around if none
     # are near to any foes
     pbEORShiftDistantBattlers
@@ -760,7 +762,11 @@ class Battle
       battler.effects[PBEffects::BanefulBunker]    = false
       battler.effects[PBEffects::SilkTrap]         = false
       battler.effects[PBEffects::BurningBulwark]   = false
-      battler.effects[PBEffects::Charge]           -= 1 if battler.effects[PBEffects::Charge] > 0
+      if Settings::MECHANICS_GENERATION >= 9
+        battler.effects[PBEffects::Charge]         -= 1 if battler.effects[PBEffects::Charge] > 1
+      else
+        battler.effects[PBEffects::Charge]         -= 1 if battler.effects[PBEffects::Charge] > 0
+      end
       battler.effects[PBEffects::Counter]          = -1
       battler.effects[PBEffects::CounterTarget]    = -1
       battler.effects[PBEffects::Electrify]        = false
@@ -807,9 +813,6 @@ class Battle
       battler.lastRoundMoveFailed                  = battler.lastMoveFailed
       battler.lastAttacker.clear
       battler.lastFoeAttacker.clear
-      if Settings::MECHANICS_GENERATION >= 9
-        battler.effects[PBEffects::Charge]   += 1 if battler.effects[PBEffects::Charge]     > 0
-      end
       battler.effects[PBEffects::GlaiveRush] -= 1 if battler.effects[PBEffects::GlaiveRush] > 0
     end
     # Reset/count down side-specific effects (no messages)

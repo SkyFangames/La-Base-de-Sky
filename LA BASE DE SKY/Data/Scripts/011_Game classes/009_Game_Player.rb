@@ -119,12 +119,10 @@ class Game_Player < Game_Character
   #-----------------------------------------------------------------------------
 
   def bump_into_object
+    return if @bump_time_start && (System.real_uptime - @bump_time_start < @move_time)
     pbSEPlay("Player bump") if !@move_route_forcing
     $stats.bump_count += 1
-    @move_initial_x = @x
-    @move_initial_y = @y
-    @move_timer = 0.0
-    @bumping = true
+    @bump_time_start = System.real_uptime
   end
 
   def add_move_distance_to_stats(distance = 1)
@@ -235,15 +233,15 @@ class Game_Player < Game_Character
   #     y : y-coordinate
   #     d : direction (0, 2, 4, 6, 8)
   #         * 0 = Determines if all directions are impassable (for jumping)
-  def passable?(x, y, d, strict = false)
+  def passable?(x, y, dir, strict = false)
     # Get new coordinates
-    new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
-    new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+    new_x = x + (dir == 6 ? 1 : dir == 4 ? -1 : 0)
+    new_y = y + (dir == 2 ? 1 : dir == 8 ? -1 : 0)
     # If coordinates are outside of map
     return false if !$game_map.validLax?(new_x, new_y)
     if !$game_map.valid?(new_x, new_y)
       return false if !$map_factory
-      return $map_factory.isPassableFromEdge?(new_x, new_y)
+      return $map_factory.isPassableFromEdge?(new_x, new_y, 10 - dir)
     end
     # If debug mode is ON and Ctrl key was pressed
     return true if $DEBUG && Input.press?(Input::CTRL)
@@ -316,13 +314,15 @@ class Game_Player < Game_Character
   def pbCheckEventTriggerAfterTurning; end
 
   def pbCheckEventTriggerFromDistance(triggers)
-    ret = pbTriggeredTrainerEvents(triggers)
-    ret.concat(pbTriggeredCounterEvents(triggers))
-    return false if ret.length == 0
-    ret.each do |event|
+    events = pbTriggeredTrainerEvents(triggers)
+    events.concat(pbTriggeredCounterEvents(triggers))
+    return false if events.length == 0
+    ret = false
+    events.each do |event|
       event.start
+      ret = true if event.starting
     end
-    return true
+    return ret
   end
 
   # Trigger event(s) at the same coordinates as self with the appropriate
@@ -339,7 +339,7 @@ class Game_Player < Game_Character
       # If starting determinant is same position event (other than jumping)
       next if event.jumping? || !event.over_trigger?
       event.start
-      result = true
+      result = true if event.starting
     end
     return result
   end
@@ -361,7 +361,7 @@ class Game_Player < Game_Character
       # If starting determinant is front event (other than jumping)
       next if event.jumping? || event.over_trigger?
       event.start
-      result = true
+      result = true if event.starting
     end
     # If fitting event is not found
     if result == false && $game_map.counter?(new_x, new_y)
@@ -377,7 +377,7 @@ class Game_Player < Game_Character
         # If starting determinant is front event (other than jumping)
         next if event.jumping? || event.over_trigger?
         event.start
-        result = true
+        result = true if event.starting
       end
     end
     return result
@@ -404,7 +404,7 @@ class Game_Player < Game_Character
       # If starting determinant is front event (other than jumping)
       next if event.jumping? || event.over_trigger?
       event.start
-      result = true
+      result = true if event.starting
     end
     return result
   end
@@ -613,4 +613,3 @@ def pbDismountBike
   pbUpdateVehicle
   $game_map.autoplayAsCue
 end
-

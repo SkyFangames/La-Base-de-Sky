@@ -338,6 +338,7 @@ class Battle::Battler
     oldAbil = @ability_id
     @effects[PBEffects::Transform]        = true
     @effects[PBEffects::TransformSpecies] = target.species
+    self.form = target.form
     pbChangeTypes(target)
     self.ability = target.ability
     @attack  = target.attack
@@ -370,4 +371,3 @@ class Battle::Battler
 
   def pbHyperMode; end
 end
-

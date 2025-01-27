@@ -101,11 +101,12 @@ module GameData
       ret["WildItemUncommon"] = [:wild_item_uncommon, "*e", :Item]
       ret["WildItemRare"]     = [:wild_item_rare,     "*e", :Item]
       if compiling_forms
-        ret["Evolutions"]     = [:evolutions,         "*ees", :Species, :Evolution, nil]
+        ret["Evolutions"]     = [:evolutions,         "*ees", :Species, :Evolution]
+        ret["Evolution"]      = [:evolutions,         "^eeS", :Species, :Evolution]
       else
-        ret["Evolutions"]     = [:evolutions,         "*ses", nil, :Evolution, nil]
+        ret["Evolutions"]     = [:evolutions,         "*ses", nil, :Evolution]
+        ret["Evolution"]      = [:evolutions,         "^seS", nil, :Evolution]
       end
-      ret["Moves"] = [:moves, "*ie", nil, :Move]
       return ret
     end
 
@@ -163,6 +164,10 @@ module GameData
 
     def self.each_species
       DATA.each_value { |species| yield species if species.form == 0 }
+    end
+
+    def self.each_form_for_species(species)
+      DATA.each_value { |species| yield species if species.species == species }
     end
 
     def self.species_count
@@ -417,7 +422,9 @@ module GameData
         return 1 if !prevo_data.incense.nil?
         prevo_min_level = prevo_data.minimum_level
         evo_method_data = GameData::Evolution.get(evo[1])
-        return prevo_min_level if evo_method_data.level_up_proc.nil? && evo_method_data.id != :Shedinja
+        return prevo_min_level if evo_method_data.level_up_proc.nil? &&
+                                  evo_method_data.battle_level_up_proc.nil? &&
+                                  evo_method_data.id != :Shedinja
         any_level_up = evo_method_data.any_level_up
         return (any_level_up) ? prevo_min_level + 1 : evo[2]
       end
@@ -458,6 +465,8 @@ module GameData
       when "Habitat"
         ret = nil if ret == :None
       when "Evolutions"
+        ret = nil   # Want to use "Evolution" instead
+      when "Evolution"
         if ret
           ret = ret.reject { |evo| evo[3] }   # Remove prevolutions
           ret.each do |evo|
@@ -487,4 +496,3 @@ module GameData
     end
   end
 end
-

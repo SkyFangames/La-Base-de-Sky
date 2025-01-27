@@ -113,6 +113,8 @@ class Interpreter
         end
         @move_route_waiting = false
       end
+      # Do nothing if the player is jumping out of surfing
+      return if $game_temp.ending_surf
       # Do nothing while waiting
       if @wait_count > 0
         return if System.uptime - @wait_start < @wait_count
@@ -451,4 +453,3 @@ class Interpreter
     setPrice(item, -1, sell_price)
   end
 end
-

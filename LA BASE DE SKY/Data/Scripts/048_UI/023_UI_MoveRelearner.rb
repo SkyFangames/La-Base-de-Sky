@@ -84,7 +84,7 @@ class MoveRelearner_Scene
                    0, 78 + ((@sprites["commands"].index - @sprites["commands"].top_item) * 64),
                    0, 0, 258, 72])
     selMoveData = GameData::Move.get(@moves[@sprites["commands"].index])
-    power = selMoveData.display_damage(@pokemon)
+    power = selMoveData.display_power(@pokemon)
     category = selMoveData.display_category(@pokemon)
     accuracy = selMoveData.display_accuracy(@pokemon)
     textpos.push([_INTL("CATEGORÍA"), 272, 120, :left, Color.new(248, 248, 248), Color.black])

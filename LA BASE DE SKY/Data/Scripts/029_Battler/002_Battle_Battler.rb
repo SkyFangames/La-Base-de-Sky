@@ -69,7 +69,7 @@ class Battle::Battler
 
   def form=(value)
     @form = value
-    @pokemon.form = value if @pokemon
+    @pokemon.form = value if @pokemon && !@effects[PBEffects::Transform]
   end
 
   def ability
@@ -281,7 +281,7 @@ class Battle::Battler
     ret = (@pokemon) ? @pokemon.weight : 500
     ret += @effects[PBEffects::WeightChange]
     ret = 1 if ret < 1
-    if abilityActive? && !@battle.moldBreaker
+    if abilityActive? && !beingMoldBroken?
       ret = Battle::AbilityEffects.triggerWeightCalc(self.ability, self, ret)
     end
     if itemActive?
@@ -311,20 +311,20 @@ class Battle::Battler
   # same type more than once, and should not include any invalid types.
   def pbTypes(withExtraType = false)
     ret = @types.uniq
-    # Burn Up erases the Fire-type.
+    # Burn Up erases the Fire-type
     ret.delete(:FIRE) if @effects[PBEffects::BurnUp]
-    # Roost erases the Flying-type. If there are no types left, adds the Normal-
-    # type.
+    # Double Shock erases the Electric-type
+    ret.delete(:ELECTRIC) if @effects[PBEffects::DoubleShock]
+    # Roost erases the Flying-type (if there are no types left, adds the Normal-
+    # type)
     if @effects[PBEffects::Roost]
       ret.delete(:FLYING)
       ret.push(:NORMAL) if ret.length == 0
     end
-    # Add the third type specially.
+    # Add the third type specially
     if withExtraType && @effects[PBEffects::ExtraType] && !ret.include?(@effects[PBEffects::ExtraType])
       ret.push(@effects[PBEffects::ExtraType])
     end
-    # DoubleShock erases the Electric-type
-    ret.delete(:ELECTRIC) if @effects[PBEffects::DoubleShock]
     return ret
   end
 
@@ -396,7 +396,9 @@ class Battle::Battler
       :COMATOSE,
       :RKSSYSTEM
     ]
-    return ability_blacklist.include?(abil.id)
+    return true if ability_blacklist.include?(abil.id)
+    return true if hasActiveItem?(:ABILITYSHIELD)
+    return false
   end
 
   # Applies to gaining the ability.
@@ -547,6 +549,11 @@ class Battle::Battler
     return hasActiveAbility?([:MOLDBREAKER, :TERAVOLT, :TURBOBLAZE])
   end
 
+  def beingMoldBroken?
+    return false if hasActiveItem?(:ABILITYSHIELD)
+    return @battle.moldBreaker
+  end
+
   def canChangeType?
     return ![:MULTITYPE, :RKSSYSTEM].include?(@ability_id)
   end
@@ -557,7 +564,7 @@ class Battle::Battler
     return false if @effects[PBEffects::SmackDown]
     return false if @battle.field.effects[PBEffects::Gravity] > 0
     return true if pbHasType?(:FLYING)
-    return true if hasActiveAbility?(:LEVITATE) && !@battle.moldBreaker
+    return true if hasActiveAbility?(:LEVITATE) && !beingMoldBroken?
     return true if hasActiveItem?(:AIRBALLOON)
     return true if @effects[PBEffects::MagnetRise] > 0
     return true if @effects[PBEffects::Telekinesis] > 0
@@ -675,6 +682,29 @@ class Battle::Battler
     return true if @effects[PBEffects::NoRetreat]
     return true if @battle.field.effects[PBEffects::FairyLock] > 0
     return false
+  end
+
+  # Returns whether this battler can be made to switch out because of another
+  # battler's move.
+  def canBeForcedOutOfBattle?(show_message = true)
+    if hasActiveAbility?(:SUCTIONCUPS) && !beingMoldBroken?
+      if show_message
+        @battle.pbShowAbilitySplash(self)
+        if Battle::Scene::USE_ABILITY_SPLASH
+          @battle.pbDisplay(_INTL("¡{1} se ancla!", pbThis))
+        else
+          @battle.pbDisplay(_INTL("¡{1} se ancla con {2}!", pbThis, abilityName))
+        end
+        @battle.pbHideAbilitySplash(self)
+      end
+      return false
+    end
+    return false if hasActiveAbility?(:GUARDDOG) && !beingMoldBroken?
+    if @effects[PBEffects::Ingrain]
+      @battle.pbDisplay(_INTL("¡{1} está anclado con sus raíces!", pbThis)) if show_message
+      return false
+    end
+    return true
   end
 
   def movedThisRound?

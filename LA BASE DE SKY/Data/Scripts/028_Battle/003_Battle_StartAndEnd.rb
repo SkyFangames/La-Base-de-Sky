@@ -270,7 +270,7 @@ class Battle
     begin
       pbStartBattleCore
     rescue BattleAbortedException
-      @decision = 0
+      @decision = Outcome::UNDECIDED
       @scene.pbEndBattle(@decision)
     end
     return @decision
@@ -334,13 +334,13 @@ class Battle
       PBDebug.log("")
       # Command phase
       PBDebug.logonerr { pbCommandPhase }
-      break if @decision > 0
+      break if decided?
       # Attack phase
       PBDebug.logonerr { pbAttackPhase }
-      break if @decision > 0
+      break if decided?
       # End of round phase
       PBDebug.logonerr { pbEndOfRoundPhase }
-      break if @decision > 0
+      break if decided?
       @turnCount += 1
     end
     pbEndOfBattle
@@ -404,10 +404,9 @@ class Battle
 
   def pbEndOfBattle
     oldDecision = @decision
-    @decision = 4 if @decision == 1 && wildBattle? && @caughtPokemon.length > 0
+    @decision = Outcome::CATCH if @decision == Outcome::WIN && wildBattle? && @caughtPokemon.length > 0
     case oldDecision
-    ##### WIN #####
-    when 1
+    when Outcome::WIN
       PBDebug.log("")
       PBDebug.log_header("===== Player won =====")
       PBDebug.log("")
@@ -432,33 +431,34 @@ class Battle
         PBDebug.log("")
       end
       # Gain money from winning a trainer battle, and from Pay Day
-      pbGainMoney if @decision != 4
+      pbGainMoney if @decision != Outcome::CATCH
       # Hide remaining trainer
       @scene.pbShowOpponent(@opponent.length) if trainerBattle? && @caughtPokemon.length > 0
-    ##### LOSE, DRAW #####
-    when 2, 5
+    when Outcome::LOSE, Outcome::DRAW
       PBDebug.log("")
       PBDebug.log_header("===== Player lost =====") if @decision == 2
       PBDebug.log_header("===== Player drew with opponent =====") if @decision == 5
       PBDebug.log("")
       if @internalBattle
-        pbDisplayPaused(_INTL("¡No te quedan Pokémon!"))
-        if trainerBattle?
-          case @opponent.length
-          when 1
-            pbDisplayPaused(_INTL("¡Has perdido contra {1}!", @opponent[0].full_name))
-          when 2
-            pbDisplayPaused(_INTL("¡Has perdido contra {1} y {2}!",
-                                  @opponent[0].full_name, @opponent[1].full_name))
-          when 3
-            pbDisplayPaused(_INTL("¡Has perdido contra {1}, {2} y {3}!",
-                                  @opponent[0].full_name, @opponent[1].full_name, @opponent[2].full_name))
+        if pbPlayerBattlerCount == 0
+          pbDisplayPaused(_INTL("¡No te quedan Pokémon!"))
+          if trainerBattle?
+            case @opponent.length
+            when 1
+              pbDisplayPaused(_INTL("¡Has perdido contra {1}!", @opponent[0].full_name))
+            when 2
+              pbDisplayPaused(_INTL("¡Has perdido contra {1} y {2}!",
+                                    @opponent[0].full_name, @opponent[1].full_name))
+            when 3
+              pbDisplayPaused(_INTL("¡Has perdido contra {1}, {2} y {3}!",
+                                    @opponent[0].full_name, @opponent[1].full_name, @opponent[2].full_name))
+            end
           end
         end
         # Lose money from losing a battle
         pbLoseMoney
         pbDisplayPaused(_INTL("¡Estás fuera de combate!")) if !@canLose
-      elsif @decision == 2   # Lost in a Battle Frontier battle
+      elsif @decision == Outcome::LOSE   # Lost in a Battle Frontier battle
         if @opponent
           @opponent.each_with_index do |trainer, i|
             @scene.pbShowOpponent(i)
@@ -469,8 +469,7 @@ class Battle
           PBDebug.log("")
         end
       end
-    ##### CAUGHT WILD POKÉMON #####
-    when 4
+    when Outcome::CATCH
       PBDebug.log("")
       PBDebug.log_header("===== Pokémon caught =====")
       PBDebug.log("")
@@ -479,7 +478,7 @@ class Battle
     # Register captured Pokémon in the Pokédex, and store them
     pbRecordAndStoreCaughtPokemon
     # Collect Pay Day money in a wild battle that ended in a capture
-    pbGainMoney if @decision == 4
+    pbGainMoney if @decision == Outcome::CATCH
     # Pass on Pokérus within the party
     if @internalBattle
       infected = []
@@ -526,11 +525,11 @@ class Battle
         hpTotals[side] += pkmn.hp
       end
     end
-    return 1 if counts[0] > counts[1]       # Win (player has more able Pokémon)
-    return 2 if counts[0] < counts[1]       # Loss (foe has more able Pokémon)
-    return 1 if hpTotals[0] > hpTotals[1]   # Win (player has more HP in total)
-    return 2 if hpTotals[0] < hpTotals[1]   # Loss (foe has more HP in total)
-    return 5                                # Draw
+    return Outcome::WIN if counts[0] > counts[1]        # Win (player has more able Pokémon)
+    return Outcome::LOSE if counts[0] < counts[1]       # Loss (foe has more able Pokémon)
+    return Outcome::WIN if hpTotals[0] > hpTotals[1]    # Win (player has more HP in total)
+    return Outcome::LOSE if hpTotals[0] < hpTotals[1]   # Loss (foe has more HP in total)
+    return Outcome::DRAW
   end
 
   # Unused
@@ -545,25 +544,24 @@ class Battle
       end
       hpTotals[side] /= counts[side] if counts[side] > 1
     end
-    return 1 if counts[0] > counts[1]       # Win (player has more able Pokémon)
-    return 2 if counts[0] < counts[1]       # Loss (foe has more able Pokémon)
-    return 1 if hpTotals[0] > hpTotals[1]   # Win (player has a bigger average HP %)
-    return 2 if hpTotals[0] < hpTotals[1]   # Loss (foe has a bigger average HP %)
-    return 5                                # Draw
+    return Outcome::WIN if counts[0] > counts[1]        # Win (player has more able Pokémon)
+    return Outcome::LOSE if counts[0] < counts[1]       # Loss (foe has more able Pokémon)
+    return Outcome::WIN if hpTotals[0] > hpTotals[1]    # Win (player has a bigger average HP %)
+    return Outcome::LOSE if hpTotals[0] < hpTotals[1]   # Loss (foe has a bigger average HP %)
+    return Outcome::DRAW
   end
 
-  def pbDecisionOnDraw; return 5; end   # Draw
+  def pbDecisionOnDraw; return Outcome::DRAW; end   # Draw
 
   def pbJudge
     fainted1 = pbAllFainted?(0)
     fainted2 = pbAllFainted?(1)
     if fainted1 && fainted2
-      @decision = pbDecisionOnDraw   # Draw
+      @decision = pbDecisionOnDraw
     elsif fainted1
-      @decision = 2                  # Loss
+      @decision = Outcome::LOSE
     elsif fainted2
-      @decision = 1                  # Win
+      @decision = Outcome::WIN
     end
   end
 end
-

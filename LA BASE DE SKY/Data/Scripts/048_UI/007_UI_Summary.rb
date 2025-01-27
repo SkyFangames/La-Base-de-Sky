@@ -826,10 +826,10 @@ class PokemonSummary_Scene
     @sprites["itemicon"].visible = false if @sprites["itemicon"]
     textpos = []
     # Write power and accuracy values for selected move
-    case selected_move.display_damage(@pokemon)
+    case selected_move.display_power(@pokemon)
     when 0 then textpos.push(["---", 216, 160, :right, base, shadow])   # Status move
     when 1 then textpos.push(["???", 216, 160, :right, base, shadow])   # Variable power move
-    else        textpos.push([selected_move.display_damage(@pokemon).to_s, 216, 160, :right, base, shadow])
+    else        textpos.push([selected_move.display_power(@pokemon).to_s, 216, 160, :right, base, shadow])
     end
     if selected_move.display_accuracy(@pokemon) == 0
       textpos.push(["---", 216, 192, :right, base, shadow])

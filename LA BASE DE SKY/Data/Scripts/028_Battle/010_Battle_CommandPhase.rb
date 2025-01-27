@@ -188,7 +188,7 @@ class Battle
     end
     # Choose actions for the round (player first, then AI)
     pbCommandPhaseLoop(true)    # Player chooses their actions
-    if @decision != 0   # Battle ended, stop choosing actions
+    if decided?   # Battle ended, stop choosing actions
       @command_phase = false
       return
     end
@@ -202,13 +202,13 @@ class Battle
     actioned = []
     idxBattler = -1
     loop do
-      break if @decision != 0   # Battle ended, stop choosing actions
+      break if decided?   # Battle ended, stop choosing actions
       idxBattler += 1
       break if idxBattler >= @battlers.length
       next if !@battlers[idxBattler] || pbOwnedByPlayer?(idxBattler) != isPlayer
       if @choices[idxBattler][0] != :None || !pbCanShowCommands?(idxBattler)
         # Action is forced, can't choose one
-        PBDebug.log_ai("#{@battlers[idxBattler].pbThis} (#{idxBattler}) is forced to use a multi-turn move")
+        PBDebug.log("[Command phase] #{@battlers[idxBattler].pbThis} (#{idxBattler}) is forced to use a multi-turn move")
         next
       end
       # AI controls this battler
@@ -264,4 +264,3 @@ class Battle
     end
   end
 end
-

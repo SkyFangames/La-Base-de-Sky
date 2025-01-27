@@ -1992,7 +1992,7 @@ Battle::AbilityEffects::OnBeingHit.add(:EFFECTSPORE,
             msg = _INTL("¡{1} de {2} durmió a {3}!", target.pbThis,
                target.abilityName, user.pbThis(true))
           end
-          user.pbSleep(msg)
+          user.pbSleep(nil, msg)
         end
       when 1
         if user.pbCanPoison?(target, Battle::Scene::USE_ABILITY_SPLASH)

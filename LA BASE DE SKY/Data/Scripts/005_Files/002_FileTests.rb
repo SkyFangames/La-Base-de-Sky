@@ -73,18 +73,6 @@ end
 #===============================================================================
 # Comprobando archivos y directorios
 #===============================================================================
-# Soluciona un problema con FileTest.directory si el directorio contiene marcas de acento
-# @deprecated Este método está programado para ser eliminado en la versión v22.
-def safeIsDirectory?(f)
-  Deprecation.warn_method("safeIsDirectory?(f)", "v22", "FileTest.directory?(f)")
-  return FileTest.directory?(f)
-end
-
-# @deprecated This method is slated to be removed in v22.
-def safeExists?(f)
-  Deprecation.warn_method("safeExists?(f)", "v22", "FileTest.exist?(f)")
-  return FileTest.exist?(f)
-end
 
 # Similar a "Dir.glob", pero diseñado para solucionar un problema al acceder
 # a archivos si una ruta contiene marcas de acento.
@@ -109,8 +97,8 @@ end
 
 def pbResolveAudioSE(file)
   return nil if !file
-  if RTP.exists?("Audio/SE/" + file, ["", ".wav", ".ogg"])   # ".mp3"
-    return RTP.getPath("Audio/SE/" + file, ["", ".wav", ".ogg"])   # ".mp3"
+  if RTP.exists?("Audio/SE/" + file, ["", ".wav", ".ogg", ".mp3", ".wma"])
+    return RTP.getPath("Audio/SE/" + file, ["", ".wav", ".ogg", ".mp3", ".wma"])
   end
   return nil
 end
@@ -199,7 +187,7 @@ module RTP
   end
 
   def self.getAudioPath(filename)
-    return self.getPath(filename, ["", ".wav", ".wma", ".mid", ".ogg", ".midi"])   # ".mp3"
+    return self.getPath(filename, ["", ".wav", ".ogg", ".mp3", ".midi", ".mid", ".wma"])
   end
 
   def self.getPath(filename, extensions = [])
@@ -262,7 +250,7 @@ end
 #===============================================================================
 module FileTest
   IMAGE_EXTENSIONS = [".png", ".gif"]   # ".jpg", ".jpeg", ".bmp",
-  AUDIO_EXTENSIONS = [".mid", ".midi", ".ogg", ".wav", ".wma"]   # ".mp3"
+  AUDIO_EXTENSIONS = [".wav", ".ogg", ".mp3", ".midi", ".mid", ".wma"]
 
   def self.audio_exist?(filename)
     return RTP.exists?(filename, AUDIO_EXTENSIONS)
@@ -486,4 +474,3 @@ class StringInput
   alias read_all read
   alias sysread read
 end
-

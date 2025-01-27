@@ -4,7 +4,7 @@
 class Game_Temp
   attr_accessor :regional_dexes_data
   attr_accessor :battle_animations_data
-  attr_accessor :move_to_battle_animation_data
+  # attr_accessor :move_to_battle_animation_data
   attr_accessor :map_infos
 end
 
@@ -12,7 +12,7 @@ def pbClearData
   if $game_temp
     $game_temp.regional_dexes_data           = nil
     $game_temp.battle_animations_data        = nil
-    $game_temp.move_to_battle_animation_data = nil
+    # $game_temp.move_to_battle_animation_data = nil
     $game_temp.map_infos                     = nil
   end
   MapFactoryHelper.clear
@@ -44,13 +44,13 @@ def pbLoadBattleAnimations
   return $game_temp.battle_animations_data
 end
 
-def pbLoadMoveToAnim
-  $game_temp = Game_Temp.new if !$game_temp
-  if !$game_temp.move_to_battle_animation_data
-    $game_temp.move_to_battle_animation_data = load_data("Data/move2anim.dat") || []
-  end
-  return $game_temp.move_to_battle_animation_data
-end
+# def pbLoadMoveToAnim
+#   $game_temp = Game_Temp.new if !$game_temp
+#   if !$game_temp.move_to_battle_animation_data
+#     $game_temp.move_to_battle_animation_data = load_data("Data/move2anim.dat") || []
+#   end
+#   return $game_temp.move_to_battle_animation_data
+# end
 
 #===============================================================================
 # Method relating to map infos data.

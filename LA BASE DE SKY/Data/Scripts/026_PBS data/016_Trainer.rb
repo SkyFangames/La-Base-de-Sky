@@ -175,7 +175,11 @@ module GameData
           pkmn.makeShadow
           pkmn.shiny = false
         end
-        pkmn.poke_ball = pkmn_data[:poke_ball] if pkmn_data[:poke_ball]
+        if pkmn_data[:poke_ball]
+          pkmn.poke_ball = pkmn_data[:poke_ball]
+        elsif trainer.default_poke_ball
+          pkmn.poke_ball = trainer.default_poke_ball
+        end
         pkmn.form   # Called just to recalculate it in case a defined property has changed it, e.g. gender for Espurr
         pkmn.reset_moves if !pkmn_data[:moves] || pkmn_data[:moves].empty?   # In case form changed
         pkmn.calc_stats

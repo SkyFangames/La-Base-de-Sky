@@ -195,7 +195,7 @@ class Battle::Move
         return pbBaseType(@power, battler, nil)
       end
     end
-    return @realMove.display_damage(battler.pokemon)
+    return @realMove.display_power(battler.pokemon)
   end
 
   def display_power(battler)

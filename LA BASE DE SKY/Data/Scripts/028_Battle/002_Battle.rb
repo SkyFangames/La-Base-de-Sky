@@ -38,6 +38,29 @@
 #       (There is no guarantee that this list is complete.)
 
 class Battle
+  module Outcome
+    UNDECIDED = 0
+    WIN       = 1
+    LOSE      = 2   # Also used when player forfeits a trainer battle
+    FLEE      = 3   # Player or wild Pokémon ran away, count as a win
+    CATCH     = 4   # Counts as a win
+    DRAW      = 5
+
+    def self.decided?(decision)
+      return decision != UNDECIDED
+    end
+
+    def self.should_black_out?(decision)
+      return decision == LOSE || decision == DRAW
+    end
+
+    def self.success?(decision)
+      return !self.should_black_out?(decision)
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+
   attr_reader   :scene            # Scene object for this battle
   attr_reader   :peer
   attr_reader   :field            # Effects common to the whole of a battle
@@ -118,7 +141,7 @@ class Battle
     @time              = 0
     @environment       = :None   # e.g. Tall grass, cave, still water
     @turnCount         = 0
-    @decision          = 0
+    @decision          = Outcome::UNDECIDED
     @caughtPokemon     = []
     player   = [player] if !player.nil? && !player.is_a?(Array)
     opponent = [opponent] if !opponent.nil? && !opponent.is_a?(Array)
@@ -182,7 +205,10 @@ class Battle
     @fainted_count   = [0, 0]
     @sideStatUps     = [{}, {}]
   end
-  
+
+  def decided?
+    return Outcome.decided?(@decision)
+  end
   #-----------------------------------------------------------------------------
   # Various utilities.
   #-----------------------------------------------------------------------------
@@ -249,7 +275,7 @@ class Battle
   end
 
   #=============================================================================
-  # Trainers and owner-related methods
+  # Trainers and owner-related methods.
   #=============================================================================
   def pbPlayer; return @player[0]; end
 
@@ -534,6 +560,13 @@ class Battle
       return b if b.hasActiveAbility?(abil)
     end
     return nil
+  end
+
+  # Returns an array containing the IDs of all active abilities.
+  def pbAllActiveAbilities
+    ret = []
+    allBattlers.each { |b| ret.push(b.ability_id) if b.abilityActive? }
+    return ret
   end
 
   # Given a battler index, and using battle side sizes, returns an array of

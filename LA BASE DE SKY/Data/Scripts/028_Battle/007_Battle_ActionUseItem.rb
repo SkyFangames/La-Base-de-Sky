@@ -55,7 +55,7 @@ class Battle
       end
     else
       items = pbGetOwnerItems(idxBattler)
-      items.delete_at(items.index(item))
+      items.delete_at(items.index(item)) if items
     end
   end
 
@@ -147,4 +147,3 @@ class Battle
     pbReturnUnusedItemToBag(item, userBattler.index)
   end
 end
-

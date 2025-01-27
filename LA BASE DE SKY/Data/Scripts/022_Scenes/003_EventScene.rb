@@ -162,6 +162,7 @@ class EventScene
       next if !sprite || sprite.disposed? || !sprite.is_a?(Sprite)
       sprite.update
     end
+    @usersprites.delete_if { |sprite| sprite.disposed? }
     @onUpdate.trigger(self)
     if Input.trigger?(Input::BACK)
       @onBTrigger.trigger(self)
@@ -189,4 +190,3 @@ def pbEventScreen(cls)
     viewport.dispose
   end
 end
-

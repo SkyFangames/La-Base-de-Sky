@@ -7,15 +7,6 @@ SaveData.register(:player) do
   new_game_value { Player.new("Unnamed", GameData::TrainerType.keys.first) }
 end
 
-# @deprecated This save data is slated to be removed in v22, as its use is
-# replaced by $stats.play_time.
-SaveData.register(:frame_count) do
-  ensure_class :Integer
-  save_value { Graphics.frame_count }
-  load_value { |value| Graphics.frame_count = value }
-  new_game_value { 0 }
-end
-
 SaveData.register(:game_system) do
   ensure_class :Game_System
   save_value { $game_system }
@@ -24,7 +15,7 @@ SaveData.register(:game_system) do
 end
 
 SaveData.register(:pokemon_system) do
-  load_in_bootup # Because this contains values for the Options screen
+  load_in_bootup   # Because this contains values for the Options screen
   ensure_class :PokemonSystem
   save_value { $PokemonSystem }
   load_value { |value| $PokemonSystem = value }
@@ -120,4 +111,3 @@ SaveData.register(:stats) do
   load_value { |value| $stats = value }
   new_game_value { GameStats.new }
 end
-

@@ -155,7 +155,7 @@ class AnimatedSprite < Sprite
     self.frame = 0
   end
 
-  # Shorter version of AnimationSprite. All frames are placed on a single row
+  # Shorter version of AnimatedSprite. All frames are placed on a single row
   # of the bitmap, so that the width and height need not be defined beforehand.
   # frameskip is in 1/20ths of a second, and is the time between frame changes.
   def initializeShort(animname, framecount, frameskip)
@@ -327,6 +327,14 @@ class ChangelingSprite < Sprite
     self.class::BITMAPS.each_pair { |mode, data| add_bitmap(mode, data) }
   end
 
+  def dispose
+    return if disposed?
+    @bitmaps.each_value { |bm| bm.dispose }
+    @bitmaps.clear
+    super
+  end
+
+
   def add_bitmap(mode, *data)
     raise ArgumentError.new(_INTL("wrong number of arguments (given {1}, expected 2 or 6)", data.length + 1)) if ![1, 5].include?(data.length)
     filepath = (data[0].is_a?(Array)) ? data[0][0] : data[0]
@@ -372,4 +380,3 @@ class ChangelingSprite < Sprite
     self.bitmap = @current_bitmap.bitmap if @current_bitmap
   end
 end
-

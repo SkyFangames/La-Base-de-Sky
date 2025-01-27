@@ -112,17 +112,16 @@ class Battle::Battler
     immAlly = nil
     if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, newStatus)
       immuneByAbility = true
-    elsif self_inflicted || !@battle.moldBreaker
-      if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, newStatus)
+    elsif abilityActive? && (self_inflicted || !beingMoldBroken?) &&
+       Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, newStatus)
+      immuneByAbility = true
+    else
+      allAllies.each do |b|
+        next if !b.abilityActive? || (!self_inflicted && b.beingMoldBroken?)
+        next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, newStatus)
         immuneByAbility = true
-      else
-        allAllies.each do |b|
-          next if !b.abilityActive?
-          next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, newStatus)
-          immuneByAbility = true
-          immAlly = b
-          break
-        end
+        immAlly = b
+        break
       end
     end
     if immuneByAbility
@@ -341,8 +340,8 @@ class Battle::Battler
     return true
   end
 
-  def pbSleep(msg = nil)
-    pbInflictStatus(:SLEEP, pbSleepDuration, msg)
+  def pbSleep(user = nil, msg = nil)
+    pbInflictStatus(:SLEEP, pbSleepDuration, msg, user)
   end
 
   def pbSleepSelf(msg = nil, duration = -1)

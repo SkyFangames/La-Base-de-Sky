@@ -551,11 +551,6 @@ class Game_Event < Game_Character
     return if @map_id != $game_player.map_id
     __hotfixes__check_event_trigger_touch(dir)
   end
-  alias __hotfixes__pbCheckEventTriggerAfterTurning pbCheckEventTriggerAfterTurning unless method_defined?(:__hotfixes__pbCheckEventTriggerAfterTurning)
-  def pbCheckEventTriggerAfterTurning
-    return if @map_id != $game_player.map_id
-    return __hotfixes__pbCheckEventTriggerAfterTurning
-  end
   def onEvent?
     return @map_id == $game_player.map_id && at_coordinate?($game_player.x, $game_player.y)
   end

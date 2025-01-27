@@ -60,7 +60,7 @@ module Game
     SaveData.load_all_values(save_data)
     $game_temp.last_uptime_refreshed_play_time = System.uptime
     $stats.play_sessions += 1
-    self.load_map
+    load_map
     pbAutoplayOnSave
     $game_map.update
     $PokemonMap.updateMap
@@ -122,4 +122,3 @@ module Game
     return true
   end
 end
-

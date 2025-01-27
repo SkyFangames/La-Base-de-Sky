@@ -1,12 +1,15 @@
+#===============================================================================
 # The pbs_order value determines the order in which the stats are written in
 # several PBS files, where base stats/IVs/EVs/EV yields are defined. Only stats
 # which are yielded by the "each_main" method can have stat numbers defined in
 # those places. The values of pbs_order defined below should start with 0 and
 # increase without skipping any numbers.
+#===============================================================================
 module GameData
   class Stat
     attr_reader :id
     attr_reader :real_name
+    attr_reader :real_name_semi_brief
     attr_reader :real_name_brief
     attr_reader :type
     attr_reader :pbs_order
@@ -34,17 +37,24 @@ module GameData
       self.each { |s| yield s if [:main_battle, :battle].include?(s.type) }
     end
 
+    #---------------------------------------------------------------------------
+
     def initialize(hash)
-      @id              = hash[:id]
-      @real_name       = hash[:name]       || "Sin nombre"
-      @real_name_brief = hash[:name_brief] || "Ninguno"
-      @type            = hash[:type]       || :none
-      @pbs_order       = hash[:pbs_order]  || -1
+      @id                   = hash[:id]
+      @real_name            = hash[:name]            || "Sin nombre"
+      @real_name_semi_brief = hash[:name_semi_brief]
+      @real_name_brief      = hash[:name_brief]      || "Ninguno"
+      @type                 = hash[:type]            || :none
+      @pbs_order            = hash[:pbs_order]       || -1
     end
 
     # @return [String] the translated name of this stat
     def name
       return _INTL(@real_name)
+    end
+
+    def name_semi_brief
+      return _INTL(@real_name_semi_brief || @real_name)
     end
 
     # @return [String] the translated brief name of this stat
@@ -54,6 +64,8 @@ module GameData
   end
 end
 
+#===============================================================================
+#
 #===============================================================================
 
 GameData::Stat.register({
@@ -81,19 +93,21 @@ GameData::Stat.register({
 })
 
 GameData::Stat.register({
-  :id         => :SPECIAL_ATTACK,
-  :name       => _INTL("Ataque Especial"),
-  :name_brief => _INTL("AtEsp"),
-  :type       => :main_battle,
-  :pbs_order  => 4
+  :id              => :SPECIAL_ATTACK,
+  :name            => _INTL("Ataque Especial"),
+  :name_semi_brief => _INTL("At. Especial"),
+  :name_brief      => _INTL("AtEsp"),
+  :type            => :main_battle,
+  :pbs_order       => 4
 })
 
 GameData::Stat.register({
-  :id         => :SPECIAL_DEFENSE,
-  :name       => _INTL("Defensa Especial"),
-  :name_brief => _INTL("DefEsp"),
-  :type       => :main_battle,
-  :pbs_order  => 5
+  :id              => :SPECIAL_DEFENSE,
+  :name            => _INTL("Defensa Especial"),
+  :name_semi_brief => _INTL("Def. Especial"),
+  :name_brief      => _INTL("DefEsp"),
+  :type            => :main_battle,
+  :pbs_order       => 5
 })
 
 GameData::Stat.register({
@@ -117,4 +131,3 @@ GameData::Stat.register({
   :name_brief => _INTL("Eva"),
   :type       => :battle
 })
-

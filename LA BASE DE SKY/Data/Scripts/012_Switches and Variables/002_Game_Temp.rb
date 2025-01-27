@@ -13,6 +13,8 @@ class Game_Temp
   attr_accessor :battle_abort             # battle flag: interrupt (unused)
   attr_accessor :title_screen_calling     # return to title screen flag
   attr_accessor :common_event_id          # common event ID to start
+  attr_accessor :field_move_to_use
+  attr_accessor :field_move_user
   # Flags indicating something is happening
   attr_accessor :in_menu                  # menu is open
   attr_accessor :in_storage               # in-Pokémon storage flag
@@ -39,7 +41,6 @@ class Game_Temp
   attr_accessor :background_bitmap
   attr_accessor :fadestate                # for sprite hashes
   # Other
-  # attr_accessor :begun_new_game           # new game flag (true fron new game until saving)
   attr_accessor :menu_beep                # menu: play sound effect flag
   attr_accessor :menu_last_choice         # pause menu: index of last selection
   attr_accessor :memorized_bgm            # set when trainer intro BGM is played
@@ -82,7 +83,6 @@ class Game_Temp
     @transition_name        = ""
     @fadestate              = 0
     # Other
-    # @begun_new_game         = false
     @menu_beep              = false
     @memorized_bgm          = nil
     @memorized_bgm_position = 0
@@ -95,4 +95,3 @@ class Game_Temp
     @mart_prices = {}
   end
 end
-
