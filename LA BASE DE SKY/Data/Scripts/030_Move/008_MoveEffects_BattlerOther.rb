@@ -1447,50 +1447,6 @@ class Battle::Move::CrashDamageIfFailsConfuseTarget < Battle::Move::ConfuseTarge
   end
 end
 
-#===============================================================================
-# Mortal Spin
-#===============================================================================
-# Removes trapping moves, entry hazards and Leech Seed on user/user's side.
-# Poisons the target.
-#-------------------------------------------------------------------------------
-class Battle::Move::RemoveUserBindingAndEntryHazardsPoisonTarget < Battle::Move::PoisonTarget
-  def pbEffectAfterAllHits(user, target)
-    return if user.fainted? || target.damageState.unaffected
-    if user.effects[PBEffects::Trapping] > 0
-      trapMove = GameData::Move.get(user.effects[PBEffects::TrappingMove]).name
-      trapUser = @battle.battlers[user.effects[PBEffects::TrappingUser]]
-      @battle.pbDisplay(_INTL("¡{1} se liberó de {2} de {3}!", user.pbThis, trapUser.pbThis(true), trapMove))
-      user.effects[PBEffects::Trapping]     = 0
-      user.effects[PBEffects::TrappingMove] = nil
-      user.effects[PBEffects::TrappingUser] = -1
-    end
-    if user.effects[PBEffects::LeechSeed] >= 0
-      user.effects[PBEffects::LeechSeed] = -1
-      @battle.pbDisplay(_INTL("¡{1} se curó de la drenadoras!", user.pbThis))
-    end
-    if user.pbOwnSide.effects[PBEffects::StealthRock]
-      user.pbOwnSide.effects[PBEffects::StealthRock] = false
-      @battle.pbDisplay(_INTL("Las piedras puntiagudas lanzadas a {1} han desaparecido.", user.pbTeam))
-    end
-    if defined?(PBEffects::Steelsurge) && user.pbOwnSide.effects[PBEffects::Steelsurge]
-      user.pbOwnSide.effects[PBEffects::Steelsurge] = false
-      @battle.pbDisplay(_INTL("¡{1} eliminó las púas metalicas!", user.pbThis))
-    end
-    if user.pbOwnSide.effects[PBEffects::Spikes] > 0
-      user.pbOwnSide.effects[PBEffects::Spikes] = 0
-      @battle.pbDisplay(_INTL("Las púas lanzadas a {1} han desaparecido.", user.pbTeam))
-    end
-    if user.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0
-      user.pbOwnSide.effects[PBEffects::ToxicSpikes] = 0
-      @battle.pbDisplay(_INTL("Las púas tóxicas lanzadas a {1} han desaparecido.", user.pbTeam))
-    end
-    if user.pbOwnSide.effects[PBEffects::StickyWeb]
-      user.pbOwnSide.effects[PBEffects::StickyWeb] = false
-      @battle.pbDisplay(_INTL("La red viscosa lanzada a {1} ha desaparecido.", user.pbTeam))
-    end
-  end
-end
-
 
 
 #===============================================================================
@@ -1506,36 +1462,6 @@ class Battle::Move::PoisonParalyzeOrSleepTarget < Battle::Move
     when 1 then target.pbPoison(user)   if target.pbCanPoison?(user, false, self)
     when 2 then target.pbParalyze(user) if target.pbCanParalyze?(user, false, self)
     end
-  end
-end
-
-#===============================================================================
-# Barb Barrage
-#===============================================================================
-# Power is doubled if the target is poisoned. May poison the target.
-#-------------------------------------------------------------------------------
-class Battle::Move::DoublePowerIfTargetPoisonedPoisonTarget < Battle::Move::PoisonTarget
-  def pbBaseDamage(baseDmg, user, target)
-    if target.poisoned? &&
-       (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      baseDmg *= 2
-    end
-    return baseDmg
-  end
-end
-
-#===============================================================================
-# Infernal Parade
-#===============================================================================
-# Power is doubled if the target has a status condition. May burn the target.
-#-------------------------------------------------------------------------------
-class Battle::Move::DoublePowerIfTargetStatusProblemBurnTarget < Battle::Move::BurnTarget
-  def pbBaseDamage(baseDmg, user, target)
-    if target.pbHasAnyStatus? &&
-       (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      baseDmg *= 2
-    end
-    return baseDmg
   end
 end
 

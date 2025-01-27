@@ -26,7 +26,7 @@ class Battle::DamageState
   attr_accessor :endured         # Damage was endured
   attr_accessor :affection_endured
   attr_accessor :berryWeakened   # Whether a type-resisting berry was used
-  attr_accessor :terashell # Tera Shell ability used
+  attr_accessor :terashell       # Tera Shell ability used
 
   def initialize; reset; end
 
@@ -61,4 +61,3 @@ class Battle::DamageState
     @berryWeakened      = false
   end
 end
-

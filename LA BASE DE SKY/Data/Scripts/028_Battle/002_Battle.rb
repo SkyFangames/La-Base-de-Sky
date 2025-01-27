@@ -549,8 +549,8 @@ class Battle
     return allSameSideBattlers.select { |b| b.pbOwnedByPlayer? }.length
   end
 
-  def pbCheckGlobalAbility(abil)
-    allBattlers.each { |b| return b if b.hasActiveAbility?(abil) }
+  def pbCheckGlobalAbility(abil, check_mold_breaker = false)
+    allBattlers.each { |b| return b if b.hasActiveAbility?(abil) && (!check_mold_breaker || !b.beingMoldBroken?) }
     return nil
   end
 

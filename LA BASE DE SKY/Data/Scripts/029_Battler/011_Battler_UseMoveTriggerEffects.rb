@@ -18,12 +18,13 @@ class Battle::Battler
         #       target Cramorant attacking the user) and the ability splash
         #       shouldn't be shown.
         @battle.pbShowAbilitySplash(target)
+        target_form = target.form
         target.pbChangeForm(0, nil)
         if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
           @battle.scene.pbDamageAnimation(user)
           user.pbReduceHP(user.totalhp / 4, false)
         end
-        case target.form
+        case target_form
         when 1   # Gulping Form
           user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
         when 2   # Gorging Form
@@ -78,15 +79,6 @@ class Battle::Battler
          user.effects[PBEffects::DestinyBondTarget] < 0
         user.effects[PBEffects::DestinyBondTarget] = target.index
       end
-    end
-    
-    # Paldea Gen 9
-    if target.damageState.calcDamage > 0 && !target.damageState.substitute
-      @battle.pbAddRageHit(target)
-    end
-    if user.pbOwnedByPlayer? && !user.fainted? && move.recoilMove?
-      recoil = (defined?(move.pbRecoilDamage(user, target))) ? move.pbRecoilDamage(user, target) : 0
-      user.pokemon.recoil_evolution(recoil)
     end
   end
 
@@ -245,4 +237,3 @@ class Battle::Battler
     end
   end
 end
-

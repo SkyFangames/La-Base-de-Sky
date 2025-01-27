@@ -10,7 +10,7 @@ class Battle::Move::UserTakesTargetItem < Battle::Move
     return if !target.item || (user.item && !target.wild?)
     return if target.unlosableItem?(target.item)
     return if user.unlosableItem?(target.item)
-    return if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
+    return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
     itemName = target.itemName
     user.item = target.item unless target.wild?
     # Permanently steal the item from wild Pokémon
@@ -94,7 +94,7 @@ class Battle::Move::UserTargetSwapItems < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
       return true
     end
-    if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
+    if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
       if show_message
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -184,7 +184,7 @@ class Battle::Move::RemoveTargetItem < Battle::Move
     return if user.fainted?
     return if target.damageState.unaffected || target.damageState.substitute
     return if !target.item || target.unlosableItem?(target.item)
-    return if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
+    return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
     itemName = target.itemName
     target.pbRemoveItem(false)
     @battle.pbDisplay(_INTL("¡{1} dejó caer su {2}!", target.pbThis, itemName))
@@ -200,7 +200,7 @@ class Battle::Move::DestroyTargetBerryOrGem < Battle::Move
     return if !target.item || (!target.item.is_berry? &&
               !(Settings::MECHANICS_GENERATION >= 6 && target.item.is_gem?))
     return if target.unlosableItem?(target.item)
-    return if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
+    return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
     item_name = target.itemName
     target.pbRemoveItem
     @battle.pbDisplay(_INTL("¡El {2} de {1} ha sido incinerado!", target.pbThis, item_name))
@@ -222,7 +222,7 @@ class Battle::Move::CorrodeTargetItem < Battle::Move
       @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis)) if show_message
       return true
     end
-    if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
+    if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
       if show_message
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -389,7 +389,7 @@ class Battle::Move::UserConsumeTargetBerry < Battle::Move
     return if user.fainted? || target.fainted?
     return if target.damageState.unaffected || target.damageState.substitute
     return if !target.item || !target.item.is_berry? || target.unlosableItem?(target.item)
-    return if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
+    return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
     item = target.item
     itemName = target.itemName
     user.setBelched
@@ -442,7 +442,7 @@ class Battle::Move::ThrowUserItemAtTarget < Battle::Move
   def pbEffectAgainstTarget(user, target)
     return if target.damageState.substitute
     return if target.hasActiveItem?(:COVERTCLOAK)
-    return if target.hasActiveAbility?(:SHIELDDUST) && !@battle.moldBreaker
+    return if target.hasActiveAbility?(:SHIELDDUST) && !target.beingMoldBroken?
     case user.item_id
     when :POISONBARB
       target.pbPoison(user) if target.pbCanPoison?(user, false, self)
@@ -472,4 +472,3 @@ class Battle::Move::ThrowUserItemAtTarget < Battle::Move
     user.pbConsumeItem(true, true, false) if user.item
   end
 end
-

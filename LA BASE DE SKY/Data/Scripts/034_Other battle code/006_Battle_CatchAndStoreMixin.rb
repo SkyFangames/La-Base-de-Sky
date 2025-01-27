@@ -40,7 +40,6 @@ module Battle::CatchAndStoreMixin
           send_pkmn.makeUnmega
           send_pkmn.makeUnprimal
           # Send chosen Pokémon to storage
-          send_pkmn = pbPlayer.party[party_index]
           stored_box = @peer.pbStorePokemon(pbPlayer, send_pkmn)
           pbPlayer.party.delete_at(party_index)
           box_name = @peer.pbBoxName(stored_box)
@@ -64,9 +63,7 @@ module Battle::CatchAndStoreMixin
           break
         when 2   # See X's summary
           pbFadeOutIn do
-            summary_scene = PokemonSummary_Scene.new
-            summary_screen = PokemonSummaryScreen.new(summary_scene, true)
-            summary_screen.pbStartScreen([pkmn], 0)
+            UI::PokemonSummary.new(pkmn, mode: :in_battle).main
           end
         when 3   # Check party
           @scene.pbPartyScreen(0, true, 2)
@@ -175,7 +172,7 @@ module Battle::CatchAndStoreMixin
       end
       battler.pbReset
       if pbAllFainted?(battler.index)
-        @decision = (trainerBattle?) ? 1 : 4   # Battle ended by win/capture
+        @decision = (trainerBattle?) ? Battle::Outcome::WIN : Battle::Outcome::CATCH
       end
       # Modify the Pokémon's properties because of the capture
       if GameData::Item.get(ball).is_snag_ball?
@@ -270,4 +267,3 @@ end
 class Battle
   include Battle::CatchAndStoreMixin
 end
-

@@ -133,12 +133,12 @@ module Battle::ItemEffects
     DamageCalcFromTarget.trigger(item, user, target, move, mults, power, type)
   end
 
-  def self.triggerCriticalCalcFromUser(item, user, target, crit_stage)
-    return trigger(CriticalCalcFromUser, item, user, target, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromUser(item, user, target, move, crit_stage)
+    return trigger(CriticalCalcFromUser, item, user, target, move, crit_stage, ret: crit_stage)
   end
 
-  def self.triggerCriticalCalcFromTarget(item, user, target, crit_stage)
-    return trigger(CriticalCalcFromTarget, item, user, target, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromTarget(item, user, target, move, crit_stage)
+    return trigger(CriticalCalcFromTarget, item, user, target, move, crit_stage, ret: crit_stage)
   end
 
   #=============================================================================
@@ -362,7 +362,7 @@ Battle::ItemEffects::HPHeal.add(:MAGOBERRY,
 Battle::ItemEffects::HPHeal.add(:MICLEBERRY,
   proc { |item, battler, battle, forced|
     next false if !forced && !battler.canConsumePinchBerry?
-    next false if !battler.effects[PBEffects::MicleBerry]
+    next false if battler.effects[PBEffects::MicleBerry]
     battle.pbCommonAnimation("EatBerry", battler) if !forced
     battler.effects[PBEffects::MicleBerry] = true
     itemName = GameData::Item.get(item).name
@@ -885,6 +885,8 @@ Battle::ItemEffects::DamageCalcFromUser.add(:GRISEOUSORB,
   }
 )
 
+Battle::ItemEffects::DamageCalcFromUser.copy(:GRISEOUSORB, :GRISEOUSCORE)
+
 Battle::ItemEffects::DamageCalcFromUser.add(:GROUNDGEM,
   proc { |item, user, target, move, mults, power, type|
     user.pbMoveTypePoweringUpGem(:GROUND, move, type, mults)
@@ -926,6 +928,8 @@ Battle::ItemEffects::DamageCalcFromUser.add(:LUSTROUSORB,
     end
   }
 )
+
+Battle::ItemEffects::DamageCalcFromUser.copy(:LUSTROUSORB, :LUSTROUSGLOBE)
 
 Battle::ItemEffects::DamageCalcFromUser.add(:MAGNET,
   proc { |item, user, target, move, mults, power, type|
@@ -1014,7 +1018,7 @@ Battle::ItemEffects::DamageCalcFromUser.add(:PSYCHICGEM,
 )
 
 Battle::ItemEffects::DamageCalcFromUser.add(:PUNCHINGGLOVE,
-  proc { |item, user, target, move, mults, baseDmg, type|
+  proc { |item, user, target, move, mults, power, type|
     mults[:power_multiplier] *= 1.1 if move.punchingMove?
   }
 )
@@ -1281,13 +1285,13 @@ Battle::ItemEffects::DamageCalcFromTarget.add(:YACHEBERRY,
 #===============================================================================
 
 Battle::ItemEffects::CriticalCalcFromUser.add(:LUCKYPUNCH,
-  proc { |item, user, target, c|
+  proc { |item, user, target, move, c|
     next c + 2 if user.isSpecies?(:CHANSEY)
   }
 )
 
 Battle::ItemEffects::CriticalCalcFromUser.add(:RAZORCLAW,
-  proc { |item, user, target, c|
+  proc { |item, user, target, move, c|
     next c + 1
   }
 )
@@ -1295,7 +1299,7 @@ Battle::ItemEffects::CriticalCalcFromUser.add(:RAZORCLAW,
 Battle::ItemEffects::CriticalCalcFromUser.copy(:RAZORCLAW, :SCOPELENS)
 
 Battle::ItemEffects::CriticalCalcFromUser.add(:LEEK,
-  proc { |item, user, target, c|
+  proc { |item, user, target, move, c|
     next c + 2 if user.isSpecies?(:FARFETCHD) || user.isSpecies?(:SIRFETCHD)
   }
 )
@@ -1910,7 +1914,7 @@ Battle::ItemEffects::EndOfRoundHealing.add(:LEFTOVERS,
 Battle::ItemEffects::EndOfRoundEffect.add(:FLAMEORB,
   proc { |item, battler, battle|
     next if !battler.pbCanBurn?(battler, false)
-    battler.pbBurn(nil, _INTL("¡{1} ha sido quemado por {2}!", battler.pbThis, battler.itemName))  #TO-DO
+    battler.pbBurn(nil, _INTL("¡{1} ha sido quemado por {2}!", battler.pbThis, battler.itemName))
   }
 )
 
@@ -2014,8 +2018,8 @@ Battle::ItemEffects::OnOpposingStatGain.add(:MIRRORHERB,
     statUps.each do |stat, increment|
       next if !battler.pbCanRaiseStatStage?(stat, battler)
         if battler.pbRaiseStatStage(stat, increment, battler, showAnim)
-        showAnim = false
-      end
+          showAnim = false
+        end
     end
     battler.mirrorHerbUsed = false
     next false if showAnim

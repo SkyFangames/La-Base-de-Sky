@@ -199,8 +199,6 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   attr_reader :battler
   attr_reader :shiftMode
 
-  GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON = false
-
   # If true, displays graphics from Graphics/UI/Battle/overlay_fight.png
   #     and Graphics/UI/Battle/cursor_fight.png.
   # If false, just displays text and the command window over the graphic
@@ -208,7 +206,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   #     pbShowWindow to make the graphic appear while the command menu is being
   #     displayed.
   USE_GRAPHICS     = true
-  TYPE_ICON_HEIGHT = 28
+  TYPE_ICON_HEIGHT = GameData::Type::ICON_SIZE[1]
   # Text colours of PP of selected move
   PP_COLORS = [
     Color.new(248, 72, 72), Color.new(136, 48, 48),    # Red, zero PP
@@ -350,7 +348,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
       x = button.x - self.x + (button.src_rect.width / 2)
       y = button.y - self.y + 14
       moveNameBase = TEXT_BASE_COLOR
-      if GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON && moves[i].display_type(@battler)
+      if Settings::BATTLE_MOVE_NAME_COLOR_FROM_GRAPHIC && moves[i].display_type(@battler)
         # NOTE: This takes a color from a particular pixel in the button
         #       graphic and makes the move name's base color that same color.
         #       The pixel is at coordinates 10,34 in the button box. If you
@@ -549,4 +547,3 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
     refreshButtons
   end
 end
-

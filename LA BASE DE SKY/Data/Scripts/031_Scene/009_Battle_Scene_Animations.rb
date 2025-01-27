@@ -38,12 +38,12 @@ class Battle::Scene::Animation::Intro < Battle::Scene::Animation
     end
     # Fading blackness over whole screen
     blackScreen = addNewSprite(0, 0, "Graphics/Battle animations/black_screen")
-    blackScreen.setZ(0, 999)
+    blackScreen.setZ(0, 99999)
     blackScreen.moveOpacity(0, 8, 0)
     # Fading blackness over command bar
     blackBar = addNewSprite(@sprites["cmdBar_bg"].x, @sprites["cmdBar_bg"].y,
                             "Graphics/Battle animations/black_bar")
-    blackBar.setZ(0, 998)
+    blackBar.setZ(0, 99998)
     blackBar.moveOpacity(appearTime * 3 / 4, appearTime / 4, 0)
   end
 
@@ -419,7 +419,7 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     ballMidY = battlerStartY - 144
     # Set up Poké Ball sprite
     ball = addBallSprite(ballStartX, ballStartY, poke_ball)
-    ball.setZ(0, 25)
+    ball.setZ(0, 1025)
     ball.setVisible(0, false)
     # Poké Ball tracking the player's hand animation (if trainer is visible)
     if @showingTrainer && traSprite && traSprite.x > 0
@@ -835,7 +835,7 @@ class Battle::Scene::Animation::PokeballThrowDeflect < Battle::Scene::Animation
     ballEndY   = 112
     # Set up Poké Ball sprite
     ball = addBallSprite(ballStartX, ballStartY, @poke_ball)
-    ball.setZ(0, 90)
+    ball.setZ(0, 5090)
     # Poké Ball arc animation
     ball.setSE(0, "Battle throw")
     createBallTrajectory(ball, 0, 16,
@@ -847,4 +847,3 @@ class Battle::Scene::Animation::PokeballThrowDeflect < Battle::Scene::Animation
     createBallTumbling(ball, delay, 8)
   end
 end
-

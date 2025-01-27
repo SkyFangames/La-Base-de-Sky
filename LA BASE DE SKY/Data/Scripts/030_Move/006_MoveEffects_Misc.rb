@@ -208,12 +208,10 @@ class Battle::Move::FailsIfTargetActed < Battle::Move
 end
 
 #===============================================================================
-# If attack misses, user takes crash damage of 1/2 of max HP.
-# (High Jump Kick, Jump Kick)
+# If attack misses, user takes crash damage of 1/2 of max HP. (Supercell Slam)
 #===============================================================================
-class Battle::Move::CrashDamageIfFailsUnusableInGravity < Battle::Move
-  def recoilMove?;        return true; end
-  def unusableInGravity?; return true; end
+class Battle::Move::CrashDamageIfFails < Battle::Move
+  def recoilMove?; return true; end
 
   def pbCrashDamage(user)
     return if !user.takesIndirectDamage?
@@ -223,6 +221,14 @@ class Battle::Move::CrashDamageIfFailsUnusableInGravity < Battle::Move
     user.pbItemHPHealCheck
     user.pbFaint if user.fainted?
   end
+end
+
+#===============================================================================
+# If attack misses, user takes crash damage of 1/2 of max HP. Can't be used in
+# gravity. (High Jump Kick, Jump Kick)
+#===============================================================================
+class Battle::Move::CrashDamageIfFailsUnusableInGravity < Battle::Move::CrashDamageIfFails
+  def unusableInGravity?; return true; end
 end
 
 #===============================================================================
@@ -342,12 +348,27 @@ class Battle::Move::RemoveTerrain < Battle::Move
 end
 
 #===============================================================================
+# Removes the current terrain. Fails if there is no terrain in effect.
+# (Steel Roller)
+#===============================================================================
+class Battle::Move::RemoveTerrainFailsIfNoTerrain < Battle::Move::RemoveTerrain
+  def pbMoveFailed?(user, targets)
+    if @battle.field.terrain == :None
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
+  end
+end
+
+#===============================================================================
 # Entry hazard. Lays spikes on the opposing side (max. 3 layers). (Spikes)
 #===============================================================================
 class Battle::Move::AddSpikesToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::Spikes] >= 3
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -356,6 +377,15 @@ class Battle::Move::AddSpikesToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return if damagingMove?
+    user.pbOpposingSide.effects[PBEffects::Spikes] += 1
+    @battle.pbDisplay(_INTL("¡{1} está rodeado de púas!",
+                            user.pbOpposingTeam(true)))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::Spikes] >= 3
     user.pbOpposingSide.effects[PBEffects::Spikes] += 1
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas!",
                             user.pbOpposingTeam(true)))
@@ -370,6 +400,7 @@ class Battle::Move::AddToxicSpikesToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::ToxicSpikes] >= 2
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -378,9 +409,18 @@ class Battle::Move::AddToxicSpikesToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return if damagingMove?
     user.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas tóxicas!",
-                            user.pbOpposingTeam()))
+                            user.pbOpposingTeam(true)))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::ToxicSpikes] >= 2
+    user.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
+    @battle.pbDisplay(_INTL("¡{1} está rodeado de púas tóxicas!",
+                            user.pbOpposingTeam(true)))
   end
 end
 
@@ -391,6 +431,7 @@ class Battle::Move::AddStealthRocksToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::StealthRock]
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -401,7 +442,14 @@ class Battle::Move::AddStealthRocksToFoeSide < Battle::Move
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::StealthRock] = true
     @battle.pbDisplay(_INTL("¡{1} está rodeado de piedras puntiagudas!",
-                            user.pbOpposingTeam()))
+                            user.pbOpposingTeam(true)))
+  end
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::StealthRock]
+    user.pbOpposingSide.effects[PBEffects::StealthRock] = true
+    @battle.pbDisplay(_INTL("¡{1} está rodeado de piedras puntiagudas!",
+                            user.pbOpposingTeam(true)))
   end
 end
 
@@ -412,6 +460,7 @@ class Battle::Move::AddStickyWebToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::StickyWeb]
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -420,9 +469,18 @@ class Battle::Move::AddStickyWebToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return false if damagingMove?
     user.pbOpposingSide.effects[PBEffects::StickyWeb] = true
     @battle.pbDisplay(_INTL("¡Una red viscosa se extiende a los pies de {1}!",
-                            user.pbOpposingTeam()))
+                            user.pbOpposingTeam(true)))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::StickyWeb]
+    user.pbOpposingSide.effects[PBEffects::StickyWeb] = true
+    @battle.pbDisplay(_INTL("¡Una red viscosa se extiende a los pies de {1}!",
+                            user.pbOpposingTeam(true)))
   end
 end
 
@@ -816,29 +874,6 @@ class Battle::Move::RevivePokemonHalfHP < Battle::Move
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
     return if user.fainted? || @numFainted == 0
     @battle.pbReviveInParty(user.index)
-  end
-end
-
-#===============================================================================
-# Fickle Beam
-#===============================================================================
-# Has a 30% chance to deal double damage.
-#-------------------------------------------------------------------------------
-class Battle::Move::RandomlyDealsDoubleDamage < Battle::Move
-  def pbOnStartUse(user, targets)
-    @allOutAttack = (@battle.pbRandom(100) < 30)
-    if @allOutAttack
-      @battle.pbDisplay(_INTL("¡{1} va con todo por este ataque!", user.pbThis))
-    end
-  end
-
-  def pbBaseDamage(baseDmg, user, target)
-    return (@allOutAttack) ? baseDmg * 2 : baseDmg
-  end
-  
-  def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
-    hitNum = 1 if @allOutAttack
-    super
   end
 end
 

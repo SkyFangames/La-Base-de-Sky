@@ -224,13 +224,14 @@ Battle::AI::Handlers::ShouldSwitch.add(:perish_song,
 Battle::AI::Handlers::ShouldSwitch.add(:significant_eor_damage,
   proc { |battler, reserves, ai, battle|
     eor_damage = battler.rough_end_of_round_damage
+    next false if eor_damage <= 0
     # Switch if battler will take significant EOR damage
     if eor_damage >= battler.hp / 2 || eor_damage >= battler.totalhp / 4
       PBDebug.log_ai("#{battler.name} wants to switch because it will take a lot of EOR damage")
       next true
     end
     # Switch to remove certain effects that cause the battler EOR damage
-    if ai.trainer.high_skill? && eor_damage > 0
+    if ai.trainer.high_skill?
       if battler.effects[PBEffects::LeechSeed] >= 0 && ai.pbAIRandom(100) < 50
         PBDebug.log_ai("#{battler.name} wants to switch to get rid of its Leech Seed")
         next true
@@ -665,6 +666,7 @@ Battle::AI::Handlers::ShouldNotSwitch.add(:lethal_entry_hazards,
 Battle::AI::Handlers::ShouldNotSwitch.add(:battler_has_super_effective_move,
   proc { |battler, reserves, ai, battle|
     next false if battler.effects[PBEffects::PerishSong] == 1
+    next false if battler.rough_end_of_round_damage >= battler.hp * 2 / 3
     next false if battle.rules["suddendeath"]
     has_super_effective_move = false
     battler.battler.eachMove do |move|
@@ -709,3 +711,28 @@ Battle::AI::Handlers::ShouldNotSwitch.add(:battler_has_very_raised_stats,
   }
 )
 
+#===============================================================================
+# Don't bother switching if the battler has Wonder Guard and is immune to the
+# foe's damaging attacks.
+#===============================================================================
+Battle::AI::Handlers::ShouldNotSwitch.add(:battler_is_immune_via_wonder_guard,
+  proc { |battler, reserves, ai, battle|
+    next false if battler.effects[PBEffects::PerishSong] == 1
+    next false if battler.rough_end_of_round_damage >= battler.hp / 2
+    next false if !battler.has_active_ability?(:WONDERGUARD)
+    super_effective_foe = false
+    ai.each_foe_battler(battler.side) do |b|
+      next if !b.check_for_move do |m|
+        next false if !m.damagingMove?
+        eff = battler.effectiveness_of_type_against_battler(m.pbCalcType(b.battler), b, m)
+        next Effectiveness.super_effective?(eff)
+      end
+      super_effective_foe = true
+      break
+    end
+    if !super_effective_foe
+      PBDebug.log_ai("#{battler.name} won't switch after all because it has Wonder Guard and can't be damaged by foes")
+    end
+    next !super_effective_foe
+  }
+)

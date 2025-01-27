@@ -20,16 +20,8 @@ class Battle::Move
 
   CRITICAL_HIT_RATIOS = (Settings::NEW_CRITICAL_HIT_RATE_MECHANICS) ? [24, 8, 2, 1] : [16, 8, 4, 3, 2]
 
-  def to_int; return @id; end
-
-  # @deprecated This method is slated to be removed in v22.
-  def baseDamage
-    Deprecation.warn_method("baseDamage", "v22", "power")
-    return @power
-  end
-
   #=============================================================================
-  # Creating a move
+  # Creating a move.
   #=============================================================================
   def initialize(battle, move)
     @battle        = battle
@@ -69,7 +61,7 @@ class Battle::Move
   end
 
   #=============================================================================
-  # About the move
+  # About the move.
   #=============================================================================
   def pbTarget(_user); return GameData::Target.get(@target); end
 
@@ -154,9 +146,6 @@ class Battle::Move
   def nonLethal?(_user, _target); return false; end   # For False Swipe
   def preventsBattlerConsumingHealingBerry?(battler, targets); return false; end   # For Bug Bite/Pluck
 
-    
-    
-    
   # user is the Pokémon using this move.
   def ignoresSubstitute?(user)
     if Settings::MECHANICS_GENERATION >= 6
@@ -181,21 +170,6 @@ class Battle::Move
       return pbBaseType(battler) if Settings::SHOW_MODIFIED_MOVE_PROPERTIES
     end
     return @realMove.display_type(battler.pokemon)
-  end
-
-  def display_damage(battler)
-    if Settings::SHOW_MODIFIED_MOVE_PROPERTIES
-      case @function_code
-      when "TypeAndPowerDependOnUserBerry"
-        return pbNaturalGiftBaseDamage(battler.item_id)
-      when "TypeAndPowerDependOnWeather", "TypeAndPowerDependOnTerrain",
-          "PowerHigherWithUserHP", "PowerLowerWithUserHP",
-          "PowerHigherWithUserHappiness", "PowerLowerWithUserHappiness",
-          "PowerHigherWithUserPositiveStatStages", "PowerDependsOnUserStockpile"
-        return pbBaseType(@power, battler, nil)
-      end
-    end
-    return @realMove.display_power(battler.pokemon)
   end
 
   def display_power(battler)
@@ -226,4 +200,3 @@ class Battle::Move
 
   def display_accuracy(battler); return @realMove.display_accuracy(battler.pokemon); end
 end
-

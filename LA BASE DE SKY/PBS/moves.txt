@@ -5514,7 +5514,7 @@ Power = 1
 Accuracy = 100
 TotalPP = 5
 Target = NearOther
-FunctionCode = PowerHigherWithTargetHP
+FunctionCode = PowerHigherWithTargetHP120
 Flags = Contact,CanProtect,CanMirrorMove
 Description = Cuantos más PS le queden al objetivo, más fuerte será el ataque.
 #-------------------------------
@@ -5670,7 +5670,7 @@ Power = 1
 Accuracy = 100
 TotalPP = 5
 Target = NearOther
-FunctionCode = PowerHigherWithTargetHP
+FunctionCode = PowerHigherWithTargetHP120
 Flags = Contact,CanProtect,CanMirrorMove
 Description = Estruja con fuerza al objetivo. Cuantos más PS tenga el objetivo, más fuerza tendrá el ataque.
 #-------------------------------
@@ -9496,7 +9496,7 @@ Category = Status
 Accuracy = 0
 TotalPP = 15
 Target = NearOther
-FunctionCode = RaiseTargetAtkLowerTargetDef2
+FunctionCode = RaiseTargetAtk2LowerTargetDef2
 Flags = CanProtect,CanMirrorMove,CannotMetronome
 Description = Libera un extracto picante que aumenta mucho su Ataque, pero también reduce mucho su Defensa. 
 #-------------------------------
@@ -9755,7 +9755,7 @@ Power = 1
 Accuracy = 100
 TotalPP = 10
 Target = NearOther
-FunctionCode = PowerHigherWithTargetHP100PowerRange
+FunctionCode = PowerHigherWithTargetHP100
 Flags = Contact,CanProtect,CanMirrorMove
 Description = Oprime con los brazos o las pinzas. Cuantos más PS le queden al objetivo, más daño hace.
 #-------------------------------

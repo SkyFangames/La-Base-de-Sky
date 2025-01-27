@@ -12,7 +12,7 @@ class Battle::Move::FleeFromBattle < Battle::Move
 
   def pbEffectGeneral(user)
     @battle.pbDisplay(_INTL("¡{1} ha huido del combate!", user.pbThis))
-    @battle.decision = 3   # Escaped
+    @battle.decision = Battle::Outcome::FLEE
   end
 end
 
@@ -52,7 +52,7 @@ class Battle::Move::SwitchOutUserStatusMove < Battle::Move
   def pbEffectGeneral(user)
     if user.wild?
       @battle.pbDisplay(_INTL("¡{1} ha huido del combate!", user.pbThis))
-      @battle.decision = 3   # Escaped
+      @battle.decision = Battle::Outcome::FLEE
     end
   end
 end
@@ -159,22 +159,7 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
       @battle.pbDisplay(_INTL("¡Pero falló!")) if show_message
       return true
     end
-    if target.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !@battle.moldBreaker
-      if show_message
-        @battle.pbShowAbilitySplash(target)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡{1} se aferró!", target.pbThis))
-        else
-          @battle.pbDisplay(_INTL("¡{1} se aferró con {2}!", target.pbThis, target.abilityName))
-        end
-        @battle.pbHideAbilitySplash(target)
-      end
-      return true
-    end
-    if target.effects[PBEffects::Ingrain]
-      @battle.pbDisplay(_INTL("¡{1} se aferró con sus raíces!", target.pbThis)) if show_message
-      return true
-    end
+    return true if !target.canBeForcedOutOfBattle?(show_message)
     if target.wild? && target.allAllies.length == 0 && @battle.canRun
       # End the battle
       if target.level > user.level
@@ -200,7 +185,7 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    @battle.decision = 3 if target.wild?   # Escaped from battle
+    @battle.decision = Battle::Outcome::FLEE if target.wild?
   end
 
   def pbSwitchOutTargetEffect(user, targets, numHits, switched_battlers)
@@ -209,8 +194,7 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
     targets.each do |b|
       next if b.fainted? || b.damageState.unaffected
       next if b.wild?
-      next if b.effects[PBEffects::Ingrain]
-      next if b.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !@battle.moldBreaker
+      next if !b.canBeForcedOutOfBattle?(false)
       newPkmn = @battle.pbGetReplacementPokemonIndex(b.index, true)   # Random
       next if newPkmn < 0
       @battle.pbRecallAndReplace(b.index, newPkmn, true)
@@ -234,7 +218,7 @@ class Battle::Move::SwitchOutTargetDamagingMove < Battle::Move
     if target.wild? && target.allAllies.length == 0 && @battle.canRun &&
        target.level <= user.level &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      @battle.decision = 3   # Escaped from battle
+      @battle.decision = Battle::Outcome::FLEE
     end
   end
 
@@ -244,8 +228,7 @@ class Battle::Move::SwitchOutTargetDamagingMove < Battle::Move
     targets.each do |b|
       next if b.fainted? || b.damageState.unaffected || b.damageState.substitute
       next if b.wild?
-      next if b.effects[PBEffects::Ingrain]
-      next if b.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !@battle.moldBreaker
+      next if !b.canBeForcedOutOfBattle?(false)
       next if b.isCommander?
       newPkmn = @battle.pbGetReplacementPokemonIndex(b.index, true)   # Random
       next if newPkmn < 0
@@ -1039,7 +1022,3 @@ class Battle::Move::UserMakeSubstituteSwitchOut < Battle::Move
     user.effects[PBEffects::Substitute] = oldSub
   end
 end
-
-
-
-

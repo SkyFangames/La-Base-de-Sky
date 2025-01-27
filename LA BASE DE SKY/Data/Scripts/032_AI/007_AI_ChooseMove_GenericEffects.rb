@@ -18,7 +18,7 @@ class Battle::AI
       desire_mult = -1
     end
     # If target has Contrary, use different calculations to score the stat change
-    if !ignore_contrary && !fixed_change && !@battle.moldBreaker && target.has_active_ability?(:CONTRARY)
+    if !ignore_contrary && !fixed_change && target.has_active_ability?(:CONTRARY) && !target.being_mold_broken?
       if desire_mult > 0 && whole_effect
         PBDebug.log_score_change(MOVE_USELESS_SCORE - score, "don't prefer raising target's stats (it has Contrary)")
         return MOVE_USELESS_SCORE
@@ -62,19 +62,26 @@ class Battle::AI
       end
       # Calculate amount that stat will be raised by
       increment = stat_changes[idx + 1]
-      increment *= 2 if !fixed_change && !@battle.moldBreaker && target.has_active_ability?(:SIMPLE)
+      increment *= 2 if !fixed_change && target.has_active_ability?(:SIMPLE) && !target.being_mold_broken?
       increment = [increment, Battle::Battler::STAT_STAGE_MAXIMUM - target.stages[stat]].min   # The actual stages gained
       # Count this as a valid stat raise
       real_stat_changes.push([stat, increment]) if increment > 0
     end
     # Discard move if it can't raise any stats
     if real_stat_changes.length == 0
+      PBDebug.log("     ignore stat raising (it can't be changed)")
       return (whole_effect) ? MOVE_USELESS_SCORE : score
     end
     # Make score change based on the additional effect chance
-    score += add_effect
+    if add_effect != 0
+      old_score = score
+      score += add_effect
+      PBDebug.log_score_change(score - old_score, "stat raising is an additional effect")
+    end
     # Make score changes based on the general concept of raising stats at all
+    old_score = score
     score = get_target_stat_raise_score_generic(score, target, real_stat_changes, desire_mult)
+    PBDebug.log_score_change(score - old_score, "generic calculations for raising any stat")
     # Make score changes based on the specific changes to each stat that will be
     # raised
     real_stat_changes.each do |change|
@@ -159,15 +166,15 @@ class Battle::AI
     total_increment = stat_changes.sum { |change| change[1] }
     # Prefer if move is a status move and it's the user's first/second turn
     if @user.turnCount < 2 && @move.statusMove?
-      score += total_increment * desire_mult * 5
+      score += total_increment * desire_mult * 4
     end
     if @trainer.has_skill_flag?("HPAware")
       # Prefer if user is at high HP, don't prefer if user is at low HP
       if target.index != @user.index
-        score += total_increment * desire_mult * ((100 * @user.hp / @user.totalhp) - 50) / 8   # +6 to -6 per stage
+        score += total_increment * desire_mult * ((100 * @user.hp / @user.totalhp) - 50) / 12   # +4 to -4 per stage
       end
       # Prefer if target is at high HP, don't prefer if target is at low HP
-      score += total_increment * desire_mult * ((100 * target.hp / target.totalhp) - 50) / 8   # +6 to -6 per stage
+      score += total_increment * desire_mult * ((100 * target.hp / target.totalhp) - 50) / 12   # +4 to -4 per stage
     end
     # NOTE: There are no abilities that trigger upon stat raise, but this is
     #       where they would be accounted for if they existed.
@@ -317,7 +324,7 @@ class Battle::AI
       desire_mult = 1
     end
     # If target has Contrary, use different calculations to score the stat change
-    if !ignore_contrary && !fixed_change && !@battle.moldBreaker && target.has_active_ability?(:CONTRARY)
+    if !ignore_contrary && !fixed_change && target.has_active_ability?(:CONTRARY) && !target.being_mold_broken?
       if desire_mult > 0 && whole_effect
         PBDebug.log_score_change(MOVE_USELESS_SCORE - score, "don't prefer lowering target's stats (it has Contrary)")
         return MOVE_USELESS_SCORE
@@ -359,19 +366,26 @@ class Battle::AI
       end
       # Calculate amount that stat will be lowered by
       decrement = stat_changes[idx + 1]
-      decrement *= 2 if !fixed_change && !@battle.moldBreaker && target.has_active_ability?(:SIMPLE)
+      decrement *= 2 if !fixed_change && target.has_active_ability?(:SIMPLE) && !target.being_mold_broken?
       decrement = [decrement, Battle::Battler::STAT_STAGE_MAXIMUM + target.stages[stat]].min   # The actual stages lost
       # Count this as a valid stat drop
       real_stat_changes.push([stat, decrement]) if decrement > 0
     end
     # Discard move if it can't lower any stats
     if real_stat_changes.length == 0
+      PBDebug.log("     ignore stat lowering (it can't be changed)")
       return (whole_effect) ? MOVE_USELESS_SCORE : score
     end
     # Make score change based on the additional effect chance
-    score += add_effect
+    if add_effect != 0
+      old_score = score
+      score += add_effect
+      PBDebug.log_score_change(score - old_score, "stat lowering is an additional effect")
+    end
     # Make score changes based on the general concept of lowering stats at all
+    old_score = score
     score = get_target_stat_drop_score_generic(score, target, real_stat_changes, desire_mult)
+    PBDebug.log_score_change(score - old_score, "generic calculations for lowering any stat")
     # Make score changes based on the specific changes to each stat that will be
     # lowered
     real_stat_changes.each do |change|
@@ -447,15 +461,15 @@ class Battle::AI
     total_decrement = stat_changes.sum { |change| change[1] }
     # Prefer if move is a status move and it's the user's first/second turn
     if @user.turnCount < 2 && @move.statusMove?
-      score += total_decrement * desire_mult * 5
+      score += total_decrement * desire_mult * 4
     end
     if @trainer.has_skill_flag?("HPAware")
       # Prefer if user is at high HP, don't prefer if user is at low HP
       if target.index != @user.index
-        score += total_decrement * desire_mult * ((100 * @user.hp / @user.totalhp) - 50) / 8   # +6 to -6 per stage
+        score += total_decrement * desire_mult * ((100 * @user.hp / @user.totalhp) - 50) / 12   # +4 to -4 per stage
       end
       # Prefer if target is at high HP, don't prefer if target is at low HP
-      score += total_decrement * desire_mult * ((100 * target.hp / target.totalhp) - 50) / 8   # +6 to -6 per stage
+      score += total_decrement * desire_mult * ((100 * target.hp / target.totalhp) - 50) / 12   # +4 to -4 per stage
     end
     # Don't prefer if target has an ability that triggers upon stat loss
     # (Competitive, Defiant)
@@ -795,4 +809,3 @@ class Battle::AI
     return ret
   end
 end
-

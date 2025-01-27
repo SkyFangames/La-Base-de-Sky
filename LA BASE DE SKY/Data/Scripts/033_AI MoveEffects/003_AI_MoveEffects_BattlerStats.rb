@@ -1756,7 +1756,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RaiseUserStat1Commander"
 #===============================================================================
 # Spicy Extract
 #===============================================================================
-Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetAtkLowerTargetDef2",
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseTargetAtk2LowerTargetDef2",
   proc { |move, user, target, ai, battle|
     will_fail = true
     (move.move.statUp.length / 2).times do |i|
@@ -1811,7 +1811,7 @@ Battle::AI::Handlers::MoveEffectScore.add("RaiseUserAtkSpAtkSpeed2LoseHalfOfTota
 #===============================================================================
 # Tidy Up
 #===============================================================================
-Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseUserAtkSpd1RemoveHazardsSubstitutes",
+Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes",
   proc { |move, user, target, ai, battle|
     will_fail = true
     (move.move.statUp.length / 2).times do |i|
@@ -1837,7 +1837,7 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("RaiseUserAtkSpd1RemoveH
     next will_fail
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("RaiseUserAtkSpd1RemoveHazardsSubstitutes",
+Battle::AI::Handlers::MoveEffectScore.add("RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes",
   proc { |score, move, user, ai, battle|
     # Score for raising user's Attack and Speed
     score = Battle::AI::Handlers.apply_move_effect_score("RaiseUserAtkSpd1",

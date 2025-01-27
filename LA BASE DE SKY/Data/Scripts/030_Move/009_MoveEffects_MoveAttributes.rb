@@ -195,9 +195,18 @@ class Battle::Move::PowerLowerWithUserHP < Battle::Move
 end
 
 #===============================================================================
+# Power increases with the target's HP. (Hard Press)
+#===============================================================================
+class Battle::Move::PowerHigherWithTargetHP100 < Battle::Move
+  def pbBaseDamage(baseDmg, user, target)
+    return [100 * target.hp / target.totalhp, 1].max
+  end
+end
+
+#===============================================================================
 # Power increases with the target's HP. (Crush Grip, Wring Out)
 #===============================================================================
-class Battle::Move::PowerHigherWithTargetHP < Battle::Move
+class Battle::Move::PowerHigherWithTargetHP120 < Battle::Move
   def pbBaseDamage(baseDmg, user, target)
     return [120 * target.hp / target.totalhp, 1].max
   end
@@ -400,6 +409,55 @@ class Battle::Move::RandomPowerDoublePowerIfTargetUnderground < Battle::Move
 end
 
 #===============================================================================
+# Power is increased by 50% in sunny weather. (Hydro Steam)
+#===============================================================================
+class Battle::Move::IncreasePowerInSun < Battle::Move
+  # NOTE: No code needed here. Effect is coded in def pbCalcDamageMultipliers.
+end
+
+#===============================================================================
+# Power is increased by 50% if Electric Terrain applies. (Psyblade)
+#===============================================================================
+class Battle::Move::IncreasePowerInElectricTerrain < Battle::Move
+  def pbBaseDamage(baseDmg, user, target)
+    baseDmg = (baseDmg * 1.5).floor if @battle.field.terrain == :Electric && target.affectedByTerrain?
+    return baseDmg
+  end
+end
+
+#===============================================================================
+# Damage is increased by 33% if the move is super-effective. (Electro Drift)
+#===============================================================================
+class Battle::Move::IncreasePowerIfSuperEffective < Battle::Move
+  def pbModifyDamage(damageMult, user, target)
+    damageMult = damageMult * 4 / 3 if Effectiveness.super_effective?(target.damageState.typeMod)
+    return damageMult
+  end
+end
+
+#===============================================================================
+# Power is doubled 30% of the time. (Fickle Beam)
+#===============================================================================
+class Battle::Move::DoublePower30PercentChance < Battle::Move
+  def pbOnStartUse(user, targets)
+    @double_power = @battle.pbRandom(100) < 30
+    if @double_power
+      @battle.pbDisplayBrief(_INTL("¡{1} va con todo por este ataque!", user.pbThis))
+    end
+  end
+
+  def pbBaseDamage(baseDmg, user, target)
+    baseDmg *= 2 if @double_power
+    return baseDmg
+  end
+
+  def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
+    hitNum = 1 if @double_power
+    super
+  end
+end
+
+#===============================================================================
 # Power is doubled if the target's HP is down to 1/2 or less. (Brine)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetHPLessThanHalf < Battle::Move
@@ -456,6 +514,20 @@ class Battle::Move::DoublePowerIfTargetPoisoned < Battle::Move
 end
 
 #===============================================================================
+# Power is doubled if the target is poisoned, and then poisons the target.
+# (Barb Barrage)
+#===============================================================================
+class Battle::Move::DoublePowerIfTargetPoisonedPoisonTarget < Battle::Move::PoisonTarget
+  def pbBaseDamage(baseDmg, user, target)
+    if target.poisoned? &&
+       (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
+      baseDmg *= 2
+    end
+    return baseDmg
+  end
+end
+
+#===============================================================================
 # Power is doubled if the target is paralyzed. Cures the target of paralysis.
 # (Smelling Salts)
 #===============================================================================
@@ -480,6 +552,20 @@ end
 # Power is doubled if the target has a status problem. (Hex)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetStatusProblem < Battle::Move
+  def pbBaseDamage(baseDmg, user, target)
+    if target.pbHasAnyStatus? &&
+       (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
+      baseDmg *= 2
+    end
+    return baseDmg
+  end
+end
+
+#===============================================================================
+# Power is doubled if the target has a status problem, and then burns the
+# target. (Infernal Parade)
+#===============================================================================
+class Battle::Move::DoublePowerIfTargetStatusProblemBurnTarget < Battle::Move::BurnTarget
   def pbBaseDamage(baseDmg, user, target)
     if target.pbHasAnyStatus? &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
@@ -851,7 +937,8 @@ class Battle::Move::RemoveScreens < Battle::Move
 end
 
 #===============================================================================
-# User is protected against moves with the "B" flag this round. (Detect, Protect)
+# User is protected against moves with the "CanProtect" flag this round.
+# (Detect, Protect)
 #===============================================================================
 class Battle::Move::ProtectUser < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -861,14 +948,26 @@ class Battle::Move::ProtectUser < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# User is protected against moves with the "B" flag this round. If a Pokémon
-# makes contact with the user while this effect applies, that Pokémon is
+# User is protected against moves with the "CanProtect" flag this round. If a
+# Pokémon makes contact with the user while this effect applies, that Pokémon is
 # poisoned. (Baneful Bunker)
 #===============================================================================
 class Battle::Move::ProtectUserBanefulBunker < Battle::Move::ProtectMove
   def initialize(battle, move)
     super
     @effect = PBEffects::BanefulBunker
+  end
+end
+
+#===============================================================================
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon is burned.
+# (Burning Bulwark)
+#===============================================================================
+class Battle::Move::ProtectUserFromDamagingMovesBurningBulwark < Battle::Move::ProtectMove
+  def initialize(battle, move)
+    super
+    @effect = PBEffects::BurningBulwark
   end
 end
 
@@ -893,6 +992,19 @@ class Battle::Move::ProtectUserFromDamagingMovesObstruct < Battle::Move::Protect
   def initialize(battle, move)
     super
     @effect = PBEffects::Obstruct
+  end
+end
+
+#===============================================================================
+# For the rest of this round, the user avoids all damaging moves that would hit
+# it. If a move that makes contact is stopped by this effect, decreases the
+# Speed of the Pokémon using that move by 1 stage. Contributes to Protect's
+# counter. (Silk Trap)
+#===============================================================================
+class Battle::Move::ProtectUserFromDamagingMovesSilkTrap < Battle::Move::ProtectMove
+  def initialize(battle, move)
+    super
+    @effect = PBEffects::SilkTrap
   end
 end
 
@@ -980,12 +1092,12 @@ end
 #===============================================================================
 class Battle::Move::RemoveProtections < Battle::Move
   def pbEffectAgainstTarget(user, target)
-    target.effects[PBEffects::BurningBulwark]         = false
-    target.effects[PBEffects::SilkTrap]         	    = false
     target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::BurningBulwark]         = false
     target.effects[PBEffects::KingsShield]            = false
     target.effects[PBEffects::Obstruct]               = false
     target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SilkTrap]               = false
     target.effects[PBEffects::SpikyShield]            = false
     target.pbOwnSide.effects[PBEffects::CraftyShield] = false
     target.pbOwnSide.effects[PBEffects::MatBlock]     = false
@@ -1025,12 +1137,12 @@ class Battle::Move::HoopaRemoveProtectionsBypassSubstituteLowerUserDef1 < Battle
   end
 
   def pbEffectAgainstTarget(user, target)
-    target.effects[PBEffects::BurningBulwark]         = false
-    target.effects[PBEffects::SilkTrap]         	    = false
     target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::BurningBulwark]         = false
     target.effects[PBEffects::KingsShield]            = false
     target.effects[PBEffects::Obstruct]               = false
     target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SilkTrap]               = false
     target.effects[PBEffects::SpikyShield]            = false
     target.pbOwnSide.effects[PBEffects::CraftyShield] = false
     target.pbOwnSide.effects[PBEffects::MatBlock]     = false
@@ -1094,6 +1206,15 @@ end
 class Battle::Move::RecoilHalfOfDamageDealt < Battle::Move::RecoilMove
   def pbRecoilDamage(user, target)
     return (target.damageState.totalHPLost / 2.0).round
+  end
+end
+
+#===============================================================================
+# User takes recoil damage equal to 1/2 of is maximum HP. (Chloroblast)
+#===============================================================================
+class Battle::Move::RecoilHalfOfTotalHP < Battle::Move::RecoilMove
+  def pbRecoilDamage(user, target)
+    return (user.totalhp / 2.0).round
   end
 end
 
@@ -1187,10 +1308,6 @@ class Battle::Move::CategoryDependsOnHigherDamageIgnoreTargetAbility < Battle::M
     realSpAtk  = (spAtk.to_f * stageMul[spAtkStage] / stageDiv[spAtkStage]).floor
     # Determine move's category
     @calcCategory = (realAtk > realSpAtk) ? 0 : 1
-    
-    if @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
-      @battle.moldBreaker = false
-    end
   end
 end
 
@@ -1292,6 +1409,7 @@ class Battle::Move::TypeIsUserFirstType < Battle::Move
     return userTypes[0] || @type
   end
 end
+
 
 #===============================================================================
 # Power and type depends on the user's IVs. (Hidden Power)
@@ -1651,14 +1769,6 @@ class Battle::Move::NormalMovesBecomeElectric < Battle::Move
   end
 end
 
-#===============================================================================
-# User takes recoil damage equal to 1/2 of its total HP. (Chloroblast)
-#===============================================================================
-class Battle::Move::RecoilHalfOfTotalHP < Battle::Move::RecoilMove
-  def pbRecoilDamage(user, target)
-    return (user.totalhp / 2.0).ceil
-  end
-end
 
 #===============================================================================
 # Raging Bull
@@ -1705,43 +1815,6 @@ class Battle::Move::IncreasePowerSuperEffective < Battle::Move
   def pbBaseDamage(baseDmg, user, target)
     baseDmg *= 4 / 3.0 if Effectiveness.super_effective?(target.damageState.typeMod)
     return baseDmg
-  end
-end
-
-#===============================================================================
-# Silk Trap
-#===============================================================================
-# User is protected against damaging moves this round. Decreases the Speed of
-# the user of a stopped contact move by 1 stage.
-#-------------------------------------------------------------------------------
-class Battle::Move::ProtectUserFromDamagingMovesSilkTrap < Battle::Move::ProtectMove
-  def initialize(battle, move)
-    super
-    @effect = PBEffects::SilkTrap
-  end
-end
-
-#===============================================================================
-# Burning Bulwark
-#===============================================================================
-# The user protects itself. Foes who make contact will become burned.
-#-------------------------------------------------------------------------------
-class Battle::Move::ProtectUserBurningBulwark < Battle::Move::ProtectMove
-  def initialize(battle, move)
-    super
-    @effect = PBEffects::BurningBulwark
-  end
-end
-
-
-#===============================================================================
-# Hard Press
-#===============================================================================
-# Deals damage based on the target's remaining HP.
-#-------------------------------------------------------------------------------
-class Battle::Move::PowerHigherWithTargetHP100PowerRange < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    return [100 * target.hp / target.totalhp, 1].max
   end
 end
 

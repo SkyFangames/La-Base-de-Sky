@@ -188,7 +188,7 @@ class Battle::Scene
     cw.setText(msg)
     PBDebug.log_message(msg)
     yielded = false
-    timer_start = System.uptime
+    timer_start = nil
     loop do
       pbUpdate(cw)
       if !cw.busy?
@@ -202,7 +202,8 @@ class Battle::Scene
           @briefMessage = true
           break
         end
-        if System.uptime - timer_start >= MESSAGE_PAUSE_TIME   # Autoclose after 1 second
+        timer_start = System.real_uptime if !timer_start
+        if System.real_uptime - timer_start >= MESSAGE_PAUSE_TIME   # Autoclose after 1 second
           cw.text = ""
           cw.visible = false
           break
@@ -233,7 +234,7 @@ class Battle::Scene
     cw.text = msg + "\1"
     PBDebug.log_message(msg)
     yielded = false
-    timer_start = System.uptime
+    timer_start = nil
     loop do
       pbUpdate(cw)
       if !cw.busy?
@@ -242,6 +243,7 @@ class Battle::Scene
           yielded = true
         end
         if !@battleEnd
+          timer_start = System.real_uptime if !timer_start
           if System.uptime - timer_start >= MESSAGE_PAUSE_TIME * 3   # Autoclose after 3 seconds
             cw.text = ""
             cw.visible = false
@@ -391,6 +393,7 @@ class Battle::Scene
     shadowSprite.setPokemonBitmap(pkmn)
     # Set visibility of battler's shadow
     shadowSprite.visible = pkmn.species_data.shows_shadow? if shadowSprite && !back
+    @sprites["dataBox_#{idxBattler}"].refres
   end
 
   def pbResetCommandsIndex(idxBattler)

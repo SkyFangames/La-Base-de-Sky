@@ -9,7 +9,7 @@ class Battle::Battler
   def pbCanRaiseStatStage?(stat, user = nil, move = nil, showFailMsg = false, ignoreContrary = false)
     return false if fainted?
     # Contrary
-    if hasActiveAbility?(:CONTRARY) && !ignoreContrary && !@battle.moldBreaker
+    if hasActiveAbility?(:CONTRARY) && !ignoreContrary && !beingMoldBroken?
       return pbCanLowerStatStage?(stat, user, move, showFailMsg, true)
     end
     # Check the stat stage
@@ -24,7 +24,7 @@ class Battle::Battler
   end
 
   def pbRaiseStatStageBasic(stat, increment, ignoreContrary = false)
-    if !@battle.moldBreaker
+    if !beingMoldBroken?
       # Contrary
       if hasActiveAbility?(:CONTRARY) && !ignoreContrary
         return pbLowerStatStageBasic(stat, increment, true)
@@ -46,7 +46,7 @@ class Battle::Battler
 
   def pbRaiseStatStage(stat, increment, user, showAnim = true, ignoreContrary = false)
     # Contrary
-    if hasActiveAbility?(:CONTRARY) && !ignoreContrary && !@battle.moldBreaker
+    if hasActiveAbility?(:CONTRARY) && !ignoreContrary && !beingMoldBroken?
       return pbLowerStatStage(stat, increment, user, showAnim, true)
     end
     # Perform the stat stage change
@@ -73,7 +73,7 @@ class Battle::Battler
   alias paldea_pbRaiseStatStage pbRaiseStatStage
   def pbRaiseStatStage(*args)
     ret = paldea_pbRaiseStatStage(*args)
-    if ret && !@mirrorHerbUsed && !(hasActiveAbility?(:CONTRARY) && !args[4] && !@battle.moldBreaker)
+    if ret && !@mirrorHerbUsed && !(hasActiveAbility?(:CONTRARY) && !args[4] && !beingMoldBroken?)
       addSideStatUps(args[0], args[1])
     end
     return ret
@@ -81,7 +81,7 @@ class Battle::Battler
 
   def pbRaiseStatStageByCause(stat, increment, user, cause, showAnim = true, ignoreContrary = false)
     # Contrary
-    if hasActiveAbility?(:CONTRARY) && !ignoreContrary && !@battle.moldBreaker
+    if hasActiveAbility?(:CONTRARY) && !ignoreContrary && !beingMoldBroken?
       return pbLowerStatStageByCause(stat, increment, user, cause, showAnim, true)
     end
     # Perform the stat stage change
@@ -116,7 +116,7 @@ class Battle::Battler
   alias paldea_pbRaiseStatStageByCause pbRaiseStatStageByCause
   def pbRaiseStatStageByCause(*args)
     ret = paldea_pbRaiseStatStageByCause(*args)
-    if ret && !@mirrorHerbUsed && !(hasActiveAbility?(:CONTRARY) && !args[5] && !@battle.moldBreaker)
+    if ret && !@mirrorHerbUsed && !(hasActiveAbility?(:CONTRARY) && !args[5] && !beingMoldBroken?)
       addSideStatUps(args[0], args[1]) 
     end
     return ret
@@ -165,7 +165,7 @@ class Battle::Battler
       end
     end
     
-    if !@battle.moldBreaker
+    if !beingMoldBroken?
       # Contrary
       if hasActiveAbility?(:CONTRARY) && !ignoreContrary
         return pbCanRaiseStatStage?(stat, user, move, showFailMsg, true)
@@ -179,36 +179,39 @@ class Battle::Battler
     if !user || user.index != @index   # Not self-inflicted
       if @effects[PBEffects::Substitute] > 0 &&
          (ignoreMirrorArmor || !(move && move.ignoresSubstitute?(user)))
-        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis(true))) if showFailMsg
+        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis)) if showFailMsg
         return false
       end
       if pbOwnSide.effects[PBEffects::Mist] > 0 &&
          !(user && user.hasActiveAbility?(:INFILTRATOR))
-        @battle.pbDisplay(_INTL("¡Los efectos de la Neblina han protegido a {1}!", pbThis(true))) if showFailMsg
+        @battle.pbDisplay(_INTL("¡Los efectos de la Neblina han protegido a {1}!", pbThis)) if showFailMsg
         return false
       end
       if abilityActive?
-        return false if !@battle.moldBreaker && Battle::AbilityEffects.triggerStatLossImmunity(
+        return false if !beingMoldBroken? && Battle::AbilityEffects.triggerStatLossImmunity(
           self.ability, self, stat, @battle, showFailMsg
         )
         return false if Battle::AbilityEffects.triggerStatLossImmunityNonIgnorable(
           self.ability, self, stat, @battle, showFailMsg
         )
       end
-      if !@battle.moldBreaker
-        allAllies.each do |b|
-          next if !b.abilityActive?
-          return false if Battle::AbilityEffects.triggerStatLossImmunityFromAlly(
-            b.ability, b, self, stat, @battle, showFailMsg
-          )
-        end
+      allAllies.each do |b|
+        next if !b.abilityActive? || b.beingMoldBroken?
+        return false if Battle::AbilityEffects.triggerStatLossImmunityFromAlly(
+          b.ability, b, self, stat, @battle, showFailMsg
+        )
       end
+    end
+    if user && user.index != @index   # Only protects against moves/abilities of non-self
+      return false if itemActive? && Battle::ItemEffects.triggerStatLossImmunity(
+        self.item, self, stat, @battle, showFailMsg
+      )
     end
     # Check the stat stage
     if statStageAtMin?(stat)
       if showFailMsg
         @battle.pbDisplay(_INTL("¡{2} de {1} no puede bajar más!",
-                                pbThis(true), GameData::Stat.get(stat).name))
+                                pbThis, GameData::Stat.get(stat).name))
       end
       return false
     end
@@ -216,7 +219,7 @@ class Battle::Battler
   end
 
   def pbLowerStatStageBasic(stat, increment, ignoreContrary = false)
-    if !@battle.moldBreaker
+    if !beingMoldBroken?
       # Contrary
       if hasActiveAbility?(:CONTRARY) && !ignoreContrary
         return pbRaiseStatStageBasic(stat, increment, true)
@@ -239,7 +242,7 @@ class Battle::Battler
 
   def pbLowerStatStage(stat, increment, user, showAnim = true, ignoreContrary = false,
                        mirrorArmorSplash = 0, ignoreMirrorArmor = false)
-    if !@battle.moldBreaker
+    if !beingMoldBroken?
       # Contrary
       if hasActiveAbility?(:CONTRARY) && !ignoreContrary
         return pbRaiseStatStage(stat, increment, user, showAnim, true)
@@ -250,7 +253,7 @@ class Battle::Battler
         if mirrorArmorSplash < 2
           @battle.pbShowAbilitySplash(self)
           if !Battle::Scene::USE_ABILITY_SPLASH
-            @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis(true), abilityName))
+            @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis, abilityName))
           end
         end
         ret = false
@@ -267,9 +270,9 @@ class Battle::Battler
     # Stat down animation and message
     @battle.pbCommonAnimation("StatDown", self) if showAnim
     arrStatTexts = [
-      _INTL("¡{2} de {1} ha disminuido!", pbThis(true), GameData::Stat.get(stat).name),
-      _INTL("¡{2} de {1} ha disminuido mucho!", pbThis(true), GameData::Stat.get(stat).name),
-      _INTL("¡{2} de {1} ha disminuido muchísimo!", pbThis(true), GameData::Stat.get(stat).name)
+      _INTL("¡{2} de {1} ha disminuido!", pbThis, GameData::Stat.get(stat).name),
+      _INTL("¡{2} de {1} ha disminuido mucho!", pbThis, GameData::Stat.get(stat).name),
+      _INTL("¡{2} de {1} ha disminuido muchísimo!", pbThis, GameData::Stat.get(stat).name)
     ]
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
     # Trigger abilities upon stat loss
@@ -281,7 +284,7 @@ class Battle::Battler
 
   def pbLowerStatStageByCause(stat, increment, user, cause, showAnim = true,
                               ignoreContrary = false, ignoreMirrorArmor = false)
-    if !@battle.moldBreaker
+    if !beingMoldBroken?
       # Contrary
       if hasActiveAbility?(:CONTRARY) && !ignoreContrary
         return pbRaiseStatStageByCause(stat, increment, user, cause, showAnim, true)
@@ -291,7 +294,7 @@ class Battle::Battler
          user && user.index != @index && !statStageAtMin?(stat)
         @battle.pbShowAbilitySplash(self)
         if !Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis(true), abilityName))
+          @battle.pbDisplay(_INTL("¡Se ha activado {2} de {1}!", pbThis, abilityName))
         end
         ret = false
         if user.pbCanLowerStatStage?(stat, self, nil, true, ignoreContrary, true)
@@ -308,15 +311,15 @@ class Battle::Battler
     @battle.pbCommonAnimation("StatDown", self) if showAnim
     if user.index == @index
       arrStatTexts = [
-        _INTL("¡{2} de {1} ha disminuido su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido mucho su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido muchísimo su {3}!", pbThis(true), cause, GameData::Stat.get(stat).name)
+        _INTL("¡{2} de {1} ha disminuido su {3}!", pbThis, cause, GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido mucho su {3}!", pbThis, cause, GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido muchísimo su {3}!", pbThis, cause, GameData::Stat.get(stat).name)
       ]
     else
       arrStatTexts = [
-        _INTL("¡{2} de {1} ha disminuido {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido mucho {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name),
-        _INTL("¡{2} de {1} ha disminuido muchísimo {4} de {3}!", user.pbThis(true), cause, pbThis(true), GameData::Stat.get(stat).name)
+        _INTL("¡{2} de {1} ha disminuido {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido mucho {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name),
+        _INTL("¡{2} de {1} ha disminuido muchísimo {4} de {3}!", user.pbThis, cause, pbThis(true), GameData::Stat.get(stat).name)
       ]
     end
     @battle.pbDisplay(arrStatTexts[[increment - 1, 2].min])
@@ -358,26 +361,33 @@ class Battle::Battler
     # NOTE: Substitute intentionally blocks Intimidate even if self has Contrary.
     if @effects[PBEffects::Substitute] > 0
       if Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis(true)))
+        @battle.pbDisplay(_INTL("¡El sustituto recibe el daño en lugar de {1}!", pbThis))
       else
         @battle.pbDisplay(_INTL("¡El sustituto de {1} le protegió de {3} de {2}!",
-                                pbThis(true), user.pbThis(true), user.abilityName))
+                                pbThis, user.pbThis(true), user.abilityName))
       end
       return false
     end
     if Settings::MECHANICS_GENERATION >= 8 && hasActiveAbility?([:OBLIVIOUS, :OWNTEMPO, :INNERFOCUS, :SCRAPPY])
       @battle.pbShowAbilitySplash(self)
       if Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("¡{2} de {1} no puede bajar más!", pbThis(true), GameData::Stat.get(:ATTACK).name))
+        @battle.pbDisplay(_INTL("¡{2} de {1} no puede bajar más!", pbThis, GameData::Stat.get(:ATTACK).name))
       else
-        @battle.pbDisplay(_INTL("¡{2} de {1} evitó que bajara su {3}!", pbThis(true), abilityName,
+        @battle.pbDisplay(_INTL("¡{2} de {1} evitó que bajara su {3}!", pbThis, abilityName,
                                 GameData::Stat.get(:ATTACK).name))
       end
       @battle.pbHideAbilitySplash(self)
       return false
     end
     if Battle::Scene::USE_ABILITY_SPLASH
-      return pbLowerStatStageByAbility(:ATTACK, 1, user, false)
+      if hasActiveAbility?(:GUARDDOG)
+        @battle.pbShowAbilitySplash(self)
+        ret = pbRaiseStatStageByAbility(:ATTACK, 1, user, false)
+        @battle.pbHideAbilitySplash(self)
+        return ret
+      else
+        return pbLowerStatStageByAbility(:ATTACK, 1, user, false)
+      end
     end
     # NOTE: These checks exist to ensure appropriate messages are shown if
     #       Intimidate is blocked somehow (i.e. the messages should mention the
@@ -385,24 +395,34 @@ class Battle::Battler
     if !hasActiveAbility?(:CONTRARY)
       if pbOwnSide.effects[PBEffects::Mist] > 0
         @battle.pbDisplay(_INTL("¡Los efectos de Neblina han protegido a {1} de {2} de {3}!",
-                                pbThis(true), user.pbThis(true), user.abilityName))
+                                pbThis, user.pbThis(true), user.abilityName))
         return false
       end
       if abilityActive? &&
          (Battle::AbilityEffects.triggerStatLossImmunity(self.ability, self, :ATTACK, @battle, false) ||
           Battle::AbilityEffects.triggerStatLossImmunityNonIgnorable(self.ability, self, :ATTACK, @battle, false))
         @battle.pbDisplay(_INTL("¡Los efectos de {2} han protegido a {1} de {4} de {3}",
-                                pbThis(true), abilityName, user.pbThis(true), user.abilityName))
+                                pbThis, abilityName, user.pbThis(true), user.abilityName))
         return false
       end
       allAllies.each do |b|
         next if !b.abilityActive?
         if Battle::AbilityEffects.triggerStatLossImmunityFromAlly(b.ability, b, self, :ATTACK, @battle, false)
           @battle.pbDisplay(_INTL("¡Los efectos de {3} de {2} han protegido a {1} de {5} de {4}",
-                                  pbThis(true), user.pbThis(true), user.abilityName, b.pbThis(true), b.abilityName))
+                                  pbThis, user.pbThis(true), user.abilityName, b.pbThis(true), b.abilityName))
           return false
         end
       end
+      if itemActive? &&
+        Battle::ItemEffects.triggerStatLossImmunity(self.item, self, :ATTACK, @battle, false)
+       @battle.pbDisplay(_INTL("{1}'s {2} prevented {3}'s {4} from working!",
+                               pbThis, itemName, user.pbThis(true), user.abilityName))
+       return false
+      end
+    end
+    if hasActiveAbility?(:GUARDDOG)
+     return false if !pbCanRaiseStatStage?(:ATTACK, user)
+     return pbRaiseStatStageByCause(:ATTACK, 1, user, user.abilityName)
     end
     return false if !pbCanLowerStatStage?(:ATTACK, user)
     return pbLowerStatStageByCause(:ATTACK, 1, user, user.abilityName)
@@ -477,4 +497,3 @@ class Battle::Battler
     statUps[stat] += increment
   end
 end
-

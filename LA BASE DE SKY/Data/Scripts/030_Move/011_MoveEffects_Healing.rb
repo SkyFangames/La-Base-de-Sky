@@ -129,7 +129,7 @@ class Battle::Move::HealUserByTargetAttackLowerTargetAttack1 < Battle::Move
     #       has Contrary and is at +6" check too for symmetry. This move still
     #       works even if the stat stage cannot be changed due to an ability or
     #       other effect.
-    if !@battle.moldBreaker && target.hasActiveAbility?(:CONTRARY)
+    if !target.beingMoldBroken? && target.hasActiveAbility?(:CONTRARY)
       if target.statStageAtMax?(@statDown[0])
         @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
         return true
@@ -195,6 +195,19 @@ class Battle::Move::HealUserByHalfOfDamageDoneIfTargetAsleep < Battle::Move
     end
     return false
   end
+
+  def pbEffectAgainstTarget(user, target)
+    return if target.damageState.hpLost <= 0
+    hpGain = (target.damageState.hpLost / 2.0).round
+    user.pbRecoverHPFromDrain(hpGain, target)
+  end
+end
+
+#===============================================================================
+# User gains half the HP it inflicts as damage. Burns the target. (Matcha Gotcha)
+#===============================================================================
+class Battle::Move::HealUserByHalfOfDamageDoneBurnTarget < Battle::Move::BurnTarget
+  def healingMove?; return Settings::MECHANICS_GENERATION >= 6; end
 
   def pbEffectAgainstTarget(user, target)
     return if target.damageState.hpLost <= 0
@@ -475,19 +488,17 @@ class Battle::Move::UserLosesHalfOfTotalHPExplosive < Battle::Move
   def worksWithNoTargets?; return true; end
 
   def pbMoveFailed?(user, targets)
-    if !@battle.moldBreaker
-      bearer = @battle.pbCheckGlobalAbility(:DAMP)
-      if bearer
-        @battle.pbShowAbilitySplash(bearer)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
-        else
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
-                                  user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
-        end
-        @battle.pbHideAbilitySplash(bearer)
-        return true
+    bearer = @battle.pbCheckGlobalAbility(:DAMP, true)
+    if bearer
+      @battle.pbShowAbilitySplash(bearer)
+      if Battle::Scene::USE_ABILITY_SPLASH
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
+      else
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
+                                user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
       end
+      @battle.pbHideAbilitySplash(bearer)
+      return true
     end
     return false
   end
@@ -507,19 +518,17 @@ class Battle::Move::UserFaintsExplosive < Battle::Move
   def pbNumHits(user, targets); return 1;    end
 
   def pbMoveFailed?(user, targets)
-    if !@battle.moldBreaker
-      bearer = @battle.pbCheckGlobalAbility(:DAMP)
-      if bearer
-        @battle.pbShowAbilitySplash(bearer)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
-        else
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
-                                  user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
-        end
-        @battle.pbHideAbilitySplash(bearer)
-        return true
+    bearer = @battle.pbCheckGlobalAbility(:DAMP, true)
+    if bearer
+      @battle.pbShowAbilitySplash(bearer)
+      if Battle::Scene::USE_ABILITY_SPLASH
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
+      else
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
+                                user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
       end
+      @battle.pbHideAbilitySplash(bearer)
+      return true
     end
     return false
   end
@@ -700,21 +709,6 @@ class Battle::Move::SetAttackerMovePPTo0IfUserFaints < Battle::Move
   end
 end
 
-#===============================================================================
-# Matcha Gatcha
-#===============================================================================
-# User gains half the HP it inflicts as damage. It may also burn the target.
-#-------------------------------------------------------------------------------
-class Battle::Move::HealUserByHalfOfDamageDoneBurnTarget < Battle::Move::BurnTarget
-  def healingMove?; return Settings::MECHANICS_GENERATION >= 6; end
-
-  def pbEffectAgainstTarget(user, target)
-    return if target.damageState.hpLost <= 0
-    hpGain = (target.damageState.hpLost / 2.0).round
-    user.pbRecoverHPFromDrain(hpGain, target)
-    super
-  end
-end
 
 #===============================================================================
 # Psychic Noise
@@ -730,4 +724,3 @@ class Battle::Move::DisableTargetHealingMoves2Turns < Battle::Move
     target.pbItemStatusCureCheck
   end
 end
-

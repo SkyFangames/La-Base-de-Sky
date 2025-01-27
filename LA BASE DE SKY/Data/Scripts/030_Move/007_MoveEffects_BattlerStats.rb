@@ -112,6 +112,33 @@ class Battle::Move::MaxUserAttackLoseHalfOfTotalHP < Battle::Move
 end
 
 #===============================================================================
+# Reduces the user's HP by half of max, and raises its Attack, Special Attack
+# and Speed by 2 stages each. (Fillet Away)
+#===============================================================================
+class Battle::Move::RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP < Battle::Move::MultiStatUpMove
+  def initialize(battle, move)
+    super
+    @statUp = [:ATTACK, 2, :SPECIAL_ATTACK, 2, :SPEED, 2]
+  end
+
+  def pbMoveFailed?(user, targets)
+    hpLoss = [user.totalhp / 2, 1].max
+    if user.hp <= hpLoss
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return super
+  end
+
+  def pbEffectGeneral(user)
+    super
+    hpLoss = [user.totalhp / 2, 1].max
+    user.pbReduceHP(hpLoss, false, false)
+    user.pbItemHPHealCheck
+  end
+end
+
+#===============================================================================
 # Increases the user's Defense by 1 stage. (Harden, Steel Wing, Withdraw)
 #===============================================================================
 class Battle::Move::RaiseUserDefense1 < Battle::Move::StatUpMove
@@ -388,6 +415,16 @@ class Battle::Move::RaiseUserAtkDef1 < Battle::Move::MultiStatUpMove
 end
 
 #===============================================================================
+# Increases the user's Attack, Defense and Speed by 1 stage each. (Victory Dance)
+#===============================================================================
+class Battle::Move::RaiseUserAtkDefSpd1 < Battle::Move::MultiStatUpMove
+  def initialize(battle, move)
+    super
+    @statUp = [:ATTACK, 1, :DEFENSE, 1, :SPEED, 1]
+  end
+end
+
+#===============================================================================
 # Increases the user's Attack, Defense and accuracy by 1 stage each. (Coil)
 #===============================================================================
 class Battle::Move::RaiseUserAtkDefAcc1 < Battle::Move::MultiStatUpMove
@@ -443,16 +480,14 @@ class Battle::Move::LowerUserDefSpDef1RaiseUserAtkSpAtkSpd2 < Battle::Move
   def pbMoveFailed?(user, targets)
     failed = true
     (@statUp.length / 2).times do |i|
-      if user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-        failed = false
-        break
-      end
+      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      failed = false
+      break
     end
     (@statDown.length / 2).times do |i|
-      if user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
-        failed = false
-        break
-      end
+      next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
+      failed = false
+      break
     end
     if failed
       @battle.pbDisplay(_INTL("Las estadísticas de {1} no pueden alterarse más!", user.pbThis))
@@ -486,6 +521,93 @@ class Battle::Move::RaiseUserAtkSpd1 < Battle::Move::MultiStatUpMove
   def initialize(battle, move)
     super
     @statUp = [:ATTACK, 1, :SPEED, 1]
+  end
+end
+
+#===============================================================================
+# Tidy Up
+#===============================================================================
+# Increases the user's Attack and Speed by 1 stage each.
+# Clears all entry hazards and substitutes on both sides.
+#-------------------------------------------------------------------------------
+class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::Move::RaiseUserAtkSpd1
+  def pbMoveFailed?(user, targets)
+    return false if damagingMove?
+    failed = true
+    (@statUp.length / 2).times do |i|
+      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      failed = false
+      break
+    end
+    @battle.allBattlers.each do |b|
+      failed = false if b.effects[PBEffects::Substitute] > 0
+    end
+    failed = false if user.pbOwnSide.effects[PBEffects::StealthRock] ||
+                      user.pbOwnSide.effects[PBEffects::Spikes] > 0 ||
+                      user.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0 ||
+                      user.pbOwnSide.effects[PBEffects::StickyWeb]
+    if failed
+      @battle.pbDisplay(_INTL("¡Pero falló!", user.pbThis))
+      return true
+    end
+    return false
+  end
+
+  def pbEffectGeneral(user)
+    something_tidied = false
+    @battle.allBattlers.each do |b|
+      next if b.effects[PBEffects::Substitute] == 0
+      b.effects[PBEffects::Substitute] = 0
+      something_tidied = true
+      @battle.pbDisplay(_INTL("{1}'s substitute faded!", b.pbThis))
+    end
+    if user.pbOwnSide.effects[PBEffects::StealthRock]
+      user.pbOwnSide.effects[PBEffects::StealthRock] = false
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las piedras puntiagudas han desaparecido del bando de {1}!", user.pbTeam(true)))
+    end
+    if user.pbOpposingSide.effects[PBEffects::StealthRock]
+      user.pbOpposingSide.effects[PBEffects::StealthRock] = false
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las piedras puntiagudas han desaparecido del bando de {1}!", user.pbOpposingTeam(true)))
+    end
+    if defined?(PBEffects::Steelsurge) && side.effects[PBEffects::Steelsurge]
+      side.effects[PBEffects::Steelsurge] = false
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las púas de acero han desaparecido del bando de {1}!", team))
+    end
+    if user.pbOwnSide.effects[PBEffects::Spikes] > 0
+      user.pbOwnSide.effects[PBEffects::Spikes] = 0
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las púas puntiagudas han desaparecido del bando de {1}!", user.pbTeam(true)))
+    end
+    if user.pbOpposingSide.effects[PBEffects::Spikes] > 0
+      user.pbOpposingSide.effects[PBEffects::Spikes] = 0
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las púas puntiagudas han desaparecido del bando de {1}!", user.pbpbOpposingSideTeam(true)))
+    end
+    if user.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0
+      user.pbOwnSide.effects[PBEffects::ToxicSpikes] = 0
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las púas venenosas han desaparecido del bando de {1}!", user.pbTeam(true)))
+    end
+    if user.pbOpposingSide.effects[PBEffects::ToxicSpikes] > 0
+      user.pbOpposingSide.effects[PBEffects::ToxicSpikes] = 0
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡Las púas venenosas han desaparecido del bando de {1}!", user.pbpbOpposingSideTeam(true)))
+    end
+    if user.pbOwnSide.effects[PBEffects::StickyWeb]
+      user.pbOwnSide.effects[PBEffects::StickyWeb] = false
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡La red viscosa ha desaparecido del bando de {1}!", user.pbTeam(true)))
+    end
+    if user.pbOpposingSide.effects[PBEffects::StickyWeb]
+      user.pbOpposingSide.effects[PBEffects::StickyWeb] = false
+      something_tidied = true
+      @battle.pbDisplay(_INTL("¡La red viscosa ha desaparecido del bando de {1}!", user.pbpbOpposingSideTeam(true)))
+    end
+    @battle.pbDisplay(_INTL("¡Limpieza completada!")) if something_tidied
+    super
   end
 end
 
@@ -527,6 +649,37 @@ class Battle::Move::RaiseUserSpAtkSpDef1 < Battle::Move::MultiStatUpMove
   def initialize(battle, move)
     super
     @statUp = [:SPECIAL_ATTACK, 1, :SPECIAL_DEFENSE, 1]
+  end
+end
+
+#===============================================================================
+# Increases the user's Sp. Attack and Sp. Defense by 1 stage each. Cures the
+# user's status condition. (Take Heart)
+#===============================================================================
+class Battle::Move::RaiseUserSpAtkSpDef1CureStatus < Battle::Move::MultiStatUpMove
+  def initialize(battle, move)
+    super
+    @statUp = [:SPECIAL_ATTACK, 1, :SPECIAL_DEFENSE, 1]
+  end
+
+  def pbMoveFailed?(user, targets)
+    failed = true
+    (@statUp.length / 2).times do |i|
+      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      failed = false
+      break
+    end
+    failed = false if user.pbHasAnyStatus?
+    if failed
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
+  end
+
+  def pbEffectGeneral(user)
+    super
+    user.pbCureStatus
   end
 end
 
@@ -673,6 +826,20 @@ class Battle::Move::LowerUserSpAtk1 < Battle::Move::StatDownMove
 end
 
 #===============================================================================
+# Make it Rain
+#===============================================================================
+# Lowers the user's Sp.Atk by 1 stage. Also scatters coins to be picked up.
+#-------------------------------------------------------------------------------
+class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
+  def pbEffectGeneral(user)
+    if user.pbOwnedByPlayer?
+      @battle.field.effects[PBEffects::PayDay] += 5 * user.level
+    end
+    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!"))
+  end
+end
+
+#===============================================================================
 # Decreases the user's Special Attack by 2 stages.
 #===============================================================================
 class Battle::Move::LowerUserSpAtk2 < Battle::Move::StatDownMove
@@ -734,7 +901,7 @@ end
 
 #===============================================================================
 # Decreases the user's Defense and Special Defense by 1 stage each.
-# (Close Combat, Dragon Ascent)
+# (Armor Cannon, Close Combat, Dragon Ascent, Headlong Rush)
 #===============================================================================
 class Battle::Move::LowerUserDefSpDef1 < Battle::Move::StatDownMove
   def initialize(battle, move)
@@ -788,6 +955,62 @@ class Battle::Move::RaiseTargetAttack1 < Battle::Move
   def pbAdditionalEffect(user, target)
     return if !target.pbCanRaiseStatStage?(:ATTACK, user, self)
     target.pbRaiseStatStage(:ATTACK, 1, user)
+  end
+end
+
+#===============================================================================
+# Increases the target's Attack by 2 stages. Decreases the target's Defense by 2
+# stages. (Spicy Extract)
+#===============================================================================
+class Battle::Move::RaiseTargetAtk2LowerTargetDef2 < Battle::Move
+  attr_reader :statUp, :statDown
+
+  def canMagicCoat?; return true; end
+
+  def initialize(battle, move)
+    super
+    @statUp   = [:ATTACK, 2]
+    @statDown = [:DEFENSE, 2]
+  end
+
+  def pbMoveFailed?(user, targets)
+    failed = true
+    targets.each do |b|
+      (@statUp.length / 2).times do |i|
+        next if !target.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+        failed = false
+        break
+      end
+      break if !failed
+      (@statDown.length / 2).times do |i|
+        next if !target.pbCanLowerStatStage?(@statDown[i * 2], user, self)
+        failed = false
+        break
+      end
+      break if !failed
+    end
+    if failed
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
+  end
+
+  def pbEffectAgainstTarget(user, target)
+    showAnim = true
+    (@statDown.length / 2).times do |i|
+      next if !target.pbCanLowerStatStage?(@statDown[i * 2], user, self)
+      if target.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
+        showAnim = false
+      end
+    end
+    showAnim = true
+    (@statUp.length / 2).times do |i|
+      next if !target.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      if target.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
+        showAnim = false
+      end
+    end
   end
 end
 
@@ -970,13 +1193,34 @@ class Battle::Move::LowerTargetDefense1 < Battle::Move::TargetStatDownMove
 end
 
 #===============================================================================
-# Decreases the target's Defense by 1 stage. Power is mutliplied by 1.5 if
+# Decreases the target's Defense by 1 stage. Power is multiplied by 1.5 if
 # Gravity is in effect. (Grav Apple)
 #===============================================================================
 class Battle::Move::LowerTargetDefense1PowersUpInGravity < Battle::Move::LowerTargetDefense1
   def pbBaseDamage(baseDmg, user, target)
     baseDmg = baseDmg * 3 / 2 if @battle.field.effects[PBEffects::Gravity] > 0
     return baseDmg
+  end
+end
+
+#===============================================================================
+# 50% chance to decreases the target's Defense by 1 stage. 30% chance to make
+# the target flinch. (Triple Arrows)
+#===============================================================================
+class Battle::Move::LowerTargetDefense1FlinchTarget < Battle::Move::TargetStatDownMove
+  def flinchingMove?; return true; end
+
+  def initialize(battle, move)
+    super
+    @statDown = [:DEFENSE, 1]
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if target.damageState.substitute
+    stat_chance = pbAdditionalEffectChance(user, target, 50)
+    super if stat_chance > 0 && @battle.pbRandom(100) < stat_chance
+    flinch_chance = pbAdditionalEffectChance(user, target, 30)
+    target.pbFlinch(user) if flinch_chance > 0 && @battle.pbRandom(100) < flinch_chance
   end
 end
 
@@ -1054,7 +1298,7 @@ class Battle::Move::LowerTargetSpAtk2IfCanAttract < Battle::Move::TargetStatDown
 
   def pbAdditionalEffect(user, target)
     return if user.gender == 2 || target.gender == 2 || user.gender == target.gender
-    return if target.hasActiveAbility?(:OBLIVIOUS) && !@battle.moldBreaker
+    return if target.hasActiveAbility?(:OBLIVIOUS) && !target.beingMoldBroken?
     super
   end
 end
@@ -1106,6 +1350,17 @@ class Battle::Move::LowerTargetSpeed1 < Battle::Move::TargetStatDownMove
   def initialize(battle, move)
     super
     @statDown = [:SPEED, 1]
+  end
+end
+
+#===============================================================================
+# Decreases the target's Speed by 1 stage. Accuracy perfect in rain.
+# (Bleakwind Storm)
+#===============================================================================
+class Battle::Move::LowerTargetSpeed1AlwaysHitsInRain < Battle::Move::LowerTargetSpeed1
+  def pbBaseAccuracy(user, target)
+    return 0 if [:Rain, :HeavyRain].include?(target.effectiveWeather)
+    return super
   end
 end
 
@@ -1937,16 +2192,8 @@ class Battle::Move::StartUserSideDoubleSpeed < Battle::Move
   def pbEffectGeneral(user)
     user.pbOwnSide.effects[PBEffects::Tailwind] = 4
     @battle.pbDisplay(_INTL("¡Viento Afín sopla a favor de {1}!", user.pbTeam(true)))
-    @battle.allSameSideBattlers.each do |b| 
-      next if !b || b.fainted?
-      if b.hasActiveAbility?(:WINDRIDER) && b.pbCanRaiseStatStage?(:ATTACK, b, self)
-        b.pbRaiseStatStageByAbility(:ATTACK, 1, b)
-      elsif b.hasActiveAbility?(:WINDPOWER) && b.effects[PBEffects::Charge] == 0
-        @battle.pbShowAbilitySplash(b)
-        b.effects[PBEffects::Charge] = 2
-        @battle.pbDisplay(_INTL("¡Al ser alcanzado por viento afín, {1}, cargó energía!", b.pbThis(true)))
-        @battle.pbHideAbilitySplash(b)
-      end
+    @battle.allSameSideBattlers(user).each do |b|
+      pbRaiseStatStageByAbility(:ATTACK, 1, b) if b.hasActiveAbility?(:WINDRIDER)
     end
   end
 end
@@ -1970,63 +2217,6 @@ class Battle::Move::StartSwapAllBattlersBaseDefensiveStats < Battle::Move
     return if @battle.field.effects[PBEffects::WonderRoom] > 0   # No animation
     super
   end
-end
-
-#===============================================================================
-# Triple Arrows
-#===============================================================================
-# Lowers the target's Defense by 1 stage. May cause flinching.
-#-------------------------------------------------------------------------------
-class Battle::Move::LowerTargetDefense1FlinchTarget < Battle::Move
-  attr_reader :statDown
-
-  def initialize(battle, move)
-    super
-    @statDown = [:DEFENSE, 1]
-  end
-  
-  def flinchingMove?; return true; end
-
-  def pbAdditionalEffect(user, target)
-    return if target.damageState.substitute
-    chance = pbAdditionalEffectChance(user, target, 50)
-    if @battle.pbRandom(100) < chance
-      if target.pbCanLowerStatStage?(:DEFENSE, user, self) && 
-        target.pbLowerStatStage(:DEFENSE, 1, user)
-      end
-    end
-    chance = pbAdditionalEffectChance(user, target, 30)
-    return if chance == 0
-    target.pbFlinch(user) if @battle.pbRandom(100) < chance
-  end
-end
-
-#===============================================================================
-# Victory Dance
-#===============================================================================
-# Increases the user's Attack, Defense and Speed by 1 stage each.
-#-------------------------------------------------------------------------------
-class Battle::Move::RaiseUserAtkDefSpd1 < Battle::Move::MultiStatUpMove
-  def initialize(battle, move)
-    super
-    @statUp = [:ATTACK, 1, :DEFENSE, 1, :SPEED, 1]
-  end
-end
-
-#===============================================================================
-# Take Heart
-#===============================================================================
-# Increases the user's Sp. Atk and Sp. Def by 1 stage each and cures its status.
-#-------------------------------------------------------------------------------
-class Battle::Move::RaiseUserSpAtkSpDef1CureStatus < Battle::Move::MultiStatUpMove
-  def initialize(battle,move)
-    super
-    @statUp = [:SPECIAL_ATTACK, 1, :SPECIAL_DEFENSE, 1]
-  end
-  
-  def pbEffectGeneral(user)
-    user.pbCureStatus if user.pbHasAnyStatus?
-  end 
 end
 
 #===============================================================================
@@ -2055,20 +2245,6 @@ class Battle::Move::UserVulnerableUntilNextAction < Battle::Move
 end
 
 #===============================================================================
-# Make it Rain
-#===============================================================================
-# Lowers the user's Sp.Atk by 1 stage. Also scatters coins to be picked up.
-#-------------------------------------------------------------------------------
-class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
-  def pbEffectGeneral(user)
-    if user.pbOwnedByPlayer?
-      @battle.field.effects[PBEffects::PayDay] += 5 * user.level
-    end
-    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!"))
-  end
-end
-
-#===============================================================================
 # Order Up
 #===============================================================================
 # Increase the user's stat by 1 stage depending on the commanding Tatsugiri.
@@ -2090,169 +2266,6 @@ class Battle::Move::RaiseUserStat1Commander < Battle::Move
     super
   end
 end
-
-
-#===============================================================================
-# Spicy Extract
-#===============================================================================
-# Increases the target's Attack by 2 stages.
-# Decreases the target's Defense by 2 stages.
-#-------------------------------------------------------------------------------
-class Battle::Move::RaiseTargetAtkLowerTargetDef2 < Battle::Move
-  def canMagicCoat?; return true; end
-
-  def initialize(battle, move)
-    super
-    @statUp   = [:ATTACK, 2]
-    @statDown = [:DEFENSE, 2]
-  end
-
-  def pbFailsAgainstTarget?(user, target, show_message)
-    return false if damagingMove?
-    failed = !target.pbCanRaiseStatStage?(@statUp[0], user, self) && 
-             !target.pbCanLowerStatStage?(@statDown[0], user, self)
-    if failed
-      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden cambiar más!", target.pbThis)) if show_message
-      return true
-    end
-    return false
-  end
-
-  def pbEffectAgainstTarget(user, target)
-    return if damagingMove?
-    if target.pbCanRaiseStatStage?(@statUp[0], user, self)
-      target.pbRaiseStatStage(@statUp[0], @statUp[1], user)
-    end
-    if target.pbCanLowerStatStage?(@statDown[0], user, self)
-      target.pbLowerStatStage(@statDown[0], @statDown[1], user)
-    end
-  end
-end
-#===============================================================================
-# Fillet Away
-#===============================================================================
-# Reduces the user's HP by half of max, and increases the user's Attack, Sp.Atk,
-# and Speed by 2 stages.
-#-------------------------------------------------------------------------------
-class Battle::Move::RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP < Battle::Move
-  def canSnatch?; return true; end
-
-  def pbMoveFailed?(user, targets)
-    hpLoss = [user.totalhp / 2, 1].max
-    if user.hp <= hpLoss
-      @battle.pbDisplay(_INTL("¡Pero falló!"))
-      return true
-    end
-    failed = true
-    [:ATTACK, :SPECIAL_ATTACK, :SPEED].each do |stat|
-      next if !user.pbCanRaiseStatStage?(stat, user, self)
-      failed = false
-      break
-    end
-    if failed
-      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden cambiar más!", user.pbThis))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    hpLoss = [user.totalhp / 2, 1].max
-    user.pbReduceHP(hpLoss, false, false)
-    showAnim = true
-    [:ATTACK, :SPECIAL_ATTACK, :SPEED].each do |stat|
-      next if !user.pbCanRaiseStatStage?(stat, user, self)
-      if user.pbRaiseStatStage(stat, 2, user, showAnim)
-        showAnim = false
-      end
-    end
-  end
-end
-
-#===============================================================================
-# Tidy Up
-#===============================================================================
-# Increases the user's Attack and Speed by 1 stage each.
-# Clears all entry hazards and substitutes on both sides.
-#-------------------------------------------------------------------------------
-class Battle::Move::RaiseUserAtkSpd1RemoveHazardsSubstitutes < Battle::Move::MultiStatUpMove
-  def initialize(battle, move)
-    super
-    @statUp = [:ATTACK, 1, :SPEED, 1]
-  end
-  
-  def pbMoveFailed?(user, targets)
-    failed = true
-    2.times do |i|
-      side = (i == 0) ? user.pbOwnSide : user.pbOpposingSide
-      next unless side.effects[PBEffects::Spikes] > 0 ||
-                  side.effects[PBEffects::ToxicSpikes] > 0 ||
-                  side.effects[PBEffects::StealthRock] ||
-                  side.effects[PBEffects::StickyWeb] ||
-                  defined?(PBEffects::Steelsurge) && side.effects[PBEffects::Steelsurge]
-      failed = false
-      break
-    end
-    @battle.allBattlers.each do |b|
-      next if b.effects[PBEffects::Substitute] == 0
-        failed = false
-      break
-    end
-    failed2 = true
-    (@statUp.length / 2).times do |i|
-      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      failed2 = false
-      break
-    end
-    if failed && failed2
-      @battle.pbDisplay(_INTL("¡Pero falló!", user.pbThis))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    showMsg = false
-    2.times do |i|
-      side = (i == 0) ? user.pbOwnSide : user.pbOpposingSide
-      team = (i == 0) ? user.pbTeam(true) : user.pbOpposingTeam(true)
-      if side.effects[PBEffects::StealthRock]
-        side.effects[PBEffects::StealthRock] = false
-        @battle.pbDisplay(_INTL("¡Las piedras puntiagudas han desaparecido del bando de {1}!", team))
-        showMsg = true
-      end
-      if defined?(PBEffects::Steelsurge) && side.effects[PBEffects::Steelsurge]
-        side.effects[PBEffects::Steelsurge] = false
-        @battle.pbDisplay(_INTL("¡Las púas de acero han desaparecido del bando de {1}!", team))
-        showMsg = true
-      end
-      if side.effects[PBEffects::Spikes] > 0
-        side.effects[PBEffects::Spikes] = 0
-        @battle.pbDisplay(_INTL("¡Las púas puntiagudas han desaparecido del bando de {1}!", team))
-        showMsg = true
-      end
-      if side.effects[PBEffects::ToxicSpikes] > 0
-        side.effects[PBEffects::ToxicSpikes] = 0
-        @battle.pbDisplay(_INTL("¡Las púas venenosas han desaparecido del bando de {1}!", team))
-        showMsg = true
-      end
-      if side.effects[PBEffects::StickyWeb]
-        side.effects[PBEffects::StickyWeb] = false
-        @battle.pbDisplay(_INTL("¡La red viscosa ha desaparecido del bando de {1}!", team))
-        showMsg = true
-      end
-    end
-    @battle.allBattlers.each do |b|
-      next if b.effects[PBEffects::Substitute] == 0
-      b.effects[PBEffects::Substitute] = 0
-      showMsg = true
-    end
-    @battle.pbDisplay(_INTL("¡Limpieza completada!")) if showMsg
-    super
-  end
-end
-
-
 
 #===============================================================================
 # Syrup Bomb
@@ -2347,5 +2360,3 @@ class Battle::Move::RaiseAlliesCriticalHitRate1DragonTypes2 < Battle::Move
     @battle.pbDisplay(_INTL("¡{1} se está preparando para luchar!", user.pbThis))
   end
 end
-
-

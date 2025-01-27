@@ -284,6 +284,10 @@ class Battle::AI::AIBattler
     return battler.hasMoldBreaker?
   end
 
+  def being_mold_broken?
+    return battler.beingMoldBroken?
+  end
+
   #-----------------------------------------------------------------------------
 
   def item_id; return battler.item_id; end
@@ -523,7 +527,7 @@ class Battle::AI::AIBattler
     when :ASPEARBERRY, :CHERIBERRY, :CHESTOBERRY, :PECHABERRY, :RAWSTBERRY
       # Status cure
       cured_status = {
-        :ASPEAR      => :FROZEN,
+        :ASPEARBERRY => :FROZEN,
         :CHERIBERRY  => :PARALYSIS,
         :CHESTOBERRY => :SLEEP,
         :PECHABERRY  => :POISON,
@@ -615,7 +619,7 @@ class Battle::AI::AIBattler
       ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
     end
     
-   if Effectiveness.ineffective_type?(type, defend_type)
+    if Effectiveness.ineffective_type?(type, defend_type)
       if user&.has_active_ability?(:MINDSEYE) && defend_type == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
@@ -624,4 +628,3 @@ class Battle::AI::AIBattler
     return ret
   end
 end
-

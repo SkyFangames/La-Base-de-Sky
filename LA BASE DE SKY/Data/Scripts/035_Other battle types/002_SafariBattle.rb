@@ -308,7 +308,7 @@ class SafariBattle
     @time          = 0
     @environment   = :None   # e.g. Tall grass, cave, still water
     @weather       = :None
-    @decision      = 0
+    @decision      = Battle::Outcome::UNDECIDED
     @caughtPokemon = []
     @player        = [player]
     @party2        = party2
@@ -317,6 +317,10 @@ class SafariBattle
                       Battle::FakeBattler.new(self, 1)]
     @rules         = {}
     @ballCount     = 0
+  end
+
+  def decided?
+    return Battle::Outcome.decided?(@decision)
   end
 
   def disablePokeBalls=(value); end
@@ -345,7 +349,7 @@ class SafariBattle
   def pbGetOwnerFromBattlerIndex(idxBattler); return pbPlayer; end
 
   def pbSetSeen(battler)
-    return if !battler || !@internalBattle
+    return if !battler
     if battler.is_a?(Battle::Battler)
       pbPlayer.pokedex.register(battler.displaySpecies, battler.displayGender,
                                 battler.displayForm, battler.shiny?)
@@ -355,7 +359,7 @@ class SafariBattle
   end
 
   def pbSetCaught(battler)
-    return if !battler || !@internalBattle
+    return if !battler
     if battler.is_a?(Battle::Battler)
       pbPlayer.pokedex.register_caught(battler.displaySpecies)
     else
@@ -450,7 +454,7 @@ class SafariBattle
             pbThrowPokeBall(1, safariBall, rare, true)
             if @caughtPokemon.length > 0
               pbRecordAndStoreCaughtPokemon
-              @decision = 4
+              @decision = Battle::Outcome::CATCH
             end
           end
         when 1   # Bait
@@ -466,22 +470,22 @@ class SafariBattle
         when 3   # Run
           pbSEPlay("Battle flee")
           pbDisplayPaused(_INTL("¡Escapaste sin problemas!"))
-          @decision = 3
+          @decision = Battle::Outcome::FLEE
         else
           next
         end
         catchFactor  = [[catchFactor, 3].max, 20].min
         escapeFactor = [[escapeFactor, 2].max, 20].min
         # End of round
-        if @decision == 0
+        if !decided?
           if @ballCount <= 0
             pbSEPlay("Safari Zone end")
             pbDisplay(_INTL("Altavoz: ¡No te quedan Safari Ball! ¡Se acabó!"))
-            @decision = 2
+            @decision = Battle::Outcome::LOSE
           elsif pbRandom(100) < 5 * escapeFactor
             pbSEPlay("Battle flee")
             pbDisplay(_INTL("¡{1} huyó!", pkmn.name))
-            @decision = 3
+            @decision = Battle::Outcome::FLEE
           elsif cmd == 1   # Bait
             pbDisplay(_INTL("¡{1} está comiendo!", pkmn.name))
           elsif cmd == 2   # Rock
@@ -493,14 +497,13 @@ class SafariBattle
           weather_data = GameData::BattleWeather.try_get(@weather)
           @scene.pbCommonAnimation(weather_data.animation) if weather_data
         end
-        break if @decision > 0
+        break if decided?
       end
       @scene.pbEndBattle(@decision)
     rescue BattleAbortedException
-      @decision = 0
+      @decision = Battle::Outcome::UNDECIDED
       @scene.pbEndBattle(@decision)
     end
     return @decision
   end
 end
-

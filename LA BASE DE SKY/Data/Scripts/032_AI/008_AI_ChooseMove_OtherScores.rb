@@ -89,7 +89,7 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:target_can_Magic_Coat_o
     if move.statusMove? && move.move.canMagicCoat? && target.opposes?(user) &&
        (target.faster_than?(user) || !target.battler.semiInvulnerable?)
       old_score = score
-      if !battle.moldBreaker && target.has_active_ability?(:MAGICBOUNCE)
+      if target.has_active_ability?(:MAGICBOUNCE) && !target.being_mold_broken?
         score = Battle::AI::MOVE_USELESS_SCORE
         PBDebug.log_score_change(score - old_score, "useless because target will Magic Bounce it")
       elsif target.has_move_with_function?("BounceBackProblemCausingStatusMoves") &&
@@ -108,7 +108,7 @@ Battle::AI::Handlers::GeneralMoveScore.add(:any_foe_can_Magic_Coat_or_Bounce_mov
       old_score = score
       ai.each_foe_battler(user.side) do |b, i|
         next if user.faster_than?(b) && b.battler.semiInvulnerable?
-        if b.has_active_ability?(:MAGICBOUNCE) && !battle.moldBreaker
+        if b.has_active_ability?(:MAGICBOUNCE) && !b.being_mold_broken?
           score = Battle::AI::MOVE_USELESS_SCORE
           PBDebug.log_score_change(score - old_score, "useless because a foe will Magic Bounce it")
           break
@@ -308,7 +308,7 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:predicted_damage,
         PBDebug.log_score_change(score - old_score, "damaging move (predicted damage #{dmg} = #{100 * dmg / target.hp}% of target's HP)")
         if ai.trainer.has_skill_flag?("HPAware") && dmg > target.hp * 1.1   # Predicted to KO the target
           old_score = score
-          score += 10
+          score += 20
           PBDebug.log_score_change(score - old_score, "predicted to KO the target")
           if move.move.multiHitMove? && target.hp == target.totalhp &&
              (target.has_active_ability?(:STURDY) || target.has_active_item?(:FOCUSSASH))
@@ -333,7 +333,7 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:external_flinching_effe
        user.faster_than?(target) && target.effects[PBEffects::Substitute] == 0
       if user.has_active_item?([:KINGSROCK, :RAZORFANG]) ||
          user.has_active_ability?(:STENCH)
-        if battle.moldBreaker || !target.has_active_ability?([:INNERFOCUS, :SHIELDDUST])
+        if !target.has_active_ability?([:INNERFOCUS, :SHIELDDUST]) || target.being_mold_broken?
           old_score = score
           score += 8
           score += 5 if move.move.multiHitMove?
@@ -378,14 +378,14 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:trigger_target_ability_
            (Battle::AbilityEffects::AfterMoveUseFromTarget[target.ability] &&
            (!user.has_active_ability?(:SHEERFORCE) || move.move.addlEffect == 0))
           old_score = score
-          score += 8
+          score -= 8
           PBDebug.log_score_change(score - old_score, "can trigger the target's ability")
         end
       end
       if target.battler.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
          target.battler.form > 0 && !target.effects[PBEffects::Transform]
         old_score = score
-        score += 8
+        score -= 8
         PBDebug.log_score_change(score - old_score, "can trigger the target's ability")
       end
       if target.item_active?
@@ -393,7 +393,7 @@ Battle::AI::Handlers::GeneralMoveAgainstTargetScore.add(:trigger_target_ability_
            (Battle::ItemEffects::AfterMoveUseFromTarget[target.item] &&
            (!user.has_active_ability?(:SHEERFORCE) || move.move.addlEffect == 0))
           old_score = score
-          score += 8
+          score -= 8
           PBDebug.log_score_change(score - old_score, "can trigger the target's item")
         end
       end
@@ -515,4 +515,3 @@ Battle::AI::Handlers::GeneralMoveScore.add(:dance_move_against_dancer,
     next score
   }
 )
-

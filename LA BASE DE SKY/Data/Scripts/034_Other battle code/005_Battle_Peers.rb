@@ -24,7 +24,7 @@ class Battle::Peer
   end
 
   def pbGetStorageCreatorName
-    return pbGetStorageCreator if $player.seen_storage_creator
+    return UI::PC.pbGetStorageCreator if $player.seen_storage_creator
     return nil
   end
 
@@ -75,4 +75,3 @@ class Battle::NullPeer
   def pbCurrentBox;            return -1;  end
   def pbBoxName(box);          return "";  end
 end
-

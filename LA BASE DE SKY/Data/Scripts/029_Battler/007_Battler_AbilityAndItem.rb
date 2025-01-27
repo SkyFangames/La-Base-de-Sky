@@ -454,6 +454,7 @@ class Battle::Battler
   end
 
   def pbMoveTypeWeakeningBerry(berry_type, move_type, mults)
+    return false if !canConsumeBerry?
     return if move_type != berry_type
     return if !Effectiveness.super_effective?(@damageState.typeMod) && move_type != :NORMAL
     mults[:final_damage_multiplier] /= 2
@@ -479,4 +480,3 @@ class Battle::Battler
     end
   end
 end
-
