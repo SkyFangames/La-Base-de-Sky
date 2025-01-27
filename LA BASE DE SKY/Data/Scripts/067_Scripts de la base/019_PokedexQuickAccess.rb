@@ -7,16 +7,16 @@ MenuHandlers.add(:party_menu, :pokedex, {
     "order"     => 60,
     "condition" => proc { next $player.has_pokedex && $player.pokedex.unlocked?(-1) },
     "effect"    => proc { |screen, party, party_idx|
-      openPokedexOnPokemon(party[party_idx].species)
+      openPokedexOnPokemon(party[party_idx].species, party[party_idx].gender, party[party_idx].form)
     }
 })
 
-def openPokedexOnPokemon(species)
-
+def openPokedexOnPokemon(species, gender, form = 0)
     region = -1
     pokedexScene = PokemonPokedexInfo_Scene.new
     pokedexScreen = PokemonPokedexInfoScreen.new(pokedexScene)
     dexlist, index = pbGetDexList(species, region)
+    $player.pokedex.set_last_form_seen(species, gender, form)
     pokedexScreen.pbStartScreen(dexlist, index, region)
 end
 

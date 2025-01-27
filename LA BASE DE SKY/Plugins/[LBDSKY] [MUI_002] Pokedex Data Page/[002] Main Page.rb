@@ -151,25 +151,31 @@ class PokemonPokedexInfo_Scene
     # Sorts all owned species into compatibility lists.
     #---------------------------------------------------------------------------
     family = species.get_family_species
-    family_evos_temp = species.get_evolutions
+    family_evos_temp = species.get_evolutions(true)
     family_evos = []
     for i in family_evos_temp
       family_evos << (i[0])
     end
+    family_to_insert = []
     blacklisted = [:PICHU_2, :FLOETTE_5, :GIMMIGHOUL_1].include?(species.id) ||
                   species.species == :PIKACHU && (8..15).include?(species.form)
+    
+    echoln "evos #{family_evos}"
+
     GameData::Species.each do |sp|
+
+      
 
       # Family members.
       next if blacklisted
-      ## NO LO HAS VISTO
       if sp.display_species?(@dexlist, species)
         if family.include?(sp.species)
           if sp.species == species.species
             special_form, _check_form, _check_item = pbGetSpecialFormData(sp)
             next if !special_form
           end
-          @data_hash[:family] << sp.id
+          # @data_hash[:family] << sp.id if (sp.form == species.form || (family_evos.include?(sp.id) && !@data_hash[:family].include?(sp.id)))
+          family_to_insert << sp if family_evos.include?(sp.species) || sp.form != species.form
         end
       elsif sp.display_species?(@dexlist, species, false, true)
           if family.include?(sp.species)
@@ -177,7 +183,8 @@ class PokemonPokedexInfo_Scene
               special_form, _check_form, _check_item = pbGetSpecialFormData(sp)
               next if !special_form
             end
-            @data_hash[:family] << sp.id
+            # @data_hash[:family] << sp.id if sp.form == species.form || ( sp.id )
+            family_to_insert << sp if family_evos.include?(sp.species) || sp.form != species.form
           end
       end
       #-------------------------------------------------------------------------
@@ -250,6 +257,21 @@ class PokemonPokedexInfo_Scene
         end
       end
     end
+
+    family_to_insert.each do |fam|
+      # Add forms that match the species form directly
+      if fam.form == species.form
+        @data_hash[:family] << fam.id
+      else
+        # Skip if there's another form of this species already added
+        # or if this species isn't in the evolution family
+        next if family_to_insert.any? { |f| f.species == fam.species && f != fam } || 
+                !family_evos.include?(fam.species)
+                
+        @data_hash[:family] << fam.id
+      end
+    end
+
     @data_hash.each_key do |key|
 	  next if key == :species
       list = @data_hash[key].clone

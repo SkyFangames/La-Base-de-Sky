@@ -319,9 +319,9 @@ module GameData
     end
 
     # Returns an array of all the species in this species' evolution family.
-    def get_family_species
+    def get_family_species(exclude_invalid = false)
       sp = get_baby_species
-      evos = GameData::Species.get(sp).get_family_evolutions(false)
+      evos = GameData::Species.get(sp).get_family_evolutions(exclude_invalid)
       return [sp] if evos.length == 0
       return [sp].concat(evos.map { |e| e[1] }).uniq
     end
