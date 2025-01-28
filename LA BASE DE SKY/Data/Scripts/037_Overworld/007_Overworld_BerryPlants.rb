@@ -268,9 +268,9 @@ class BerryPlantSprite
       end
       if berry_plant.new_mechanics && @old_stage != berry_plant.growth_stage &&
          @old_stage > 0 && berry_plant.growth_stage <= GameData::BerryPlant::NUMBER_OF_GROWTH_STAGES + 1
-        spriteset = $scene.spriteset(@map.map_id)
-        spriteset&.addUserAnimation(Settings::PLANT_SPARKLE_ANIMATION_ID,
-                                    @event.x, @event.y, false, 1)
+        @event.animation_id = Settings::PLANT_SPARKLE_ANIMATION_ID
+        @event.animation_height = 1
+        @event.animation_regular_tone = true
       end
     end
     @old_stage = berry_plant.growth_stage
@@ -382,9 +382,9 @@ def pbBerryPlant
       when 0   # Fertilize
         mulch = nil
         pbFadeOutIn do
-          scene = PokemonBag_Scene.new
-          screen = PokemonBagScreen.new(scene, $bag)
-          mulch = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_mulch? })
+          bag_screen = UI::Bag.new($bag, mode: :choose_item)
+          bag_screen.set_filter_proc(proc { |item| GameData::Item.get(item).is_mulch? })
+          mulch = bag_screen.choose_item
         end
         return if !mulch
         mulch_data = GameData::Item.get(mulch)
@@ -409,9 +409,9 @@ def pbBerryPlant
   end
   if !ask_to_plant || pbConfirmMessage(_INTL("¿Quieres plantar una baya?"))
     pbFadeOutIn do
-      scene = PokemonBag_Scene.new
-      screen = PokemonBagScreen.new(scene, $bag)
-      berry = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_berry? })
+      bag_screen = UI::Bag.new($bag, mode: :choose_item)
+      bag_screen.set_filter_proc(proc { |item| GameData::Item.get(item).is_berry? })
+      berry = bag_screen.choose_item
     end
     if berry
       $stats.berries_planted += 1
@@ -459,7 +459,7 @@ def pbPickBerry(berry, qty = 1)
   end
   pocket = berry.pocket
   pbMessage(_INTL("Has puesto {1} en\\nel bolsillo <icon=bagPocket{2}>\\c[1]{3}\\c[0].",
-                  berry_name, pocket, PokemonBag.pocket_names[pocket - 1]) + "\1")
+                  berry_name, pocket, GameData::BagPocket.get(pocket).name) + "\1")
   if Settings::NEW_BERRY_PLANTS
     pbMessage(_INTL("La tierra ha vuelto a su estado fértil."))
   else
@@ -469,4 +469,3 @@ def pbPickBerry(berry, qty = 1)
   pbSetSelfSwitch(this_event.id, "A", true)
   return true
 end
-

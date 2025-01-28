@@ -16,8 +16,6 @@ class PokemonGlobalMetadata
   attr_accessor :stepcount
   attr_accessor :pcItemStorage
   attr_accessor :mailbox
-  attr_accessor :phoneNumbers   # Deprecated - to be removed in v22
-  attr_accessor :phoneTime   # Deprecated - to be removed in v22
   attr_accessor :phone
   attr_accessor :partner
   attr_accessor :creditsPlayed
@@ -25,6 +23,8 @@ class PokemonGlobalMetadata
   attr_accessor :pokedexDex      # Dex currently looking at (-1 is National Dex)
   attr_accessor :pokedexIndex    # Last species viewed per Dex
   attr_accessor :pokedexMode     # Search mode
+  # Town Map
+  attr_accessor :townMapMarkings
   # Day Care
   attr_accessor :day_care
   # Special battle modes
@@ -36,7 +36,7 @@ class PokemonGlobalMetadata
   attr_accessor :eventvars
   # Affecting the map
   attr_accessor :bridge
-  attr_accessor :repel
+  attr_accessor :repel, :repel_item
   attr_accessor :flashUsed
   attr_reader   :encounter_version
   # Map transfers
@@ -80,6 +80,8 @@ class PokemonGlobalMetadata
     (numRegions + 1).times do |i|     # National Dex isn't a region, but is included
       @pokedexIndex[i] = 0
     end
+    # Town Map
+    @townMapMarkings      = []
     # Day Care
     @day_care             = DayCare.new
     # Special battle modes
@@ -181,4 +183,3 @@ class PokemonMapMetadata
     end
   end
 end
-

@@ -5,15 +5,94 @@ class LocationWindow
   APPEAR_TIME = 0.4   # In seconds; is also the disappear time
   LINGER_TIME = 1.6   # In seconds; time during which self is fully visible
 
-  def initialize(name)
+  def initialize(name, graphic_name = nil)
+    initialize_viewport
+    initialize_graphic(graphic_name)
+    initialize_text_window(name)
+    apply_style(graphic_name)
+    @current_map = $game_map.map_id
+    @timer_start = System.uptime
+    @delayed = !$game_temp.fly_destination.nil?
+  end
+
+  def initialize_viewport
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport.z = 99999
+  end
+
+  def initialize_graphic(graphic_name)
+    return if graphic_name.nil? || !pbResolveBitmap("Graphics/UI/Location/#{graphic_name}")
+    @graphic = Sprite.new(@viewport)
+    @graphic.bitmap = RPG::Cache.ui("Location/#{graphic_name}")
+    @graphic.x = 0
+    @graphic.y = -@graphic.height
+  end
+
+  def initialize_text_window(name)
     @window = Window_AdvancedTextPokemon.new(name)
     @window.resizeToFit(name, Graphics.width)
     @window.x        = 0
     @window.y        = -@window.height
-    @window.viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @window.viewport.z = 99999
-    @currentmap = $game_map.map_id
-    @timer_start = System.uptime
+    @window.z        = 1
+    @window.viewport = @viewport
+  end
+
+  def apply_style(graphic_name)
+    # Set up values to be used elsewhere
+    @graphic_offset = [0, 0]
+    @window_offset = [0, 0]
+    @y_distance = @window.height
+    return if graphic_name.nil?
+    # Determine the style and base/shadow colors
+    style = :none
+    base_color = nil
+    shadow_color = nil
+    Settings::LOCATION_SIGN_GRAPHIC_STYLES.each_pair do |val, filenames|
+      filenames.each do |filename|
+        if filename.is_a?(Array)
+          next if filename[0] != graphic_name
+          base_color = filename[1]
+          shadow_color = filename[2]
+        else
+          next if filename != graphic_name
+        end
+        style = val
+        break
+      end
+      break if style != :none
+    end
+    return if style == :none
+    # Apply the style
+    @y_distance = @graphic&.height || @window.height
+    @window.back_opacity = 0
+    case style
+    when :dp
+      @window.baseColor = base_color if base_color
+      @window.shadowColor = shadow_color if shadow_color
+      @window.text = @window.text   # Because the text colors were changed
+      @window_offset = [8, -10]
+      @graphic&.dispose
+      @graphic = Window_AdvancedTextPokemon.new("")
+      @graphic.setSkin("Graphics/UI/Location/#{graphic_name}")
+      @graphic.width    = @window.width + (@window_offset[0] * 2) - 4
+      @graphic.height   = 48
+      @graphic.x        = 0
+      @graphic.y        = -@graphic.height
+      @graphic.z        = 0
+      @graphic.viewport = @viewport
+      @y_distance = @graphic.height
+    when :hgss
+      @window.baseColor = base_color if base_color
+      @window.shadowColor = shadow_color if shadow_color
+      @window.width = @graphic.width
+      @window.text = "<ac>" + @window.text
+    when :platinum
+      @window.baseColor = base_color || Color.black
+      @window.shadowColor = shadow_color || Color.new(144, 144, 160)
+      @window.text = @window.text   # Because the text colors were changed
+      @window_offset = [10, 16]
+    end
+    @window.x = @window_offset[0]
   end
 
   def disposed?
@@ -21,21 +100,32 @@ class LocationWindow
   end
 
   def dispose
+    @graphic&.dispose
     @window.dispose
+    @viewport.dispose
   end
 
   def update
-    return if @window.disposed?
+    return if disposed? || $game_temp.fly_destination
+    if @delayed
+      @timer_start = System.uptime
+      @delayed = false
+    end
+    @graphic&.update
     @window.update
-    if $game_temp.message_window_showing || @currentmap != $game_map.map_id
-      @window.dispose
+    if $game_temp.message_window_showing || @current_map != $game_map.map_id
+      dispose
       return
     end
-    if System.uptime - @timer_start >= APPEAR_TIME + LINGER_TIME
-      @window.y = lerp(0, -@window.height, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
-      @window.dispose if @window.y + @window.height <= 0
+    if System.real_uptime - @timer_start >= APPEAR_TIME + LINGER_TIME
+      y_pos = lerp(0, -@y_distance, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.real_uptime)
+      @window.y = y_pos + @window_offset[1]
+      @graphic&.y = y_pos + @graphic_offset[1]
+      dispose if y_pos <= -@y_distance
     else
-      @window.y = lerp(-@window.height, 0, APPEAR_TIME, @timer_start, System.uptime)
+      y_pos = lerp(-@y_distance, 0, APPEAR_TIME, @timer_start, System.uptime)
+      @window.y = y_pos + @window_offset[1]
+      @graphic&.y = y_pos + @graphic_offset[1]
     end
   end
 end
@@ -225,4 +315,3 @@ EventHandlers.add(:on_new_spriteset_map, :add_light_effects,
     end
   }
 )
-
