@@ -569,6 +569,8 @@ module Settings
   
   ENABLE_SKIP_TEXT = false
 
+  # Desactiva el sonido de "bump" al chocarte con cosas.
+  DISABLE_BUMP_SOUND = false
   #=============================================================================
 
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 

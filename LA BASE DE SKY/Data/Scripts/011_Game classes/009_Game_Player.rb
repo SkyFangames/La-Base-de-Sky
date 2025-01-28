@@ -119,7 +119,7 @@ class Game_Player < Game_Character
   #-----------------------------------------------------------------------------
 
   def bump_into_object
-    pbSEPlay("Player bump") if !@move_route_forcing
+    pbSEPlay("Player bump") if !@move_route_forcing && !Settings::DISABLE_BUMP_SOUND
     $stats.bump_count += 1
     @move_initial_x = @x
     @move_initial_y = @y
