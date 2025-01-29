@@ -6,7 +6,7 @@ class Battle::Scene
   def pbCommandMenu(idxBattler, firstAction)
     shadowTrainer = (GameData::Type.exists?(:SHADOW) && @battle.trainerBattle?)
     cmds = [
-      _INTL("¿Qué debería\nhacer {1}?", @battle.battlers[idxBattler].name),
+      _INTL("¿Qué debería hacer\n{1}?", @battle.battlers[idxBattler].name),
       _INTL("Luchar"),
       _INTL("Mochila"),
       _INTL("Pokémon"),
