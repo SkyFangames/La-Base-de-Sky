@@ -1139,10 +1139,9 @@ class Interpreter
   # * Call Save Screen
   #-----------------------------------------------------------------------------
   def command_352
-    # scene = PokemonSave_Scene.new
-    # screen = PokemonSaveScreen.new(scene)
-    # screen.pbSaveScreen
-    pbFadeOutIn { UI::Save.new.main }
+    scene = PokemonSave_Scene.new
+    screen = PokemonSaveScreen.new(scene)
+    screen.pbSaveScreen
     return true
   end
 

@@ -1,27 +1,27 @@
-# def pbEmergencySave
-#   oldscene = $scene
-#   $scene = nil
-#   pbMessage(_INTL("El script está tardando mucho. Se va a reiniciar el juego."))
-#   return if !$player
-#   if SaveData.exists?
-#     File.open(SaveData::FILE_PATH, "rb") do |r|
-#       File.open(SaveData::FILE_PATH + ".bak", "wb") do |w|
-#         loop do
-#           s = r.read(4096)
-#           break if !s
-#           w.write(s)
-#         end
-#       end
-#     end
-#   end
-#   if Game.save
-#     pbMessage("\\se[]" + _INTL("Se ha guardado la partida.") + "\\me[GUI save game]\\wtnp[20]")
-#     pbMessage("\\se[]" + _INTL("Se ha hecho una copia del anterior archivo de guardado.") + "\\wtnp[20]")
-#   else
-#     pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
-#   end
-#   $scene = oldscene
-# end
+def pbEmergencySave
+  oldscene = $scene
+  $scene = nil
+  pbMessage(_INTL("El script está tardando mucho. Se va a reiniciar el juego."))
+  return if !$player
+  if SaveData.exists?
+    File.open(SaveData::FILE_PATH, "rb") do |r|
+      File.open(SaveData::FILE_PATH + ".bak", "wb") do |w|
+        loop do
+          s = r.read(4096)
+          break if !s
+          w.write(s)
+        end
+      end
+    end
+  end
+  if Game.save
+    pbMessage("\\se[]" + _INTL("Se ha guardado la partida.") + "\\me[GUI save game]\\wtnp[20]")
+    pbMessage("\\se[]" + _INTL("Se ha hecho una copia del anterior archivo de guardado.") + "\\wtnp[20]")
+  else
+    pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
+  end
+  $scene = oldscene
+end
 
 #===============================================================================
 #
@@ -97,40 +97,35 @@ class PokemonSaveScreen
     return @scene.pbConfirm(text)
   end
 
-
   def pbSaveScreen
-    return UI::Save.new.main
+    ret = false
+    @scene.pbStartScreen
+    if pbConfirmMessage(_INTL("¿Quieres guardar la partida?"))
+      if SaveData.exists? && $game_temp.begun_new_game
+        pbMessage(_INTL("¡AVISO!") + "\1")
+        pbMessage(_INTL("Tienes ya un archivo de guardado de una partida diferente.") + "\1")
+        pbMessage(_INTL("Si guardas ahora, todos los datos de la otra partida se perderán para siempre.") + "\1")
+        if !pbConfirmMessageSerious(_INTL("¿Estás seguro de que quieres guardar la partida y sobreescribir el otro archivo?"))
+          pbSEPlay("GUI save choice")
+          @scene.pbEndScreen
+          return false
+        end
+      end
+      $game_temp.begun_new_game = false
+      pbSEPlay("GUI save choice")
+      if Game.save
+        pbMessage("\\se[]" + _INTL("{1} guardó la partida.", $player.name) + "\\me[GUI save game]\\wtnp[20]")
+        ret = true
+      else
+        pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
+        ret = false
+      end
+    else
+      pbSEPlay("GUI save choice")
+    end
+    @scene.pbEndScreen
+    return ret
   end
-#   def pbSaveScreen
-#     ret = false
-#     @scene.pbStartScreen
-#     if pbConfirmMessage(_INTL("¿Quieres guardar la partida?"))
-#       if SaveData.exists? && $game_temp.begun_new_game
-#         pbMessage(_INTL("¡AVISO!") + "\1")
-#         pbMessage(_INTL("Tienes ya un archivo de guardado de una partida diferente.") + "\1")
-#         pbMessage(_INTL("Si guardas ahora, todos los datos de la otra partida se perderán para siempre.") + "\1")
-#         if !pbConfirmMessageSerious(_INTL("¿Estás seguro de que quieres guardar la partida y sobreescribir el otro archivo?"))
-#           pbSEPlay("GUI save choice")
-#           @scene.pbEndScreen
-#           return false
-#         end
-#       end
-#       $game_temp.begun_new_game = false
-#       pbSEPlay("GUI save choice")
-#       if Game.save
-#         pbMessage("\\se[]" + _INTL("{1} guardó la partida.", $player.name) + "\\me[GUI save game]\\wtnp[20]")
-#         ret = true
-#       else
-#         pbMessage("\\se[]" + _INTL("El guardado ha fallado.") + "\\wtnp[30]")
-#         ret = false
-#       end
-#     else
-#       pbSEPlay("GUI save choice")
-#     end
-#     @scene.pbEndScreen
-#     return ret
-#   end
-# end
 end
 #===============================================================================
 #

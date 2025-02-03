@@ -259,10 +259,9 @@ MenuHandlers.add(:pause_menu, :save, {
   },
   "effect"    => proc { |menu|
     menu.pbHideMenu
-    # scene = PokemonSave_Scene.new
-    # screen = PokemonSaveScreen.new(scene)
-    ret = UI::Save.new.main
-    if ret #screen.pbSaveScreen
+    scene = PokemonSave_Scene.new
+    screen = PokemonSaveScreen.new(scene)
+    if screen.pbSaveScreen
       menu.pbEndScene
       next true
     end
@@ -308,17 +307,12 @@ MenuHandlers.add(:pause_menu, :quit_game, {
   "effect"    => proc { |menu|
     menu.pbHideMenu
     if pbConfirmMessage(_INTL("¿Estás seguro de que quieres cerrar el juego?"))
-      # scene = PokemonSave_Scene.new
-      # screen = PokemonSaveScreen.new(scene)
-      # screen.pbSaveScreen
-      # $scene = nil
-      # menu.pbEndScene
-      # next true
-      ret = UI::Save.new.main
-      if ret #screen.pbSaveScreen
-        menu.pbEndScene
-        next true
-      end
+      scene = PokemonSave_Scene.new
+      screen = PokemonSaveScreen.new(scene)
+      screen.pbSaveScreen
+      $scene = nil
+      menu.pbEndScene
+      next true
     end
     menu.pbRefresh
     menu.pbShowMenu

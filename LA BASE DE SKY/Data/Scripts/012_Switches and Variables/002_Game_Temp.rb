@@ -39,7 +39,7 @@ class Game_Temp
   attr_accessor :background_bitmap
   attr_accessor :fadestate                # for sprite hashes
   # Other
-  # attr_accessor :begun_new_game           # new game flag (true fron new game until saving)
+  attr_accessor :begun_new_game           # new game flag (true fron new game until saving)
   attr_accessor :menu_beep                # menu: play sound effect flag
   attr_accessor :menu_last_choice         # pause menu: index of last selection
   attr_accessor :memorized_bgm            # set when trainer intro BGM is played
@@ -82,7 +82,7 @@ class Game_Temp
     @transition_name        = ""
     @fadestate              = 0
     # Other
-    # @begun_new_game         = false
+    @begun_new_game         = false
     @menu_beep              = false
     @memorized_bgm          = nil
     @memorized_bgm_position = 0

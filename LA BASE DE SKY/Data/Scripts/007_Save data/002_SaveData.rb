@@ -5,40 +5,15 @@
 # @see SaveData.register_conversion
 module SaveData
   # Contiene la ruta del archivo de guardado.
-  DIRECTORY      = (File.directory?(System.data_directory)) ? System.data_directory : "./"
-  FILENAME_REGEX = /Game(\d*)\.rxdata$/
+  FILE_PATH = if File.directory?(System.data_directory)
+                File.join(System.data_directory, "Game.rxdata")
+              else
+                "./Game.rxdata"
+              end
 
-  # @return [Boolean] si algún archivo de guardado existe
+  # @return [Boolean] si el archivo de guardado existe
   def self.exists?
-    return !all_save_files.empty?
-  end
-
-  # @return [Array] listado de los nombres de todos los archivos de guardado
-  def self.all_save_files
-    files = Dir.get(DIRECTORY, "*", false)
-    ret = []
-    files.each do |file|
-      next if !file[FILENAME_REGEX]
-      ret.push([$~[1].to_i, file])
-    end
-    ret.sort! { |a, b| a[0] <=> b[0] }
-    ret.map! { |val| val[1] }
-    return ret
-  end
-
-  def self.rename_save_files
-    files = Dir.get(DIRECTORY, "*", false)
-    files.each do |file|
-      next if !file.end_with?(".rxdata") || file.start_with?("Game")
-      old_path = File.join(DIRECTORY, file)
-      max_index = SaveData.get_max_index
-      new_path = File.join(DIRECTORY, filename_from_index(max_index+1))
-      begin
-        File.rename(old_path, new_path)
-      rescue SystemCallError
-        # Failed to rename file, skip it
-      end
-    end
+    return File.file?(FILE_PATH)
   end
 
   # Obtiene los datos de guardado del archivo proporcionado.
@@ -70,7 +45,7 @@ module SaveData
   def self.read_from_file(file_path)
     validate file_path => String
     save_data = get_data_from_file(file_path)
-    save_data = to_hash_format(save_data) if save_data.is_a?(Array)  # Pre-v19 save file support
+    save_data = to_hash_format(save_data) if save_data.is_a?(Array)
     if !save_data.empty? && run_conversions(save_data)
       File.open(file_path, "wb") { |file| Marshal.dump(save_data, file) }
     end
@@ -90,30 +65,9 @@ module SaveData
   # Elimina el archivo de guardado (y un posible archivo de respaldo .bak 
   # si existe)
   # @raise [Error::ENOENT]
-  def self.delete_file(filename)
-    path = File.join(DIRECTORY, filename)
-    path_bak = path + ".bak"
-    File.delete(path)
-    File.delete(path_bak) if File.file?(path_bak)
-  end
-  
-  def self.filename_from_index(index = 0)
-    return "Game.rxdata" if index <= 0
-    return "Game#{index}.rxdata"
-  end
-
-  def self.get_max_index
-    files = Dir.get(DIRECTORY, "Game*.rxdata", false)
-    echoln "files #{files}"
-    max_index = 0
-    files.each do |f|
-      next if f.end_with?(".bak")
-      filename = File.basename(f)
-      next unless filename =~ FILENAME_REGEX
-      index = $1.to_i
-      max_index = index if index > max_index
-    end
-    return max_index
+  def self.delete_file
+    File.delete(FILE_PATH)
+    File.delete(FILE_PATH + ".bak") if File.file?(FILE_PATH + ".bak")
   end
 
   # Convierte los datos de formato anterior a la versión 19 al nuevo formato.

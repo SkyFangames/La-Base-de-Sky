@@ -90,18 +90,17 @@ class IntroEventScene < EventScene
 
   def close_title_screen(scene, *args)
     fade_out_title_screen(scene)
-    UI::Load.new.main
-    # sscene = PokemonLoad_Scene.new
-    # sscreen = PokemonLoadScreen.new(sscene)
-    # sscreen.pbStartLoadScreen
+    sscene = PokemonLoad_Scene.new
+    sscreen = PokemonLoadScreen.new(sscene)
+    sscreen.pbStartLoadScreen
   end
 
-  # def close_title_screen_delete(scene, *args)
-  #   fade_out_title_screen(scene)
-  #   # sscene = PokemonLoad_Scene.new
-  #   # sscreen = PokemonLoadScreen.new(sscene)
-  #   # sscreen.pbStartDeleteScreen
-  # end
+  def close_title_screen_delete(scene, *args)
+    fade_out_title_screen(scene)
+    sscene = PokemonLoad_Scene.new
+    sscreen = PokemonLoadScreen.new(sscene)
+    sscreen.pbStartDeleteScreen
+  end
 
   def title_screen_update(scene, args)
     # Flashing of "Press Enter" picture
@@ -109,11 +108,11 @@ class IntroEventScene < EventScene
       @pic2.moveOpacity(TICKS_PER_ENTER_FLASH * 2 / 10, TICKS_PER_ENTER_FLASH * 4 / 10, 0)
       @pic2.moveOpacity(TICKS_PER_ENTER_FLASH * 6 / 10, TICKS_PER_ENTER_FLASH * 4 / 10, 255)
     end
-    # if Input.press?(Input::DOWN) &&
-    #    Input.press?(Input::BACK) &&
-    #    Input.press?(Input::CTRL)
-    #   close_title_screen_delete(scene, args)
-    # end
+    if Input.press?(Input::DOWN) &&
+       Input.press?(Input::BACK) &&
+       Input.press?(Input::CTRL)
+      close_title_screen_delete(scene, args)
+    end
   end
 end
 

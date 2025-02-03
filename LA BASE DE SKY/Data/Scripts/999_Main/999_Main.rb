@@ -5,10 +5,9 @@ end
 class Scene_DebugIntro
   def main
     Graphics.transition(0)
-    # sscene = PokemonLoad_Scene.new
-    # sscreen = PokemonLoadScreen.new(sscene)
-    # sscreen.pbStartLoadScreen
-    UI::Load.new.main
+    sscene = PokemonLoad_Scene.new
+    sscreen = PokemonLoadScreen.new(sscene)
+    sscreen.pbStartLoadScreen
     Graphics.freeze
   end
 end

@@ -60,8 +60,6 @@ class GameStats
   attr_writer   :play_time   # In seconds; the reader also updates the value
   attr_accessor :play_sessions
   attr_accessor :time_last_saved   # In seconds
-  attr_reader   :real_time_saved
-  attr_accessor :save_filename_number   # -1 if haven't saved yet
 
   def initialize
     # Travel
@@ -147,8 +145,6 @@ class GameStats
     @play_time                     = 0
     @play_sessions                 = 0
     @time_last_saved               = 0
-    @real_time_saved               = 0
-    @save_filename_number          = -1
   end
 
   def distance_moved
@@ -183,18 +179,12 @@ class GameStats
     return @play_time
   end
 
-  # For looking at a save file's play time.
-  def real_play_time
-    return @play_time
-  end
-
   def play_time_per_session
     return play_time / @play_sessions
   end
 
   def set_time_last_saved
     @time_last_saved = play_time
-    @real_time_saved = Time.now.to_i
   end
 
   def time_since_last_save
