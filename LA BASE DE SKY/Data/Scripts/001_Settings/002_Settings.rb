@@ -474,7 +474,7 @@ module Settings
   # Lista de los posibles idiomas del juego. Cada uno es una lista que contiene
   # el nombre del idioma que se muestra en el juego y el fragmento del archivo
   # de ese lenguaje. Un lenguaje usa los archivos de datos que están en la 
-  # carpeta Data llamados essages_FRAGMENT_core.dat y messages_FRAGMENT_game.dat 
+  # carpeta Data llamados messages_FRAGMENT_core.dat y messages_FRAGMENT_game.dat 
   # (en caso de que existan).
   LANGUAGES = [
 #    ["Español", "español"],
