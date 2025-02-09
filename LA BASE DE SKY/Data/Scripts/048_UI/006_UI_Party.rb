@@ -380,11 +380,11 @@ class PokemonPartyPanel < Sprite
     return if @pokemon.egg?
     # "Lv" graphic
     pbDrawImagePositions(@overlaysprite.bitmap,
-                         [[_INTL("Graphics/UI/Party/overlay_lv"), 20, 70, 0, 0, 22, 14]])
+                         [[_INTL("Graphics/UI/Party/overlay_lv"), 20, 70, 0, 0, 24, 14]])
     # Level number
     pbSetSmallFont(@overlaysprite.bitmap)
     pbDrawTextPositions(@overlaysprite.bitmap,
-                        [[@pokemon.level.to_s, 42, 68, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
+                        [[@pokemon.level.to_s, 46, 68, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
     pbSetSystemFont(@overlaysprite.bitmap)
   end
 
