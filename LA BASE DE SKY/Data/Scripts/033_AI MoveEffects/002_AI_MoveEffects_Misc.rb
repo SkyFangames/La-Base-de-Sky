@@ -833,12 +833,12 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("DamageTargetAddStealthR
     next false
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("DamageTargetAddSpikesToFoeSide",
-  proc { |score, move, user, ai, battle|
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DamageTargetAddSpikesToFoeSide",
+  proc { |score, move, user, target, ai, battle|
     score += 15
     if Settings::MECHANICS_GENERATION >= 9
       spike_score = Battle::AI::Handlers.apply_move_effect_against_target_score("AddSpikesToFoeSide",
-        0, move, user, b, ai, battle)
+        0, move, user, target, ai, battle)
       if spike_score != Battle::AI::MOVE_USELESS_SCORE
         score += spike_score if spike_score != Battle::AI::MOVE_USELESS_SCORE
       end
