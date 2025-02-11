@@ -12,6 +12,7 @@
 - Refactoriza el BetterMoveRelearner.
 - Agrega opcion de LoseText_F en el PBS de los trainers, este texto será usado cuando un trainer pierda cuando el jugador esté con el personajes femenino.
 - La incubadora ahora permite elegir los huevos desde el PC
+- Agrega opción para asignarle un estado a N Pokémon del equipo, puede ser en orden o aleatorio, se puede poner una probabilidad y además tiene en cuenta inmunidades por tipos o habilidades.
 
 ### AÑADIDOS V 1.1.1
 

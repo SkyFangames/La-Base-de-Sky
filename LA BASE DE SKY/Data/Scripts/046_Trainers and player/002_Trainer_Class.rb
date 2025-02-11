@@ -224,6 +224,45 @@ class Trainer
     @party.each { |pkmn| pkmn.heal }
   end
 
+  # status: el status que se desea asignar, puede ser un GameData::Status, un String o un Symbol
+  # status_count: a cuántos Pokémon se les aplicará el status
+  # probability: la probalidad de que se le asigne el status entre 1% y 100%
+  # in_order: Si se asignará el status a los Pokémon de acuerdo a su posición en el equipo o si se seleccionará uno aleatorio
+  def give_status_party_pokemon(status, status_count = 1, probabilty = 25, in_order = true)
+    return if probabilty < 1
+    probabilty = 100 if probabilty > 100
+    return if !GameData::Status.exists?(status)
+
+    
+    return if able_pokemon_count < 1 || status_count < 1
+    
+    count = 0
+    able_party_aux = able_party
+    if in_order || status_count >= able_party_aux.length
+      able_party_aux.each do |pokemon|
+        next if !pokemon.can_get_status?(status)
+        break if count >= status_count
+        next if rand(100) >= probabilty
+        pokemon.status = status
+        count += 1 
+      end
+    else
+      count = status_count
+      while count > 0 do
+        break if able_party_aux.empty?
+        pokemon = able_party_aux.sample
+        if !pokemon || !pokemon.can_get_status?(status)
+          able_party_aux.delete(pokemon)
+          next
+        end
+        next if rand(100) >= probabilty
+        pokemon.status = status
+        able_party_aux.delete(pokemon)
+        count -= 1
+      end
+    end
+  end
+
   #=============================================================================
 
   def initialize(name, trainer_type)
