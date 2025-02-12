@@ -191,7 +191,7 @@ class Trainer
   # Returns whether there is a Pokémon with the given type in the trainer's
   # party. excluded_pokemon is an array of Pokemon objects to ignore.
   def has_pokemon_of_type?(type, excluded_pokemon = [])
-    return false if !GameData::Type.exists?(type)
+    return false unless GameData::Type.exists?(type)
     type = GameData::Type.get(type).id
     return pokemon_party.any? { |pkmn| pkmn&.hasType?(type) && !excluded_pokemon.include?(pkmn) }
   end
