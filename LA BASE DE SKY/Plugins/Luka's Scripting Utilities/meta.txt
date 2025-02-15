@@ -1,0 +1,5 @@
+Name         = Luka's Scripting Utilities
+Version      = 4.0.1
+Essentials   = 21.1
+Website      = https://luka-sj.com/res/luts
+Credits      = Luka S.J.
