@@ -43,12 +43,12 @@ class PokemonSystem
     clean_json_string = json_remove_comments(file_content)
     # Parse JSON content
     begin
-      config = JSON.parse(clean_json_string)
+      config = HTTPLite::JSON.parse(clean_json_string)
 
       # Check the vsync value
       vsync_value = config['vsync']
       return vsync_value == true ? 0 : 1
-    rescue JSON::ParserError => e
+    rescue HTTPLite::JSON::ParserError => e
       echoln "Error parsing JSON: #{e.message}"
     end
   end

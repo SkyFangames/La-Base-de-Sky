@@ -1,7 +1,5 @@
 $:.push File.join(Dir.pwd, "Ruby Library 3.3.0")
 
-require 'json'
-
 def json_remove_comments(json_str)
   json_str.gsub(/\/\/.*$/, '').gsub(/\/\*.*?\*\//m, '')
 end
