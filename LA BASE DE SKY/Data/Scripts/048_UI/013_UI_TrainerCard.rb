@@ -42,11 +42,11 @@ class PokemonTrainerCard_Scene
     totalsec = $stats.play_time.to_i
     hour = totalsec / 60 / 60
     min = totalsec / 60 % 60
-    time = (hour > 0) ? _INTL("{1}h {2}m", hour, min) : _INTL("{1}m", min)
+    time = (hour > 0) ? _INTL("{1}:{2}", format("%02d", hour), format("%02d", min)) : _INTL("00:{1}", format("%02d", min))
     $PokemonGlobal.startTime = Time.now if !$PokemonGlobal.startTime
-    starttime = _INTL("{1} {2}, {3}",
-                      pbGetAbbrevMonthName($PokemonGlobal.startTime.mon),
+    starttime = _INTL("{1}, {2} {3}",
                       $PokemonGlobal.startTime.day,
+                      pbGetAbbrevMonthName($PokemonGlobal.startTime.mon),
                       $PokemonGlobal.startTime.year)
     textPositions = [
       [_INTL("Nombre"), 34, 70, :left, baseColor, shadowColor],

@@ -55,9 +55,9 @@ class PokemonSave_Scene
     loctext = location_tag + "<ac>" + mapname + "</ac></c3>"
     loctext += _INTL("Jugador") + "<r>" + text_tag + $player.name + "</c3><br>"
     if hour > 0
-      loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("{1}h {2}m", hour, min) + "</c3><br>"
+      loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("{1}:{2}", format("%02d", hour), format("%02d", min)) + "</c3><br>"
     else
-      loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("{1}m", min) + "</c3><br>"
+      loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("00:{1}", format("%02d", min)) + "</c3><br>"
     end
     loctext += _INTL("Medallas") + "<r>" + text_tag + $player.badge_count.to_s + "</c3><br>"
     if $player.has_pokedex
