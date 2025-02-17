@@ -42,7 +42,7 @@ class PokemonTrainerCard_Scene
     totalsec = $stats.play_time.to_i
     hour = totalsec / 60 / 60
     min = totalsec / 60 % 60
-    time = _INTL("{1}:{2}", format("%02d", hour), format("%02d", min))
+    time = (hour > 0) ? _INTL("{1}:{2}", format("%02d", hour), format("%02d", min)) : _INTL("00:{1}", format("%02d", min))
     $PokemonGlobal.startTime = Time.now if !$PokemonGlobal.startTime
     starttime = _INTL("{1}, {2} {3}",
                       $PokemonGlobal.startTime.day,
