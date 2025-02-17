@@ -650,3 +650,36 @@ class Tone
   end
   #-----------------------------------------------------------------------------
 end
+
+#===============================================================================
+#  MTS utility
+#===============================================================================
+class PokemonSprite
+  def id?(val); return nil; end
+end
+#===============================================================================
+#  Mathematical functions
+#===============================================================================
+# generates a uniform polygon based on the number of points, radius (for x and y),
+# angle and coordinates of its origin
+def getPolygonPoints(n, rx = 50,ry=50,a=0,tx=Graphics.width/2,ty=Graphics.height/2)
+  points = []
+  ang = 360/n
+  n.times do
+    b = a*(Math::PI/180)
+    r = rx*Math.cos(b).abs + ry*Math.sin(b).abs
+    x = tx + r*Math.cos(b)
+    y = ty - r*Math.sin(b)
+    points.push([x,y])
+    a += ang
+  end
+  return points
+end
+#-------------------------------------------------------------------------------
+# Gets a random coordinate on a circumference
+def randCircleCord(r, x = nil)
+  x = rand(r*2) if x.nil?
+  y1 = -Math.sqrt(r**2 - (x - r)**2)
+  y2 =  Math.sqrt(r**2 - (x - r)**2)
+  return x, (rand(2)==0 ? y1.to_i : y2.to_i) + r
+end
