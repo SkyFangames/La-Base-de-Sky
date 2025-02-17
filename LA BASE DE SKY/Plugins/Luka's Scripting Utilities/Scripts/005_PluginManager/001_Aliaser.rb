@@ -2,6 +2,10 @@
 #  Plugin function bulk aliaser
 #===============================================================================
 module PluginManager
+  def self.find_dir(plugin)
+    self.findDirectory(name)
+  end
+  
   module Aliaser
     #---------------------------------------------------------------------------
     #  extend the base class with new class methods

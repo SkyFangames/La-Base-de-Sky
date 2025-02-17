@@ -331,3 +331,322 @@ end
 class AnimatedPlane < Plane
   attr_accessor :end_x, :end_y
 end
+
+
+
+#===============================================================================
+#  Extensions for the `Sprite` class
+#===============================================================================
+class Sprite
+  # additional sprite attributes
+  attr_reader :storedBitmap
+  attr_accessor :direction
+  attr_accessor :speed
+  attr_accessor :toggle
+  attr_accessor :end_x, :end_y
+  attr_accessor :param, :skew_d
+  attr_accessor :ex, :ey
+  attr_accessor :zx, :zy
+  #-----------------------------------------------------------------------------
+  #  MTS compatibility layer
+  #-----------------------------------------------------------------------------
+  def id?(val); return nil; end
+  #-----------------------------------------------------------------------------
+  #  draws rect bitmap
+  #-----------------------------------------------------------------------------
+  def create_rect(width, height, color)
+    self.bitmap = Bitmap.new(width,height)
+    self.bitmap.fill_rect(0,0,width,height,color)
+  end
+  def full_rect(color)
+    self.blank_screen if !self.bitmap
+    self.bitmap.fill_rect(0, 0, self.bitmap.width, self.bitmap.height, color)
+  end
+  #-----------------------------------------------------------------------------
+  #  resets additional values
+  #-----------------------------------------------------------------------------
+  def default!
+    @speed = 1; @toggle = 1; @end_x = 0; @end_y = 0
+    @ex = 0; @ey = 0; @zx = 1; @zy = 1; @param = 1; @direction = 1
+  end
+  #-----------------------------------------------------------------------------
+  #  gets zoom
+  #-----------------------------------------------------------------------------
+  def zoom
+    return self.zoom_x
+  end
+  #-----------------------------------------------------------------------------
+  #  sets all zoom values
+  #-----------------------------------------------------------------------------
+  def zoom=(val)
+    self.zoom_x = val
+    self.zoom_y = val
+  end
+  #-----------------------------------------------------------------------------
+  #  centers sprite anchor
+  #-----------------------------------------------------------------------------
+  def center!(snap = false)
+    self.ox = self.width/2
+    self.oy = self.height/2
+    # aligns with the center of the sprite's viewport
+    if snap && self.viewport
+      self.x = self.viewport.rect.width/2
+      self.y = self.viewport.rect.height/2
+    end
+  end
+  def center; return self.width/2, self.height/2; end
+  #-----------------------------------------------------------------------------
+  #  sets sprite anchor to bottom
+  #-----------------------------------------------------------------------------
+  def bottom!
+    self.ox = self.width/2
+    self.oy = self.height
+  end
+  def bottom; return self.width/2, self.height; end
+  #-----------------------------------------------------------------------------
+  #  applies screenshot as sprite bitmap
+  #-----------------------------------------------------------------------------
+  def snap_screen
+    bmp = Graphics.snap_to_bitmap
+    width = self.viewport ? viewport.rect.width : Graphics.width
+    height = self.viewport ? viewport.rect.height : Graphics.height
+    x = self.viewport ? viewport.rect.x : 0
+    y = self.viewport ? viewport.rect.y : 0
+    self.bitmap = Bitmap.new(width,height)
+    self.bitmap.blt(0,0,bmp,Rect.new(x,y,width,height)); bmp.dispose
+  end
+  def screenshot; self.snap_screen; end
+  #-----------------------------------------------------------------------------
+  #  stretch the provided image across the whole viewport
+  #-----------------------------------------------------------------------------
+  def stretch_screen(file)
+    bmp = pbBitmap(file)
+    self.bitmap = Bitmap.new(self.viewport.width, self.viewport.height)
+    self.bitmap.stretch_blt(self.bitmap.rect, bmp, bmp.rect)
+  end
+  #-----------------------------------------------------------------------------
+  #  skews sprite's bitmap
+  #-----------------------------------------------------------------------------
+  def skew(angle = 90)
+    return false if !self.bitmap
+    return false if angle == self.skew_d
+    piangle = angle*(Math::PI/180)
+    bmp = self.storedBitmap ? self.storedBitmap : self.bitmap
+    width = bmp.width
+    width += ((bmp.height - 1)/Math.tan(piangle)).abs if angle != 90
+    self.bitmap = Bitmap.new(width, bmp.height)
+    for i in 0...bmp.height
+      y = bmp.height - i
+      x = (angle == 90) ? 0 : i/Math.tan(piangle)
+      self.bitmap.blt(x, y, bmp, Rect.new(0, y, bmp.width, 1))
+    end
+    @calMidX = (angle <= 90) ? bmp.width/2 : (self.bitmap.width - bitmap.width/2)
+    self.skew_d = angle
+  end
+  #-----------------------------------------------------------------------------
+  #  gets the mid-point anchor of sprite
+  #-----------------------------------------------------------------------------
+  def x_mid
+    return @calMidX if @calMidX
+    return self.bitmap.width/2 if self.bitmap
+    return self.ox
+  end
+  #-----------------------------------------------------------------------------
+  #  blurs the contents of the sprite bitmap
+  #-----------------------------------------------------------------------------
+  def blur_sprite(blur_val = 2, opacity = 35)
+    bitmap = self.bitmap
+    self.bitmap = Bitmap.new(bitmap.width,bitmap.height)
+    self.bitmap.blt(0,0,bitmap,Rect.new(0,0,bitmap.width,bitmap.height))
+    x = 0; y = 0
+    for i in 1...(8 * blur_val)
+      dir = i % 8
+      x += (1 + (i / 8))*([0,6,7].include?(dir) ? -1 : 1)*([1,5].include?(dir) ? 0 : 1)
+      y += (1 + (i / 8))*([1,4,5,6].include?(dir) ? -1 : 1)*([3,7].include?(dir) ? 0 : 1)
+      self.bitmap.blt(x-blur_val,y+(blur_val*2),bitmap,Rect.new(0,0,bitmap.width,bitmap.height),opacity)
+    end
+  end
+  #-----------------------------------------------------------------------------
+  #  gets average sprite color
+  #-----------------------------------------------------------------------------
+  def avg_color(freq = 2)
+    return Color.new(0,0,0,0) if !self.bitmap
+    bmp = self.bitmap
+    width = self.bitmap.width/freq
+    height = self.bitmap.height/freq
+    red = 0; green = 0; blue = 0
+    n = width*height
+    for x in 0...width
+      for y in 0...height
+        color = bmp.get_pixel(x*freq,y*freq)
+        if color.alpha > 0
+          red += color.red
+          green += color.green
+          blue += color.blue
+        end
+      end
+    end
+    avg = Color.new(red/n,green/n,blue/n)
+    return avg
+  end
+  #-----------------------------------------------------------------------------
+  #  draws outline on bitmap
+  #-----------------------------------------------------------------------------
+  def create_outline(color, thickness = 2)
+    return false if !self.bitmap
+    # creates temp outline bmp
+    out = Bitmap.new(self.bitmap.width, self.bitmap.height)
+    for i in 0...4 # corners
+      x = (i/2 == 0) ? -r : r
+      y = (i%2 == 0) ? -r : r
+      out.blt(x, y, self.bitmap, self.bitmap.rect)
+    end
+    for i in 0...4 # edges
+      x = (i < 2) ? 0 : ((i%2 == 0) ? -r : r)
+      y = (i >= 2) ? 0 : ((i%2 == 0) ? -r : r)
+      out.blt(x, y, self.bitmap, self.bitmap.rect)
+    end
+    # analyzes the pixel contents of both bitmaps
+    # iterates through each X coordinate
+    for x in 0...self.bitmap.width
+      # iterates through each Y coordinate
+      for y in 0...self.bitmap.height
+        c1 = self.bitmap.get_pixel(x,y) # target bitmap
+        c2 = out.get_pixel(x,y) # outline fill
+        # compares the pixel values of the original bitmap and outline bitmap
+        self.bitmap.set_pixel(x, y, color) if c1.alpha <= 0 && c2.alpha > 0
+      end
+    end
+    # disposes temp outline bitmap
+    out.dispose
+  end
+  #-----------------------------------------------------------------------------
+  #  applies hard-color onto bitmap pixels
+  #-----------------------------------------------------------------------------
+  def colorize(color, amt = 255)
+    return false if !self.bitmap
+    alpha = amt/255.0
+    # clone current bitmap
+    bmp = self.bitmap.clone
+    # create new one in cache
+    self.bitmap = Bitmap.new(bmp.width, bmp.height)
+    # get pixels from bitmap
+    pixels = bmp.raw_data.unpack('I*')
+    for i in 0...pixels.length
+      # get RGBA values from 24 bit INT
+      b  =  pixels[i] & 255
+      g  = (pixels[i] >> 8) & 255
+      r  = (pixels[i] >> 16) & 255
+      pa = (pixels[i] >> 24) & 255
+      # proceed only if alpha > 0
+      if pa > 0
+        # calculate new RGB values
+        r = alpha * color.red + (1 - alpha) * r
+        g = alpha * color.green + (1 - alpha) * g
+        b = alpha * color.blue + (1 - alpha) * b
+        # convert RGBA to 24 bit INT
+        pixels[i] = pa.to_i << 24 | b.to_i << 16 | g.to_i << 8 | r.to_i
+      end
+    end
+    # pack data
+    self.bitmap.raw_data = pixels.pack('I*')
+  end
+  #-----------------------------------------------------------------------------
+  #  creates a glow around sprite
+  #-----------------------------------------------------------------------------
+  def glow(color, opacity = 35, keep = true)
+    return false if !self.bitmap
+    temp_bmp = self.bitmap.clone
+    self.color = color
+    self.blur_sprite(3,opacity)
+    src = self.bitmap.clone
+    self.bitmap.clear
+    self.bitmap.stretch_blt(Rect.new(-0.005*src.width,-0.015*src.height,src.width*1.01,1.02*src.height),src,Rect.new(0,0,src.width,src.height))
+    self.bitmap.blt(0,0,temp_bmp,Rect.new(0,0,temp_bmp.width,temp_bmp.height)) if keep
+  end
+  #-----------------------------------------------------------------------------
+  #  fuzzes sprite outlines
+  #-----------------------------------------------------------------------------
+  def fuzz(color, opacity = 35)
+    return false if !self.bitmap
+    self.colorize(color)
+    self.blur_sprite(3,opacity)
+    src = self.bitmap.clone
+    self.bitmap.clear
+    self.bitmap.stretch_blt(Rect.new(-0.005*src.width,-0.015*src.height,src.width*1.01,1.02*src.height),src,Rect.new(0,0,src.width,src.height))
+  end
+  #-----------------------------------------------------------------------------
+  #  caches current bitmap additionally
+  #-----------------------------------------------------------------------------
+  def memorize_bitmap(bitmap = nil)
+    @storedBitmap = bitmap if !bitmap.nil?
+    @storedBitmap = self.bitmap.clone if bitmap.nil?
+  end
+  #-----------------------------------------------------------------------------
+  #  returns cached bitmap
+  #-----------------------------------------------------------------------------
+  def restore_bitmap
+    self.bitmap = @storedBitmap.clone
+  end
+  #-----------------------------------------------------------------------------
+  #  downloads a bitmap and applies it to sprite
+  #-----------------------------------------------------------------------------
+  def online_bitmap(url)
+    bmp = Bitmap.online_bitmap(url)
+    return if !bmp
+    self.bitmap = bmp
+  end
+  #-----------------------------------------------------------------------------
+  #  applies mask to bitmap
+  #-----------------------------------------------------------------------------
+  def mask(mask = nil, xpush = 0, ypush = 0) # Draw sprite on a sprite/bitmap
+    return false if !self.bitmap
+    self.bitmap = self.bitmap.mask(mask,xpush,ypush)
+  end
+  #-----------------------------------------------------------------------------
+  #  creates a blank bitmap the size of the viewport
+  #-----------------------------------------------------------------------------
+  def blank_screen
+    self.bitmap = Bitmap.new(self.viewport.width, self.viewport.height)
+  end
+  #-----------------------------------------------------------------------------
+  #  swap out specified colors (resource intensive, best not use on large sprites)
+  #-----------------------------------------------------------------------------
+  def swap_colors(map)
+    self.bitmap.swapColors(map) if self.bitmap
+  end
+  #-----------------------------------------------------------------------------
+  #  swap out specified colors (resource intensive, best not use on large sprites)
+  #-----------------------------------------------------------------------------
+  def width
+    return self.src_rect.width
+  end
+  #-----------------------------------------------------------------------------
+  #  swap out specified colors (resource intensive, best not use on large sprites)
+  #-----------------------------------------------------------------------------
+  def height
+    return self.src_rect.height
+  end
+  #-----------------------------------------------------------------------------
+end
+
+#===============================================================================
+#  Extensions for the `Tone` class
+#===============================================================================
+class Tone
+  #-----------------------------------------------------------------------------
+  #  gets value of all
+  #-----------------------------------------------------------------------------
+  def all
+    return (self.red + self.green + self.blue)/3
+  end
+  #-----------------------------------------------------------------------------
+  #  applies value to all channels
+  #-----------------------------------------------------------------------------
+  def all=(val)
+    self.red = val
+    self.green = val
+    self.blue = val
+  end
+  #-----------------------------------------------------------------------------
+end
