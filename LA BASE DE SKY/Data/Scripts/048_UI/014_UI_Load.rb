@@ -70,7 +70,11 @@ class PokemonLoadPanel < Sprite
         textpos.push([_INTL("Tiempo:"), 32, 182, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
         hour = @totalsec / 60 / 60
         min  = @totalsec / 60 % 60
-        textpos.push([_INTL("{1}:{2}", format("%02d", hour), format("%02d", min)), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        if hour > 0
+          textpos.push([_INTL("{1}:{2}", format("%02d", hour), format("%02d", min)), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        else
+          textpos.push([_INTL("00:{1}", format("%02d", min)), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        end
         if @trainer.male?
           textpos.push([@trainer.name, 112, 70, :left, MALE_TEXT_COLOR, MALE_TEXT_SHADOW_COLOR])
         elsif @trainer.female?
