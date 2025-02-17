@@ -112,7 +112,6 @@ module GameData
     def lose_text
       speech = $player&.female? ? MessageTypes::TRAINER_SPEECHES_LOSE_F : MessageTypes::TRAINER_SPEECHES_LOSE
       text = $player&.female? && !nil_or_empty?(@real_lose_text_f) ? @real_lose_text_f : @real_lose_text
-      echoln "lose_text #{text}"
       return pbGetMessageFromHash(speech, text)
     end
 
