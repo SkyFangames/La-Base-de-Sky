@@ -54,7 +54,11 @@ class PokemonSave_Scene
     location_tag = shadowc3tag(LOCATION_TEXT_BASE, LOCATION_TEXT_SHADOW)
     loctext = location_tag + "<ac>" + mapname + "</ac></c3>"
     loctext += _INTL("Jugador") + "<r>" + text_tag + $player.name + "</c3><br>"
-    loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("{1}:{2}", format("%02d", hour), format("%02d", min)) + "</c3><br>"
+    if hour > 0
+      loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("{1}:{2}", format("%02d", hour), format("%02d", min)) + "</c3><br>"
+    else
+      loctext += _INTL("Tiempo") + "<r>" + text_tag + _INTL("00:{1}", format("%02d", min)) + "</c3><br>"
+    end
     loctext += _INTL("Medallas") + "<r>" + text_tag + $player.badge_count.to_s + "</c3><br>"
     if $player.has_pokedex
       loctext += _INTL("Pokédex") + "<r>" + text_tag + $player.pokedex.owned_count.to_s + "/" + $player.pokedex.seen_count.to_s + "</c3>"
