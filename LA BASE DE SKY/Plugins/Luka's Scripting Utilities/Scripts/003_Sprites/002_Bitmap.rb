@@ -121,3 +121,40 @@ module Sprites
     #-------------------------------------------------------------------------
   end
 end
+
+#===============================================================================
+#  Safe bitmap loading method
+#===============================================================================
+def pbBitmap(name)
+  begin
+    dir = name.split("/")[0...-1].join("/") + "/"
+    file = name.split("/")[-1]
+    bmp = RPG::Cache.load_bitmap(dir, file)
+    bmp.storedPath = name
+  rescue
+    Env.log.warn("Image located at '#{name}' was not found!")
+    bmp = Bitmap.new(2,2)
+  end
+  return bmp
+end
+#===============================================================================
+#  Renders bitmap spritesheet for selection cursor
+#===============================================================================
+def pbSelBitmap(name, rect)
+  bmp = pbBitmap(name)
+  qw = bmp.width/2
+  qh = bmp.height/2
+  max_w = rect.width + qw*2 - 8
+  max_h = rect.height + qh*2 - 8
+  full = Bitmap.new(max_w*4,max_h)
+  # draws 4 frames where corners of selection get closer to bounding rect
+  for i in 0...4
+    for j in 0...4
+      m = (i < 3) ? i : (i-2)
+      x = (j%2 == 0 ? 2 : -2)*m + max_w*i + (j%2 == 0 ? 0 : max_w-qw)
+      y = (j/2 == 0 ? 2 : -2)*m + (j/2 == 0 ? 0 : max_h-qh)
+      full.blt(x,y,bmp,Rect.new(qw*(j%2),qh*(j/2),qw,qh))
+    end
+  end
+  return full
+end
