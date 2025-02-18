@@ -151,7 +151,7 @@ class BattlePointShop_Scene
       @sprites["qtywindow"].y       = Graphics.height - 102 - @sprites["qtywindow"].height
       itemwindow.refresh
     end
-    @sprites["battlepointwindow"].text = _INTL("Puntos de Batalla:\n<r>{1}", @adapter.getBPString)
+    @sprites["battlepointwindow"].text = _INTL("Puntos de\nBatalla:<r>{1}", @adapter.getBPString)
   end
 
   def pbStartScene(stock, adapter)
