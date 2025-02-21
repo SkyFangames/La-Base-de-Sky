@@ -99,8 +99,8 @@ class ScrollingSprite < Sprites::Scrolling
   #-----------------------------------------------------------------------------
   #  applies bitmap to sprite
   #-----------------------------------------------------------------------------
-  def setBitmap(val, vertical = false, pulse = false)
-    super.set_bitmap(val, vertical, pulse)
+  def setBitmap(val, vertical = false, pulse = false, speed = 1)
+    Sprites::Scrolling.instance_method(:set_bitmap).bind(self).call(val, vertical: vertical, pulse: pulse, speed: speed)
   end
   #-----------------------------------------------------------------------------
 end
