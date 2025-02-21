@@ -498,6 +498,7 @@ class PBAnimation < Array
             bgGraphic.color = Color.new(cr, cg, cb, ca)
           end
         rescue NoMethodError
+        rescue TypeError
         end
       when 4
         begin
@@ -519,6 +520,7 @@ class PBAnimation < Array
             foGraphic.color = Color.new(cr, cg, cb, ca)
           end
         rescue NoMethodError
+        rescue TypeError
         end
       end
     end
