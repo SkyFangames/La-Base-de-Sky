@@ -6138,7 +6138,7 @@ Pocket = 8
 Price = 0
 FieldUse = Direct
 Flags = KeyItem
-Description = Caña pequeña para guardar fichas.
+Description = Pequeño monedero para guardar fichas.
 #-------------------------------
 [POKEFLUTE]
 Name = Poké Flauta
