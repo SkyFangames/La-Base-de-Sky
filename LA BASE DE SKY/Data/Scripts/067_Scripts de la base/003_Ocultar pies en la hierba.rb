@@ -15,7 +15,7 @@ class Game_Character
       ybehind = @y + (@direction == 8 ? 1 : @direction == 2 ? -1 : 0)
       if moving?
         behind_map = (self.map.valid?(xbehind, ybehind)) ? [self.map, xbehind, ybehind] : $map_factory&.getNewMap(xbehind, ybehind, self.map.map_id)
-        @bush_depth = 12 if (behind_map[0].bush?(behind_map[1], behind_map[2]) || behind_map[0].deepBush?(behind_map[1], behind_map[2]))
+        @bush_depth = 12 if behind_map && ((behind_map[0].bush?(behind_map[1], behind_map[2]) || behind_map[0].deepBush?(behind_map[1], behind_map[2])))
       else
         @bush_depth = 12
       end
