@@ -98,6 +98,12 @@ class Trainer
     return able_party.first
   end
 
+  def first_able_pokemon?(species)
+    return false unless GameData::Species.exist?(species)
+    pkmn = first_able_pokemon
+    return pkmn.isSpecies?(species)
+  end
+
   def last_party
     return (@party.length > 0) ? @party[@party.length - 1] : nil
   end
