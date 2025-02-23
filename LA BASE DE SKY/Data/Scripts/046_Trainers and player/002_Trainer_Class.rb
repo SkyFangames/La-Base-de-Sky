@@ -99,7 +99,7 @@ class Trainer
   end
 
   def first_able_pokemon?(species)
-    return false unless GameData::Species.exist?(species)
+    return false unless GameData::Species.exists?(species)
     pkmn = first_able_pokemon
     return pkmn.isSpecies?(species)
   end
