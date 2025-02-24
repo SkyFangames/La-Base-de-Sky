@@ -36,27 +36,34 @@ module MessageConfig
 
   def self.pbDefaultSystemFrame
     if $PokemonSystem
-      return pbResolveBitmap("Graphics/Windowskins/" + Settings::MENU_WINDOWSKINS[$PokemonSystem.frame]) || ""
+      path = File.join("Graphics", "Windowskins", Settings::MENU_WINDOWSKINS[$PokemonSystem.frame])
+      return pbResolveBitmap(path) || ""
     else
-      return pbResolveBitmap("Graphics/Windowskins/" + Settings::MENU_WINDOWSKINS[0]) || ""
+      path = File.join("Graphics", "Windowskins", Settings::MENU_WINDOWSKINS[0])
+      return pbResolveBitmap(path) || ""
     end
   end
 
   def self.pbDefaultSpeechFrame
     if $PokemonSystem
-      return pbResolveBitmap("Graphics/Windowskins/" + Settings::SPEECH_WINDOWSKINS[$PokemonSystem.textskin]) || ""
+      path = File.join("Graphics", "Windowskins", Settings::SPEECH_WINDOWSKINS[$PokemonSystem.textskin])
+      return pbResolveBitmap(path) || ""
     else
-      return pbResolveBitmap("Graphics/Windowskins/" + Settings::SPEECH_WINDOWSKINS[0]) || ""
+      path = File.join("Graphics", "Windowskins", Settings::SPEECH_WINDOWSKINS[0])
+      return pbResolveBitmap(path) || ""
     end
   end
 
   def self.pbDefaultWindowskin
     skin = ($data_system) ? $data_system.windowskin_name : nil
     if skin && skin != ""
-      skin = pbResolveBitmap("Graphics/Windowskins/" + skin) || ""
+      path = File.join("Graphics", "Windowskins", skin)
+      skin = pbResolveBitmap(path) || ""
     end
-    skin = pbResolveBitmap("Graphics/System/Window") if nil_or_empty?(skin)
-    skin = pbResolveBitmap("Graphics/Windowskins/001-Blue01") if nil_or_empty?(skin)
+    path = File.join("Graphics", "System", "Window")
+    skin = pbResolveBitmap(path) if nil_or_empty?(skin)
+    path = File.join("Graphics", "Windowskins", "001-Blue01")
+    skin = pbResolveBitmap(path) if nil_or_empty?(skin)
     return skin || ""
   end
 
