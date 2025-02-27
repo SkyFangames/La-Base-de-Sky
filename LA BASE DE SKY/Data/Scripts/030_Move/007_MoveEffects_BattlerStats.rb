@@ -2059,14 +2059,38 @@ end
 #===============================================================================
 # Lowers the user's Sp.Atk by 1 stage. Also scatters coins to be picked up.
 #-------------------------------------------------------------------------------
-class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
-  def pbEffectGeneral(user)
-    if user.pbOwnedByPlayer?
+#===============================================================================
+# Make it Rain
+#===============================================================================
+# Lowers the user's Sp.Atk by 1 stage. Also scatters coins to be picked up.
+#-------------------------------------------------------------------------------
+class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move
+  attr_reader :statDown
+  def initialize(battle, move)
+    super
+    @statDown = [:SPECIAL_ATTACK, 1]
+  end
+  
+  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
+    return if @battle.pbAllFainted?(user.idxOpposingSide)
+    hit_target = false
+    targets.each do |b|
+      next if b.damageState.missed
+      next if b.damageState.protected
+      next if b.damageState.unaffected
+      hit_target = true
+      # Money modifier
+      next if !user.pbOwnedByPlayer?
       @battle.field.effects[PBEffects::PayDay] += 5 * user.level
     end
-    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!"))
+    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!")) if hit_target
+    # Stats modifier
+    if user.pbCanLowerStatStage?(@statDown[0], user, self) && hit_target
+      user.pbLowerStatStage(@statDown[0], @statDown[1], user)
+    end
   end
 end
+
 
 #===============================================================================
 # Order Up
