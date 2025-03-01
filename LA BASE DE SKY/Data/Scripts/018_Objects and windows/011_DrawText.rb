@@ -1045,7 +1045,7 @@ end
 def drawFormattedTextEx(bitmap, x, y, width, text, baseColor = nil, shadowColor = nil, lineheight = 32)
   base = baseColor ? baseColor.clone : Color.new(96, 96, 96)
   shadow = shadowColor ? shadowColor.clone : Color.new(208, 208, 200)
-  text = shadowc3tag(base, shadow) + text
+  text = shadowc3tag(base, shadow) + (text || "")
   chars = getFormattedText(bitmap, x, y, width, -1, text, lineheight)
   drawFormattedChars(bitmap, chars)
 end
@@ -1116,7 +1116,9 @@ end
 #      shadow color is nil), there is no shadow. Otherwise, the text has a shadow.
 def pbDrawTextPositions(bitmap, textpos)
   textpos.each do |i|
-    textsize = bitmap.text_size(i[0])
+    text = i[0] 
+    text ||= ""
+    textsize = bitmap.text_size(text)
     x = i[1]
     y = i[2]
     case i[3]
@@ -1128,11 +1130,11 @@ def pbDrawTextPositions(bitmap, textpos)
     i[6] = :none if !i[5]   # No shadow color given, draw plain text
     case i[6]
     when :outline, true, 1   # outline text
-      pbDrawOutlineText(bitmap, x, y, textsize.width, textsize.height, i[0], i[4], i[5])
+      pbDrawOutlineText(bitmap, x, y, textsize.width, textsize.height, text, i[4], i[5])
     when :none
-      pbDrawPlainText(bitmap, x, y, textsize.width, textsize.height, i[0], i[4])
+      pbDrawPlainText(bitmap, x, y, textsize.width, textsize.height, text, i[4])
     else
-      pbDrawShadowText(bitmap, x, y, textsize.width, textsize.height, i[0], i[4], i[5])
+      pbDrawShadowText(bitmap, x, y, textsize.width, textsize.height, text, i[4], i[5])
     end
   end
 end
