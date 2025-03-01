@@ -80,6 +80,7 @@ class Battle::Move::HitThreeTimesPowersUpWithEachHit < Battle::Move
   end
 
   def pbBaseDamage(baseDmg, user, target)
+    return baseDmg if !@calcBaseDmg
     @calcBaseDmg += baseDmg
     return @calcBaseDmg
   end
