@@ -103,7 +103,7 @@ class PokemonEntryScene
     if minlength == 0
       @sprites["helpwindow"] = Window_UnformattedTextPokemon.newWithSize(
         _INTL("Escribe texto usando el teclado. Pulsa\nEnter para confirmar, o Esc para cancelar."),
-        32, Graphics.height - 96, Graphics.width - 64, 96, @viewport
+        24, Graphics.height - 96, Graphics.width - 48, 96, @viewport
       )
     else
       @sprites["helpwindow"] = Window_UnformattedTextPokemon.newWithSize(
