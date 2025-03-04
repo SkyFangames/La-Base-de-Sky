@@ -664,9 +664,11 @@ class Battle::Move::StartSlowerBattlersActFirst < Battle::Move
   def pbEffectGeneral(user)
     if @battle.field.effects[PBEffects::TrickRoom] > 0
       @battle.field.effects[PBEffects::TrickRoom] = 0
+      @battle.scene.pbDeleteTrickRoomBackground
       @battle.pbDisplay(_INTL("¡{1} alteró las dimensiones!", user.pbThis))
     else
       @battle.field.effects[PBEffects::TrickRoom] = 5
+      @battle.scene.pbSetTrickRoomBackground
       @battle.pbDisplay(_INTL("¡{1} alteró las dimensiones!", user.pbThis))
     end
   end

@@ -2013,7 +2013,7 @@ Battle::ItemEffects::OnOpposingStatGain.add(:MIRRORHERB,
     battler.mirrorHerbUsed = true
     statUps.each do |stat, increment|
       next if !battler.pbCanRaiseStatStage?(stat, battler)
-        if battler.pbRaiseStatStage(stat, increment, battler, showAnim)
+      if battler.pbRaiseStatStage(stat, increment, battler, showAnim)
         showAnim = false
       end
     end
