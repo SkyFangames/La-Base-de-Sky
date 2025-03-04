@@ -1298,7 +1298,7 @@ Price = 3000
 SellPrice = 2000
 BPPrice = 25
 Flags = Fling_80
-Description = Garra ligera y afilada que permite que el Pokémon que la lleve ataque a veces el primero.
+Description = Garra ligera y afilada que permite que el Pokémon que la lleve ataque primero ocasionalmente.
 #-------------------------------
 [FOCUSBAND]
 Name = Cinta Aguante
