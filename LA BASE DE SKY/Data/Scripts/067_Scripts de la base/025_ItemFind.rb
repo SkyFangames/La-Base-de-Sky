@@ -65,6 +65,10 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
     def pbShow(item)
       item_object = GameData::Item.try_get(item)
       name = item_object.name
+      if item_object.is_machine?
+        machine = GameData::Item.get(item_object).move
+        name = _INTL("{1} {2}", name, GameData::Move.get(machine).name)
+      end
       description = item_object.description
   
       descwindow = @sprites["descwindow"]
