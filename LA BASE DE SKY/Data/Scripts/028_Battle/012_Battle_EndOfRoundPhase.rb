@@ -54,15 +54,15 @@ class Battle
     case battler.effectiveWeather
     when :Sandstorm
       return if !battler.takesSandstormDamage?
-      pbDisplay(_INTL("¡La tormenta de arena zarandea a {1}!", battler.pbThis))
+      pbDisplay(_INTL("¡La tormenta de arena zarandea a {1}!", battler.pbThis(true)))
       amt = battler.totalhp / 16
     when :Hail
       return if !battler.takesHailDamage?
-      pbDisplay(_INTL("¡El granizo golpea a {1}!", battler.pbThis))
+      pbDisplay(_INTL("¡El granizo golpea a {1}!", battler.pbThis(true)))
       amt = battler.totalhp / 16
     when :ShadowSky
       return if !battler.takesShadowSkyDamage?
-      pbDisplay(_INTL("¡El cielo sombrío daña a {1}!", battler.pbThis))
+      pbDisplay(_INTL("¡El cielo sombrío daña a {1}!", battler.pbThis(true)))
       amt = battler.totalhp / 16
     end
     return if amt < 0
@@ -144,7 +144,7 @@ class Battle
         next if !battler.takesIndirectDamage? || battler.pbHasType?(:FIRE)
         @scene.pbDamageAnimation(battler)
         battler.pbTakeEffectDamage(battler.totalhp / 8, false) do |hp_lost|
-          pbDisplay(_INTL("¡El mar de llamas ha dañado a {1}!", battler.pbThis))
+          pbDisplay(_INTL("¡El mar de llamas ha dañado a {1}!", battler.pbThis(true)))
         end
       end
     end
@@ -174,7 +174,7 @@ class Battle
       hpGain = battler.totalhp / 16
       hpGain = (hpGain * 1.3).floor if battler.hasActiveItem?(:BIGROOT)
       battler.pbRecoverHP(hpGain)
-      pbDisplay(_INTL("¡{1} ha recuperado algunos PS gracias al manto de agua que rodea su cuerpo!", battler.pbThis(true)))
+      pbDisplay(_INTL("¡{1} ha recuperado algunos PS gracias al manto de agua que rodea su cuerpo!", battler.pbThis))
     end
     # Ingrain
     priority.each do |battler|
@@ -374,11 +374,11 @@ class Battle
     # Disable/Cursed Body
     pbEORCountDownBattlerEffect(priority, PBEffects::Disable) do |battler|
       battler.effects[PBEffects::DisableMove] = nil
-      pbDisplay(_INTL("¡El movimiento de {1} ya no está anulado!", battler.pbThis))
+      pbDisplay(_INTL("¡El movimiento de {1} ya no está anulado!", battler.pbThis(true)))
     end
     # Magnet Rise
     pbEORCountDownBattlerEffect(priority, PBEffects::MagnetRise) do |battler|
-      pbDisplay(_INTL("¡El campo electromagnético de {1} se ha disipado!", battler.pbThis))
+      pbDisplay(_INTL("¡El campo electromagnético de {1} se ha disipado!", battler.pbThis(true)))
     end
     # Telekinesis
     pbEORCountDownBattlerEffect(priority, PBEffects::Telekinesis) do |battler|
@@ -386,7 +386,7 @@ class Battle
     end
     # Heal Block
     pbEORCountDownBattlerEffect(priority, PBEffects::HealBlock) do |battler|
-      pbDisplay(_INTL("¡Se han pasado los efectos de Anticura en {1}!", battler.pbThis))
+      pbDisplay(_INTL("¡Se han pasado los efectos de Anticura en {1}!", battler.pbThis(true)))
     end
     # Embargo
     pbEORCountDownBattlerEffect(priority, PBEffects::Embargo) do |battler|
@@ -405,7 +405,7 @@ class Battle
     priority.each do |battler|
       next if battler.fainted? || battler.effects[PBEffects::PerishSong] == 0
       battler.effects[PBEffects::PerishSong] -= 1
-      pbDisplay(_INTL("El contador de {1} bajó a {2}!", battler.pbThis, battler.effects[PBEffects::PerishSong]))
+      pbDisplay(_INTL("El contador de {1} bajó a {2}!", battler.pbThis(true), battler.effects[PBEffects::PerishSong]))
       if battler.effects[PBEffects::PerishSong] == 0
         perishSongUsers.push(battler.effects[PBEffects::PerishSongUser])
         battler.pbReduceHP(battler.hp)

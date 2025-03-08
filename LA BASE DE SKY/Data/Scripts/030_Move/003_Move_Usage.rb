@@ -136,10 +136,10 @@ class Battle::Move
       if showMessage
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis))
+          @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true)))
         else
           @battle.pbDisplay(_INTL("No afecta a {1} debido a {2}.",
-                                  target.pbThis, target.abilityName))
+                                  target.pbThis(true), target.abilityName))
         end
         @battle.pbHideAbilitySplash(target)
       end
@@ -150,10 +150,10 @@ class Battle::Move
       if showMessage
         @battle.pbShowAbilitySplash(b)
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis))
+          @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true)))
         else
           @battle.pbDisplay(_INTL("No afecta a {1} debido a {2} de {3}.",
-                                  target.pbThis, b.pbThis(true), b.abilityName))
+                                  target.pbThis(true), b.pbThis(true), b.abilityName))
         end
         @battle.pbHideAbilitySplash(b)
       end
@@ -317,7 +317,7 @@ class Battle::Move
           @battle.pbDisplay(_INTL("{1} asestó un golpe crítico para impresionarte!", user.pbThis))
         end
       elsif numTargets > 1
-        @battle.pbDisplay(_INTL("¡{1} recibió un golpe crítico!", target.pbThis(true)))
+        @battle.pbDisplay(_INTL("¡{1} recibió un golpe crítico!", target.pbThis))
       else
         @battle.pbDisplay(_INTL("¡Un golpe crítico!"))
       end
@@ -338,15 +338,15 @@ class Battle::Move
       if Battle::Scene::USE_ABILITY_SPLASH
         @battle.pbDisplay(_INTL("¡El disfraz ha actuado como señuelo!"))
       else
-        @battle.pbDisplay(_INTL("¡El disfraz de {1} ha actuado como señuelo!", target.pbThis))
+        @battle.pbDisplay(_INTL("¡El disfraz de {1} ha actuado como señuelo!", target.pbThis(true)))
       end
       @battle.pbHideAbilitySplash(target)
-      target.pbChangeForm(1, _INTL("¡El disfraz de {1} se ha roto!", target.pbThis))
+      target.pbChangeForm(1, _INTL("¡El disfraz de {1} se ha roto!", target.pbThis(true)))
       target.pbReduceHP(target.totalhp / 8, false) if Settings::MECHANICS_GENERATION >= 8
     elsif target.damageState.iceFace
       @battle.pbShowAbilitySplash(target)
       if !Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("¡Se activó {2} de {1}!", target.pbThis, target.abilityName))
+        @battle.pbDisplay(_INTL("¡Se activó {2} de {1}!", target.pbThis(true), target.abilityName))
       end
       target.pbChangeForm(1, _INTL("¡{1} se transformó!", target.pbThis))
       @battle.pbHideAbilitySplash(target)

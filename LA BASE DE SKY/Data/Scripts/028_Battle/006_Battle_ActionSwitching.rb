@@ -418,7 +418,7 @@ class Battle
       battler.eachMove { |m| full_pp = false if m.pp < m.total_pp }
       if battler.canHeal? || battler.status != :NONE || !full_pp
         pbCommonAnimation("LunarDance", battler)
-        pbDisplay(_INTL("¡Un místico halo de luz de luna envuelve a {1}!", battler.pbThis))
+        pbDisplay(_INTL("¡Un místico halo de luz de luna envuelve a {1}!", battler.pbThis(true)))
         battler.pbRecoverHP(battler.totalhp)
         battler.pbCureStatus(false)
         battler.eachMove { |m| battler.pbSetPP(m, m.total_pp) }
@@ -438,7 +438,7 @@ class Battle
       eff = Effectiveness.calculate(:ROCK, *bTypes)
       if !Effectiveness.ineffective?(eff)
         battler.pbReduceHP(battler.totalhp * eff / 8, false)
-        pbDisplay(_INTL("¡Unas piedras puntiagudas han dañado a {1}!", battler.pbThis))
+        pbDisplay(_INTL("¡Unas piedras puntiagudas han dañado a {1}!", battler.pbThis(true)))
         battler.pbItemHPHealCheck
       end
     end
@@ -447,14 +447,14 @@ class Battle
        !battler.airborne? && !battler.hasActiveItem?(:HEAVYDUTYBOOTS)
       spikesDiv = [8, 6, 4][battler_side.effects[PBEffects::Spikes] - 1]
       battler.pbReduceHP(battler.totalhp / spikesDiv, false)
-      pbDisplay(_INTL("¡Las púas han herido al {1}!", battler.pbThis))
+      pbDisplay(_INTL("¡Las púas han herido al {1}!", battler.pbThis(true)))
       battler.pbItemHPHealCheck
     end
     # Toxic Spikes
     if battler_side.effects[PBEffects::ToxicSpikes] > 0 && !battler.fainted? && !battler.airborne?
       if battler.pbHasType?(:POISON)
         battler_side.effects[PBEffects::ToxicSpikes] = 0
-        pbDisplay(_INTL("¡Las púas tóxicas lanzadas a {1} han desaparecido!", battler.pbThis))
+        pbDisplay(_INTL("¡Las púas tóxicas lanzadas a {1} han desaparecido!", battler.pbThis(true)))
       elsif battler.pbCanPoison?(nil, false) && !battler.hasActiveItem?(:HEAVYDUTYBOOTS)
         if battler_side.effects[PBEffects::ToxicSpikes] == 2
           battler.pbPoison(nil, _INTL("¡{1} ha sido envenenado por las púas tóxicas!", battler.pbThis), true)

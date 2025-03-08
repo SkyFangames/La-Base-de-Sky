@@ -203,7 +203,7 @@ class Battle::Move::DestroyTargetBerryOrGem < Battle::Move
     return if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
     item_name = target.itemName
     target.pbRemoveItem
-    @battle.pbDisplay(_INTL("¡El {2} de {1} ha sido incinerado!", target.pbThis, item_name))
+    @battle.pbDisplay(_INTL("¡El {2} de {1} ha sido incinerado!", target.pbThis(true), item_name))
   end
 end
 
@@ -219,7 +219,7 @@ class Battle::Move::CorrodeTargetItem < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     if !target.item || target.unlosableItem?(target.item) ||
        target.effects[PBEffects::Substitute] > 0
-      @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis(true))) if show_message
       return true
     end
     if target.hasActiveAbility?(:STICKYHOLD) && !@battle.moldBreaker
@@ -236,7 +236,7 @@ class Battle::Move::CorrodeTargetItem < Battle::Move
       return true
     end
     if @battle.corrosiveGas[target.index % 2][target.pokemonIndex]
-      @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis(true))) if show_message
       return true
     end
     return false

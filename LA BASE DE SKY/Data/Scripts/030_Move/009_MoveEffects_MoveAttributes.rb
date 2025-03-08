@@ -70,7 +70,7 @@ end
 class Battle::Move::OHKO < Battle::Move::FixedDamageMove
   def pbFailsAgainstTarget?(user, target, show_message)
     if target.level > user.level
-      @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis(true))) if show_message
       return true
     end
     if target.hasActiveAbility?(:STURDY) && !@battle.moldBreaker
@@ -1527,7 +1527,7 @@ end
 class Battle::Move::TypeDependsOnUserMorpekoFormRaiseUserSpeed1 < Battle::Move::RaiseUserSpeed1
   def pbMoveFailed?(user, targets)
     if !user.isSpecies?(:MORPEKO) && user.effects[PBEffects::TransformSpecies] != :MORPEKO
-      @battle.pbDisplay(_INTL("¡Pero {1} no puede usar el movimiento!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡Pero {1} no puede usar el movimiento!", user.pbThis(true)))
       return true
     end
     return false
@@ -1625,7 +1625,7 @@ class Battle::Move::TargetMovesBecomeElectric < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Electrify] = true
-    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Electrico!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Electrico!", target.pbThis(true)))
   end
 end
 

@@ -156,7 +156,7 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(self)
       if canHeal? && pbRecoverHP(@totalhp / 4) > 0
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("Los PS de {1} han sido restaurados.", pbThis))
+          @battle.pbDisplay(_INTL("Los PS de {1} han sido restaurados.", pbThis(true)))
         else
           @battle.pbDisplay(_INTL("{1} de {2} ha restaurado sus PS.", pbThis, abilityName))
         end
@@ -280,7 +280,7 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(self)
       pbRecoverHP(@totalhp / 3)
       if Battle::Scene::USE_ABILITY_SPLASH
-        @battle.pbDisplay(_INTL("Los PS de {1} han sido restaurados", pbThis))
+        @battle.pbDisplay(_INTL("Los PS de {1} han sido restaurados", pbThis(true)))
       else
         @battle.pbDisplay(_INTL("{1} de {2} ha restaurado sus PS.", pbThis, abilityName))
       end

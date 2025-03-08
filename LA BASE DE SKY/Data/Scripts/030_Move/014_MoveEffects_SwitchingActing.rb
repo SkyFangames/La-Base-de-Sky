@@ -279,7 +279,7 @@ class Battle::Move::BindTarget < Battle::Move
     msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
     case @id
     when :BIND
-      msg = _INTL("¡Atadura de {1} oprime a {2}!", user.pbThis, target.pbThis(true))
+      msg = _INTL("¡Atadura de {1} oprime a {2}!", user.pbThis(true), target.pbThis(true))
     when :CLAMP
       msg = _INTL("¡{1} atenazó a {2}!", user.pbThis, target.pbThis(true))
     when :FIRESPIN
@@ -461,7 +461,7 @@ class Battle::Move::UsedAfterUserTakesPhysicalDamage < Battle::Move
       return true
     end
     if !user.tookPhysicalHit
-      @battle.pbDisplay(_INTL("¡La trampa de {1} no funcionó!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡La trampa de {1} no funcionó!", user.pbThis(true)))
       return true
     end
     return false
@@ -760,7 +760,7 @@ class Battle::Move::DisableTargetLastMoveUsed < Battle::Move
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Disable]     = 5
     target.effects[PBEffects::DisableMove] = target.lastRegularMoveUsed
-    @battle.pbDisplay(_INTL("¡Se ha anulado el movimiento {2} del {1}!", target.pbThis,
+    @battle.pbDisplay(_INTL("¡Se ha anulado el movimiento {2} del {1}!", target.pbThis(true),
                             GameData::Move.get(target.lastRegularMoveUsed).name))
     target.pbItemStatusCureCheck
   end

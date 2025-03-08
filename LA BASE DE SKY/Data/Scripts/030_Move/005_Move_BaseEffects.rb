@@ -121,7 +121,7 @@ class Battle::Move::MultiStatUpMove < Battle::Move
       break
     end
     if failed
-      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", user.pbThis(true)))
       return true
     end
     return false
@@ -218,14 +218,14 @@ class Battle::Move::TargetMultiStatDownMove < Battle::Move
           canLower = true
           break
         end
-        @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", user.pbThis)) if !canLower && show_message
+        @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", user.pbThis(true))) if !canLower && show_message
       else
         (@statDown.length / 2).times do |i|
           next if target.statStageAtMin?(@statDown[i * 2])
           canLower = true
           break
         end
-        @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden disminuir más!", user.pbThis)) if !canLower && show_message
+        @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden disminuir más!", user.pbThis(true))) if !canLower && show_message
       end
       if canLower
         target.pbCanLowerStatStage?(@statDown[0], user, self, show_message)
@@ -247,7 +247,7 @@ class Battle::Move::TargetMultiStatDownMove < Battle::Move
       if failed
         @battle.pbShowAbilitySplash(target)
         if !Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡Se activó {1} de {2}!", target.pbThis, target.abilityName))
+          @battle.pbDisplay(_INTL("¡Se activó {1} de {2}!", target.pbThis(true), target.abilityName))
         end
         user.pbCanLowerStatStage?(@statDown[0], target, self, true, false, true)   # Show fail message
         @battle.pbHideAbilitySplash(target)
@@ -398,7 +398,7 @@ class Battle::Move::HealingMove < Battle::Move
 
   def pbMoveFailed?(user, targets)
     if user.hp == user.totalhp
-      @battle.pbDisplay(_INTL("¡Los PS de {1} están al máximo!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡Los PS de {1} están al máximo!", user.pbThis(true)))
       return true
     end
     return false

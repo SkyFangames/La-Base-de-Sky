@@ -48,7 +48,7 @@ class Battle::Battler
       # Rage
       if target.effects[PBEffects::Rage] && !target.fainted? &&
          target.pbCanRaiseStatStage?(:ATTACK, target)
-        @battle.pbDisplay(_INTL("¡La furia de {1} está aumentando!", target.pbThis))
+        @battle.pbDisplay(_INTL("¡La furia de {1} está aumentando!", target.pbThis(true)))
         target.pbRaiseStatStage(:ATTACK, 1, target)
       end
       # Beak Blast
@@ -71,7 +71,7 @@ class Battle::Battler
       if target.effects[PBEffects::Grudge] && target.fainted?
         user.pbSetPP(move, 0)
         @battle.pbDisplay(_INTL("¡{2} de {1} perdió todos sus PP debido a Rabia!",
-                                user.pbThis, move.name))
+                                user.pbThis(true), move.name))
       end
       # Destiny Bond (recording that it should apply)
       if target.effects[PBEffects::DestinyBond] && target.fainted? &&

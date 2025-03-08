@@ -260,7 +260,7 @@ class Battle::Move::UserFaintsExplosive
       count = @battle.pbAbleNonActiveCount(user.idxOwnSide)
       count += @battle.pbAbleNonActiveCount(user.idxOpposingSide)
       if count == 0
-        @battle.pbDisplay(_INTL("¡El equipo de {1} ha sido descalificado!", user.pbThis))
+        @battle.pbDisplay(_INTL("¡El equipo de {1} ha sido descalificado!", user.pbThis(true)))
         @battle.decision = (user.opposes?) ? 1 : 2
         return false
       end

@@ -162,11 +162,11 @@ class Battle::Battler
         else
           case newStatus
           when :SLEEP      then msg = _INTL("¡{1} permanece despierto por la habilidad {2}!", pbThis, abilityName)
-          when :POISON     then msg = _INTL("¡La habilidad {1} de {2} previene envenenamiento!", pbThis, abilityName)
-          when :BURN       then msg = _INTL("¡La habilidad {1} de {2} previene quemaduras!", pbThis, abilityName)
-          when :PARALYSIS  then msg = _INTL("¡La habilidad {1} de {2} previene paralisis!", pbThis, abilityName)
-          when :FROZEN     then msg = _INTL("¡La habilidad {1} de {2} previene congelación!", pbThis, abilityName)
-          when :FROSTBITE  then msg = _INTL("¡La habilidad {1} de {2} previene congelación!", pbThis, abilityName)
+          when :POISON     then msg = _INTL("¡La habilidad {1} de {2} previene envenenamiento!", pbThis(true), abilityName)
+          when :BURN       then msg = _INTL("¡La habilidad {1} de {2} previene quemaduras!", pbThis(true), abilityName)
+          when :PARALYSIS  then msg = _INTL("¡La habilidad {1} de {2} previene paralisis!", pbThis(true), abilityName)
+          when :FROZEN     then msg = _INTL("¡La habilidad {1} de {2} previene congelación!", pbThis(true), abilityName)
+          when :FROSTBITE  then msg = _INTL("¡La habilidad {1} de {2} previene congelación!", pbThis(true), abilityName)
           end
         end
         @battle.pbDisplay(msg)
@@ -461,9 +461,9 @@ class Battle::Battler
     when :SLEEP
       @battle.pbDisplay(_INTL("{1} está dormido como un tronco.", pbThis))
     when :POISON
-      @battle.pbDisplay(_INTL("¡El veneno resta PS a el {1}!", pbThis))
+      @battle.pbDisplay(_INTL("¡El veneno resta PS a {1}!", pbThis(true)))
     when :BURN
-      @battle.pbDisplay(_INTL("¡El {1} se resiente de la quemadura!", pbThis))
+      @battle.pbDisplay(_INTL("{1} se resiente de la quemadura!", pbThis))
     when :PARALYSIS
       @battle.pbDisplay(_INTL("¡{1} está paralizado! ¡No se puede mover!", pbThis))
     when :FROZEN

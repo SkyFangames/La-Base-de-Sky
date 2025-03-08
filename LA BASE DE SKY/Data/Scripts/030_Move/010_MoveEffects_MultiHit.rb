@@ -296,7 +296,7 @@ class Battle::Move::TwoTurnAttackRaiseUserSpAtkSpDefSpd2 < Battle::Move::TwoTurn
       break
     end
     if failed
-      @battle.pbDisplay(_INTL("¡Los stats de {1} no pueden aumentar más!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡Los stats de {1} no pueden aumentar más!", user.pbThis(true)))
       return true
     end
     return false
