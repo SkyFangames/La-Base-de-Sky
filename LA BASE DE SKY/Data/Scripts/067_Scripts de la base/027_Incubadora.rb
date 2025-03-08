@@ -311,26 +311,23 @@ end
 
 EventHandlers.add(:on_step_taken, :incubadora, proc{|sender,e|
   next if !$player || !$PokemonGlobal.eggs
-  for i in 0...$PokemonGlobal.eggs.length
-   egg = $PokemonGlobal.eggs[i]
-   next if egg == nil
-   if egg.steps_to_hatch>0
-     egg.steps_to_hatch-=1
-     for poke in $player.party
-       if poke.hasAbility?(:FLAMEBODY) ||
-          poke.hasAbility?(:MAGMAARMOR)
-         egg.steps_to_hatch-=1
-         break
-       end
-     end
-     if egg.steps_to_hatch<=0
-      egg.steps_to_hatch=0
+  $PokemonGlobal.eggs.each_with_index do |egg, i|
+    next unless egg
+    next unless egg.steps_to_hatch.positive?
+    egg.steps_to_hatch -= 1
+    $player.pokemon_party.each do |poke|
+      next if !poke.ability&.has_flag?("FasterEggHatching")
+      egg.steps_to_hatch -= 1
+      break
+    end
+    if egg.steps_to_hatch <= 0
+      egg.steps_to_hatch = 0
       pbHatch(egg)
       takeEgg(egg,i)
-     end
-   end
+    end
   end
 })
+
 
 
 def openHatcher
