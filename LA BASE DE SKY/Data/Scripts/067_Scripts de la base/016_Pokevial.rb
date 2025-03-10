@@ -9,6 +9,7 @@ class PokemonGlobalMetadata
 end
 
 INITIAL_CHARGES_POKEVIAL = 1 
+INFINITE_POKEVIAL = false
 
 ItemHandlers::UseFromBag.add(:VIAL, proc { |item| use_pokevial; next 1 })
 ItemHandlers::UseInField.add(:VIAL, proc { |item| use_pokevial; next 1 })
@@ -47,11 +48,13 @@ def show_message_pokevial
     Kernel.pbMessage(_INTL("El Pokévial está vacío. Recárgalo en el Centro Pokémon."))
     return false
   end
-  Kernel.pbMessage(_INTL("Tienes {1} {2} {3} de un máximo de {4}.",
-    $PokemonGlobal.vial_charges,
-    $PokemonGlobal.vial_charges == 1 ? "curación" : "curaciones",
-    $PokemonGlobal.vial_charges == 1 ? "disponible" : "disponibles",
-    $PokemonGlobal.max_vial_charges))
+  if !INFINITE_POKEVIAL
+    Kernel.pbMessage(_INTL("Tienes {1} {2} {3} de un máximo de {4}.",
+      $PokemonGlobal.vial_charges,
+      $PokemonGlobal.vial_charges == 1 ? "curación" : "curaciones",
+      $PokemonGlobal.vial_charges == 1 ? "disponible" : "disponibles",
+      $PokemonGlobal.max_vial_charges))
+  end
   true
 end
 
@@ -87,19 +90,19 @@ def heal_party_with_pokevial
   $player.heal_party
   pbMEPlay("Pkmn healing")
   Kernel.pbMessage(_INTL("¡Tu equipo Pokémon se ha curado al completo!"))
-  $PokemonGlobal.vial_charges -= 1
+  $PokemonGlobal.vial_charges -= 1 if !INFINITE_POKEVIAL
   $bag.replace_item(:VIAL, :EMPTYVIAL) if $PokemonGlobal.vial_charges <= 0
 end
 
 def recharge_vial
     return unless ensure_pokevial_initialized
     $PokemonGlobal.vial_charges = $PokemonGlobal.max_vial_charges
-    Kernel.pbMessage(_INTL("¡Tu Pokévial ha sido recargado!"))
+    Kernel.pbMessage(_INTL("¡Tu Pokévial ha sido recargado!")) if !INFINITE_POKEVIAL
     $bag.replace_item(:EMPTYVIAL,:VIAL) if $bag.has?(:EMPTYVIAL)
 end
 
 def add_new_vial_charge
-    return unless ensure_pokevial_initialized
+    return unless ensure_pokevial_initialized || INFINITE_POKEVIAL
     $PokemonGlobal.max_vial_charges += 1
     # Se hace de esta forma para que recibir una nueva carga no restaure completamente el vial
     $PokemonGlobal.vial_charges += 1
@@ -107,7 +110,7 @@ def add_new_vial_charge
 end
 
 def remove_vial_charge
-  return unless ensure_pokevial_initialized
+  return unless ensure_pokevial_initialized || INFINITE_POKEVIAL
   if $PokemonGlobal.max_vial_charges > 1
     $PokemonGlobal.max_vial_charges -= 1
     # Se hace de esta forma para que al eliminar una carga no restaure completamente el vial
