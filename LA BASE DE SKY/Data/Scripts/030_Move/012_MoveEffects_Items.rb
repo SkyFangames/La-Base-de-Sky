@@ -226,7 +226,7 @@ class Battle::Move::CorrodeTargetItem < Battle::Move
       if show_message
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis))
+          @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis(true)))
         else
           @battle.pbDisplay(_INTL("¡No afecta a {1} por su habilidad {2}!",
                                   target.pbThis(true), target.abilityName))

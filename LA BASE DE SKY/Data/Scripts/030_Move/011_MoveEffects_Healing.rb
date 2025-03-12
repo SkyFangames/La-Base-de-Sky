@@ -323,7 +323,7 @@ class Battle::Move::HealTargetDependingOnGrassyTerrain < Battle::Move
 
   def pbFailsAgainstTarget?(user, target, show_message)
     if target.hp == target.totalhp
-      @battle.pbDisplay(_INTL("¡Los PS de {1} están al máximo!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡Los PS de {1} están al máximo!", target.pbThis(true))) if show_message
       return true
     elsif !target.canHeal?
       @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis(true))) if show_message
