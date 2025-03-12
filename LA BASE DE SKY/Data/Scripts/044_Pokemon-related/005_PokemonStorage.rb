@@ -253,7 +253,6 @@ class PokemonStorage
 
   def pbDelete(box, indices)
     if indices.is_a?(Range) || indices.is_a?(Array)
-      echoln "range or array"
       indices.each do |index|
         if self[box, index]
           self[box, index] = nil

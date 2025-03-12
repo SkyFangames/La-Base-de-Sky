@@ -1241,7 +1241,6 @@ class PokemonStorageScene
       end
     end
     chosen_box = pbShowCommands(msg, commands, @storage.currentBox)
-    echoln "chosen_box #{chosen_box}"
     return chosen_box if chosen_box == -1
     return box_num[chosen_box]
   end

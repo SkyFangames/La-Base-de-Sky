@@ -159,8 +159,6 @@ class PokemonPokedexInfo_Scene
     family_to_insert = []
     blacklisted = [:PICHU_2, :FLOETTE_5, :GIMMIGHOUL_1].include?(species.id) ||
                   species.species == :PIKACHU && (8..15).include?(species.form)
-    
-    echoln "evos #{family_evos}"
 
     GameData::Species.each do |sp|
 
