@@ -113,7 +113,7 @@ class Debug_Passability
     bit = (1 << ((d / 2) - 1)) & 0x0f
     [2, 1, 0].each do |i|
       tile_id = $game_map.data[x, y, i]
-      next if tile_id == 0 || tile_id == nil
+      next if tile_id == 0 || tile_id == nil || !$passa_terrain_tags
       terrain = GameData::TerrainTag.try_get($passa_terrain_tags[tile_id])
       passage = $passa_passages[tile_id]
       if terrain
