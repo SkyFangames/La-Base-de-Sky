@@ -1043,7 +1043,7 @@ class Battle::Move::LowerTargetSpAtk2IfCanAttract < Battle::Move::TargetStatDown
         if Battle::Scene::USE_ABILITY_SPLASH
           @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true)))
         else
-          @battle.pbDisplay(_INTL("¡{1} de {2} le evita de caer enamorado!", target.pbThis, target.abilityName))
+          @battle.pbDisplay(_INTL("¡{1} de {2} le evita caer enamorado!", target.abilityName, target.pbThis(true)))
         end
         @battle.pbHideAbilitySplash(target)
       end
