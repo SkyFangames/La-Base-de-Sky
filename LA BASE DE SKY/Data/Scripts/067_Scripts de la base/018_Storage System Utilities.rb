@@ -552,6 +552,8 @@ class PokemonStorageScene
           pbUpdateOverlay(selection)
           pbSetMosaic(selection)
         end
+      elsif Input.trigger?(Input::AUX2)
+        pbSearch
       elsif Input.trigger?(Input::ACTION) && @command == 0   # Organize only
         if !t && !@grabber.carrying
           pbPlayDecisionSE

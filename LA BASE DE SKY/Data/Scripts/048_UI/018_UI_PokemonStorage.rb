@@ -888,6 +888,8 @@ class PokemonStorageScene
           pbUpdateOverlay(selection)
           pbSetMosaic(selection)
         end
+      elsif Input.trigger?(Input::AUX2)
+        pbSearch
       elsif Input.trigger?(Input::ACTION) && @command == 0   # Organize only
         pbPlayDecisionSE
         pbSetQuickSwap(!@quickswap)
@@ -908,6 +910,78 @@ class PokemonStorageScene
       end
     end
   end
+
+  def pbSearch
+    term = pbMessageFreeText(_INTL("¿Qué Pokémon buscar?"), "", false, 32)
+    return false if term.to_s.empty?
+  
+    search_results = {}
+    @storage.maxBoxes.times do |box|
+      next if @storage[box].nitems < 1
+      @storage.maxPokemon(box).times do |i|
+        pokemon = @storage[box, i]
+        next unless pokemon && !pokemon.egg?
+  
+        if pokemon.species_data.name.downcase.include?(term.downcase)
+          search_results[box] ||= []
+          search_results[box] << i
+        end
+      end
+    end
+  
+    return if search_results.empty?
+  
+    msg = _INTL("El Pokémon buscado está en las siguientes cajas. Elige a cúal desplazarte.")
+    commands, commands_keys = [], []
+  
+    search_results.keys.each do |box|
+      commands << @storage[box].name
+      commands_keys << box
+    end
+  
+    chosen_box = pbShowCommands(msg, commands)
+    return if chosen_box == -1 || !chosen_box
+  
+    key = commands_keys[chosen_box]
+    pbJumpToBox(key)
+    results = search_results[key]
+  
+    # Opacity change settings
+    opacity_change = 15 # Amount to change opacity by per step
+    total_steps = 7     # Number of steps for opacity change
+    wait_time = 0.2     # Time to wait between each step
+    max_pokemon = @storage.maxPokemon(key)
+  
+    # Decrease opacity in steps for Pokémon not in search results
+    total_steps.times do
+      max_pokemon.times do |i|
+        pokemon = @storage[key, i]
+        next unless pokemon
+        if !results.include?(i)
+          current_opacity = @sprites["box"].getPokemon(i).opacity
+          @sprites["box"].getPokemon(i).opacity = [current_opacity - opacity_change, 0].max
+        end
+      end
+      pbWait(wait_time)
+    end
+  
+    pbWait(1.2)
+  
+    # Increase opacity in steps for Pokémon not in search results
+    total_steps.times do
+      max_pokemon.times do |i|
+        pokemon = @storage[key, i]
+        next unless pokemon
+        if !results.include?(i)
+          current_opacity = @sprites["box"].getPokemon(i).opacity
+          @sprites["box"].getPokemon(i).opacity = [current_opacity + opacity_change, 255].min
+        end
+      end
+      pbWait(wait_time)
+    end
+  end
+  
+  
 
   def pbSelectBox(party)
     return pbSelectBoxInternal(party) if @command == 1   # Withdraw
