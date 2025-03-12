@@ -782,7 +782,7 @@ class PokemonStorageScreen
   def pbBoxCommands
     c_consts = [:JUMP]
 	c_consts.push(:SWAP) if CAN_SWAP_BOXES
-	c_consts.push(:WALL, :NAME, :RELEASE, :CANCEL)
+	c_consts.push(:WALL, :NAME, :RELEASE, :SORT, :CANCEL)
     commands = [
       _INTL("Saltar")
 	]
@@ -791,6 +791,7 @@ class PokemonStorageScreen
       _INTL("Fondo"),
       _INTL("Nombre"),
       _INTL("Liberar Caja"),
+      _INTL("Ordenar Caja"),
       _INTL("Cancelar")
     )
     command = pbShowCommands(_INTL("¿Qué quieres hacer?"), commands)
@@ -816,6 +817,8 @@ class PokemonStorageScreen
       @scene.pbBoxName(_INTL("¿Nombre de la Caja?"), 0, 12)
     when :RELEASE
       pbReleaseBox(@storage.currentBox)
+    when :SORT
+      pbSortBox(@storage.currentBox)
     end
   end
   
