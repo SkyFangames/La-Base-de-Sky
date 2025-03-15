@@ -931,7 +931,7 @@ class PokemonStorageScene
   
     return if search_results.empty?
   
-    msg = _INTL("El Pokémon buscado está en las siguientes cajas. Elige a cúal desplazarte.")
+    msg = _INTL("El Pokémon buscado está en las siguientes cajas. Elige a cual desplazarte.")
     commands, commands_keys = [], []
   
     search_results.keys.each do |box|
