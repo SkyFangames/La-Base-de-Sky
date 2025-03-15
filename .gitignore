@@ -23,3 +23,17 @@ LA BASE DE SKY/Data/Tilesets.rxdata
 LA BASE DE SKY/Data/System.rxdata
 LA BASE DE SKY/Data/States.rxdata
 LA BASE DE SKY/Data/Skills.rxdata
+
+# Sorbet files
+sorbet/
+
+# Rubocop cache
+.rubocop-https--*
+.rubocop_todo.yml
+
+# Bundler files
+vendor/
+.bundle/
+Gemfile.lock
+Gemfile
+.rubocop.yml
