@@ -14,6 +14,7 @@
 - Agrega opción para asignarle un estado a N Pokémon del equipo, puede ser en orden o aleatorio, se puede poner una probabilidad y además tiene en cuenta inmunidades por tipos o habilidades.
 - Al abrir la Pokedex desde el menú del equipo ahora, haciendolo con una forma alterna abre la Pokédex de esa forma.
 - Agrega opción para ordenar la caja del PC
+- Agrega opción para buscar un Pokémon en la PC
 
 ### AÑADIDOS V 1.1.1
 
