@@ -15,6 +15,8 @@
 - Al abrir la Pokedex desde el menú del equipo ahora, haciendolo con una forma alterna abre la Pokédex de esa forma.
 - Agrega opción para ordenar la caja del PC
 - Agrega opción para buscar un Pokémon en la PC
+- Actualizada la pantalla de título de la base.
+
 
 ### AÑADIDOS V 1.1.1
 
