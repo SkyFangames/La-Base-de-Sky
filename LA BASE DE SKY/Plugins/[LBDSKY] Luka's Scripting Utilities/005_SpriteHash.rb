@@ -33,6 +33,19 @@ class SpriteHash
     bitmap
   end
   #---------------------------------------------------------------------------
+  #  downloads a bitmap and returns it
+  #---------------------------------------------------------------------------
+  def online_bitmap(url)
+    file_name = url.split('/').last
+    pbDownloadToFile(url, file_name)
+    return nil unless File.safe_data?(file_name)
+
+    bitmap = self.class.bitmap(file_name)
+    File.delete(file_name)
+
+    bitmap
+  end
+  #---------------------------------------------------------------------------
   #  class constructor
   #---------------------------------------------------------------------------
   def initialize(viewport = nil)

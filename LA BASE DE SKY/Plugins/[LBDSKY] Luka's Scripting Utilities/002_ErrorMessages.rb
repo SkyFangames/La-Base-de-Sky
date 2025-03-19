@@ -80,6 +80,28 @@ module LUTS
       end
     end
     #---------------------------------------------------------------------------
+    #  unable to find function
+    #---------------------------------------------------------------------------
+    class MissingFunctionError < BaseError
+      def initialize(klass, function)
+        @klass    = klass
+        @function = function
+      end
+
+      private
+
+      def level
+        :warn
+      end
+
+      def message
+        "Undefined function `#{@function}' for class `#{@klass}'!"
+      end
+    end
+    #---------------------------------------------------------------------------
+    class ScriptError < ::StandardError
+    end
+    #---------------------------------------------------------------------------
   end
   #-----------------------------------------------------------------------------
   #  standard error wrapper for LUTS
