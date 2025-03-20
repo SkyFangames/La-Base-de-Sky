@@ -234,39 +234,38 @@ class Trainer
   # status_count: a cuántos Pokémon se les aplicará el status
   # probability: la probalidad de que se le asigne el status entre 1% y 100%
   # in_order: Si se asignará el status a los Pokémon de acuerdo a su posición en el equipo o si se seleccionará uno aleatorio
-  def give_status_party_pokemon(status, status_count = 1, probabilty = 25, in_order = true)
-    return if probabilty < 1
-    probabilty = 100 if probabilty > 100
-    return if !GameData::Status.exists?(status)
-
+  def give_status_party_pokemon(status, status_count = 1, probability = 25, in_order = true)
+    return if !GameData::Status.exists?(status) || able_pokemon_count < 1 || status_count < 1
+    probability = [[probability, 1].max, 100].min
     
-    return if able_pokemon_count < 1 || status_count < 1
-    
-    count = 0
     able_party_aux = able_party
+    count = 0
+    
     if in_order || status_count >= able_party_aux.length
       able_party_aux.each do |pokemon|
-        next if !pokemon.can_get_status?(status)
         break if count >= status_count
-        next if rand(100) >= probabilty
+        next unless pokemon.can_get_status?(status) && rand(100) < probability
         pokemon.status = status
         count += 1 
       end
     else
-      count = status_count
-      while count > 0 do
-        break if able_party_aux.empty?
+      while count < status_count && !able_party_aux.empty?
         pokemon = able_party_aux.sample
-        if !pokemon || !pokemon.can_get_status?(status)
-          able_party_aux.delete(pokemon)
-          next
-        end
-        next if rand(100) >= probabilty
-        pokemon.status = status
         able_party_aux.delete(pokemon)
-        count -= 1
+        next unless pokemon&.can_get_status?(status) && rand(100) < probability
+        pokemon.status = status
+        count += 1
       end
     end
+  end
+
+  # Este metodo inicia un combate contra un NPC con tu mismo equipo.
+  def battle_self(trainer_name, trainer_type)
+    clone = NPCTrainer.new(trainer_name, trainer_type)
+    clone.party = Marshal.load(Marshal.dump($player.party))
+    # En caso de quererle dar items al rival como el mega aro seria
+    clone.items = [:MEGARING] if $bag.has?(:MEGARING)
+    TrainerBattle.start(clone)
   end
 
   #=============================================================================
