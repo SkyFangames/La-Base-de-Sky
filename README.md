@@ -29,6 +29,7 @@
 - Opción para asignarle un estado a N Pokémon del equipo.
 - Correcciones IA movs Paldea y Hisui.
 - Actualizada la pantalla de título de la base.
+- Actualiza MK
 
 
 ### AÑADIDOS V 1.1.1
