@@ -161,7 +161,7 @@ module Battle::CatchAndStoreMixin
     if !pkmn.shadowPokemon?
       if $PokemonSystem.givenicknames == 0 &&
          pbDisplayConfirm(_INTL("¿Quieres ponerle un mote a {1}?", pkmn.name))
-        nickname = @scene.pbNameEntry(_INTL("Mote de {1}?", pkmn.speciesName), pkmn)
+        nickname = @scene.pbNameEntry(_INTL("¿Mote de {1}?", pkmn.speciesName), pkmn)
         pkmn.name = nickname
       end
     end
