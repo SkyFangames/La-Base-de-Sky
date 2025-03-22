@@ -482,43 +482,45 @@ class PBAnimation < Array
         begin 
           if bgGraphic.bitmap.nil?
             bgColor.opacity = oldbg[2] || 0 + ((i.opacity - (oldbg[2] || 0)) * fraction) if i.opacity
-            cr = i.colorRed ? oldbg[3]&.red || 0 + ((i.colorRed - (oldbg[3].red || Color.new(0, 0, 0, 0).red)) * fraction) : oldbg[3]&.red || Color.new(0, 0, 0, 0).red
-            cg = i.colorGreen ? oldbg[3]&.green || 0 + ((i.colorGreen - (oldbg[3]&.green || Color.new(0, 0, 0, 0).green)) * fraction) : oldbg[3]&.green || Color.new(0, 0, 0, 0).green
-            cb = i.colorBlue ? oldbg[3]&.blue || 0  + ((i.colorBlue - (oldbg[3]&.blue || Color.new(0, 0, 0, 0).blue)) * fraction) : oldbg[3]&.blue || Color.new(0, 0, 0, 0).blue
-            ca = i.colorAlpha ? oldbg[3]&.alpha || 0 + ((i.colorAlpha - (oldbg[3]&.alpha || Color.new(0, 0, 0, 0).alpha)) * fraction) : oldbg[3]&.alpha || Color.new(0, 0, 0, 0).alpha
+            cr = i.colorRed ? (oldbg[3]&.red || 0.0) + ((i.colorRed - (oldbg[3].red || Color.new(0, 0, 0, 0).red)) * fraction) : oldbg[3]&.red || Color.new(0, 0, 0, 0).red
+            cg = i.colorGreen ? (oldbg[3]&.green || 0.0) + ((i.colorGreen - (oldbg[3]&.green || Color.new(0, 0, 0, 0).green)) * fraction) : oldbg[3]&.green || Color.new(0, 0, 0, 0).green
+            cb = i.colorBlue ? (oldbg[3]&.blue || 0.0) + ((i.colorBlue - (oldbg[3]&.blue || Color.new(0, 0, 0, 0).blue)) * fraction) : oldbg[3]&.blue || Color.new(0, 0, 0, 0).blue
+            ca = i.colorAlpha ? (oldbg[3]&.alpha || 0.0) + ((i.colorAlpha - (oldbg[3]&.alpha || Color.new(0, 0, 0, 0).alpha)) * fraction) : oldbg[3]&.alpha || Color.new(0, 0, 0, 0).alpha
             bgColor.color = Color.new(cr, cg, cb, ca)
           else
-            bgGraphic.ox      = oldbg[0] - ((i.bgX - oldbg[0]) * fraction) if i.bgX
-            bgGraphic.oy      = oldbg[1] - ((i.bgY - oldbg[1]) * fraction) if i.bgY
-            bgGraphic.opacity = oldbg[2] + ((i.opacity - oldbg[2]) * fraction) if i.opacity && oldbg[2]
-            cr = i.colorRed ? oldbg[3].red + ((i.colorRed - oldbg[3].red) * fraction) : oldbg[3].red
-            cg = i.colorGreen ? oldbg[3].green + ((i.colorGreen - oldbg[3].green) * fraction) : oldbg[3].green
-            cb = i.colorBlue ? oldbg[3].blue + ((i.colorBlue - oldbg[3].blue) * fraction) : oldbg[3].blue
-            ca = i.colorAlpha ? oldbg[3].alpha + ((i.colorAlpha - oldbg[3].alpha) * fraction) : oldbg[3].alpha
+            bgGraphic.ox      = (oldbg[0] || 0) - ((i.bgX - oldbg[0] || 0) * fraction) if i&.bgX
+            bgGraphic.oy      = (oldbg[1] || 0) - ((i.bgY - oldbg[1] || 0) * fraction) if i&.bgY
+            bgGraphic.opacity = (oldbg[2] || 0) + ((i.opacity - oldbg[2]) * fraction) if i&.opacity && oldbg[2]
+            cr = i.colorRed ? (oldbg[3]&.red || 0.0) + ((i.colorRed - (oldbg[3]&.red || 0.0)) * fraction) : oldbg[3]&.red || 0.0
+            cg = i.colorGreen ? (oldbg[3]&.green || 0.0) + ((i.colorGreen - (oldbg[3]&.green || 0.0)) * fraction) : oldbg[3]&.green || 0.0
+            cb = i.colorBlue ? (oldbg[3]&.blue || 0.0) + ((i.colorBlue - (oldbg[3]&.blue || 0.0)) * fraction) : oldbg[3]&.blue || 0.0
+            ca = i.colorAlpha ? (oldbg[3]&.alpha || 0.0) + ((i.colorAlpha - (oldbg[3]&.alpha || 0.0)) * fraction) : oldbg[3]&.alpha || 0.0
             bgGraphic.color = Color.new(cr, cg, cb, ca)
           end
         rescue NoMethodError
+        rescue TypeError
         end
       when 4
         begin
           if foGraphic.bitmap.nil?
-            foColor.opacity = oldfo[2] || 0 + ((i.opacity - oldfo[2] || 0) * fraction) if i.opacity
-            cr = i.colorRed ? oldfo[3]&.red || 0 + ((i.colorRed - (oldfo[3]&.red || Color.new(0, 0, 0, 0).red)) * fraction) : oldfo[3]&.red || Color.new(0, 0, 0, 0).red
-            cg = i.colorGreen ? oldfo[3]&.green || 0 + ((i.colorGreen - (oldfo[3]&.green || Color.new(0, 0, 0, 0).green)) * fraction) : oldfo[3].green || Color.new(0, 0, 0, 0).green
-            cb = i.colorBlue ? oldfo[3]&.blue || 0 + ((i.colorBlue - (oldfo[3]&.blue || Color.new(0, 0, 0, 0).blue)) * fraction) : oldfo[3].blue || Color.new(0, 0, 0, 0).blue
-            ca = i.colorAlpha ? oldfo[3]&.alpha || 0 + ((i.colorAlpha - (oldfo[3]&.alpha || Color.new(0, 0, 0, 0).alpha)) * fraction) : oldfo[3].alpha || Color.new(0, 0, 0, 0).alpha
+            foColor.opacity = (oldfo[2] || 0.0) + ((i&.opacity - (oldfo[2] || 0)) * fraction) if i&.opacity 
+            cr = i.colorRed ? (oldfo[3]&.red || 0.0) + ((i.colorRed - (oldfo[3]&.red || Color.new(0, 0, 0, 0).red)) * fraction) : oldfo[3]&.red || Color.new(0, 0, 0, 0).red
+            cg = i.colorGreen ? (oldfo[3]&.green || 0.0) + ((i.colorGreen - (oldfo[3]&.green || Color.new(0, 0, 0, 0).green)) * fraction) : oldfo[3]&.green || Color.new(0, 0, 0, 0).green
+            cb = i.colorBlue ? (oldfo[3]&.blue || 0.0) + ((i.colorBlue - (oldfo[3]&.blue || Color.new(0, 0, 0, 0).blue)) * fraction) : oldfo[3]&.blue || Color.new(0, 0, 0, 0).blue
+            ca = i.colorAlpha ? (oldfo[3]&.alpha || 0.0) + ((i.colorAlpha - (oldfo[3]&.alpha || Color.new(0, 0, 0, 0).alpha)) * fraction) : oldfo[3]&.alpha || Color.new(0, 0, 0, 0).alpha
             foColor.color = Color.new(cr, cg, cb, ca)
           else
-            foGraphic.ox      = oldfo[0] - ((i.bgX - oldfo[0]) * fraction) if i.bgX
-            foGraphic.oy      = oldfo[1] - ((i.bgY - oldfo[1]) * fraction) if i.bgY
-            foGraphic.opacity = oldfo[2] + ((i.opacity - oldfo[2]) * fraction) if i.opacity && oldfo[2]
-            cr = i.colorRed ? oldfo[3].red + ((i.colorRed - oldfo[3].red) * fraction) : oldfo[3].red
-            cg = i.colorGreen ? oldfo[3].green + ((i.colorGreen - oldfo[3].green) * fraction) : oldfo[3].green
-            cb = i.colorBlue ? oldfo[3].blue + ((i.colorBlue - oldfo[3].blue) * fraction) : oldfo[3].blue
-            ca = i.colorAlpha ? oldfo[3].alpha + ((i.colorAlpha - oldfo[3].alpha) * fraction) : oldfo[3].alpha
+            foGraphic.ox      = (oldfo[0] || 0) - ((i.bgX - (oldfo[0] || 0)) * fraction) if i&.bgX
+            foGraphic.oy      = (oldfo[1] || 0) - ((i.bgY - (oldfo[1] || 0)) * fraction) if i&.bgY
+            foGraphic.opacity = (oldfo[2] || 0) + ((i.opacity - (oldfo[2] || 0)) * fraction) if i.opacity && oldfo[2]
+            cr = i.colorRed ? (oldfo[3]&.red || 0) + ((i.colorRed - (oldfo[3]&.red || 0)) * fraction) : oldfo[3]&.red || 0
+            cg = i.colorGreen ? (oldfo[3]&.green || 0) + ((i.colorGreen - (oldfo[3]&.green || 0)) * fraction) : oldfo[3]&.green || 0
+            cb = i.colorBlue ? (oldfo[3]&.blue || 0) + ((i.colorBlue - (oldfo[3]&.blue || 0)) * fraction) : oldfo[3]&.blue || 0
+            ca = i.colorAlpha ? (oldfo[3]&.alpha || 0) + ((i.colorAlpha - (oldfo[3]&.alpha || 0)) * fraction) : oldfo[3]&.alpha || 0
             foGraphic.color = Color.new(cr, cg, cb, ca)
           end
         rescue NoMethodError
+        rescue TypeError
         end
       end
     end

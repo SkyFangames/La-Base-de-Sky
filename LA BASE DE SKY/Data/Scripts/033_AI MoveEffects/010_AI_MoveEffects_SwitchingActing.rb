@@ -715,7 +715,6 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("DisableTargetUsingDiffe
                  move.move.moveBlacklist.include?(GameData::Move.get(target.battler.lastRegularMoveUsed).function_code)
     next true if target.effects[PBEffects::ShellTrap]
     next true if move.move.pbMoveFailedAromaVeil?(user.battler, target.battler, false)
-    will_fail = true
     next !target.check_for_move { |m| m.id == target.battler.lastRegularMoveUsed }
   }
 )

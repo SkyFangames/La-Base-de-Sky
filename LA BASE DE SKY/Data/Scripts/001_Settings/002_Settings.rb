@@ -33,7 +33,8 @@ module Settings
   # Muestra unas barras negras en los marcos superirores e inferiores 
   # A medida que se acercan a un entrenador se vuelven mas oscuras.
   MOSTRAR_BARRAS_ENTRENADORES = true
-  
+
+
   # Elige si cuando crees regalos misteriosos en el archivo MysteryGiftMaster.txt,
   # estos datos estarán o no encriptados. No encriptarlos ayuda a poder abrir el
   # archivo y ver el contenido desde cualquier editor de texto, pero en caso de que
@@ -244,6 +245,8 @@ module Settings
   # Las MOs se pueden olvidar
   CAN_FORGET_HMS = true 
 
+  INCUBATOR_CHOOSE_EGG_FROM_PC = true
+
   #=============================================================================
 
   # Los nombres de cada bolsillo de la Mochila.
@@ -321,7 +324,7 @@ module Settings
   # Si todas las formas de una especie de Pokémon concreto se pueden ver en la
   # Pokédex con solo haber visto una de ellas (true) o necesitas ver cada forma
   # por separado para que esa forma en concreto se vea en la Pokédex (falso).
-  DEX_SHOWS_ALL_FORMS = false
+  DEX_SHOWS_ALL_FORMS = true
   # Una lista de números, donde cada número es el de una de las Pokédex (en el 
   # mismo orden que las que hay arriba, salvo la Nacional, que es -1). Todas las
   # diferentes Pokédex que pongas aquí empezarán su número en 0 en lugar de en
@@ -471,7 +474,7 @@ module Settings
   # Lista de los posibles idiomas del juego. Cada uno es una lista que contiene
   # el nombre del idioma que se muestra en el juego y el fragmento del archivo
   # de ese lenguaje. Un lenguaje usa los archivos de datos que están en la 
-  # carpeta Data llamados essages_FRAGMENT_core.dat y messages_FRAGMENT_game.dat 
+  # carpeta Data llamados messages_FRAGMENT_core.dat y messages_FRAGMENT_game.dat 
   # (en caso de que existan).
   LANGUAGES = [
 #    ["Español", "español"],
@@ -558,6 +561,8 @@ module Settings
   
   ENABLE_SKIP_TEXT = false
 
+  # Desactiva el sonido de "bump" al chocarte con cosas.
+  DISABLE_BUMP_SOUND = false
   #=============================================================================
 
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 

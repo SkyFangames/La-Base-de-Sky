@@ -156,7 +156,7 @@ class Battle::Move::FailsUnlessTargetSharesTypeWithUser < Battle::Move
       break
     end
     if !sharesType
-      @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -757,7 +757,7 @@ class Battle::Move::SetUserAlliesAbilityToTargetAbility < Battle::Move
       return true
     end
     if user.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos de su Escudo Habilidad!",user.pbThis))
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos de su Escudo Habilidad!",user.pbThis(true)))
       return true
     end
     return false

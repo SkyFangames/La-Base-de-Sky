@@ -155,15 +155,15 @@ class PokemonBoxArrow < Sprite
     @quickswap  = false
     @heldpkmn   = nil
     @handsprite = ChangelingSprite.new(0, 0, viewport)
-    @handsprite.addBitmap("point1", "Graphics/UI/Storage/cursor_point_1")
-    @handsprite.addBitmap("point2", "Graphics/UI/Storage/cursor_point_2")
-    @handsprite.addBitmap("grab", "Graphics/UI/Storage/cursor_grab")
-    @handsprite.addBitmap("fist", "Graphics/UI/Storage/cursor_fist")
-    @handsprite.addBitmap("point1q", "Graphics/UI/Storage/cursor_point_1_q")
-    @handsprite.addBitmap("point2q", "Graphics/UI/Storage/cursor_point_2_q")
-    @handsprite.addBitmap("grabq", "Graphics/UI/Storage/cursor_grab_q")
-    @handsprite.addBitmap("fistq", "Graphics/UI/Storage/cursor_fist_q")
-    @handsprite.changeBitmap("fist")
+    @handsprite.add_bitmap(:point1, "Graphics/UI/Storage/cursor_point_1")
+    @handsprite.add_bitmap(:point2, "Graphics/UI/Storage/cursor_point_2")
+    @handsprite.add_bitmap(:grab, "Graphics/UI/Storage/cursor_grab")
+    @handsprite.add_bitmap(:fist, "Graphics/UI/Storage/cursor_fist")
+    @handsprite.add_bitmap(:point1q, "Graphics/UI/Storage/cursor_point_1_q")
+    @handsprite.add_bitmap(:point2q, "Graphics/UI/Storage/cursor_point_2_q")
+    @handsprite.add_bitmap(:grabq, "Graphics/UI/Storage/cursor_grab_q")
+    @handsprite.add_bitmap(:fistq, "Graphics/UI/Storage/cursor_fist_q")
+    @handsprite.change_bitmap(:fist)
     @spriteX = self.x
     @spriteY = self.y
   end
@@ -268,36 +268,36 @@ class PokemonBoxArrow < Sprite
     @holding = false if !heldpkmn
     if @grabbing_timer_start
       if System.uptime - @grabbing_timer_start <= GRAB_TIME / 2
-        @handsprite.changeBitmap((@quickswap) ? "grabq" : "grab")
+        @handsprite.change_bitmap((@quickswap) ? :grabq : :grab)
         self.y = @spriteY + lerp(0, 16, GRAB_TIME / 2, @grabbing_timer_start, System.uptime)
       else
         @holding = true
-        @handsprite.changeBitmap((@quickswap) ? "fistq" : "fist")
+        @handsprite.change_bitmap((@quickswap) ? :fistq : :fist)
         delta_y = lerp(16, 0, GRAB_TIME / 2, @grabbing_timer_start + (GRAB_TIME / 2), System.uptime)
         self.y = @spriteY + delta_y
         @grabbing_timer_start = nil if delta_y == 0
       end
     elsif @placing_timer_start
       if System.uptime - @placing_timer_start <= GRAB_TIME / 2
-        @handsprite.changeBitmap((@quickswap) ? "fistq" : "fist")
+        @handsprite.change_bitmap((@quickswap) ? :fistq : :fist)
         self.y = @spriteY + lerp(0, 16, GRAB_TIME / 2, @placing_timer_start, System.uptime)
       else
         @holding = false
         @heldpkmn = nil
-        @handsprite.changeBitmap((@quickswap) ? "grabq" : "grab")
+        @handsprite.change_bitmap((@quickswap) ? :grabq : :grab)
         delta_y = lerp(16, 0, GRAB_TIME / 2, @placing_timer_start + (GRAB_TIME / 2), System.uptime)
         self.y = @spriteY + delta_y
         @placing_timer_start = nil if delta_y == 0
       end
     elsif holding?
-      @handsprite.changeBitmap((@quickswap) ? "fistq" : "fist")
+      @handsprite.change_bitmap((@quickswap) ? :fistq : :fist)
     else   # Idling
       self.x = @spriteX
       self.y = @spriteY
       if (System.uptime / 0.5).to_i.even?   # Changes every 0.5 seconds
-        @handsprite.changeBitmap((@quickswap) ? "point1q" : "point1")
+        @handsprite.change_bitmap((@quickswap) ? :point1q : :point1)
       else
-        @handsprite.changeBitmap((@quickswap) ? "point2q" : "point2")
+        @handsprite.change_bitmap((@quickswap) ? :point2q : :point2)
       end
     end
     @updating = false
@@ -888,6 +888,8 @@ class PokemonStorageScene
           pbUpdateOverlay(selection)
           pbSetMosaic(selection)
         end
+      elsif Input.trigger?(Input::AUX2)
+        pbSearch
       elsif Input.trigger?(Input::ACTION) && @command == 0   # Organize only
         pbPlayDecisionSE
         pbSetQuickSwap(!@quickswap)
@@ -908,6 +910,78 @@ class PokemonStorageScene
       end
     end
   end
+
+  def pbSearch
+    term = pbMessageFreeText(_INTL("¿Qué Pokémon buscar?"), "", false, 32)
+    return false if term.to_s.empty?
+  
+    search_results = {}
+    @storage.maxBoxes.times do |box|
+      next if @storage[box].nitems < 1
+      @storage.maxPokemon(box).times do |i|
+        pokemon = @storage[box, i]
+        next unless pokemon && !pokemon.egg?
+  
+        if pokemon.species_data.name.downcase.include?(term.downcase)
+          search_results[box] ||= []
+          search_results[box] << i
+        end
+      end
+    end
+  
+    return if search_results.empty?
+  
+    msg = _INTL("El Pokémon buscado está en las siguientes cajas. Elige a cual desplazarte.")
+    commands, commands_keys = [], []
+  
+    search_results.keys.each do |box|
+      commands << @storage[box].name
+      commands_keys << box
+    end
+  
+    chosen_box = pbShowCommands(msg, commands)
+    return if chosen_box == -1 || !chosen_box
+  
+    key = commands_keys[chosen_box]
+    pbJumpToBox(key)
+    results = search_results[key]
+  
+    # Opacity change settings
+    opacity_change = 15 # Amount to change opacity by per step
+    total_steps = 7     # Number of steps for opacity change
+    wait_time = 0.2     # Time to wait between each step
+    max_pokemon = @storage.maxPokemon(key)
+  
+    # Decrease opacity in steps for Pokémon not in search results
+    total_steps.times do
+      max_pokemon.times do |i|
+        pokemon = @storage[key, i]
+        next unless pokemon
+        if !results.include?(i)
+          current_opacity = @sprites["box"].getPokemon(i).opacity
+          @sprites["box"].getPokemon(i).opacity = [current_opacity - opacity_change, 0].max
+        end
+      end
+      pbWait(wait_time)
+    end
+  
+    pbWait(1.2)
+  
+    # Increase opacity in steps for Pokémon not in search results
+    total_steps.times do
+      max_pokemon.times do |i|
+        pokemon = @storage[key, i]
+        next unless pokemon
+        if !results.include?(i)
+          current_opacity = @sprites["box"].getPokemon(i).opacity
+          @sprites["box"].getPokemon(i).opacity = [current_opacity + opacity_change, 255].min
+        end
+      end
+      pbWait(wait_time)
+    end
+  end
+  
+  
 
   def pbSelectBox(party)
     return pbSelectBoxInternal(party) if @command == 1   # Withdraw
@@ -1241,7 +1315,6 @@ class PokemonStorageScene
       end
     end
     chosen_box = pbShowCommands(msg, commands, @storage.currentBox)
-    echoln "chosen_box #{chosen_box}"
     return chosen_box if chosen_box == -1
     return box_num[chosen_box]
   end
@@ -1962,6 +2035,7 @@ class PokemonStorageScreen
       _INTL("Fondo"),
       _INTL("Nombre"),
       _INTL("Liberar Caja"),
+      _INTL("Ordenar Caja"),
       _INTL("Cancelar")
     ]
     command = pbShowCommands(_INTL("¿Qué hacer con?"), commands)
@@ -1984,6 +2058,8 @@ class PokemonStorageScreen
       @scene.pbBoxName(_INTL("¿Nombre de la caja?"), 0, 12)
     when 3
       pbReleaseBox(@storage.currentBox)
+    when 4
+      pbSortBox(@storage.currentBox)
     end
   end
 
@@ -2013,6 +2089,50 @@ class PokemonStorageScreen
       end
     end
     @scene.pbRefresh
+  end
+
+  def pbSortBox(box)
+    commands = [
+      _INTL("Por nombre de especie"),
+      _INTL("Por Orden de Pokédex"),
+      _INTL("Por Familia"),
+      _INTL("Cancelar")
+    ]
+    command = pbShowCommands(_INTL("¿Cómo quieres ordenar la caja?"), commands)
+    pokemon_array = []
+    eggs = []
+
+    return if command == -1 || command == commands.length - 1
+
+    # Get all Pokémon in the box
+    @storage.maxPokemon(box).times do |i|
+      pokemon = @storage[box, i]
+      next unless pokemon
+      pokemon.egg? ? eggs << pokemon : pokemon_array << pokemon
+    end
+
+    case command
+    when 0   # Sort by name
+      pokemon_array.sort_by! { |p| p.species_data.name }
+    when 1   # Sort by Pokédex number
+      pokemon_array.sort_by! { |p| pbGetDexList(p.species)[1] }
+    when 2   # Sort by evolution family
+      pokemon_array.sort_by! do |p|
+        species = GameData::Species.get(p.species)
+        base_dex = pbGetDexList(species.get_family_species.first)[1]
+        [base_dex, species.get_family_species.index(p.species)]
+      end
+    end
+
+    # Add eggs at the end
+    pokemon_array += eggs
+
+    # Clear the box and place sorted Pokémon
+    @storage.pbDelete(box, 0...@storage.maxPokemon(box))
+    pokemon_array.each_with_index { |pkmn, i| @storage[box, i] = pkmn }
+
+    @scene.pbRefresh
+    @scene.pbHardRefresh
   end
 
   def pbChoosePokemon(_party = nil)

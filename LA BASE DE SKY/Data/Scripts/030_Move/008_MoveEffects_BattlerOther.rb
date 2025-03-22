@@ -26,7 +26,7 @@ end
 class Battle::Move::SleepTargetIfUserDarkrai < Battle::Move::SleepTarget
   def pbMoveFailed?(user, targets)
     if !user.isSpecies?(:DARKRAI) && user.effects[PBEffects::TransformSpecies] != :DARKRAI
-      @battle.pbDisplay(_INTL("¡Pero {1} no puede usar el movimiento!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡Pero {1} no puede usar el movimiento!", user.pbThis(true)))
       return true
     end
     return false
@@ -386,7 +386,7 @@ class Battle::Move::GiveUserStatusToTarget < Battle::Move
       msg = _INTL("{1} fue curado del envenenamiento.", user.pbThis)
     when :BURN
       target.pbBurn(user)
-      msg = _INTL("La quemadura de {1} fue curada.", user.pbThis)
+      msg = _INTL("La quemadura de {1} fue curada.", user.pbThis(true))
     when :PARALYSIS
       target.pbParalyze(user)
       msg = _INTL("{1} fue curado de la parálisis.", user.pbThis)
@@ -423,7 +423,7 @@ class Battle::Move::CureUserBurnPoisonParalysis < Battle::Move
     user.pbCureStatus(false)
     case old_status
     when :BURN
-      @battle.pbDisplay(_INTL("La quemadura de {1} fue curada.", user.pbThis))
+      @battle.pbDisplay(_INTL("La quemadura de {1} fue curada.", user.pbThis(true)))
     when :POISON
       @battle.pbDisplay(_INTL("{1} fue curado del envenenamiento.", user.pbThis))
     when :PARALYSIS
@@ -957,7 +957,7 @@ class Battle::Move::UserLosesFireType < Battle::Move
   def pbEffectAfterAllHits(user, target)
     if !user.effects[PBEffects::BurnUp]
       user.effects[PBEffects::BurnUp] = true
-      @battle.pbDisplay(_INTL("¡El fuego interior de {1} se ha extinguido!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡El fuego interior de {1} se ha extinguido!", user.pbThis(true)))
     end
   end
 end
@@ -983,7 +983,7 @@ class Battle::Move::SetTargetAbilityToSimple < Battle::Move
     end
     ret = false
     if !ret && target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis(true))) if show_message
       return true
     end
     return ret
@@ -994,7 +994,7 @@ class Battle::Move::SetTargetAbilityToSimple < Battle::Move
     oldAbil = target.ability
     target.ability = :SIMPLE
     @battle.pbReplaceAbilitySplash(target)
-    @battle.pbDisplay(_INTL("¡La habilidad de {1} ha cambiado a {2}!", target.pbThis, target.abilityName))
+    @battle.pbDisplay(_INTL("¡La habilidad de {1} ha cambiado a {2}!", target.pbThis(true), target.abilityName))
     @battle.pbHideAbilitySplash(target)
     target.pbOnLosingAbility(oldAbil)
     target.pbTriggerAbilityOnGainingIt
@@ -1021,7 +1021,7 @@ class Battle::Move::SetTargetAbilityToInsomnia < Battle::Move
       return true
     end
     if target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -1032,7 +1032,7 @@ class Battle::Move::SetTargetAbilityToInsomnia < Battle::Move
     oldAbil = target.ability
     target.ability = :INSOMNIA
     @battle.pbReplaceAbilitySplash(target)
-    @battle.pbDisplay(_INTL("¡El {1} adquirió {2}!", target.pbThis, target.abilityName))
+    @battle.pbDisplay(_INTL("¡El {1} adquirió {2}!", target.pbThis(true), target.abilityName))
     @battle.pbHideAbilitySplash(target)
     target.pbOnLosingAbility(oldAbil)
     target.pbTriggerAbilityOnGainingIt
@@ -1047,7 +1047,7 @@ class Battle::Move::SetUserAbilityToTargetAbility < Battle::Move
 
   def pbMoveFailed?(user, targets)
     if user.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", user.pbThis(true)))
       return true
     end
     if user.unstoppableAbility?
@@ -1108,7 +1108,7 @@ class Battle::Move::SetTargetAbilityToUserAbility < Battle::Move
       return true
     end
     if target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -1119,7 +1119,7 @@ class Battle::Move::SetTargetAbilityToUserAbility < Battle::Move
     oldAbil = target.ability
     target.ability = user.ability
     @battle.pbReplaceAbilitySplash(target)
-    @battle.pbDisplay(_INTL("¡La habilidad de {1} ha cambiado a {2}!", target.pbThis, target.abilityName))
+    @battle.pbDisplay(_INTL("¡La habilidad de {1} ha cambiado a {2}!", target.pbThis(true), target.abilityName))
     @battle.pbHideAbilitySplash(target)
     target.pbOnLosingAbility(oldAbil)
     target.pbTriggerAbilityOnGainingIt
@@ -1134,7 +1134,7 @@ class Battle::Move::UserTargetSwapAbilities < Battle::Move
 
   def pbMoveFailed?(user, targets)
     if user.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", user.pbThis(true)))
       return true
     end
     
@@ -1168,7 +1168,7 @@ class Battle::Move::UserTargetSwapAbilities < Battle::Move
       return true
     end
     if target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -1216,7 +1216,7 @@ class Battle::Move::NegateTargetAbility < Battle::Move
       return true
     end
     if target.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos del Escudo Habilidad!", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -1225,7 +1225,7 @@ class Battle::Move::NegateTargetAbility < Battle::Move
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::GastroAcid] = true
     target.effects[PBEffects::Truant]     = false
-    @battle.pbDisplay(_INTL("¡Se ha anulado la Habilidad del {1}!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡Se ha anulado la Habilidad del {1}!", target.pbThis(true)))
     target.pbOnLosingAbility(target.ability, true)
   end
 end
@@ -1244,7 +1244,7 @@ class Battle::Move::NegateTargetAbilityIfTargetActed < Battle::Move
               @battle.choices[target.index][0] == :Shift) && target.movedThisRound?)
     target.effects[PBEffects::GastroAcid] = true
     target.effects[PBEffects::Truant]     = false
-    @battle.pbDisplay(_INTL("¡Se ha anulado la Habilidad del {1}!", target.pbThis))
+    @battle.pbDisplay(_INTL("¡Se ha anulado la Habilidad del {1}!", target.pbThis(true)))
     target.pbOnLosingAbility(target.ability, true)
   end
 end

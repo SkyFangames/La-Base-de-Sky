@@ -6,6 +6,7 @@ module GameData
     attr_reader :version
     attr_reader :items
     attr_reader :real_lose_text
+    attr_reader :real_lose_text_f
     attr_reader :pokemon
     attr_reader :pbs_file_suffix
 
@@ -19,6 +20,7 @@ module GameData
       "SectionName" => [:id,             "esU", :TrainerType],
       "Items"       => [:items,          "*e", :Item],
       "LoseText"    => [:real_lose_text, "q"],
+      "LoseText_F"  => [:real_lose_text_f, "q"],
       "Pokemon"     => [:pokemon,        "ev", :Species]   # Species, level
     }
     # This schema is for definable properties of individual Pokémon (apart from
@@ -84,13 +86,14 @@ module GameData
     end
 
     def initialize(hash)
-      @id              = hash[:id]
-      @trainer_type    = hash[:trainer_type]
-      @real_name       = hash[:real_name]       || ""
-      @version         = hash[:version]         || 0
-      @items           = hash[:items]           || []
-      @real_lose_text  = hash[:real_lose_text]  || "..."
-      @pokemon         = hash[:pokemon]         || []
+      @id                = hash[:id]
+      @trainer_type      = hash[:trainer_type]
+      @real_name         = hash[:real_name]        || ""
+      @version           = hash[:version]          || 0
+      @items             = hash[:items]            || []
+      @real_lose_text    = hash[:real_lose_text]   || "..."
+      @real_lose_text_f  = hash[:real_lose_text_f] || @real_lose_text 
+      @pokemon           = hash[:pokemon]          || []
       @pokemon.each do |pkmn|
         GameData::Stat.each_main do |s|
           pkmn[:iv][s.id] ||= 0 if pkmn[:iv]
@@ -107,7 +110,9 @@ module GameData
 
     # @return [String] the translated in-battle lose message of this trainer
     def lose_text
-      return pbGetMessageFromHash(MessageTypes::TRAINER_SPEECHES_LOSE, @real_lose_text)
+      speech = $player&.female? ? MessageTypes::TRAINER_SPEECHES_LOSE_F : MessageTypes::TRAINER_SPEECHES_LOSE
+      text = $player&.female? && !nil_or_empty?(@real_lose_text_f) ? @real_lose_text_f : @real_lose_text
+      return pbGetMessageFromHash(speech, text)
     end
 
     # Creates a battle-ready version of a trainer's data.

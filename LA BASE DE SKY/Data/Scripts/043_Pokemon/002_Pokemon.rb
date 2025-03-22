@@ -260,6 +260,40 @@ class Pokemon
     @status = new_status.id
   end
 
+  def can_get_status?(status)
+    # Type immunities
+    hasImmuneType = false
+    case status
+    when :SLEEP
+      # No type is immune to sleep
+    when :POISON
+      hasImmuneType |= hasType?(:POISON)
+      hasImmuneType |= hasType?(:STEEL)
+    when :BURN
+      hasImmuneType |= hasType?(:FIRE)
+    when :PARALYSIS
+      hasImmuneType |= hasType?(:ELECTRIC) && Settings::MORE_TYPE_EFFECTS
+    when :FROZEN 
+      hasImmuneType |= hasType?(:ICE)
+    when :FROSTBITE
+      hasImmuneType |= hasType?(:ICE)
+    end
+    return false if hasImmuneType
+
+    # Ability immunity
+    immuneByAbility = false
+    if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, status)
+      immuneByAbility = true
+    else
+      if Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, status)
+        immuneByAbility = true
+      end
+    end
+      
+    return !immuneByAbility
+      
+  end
+
   # @return [Boolean] whether the Pokémon is not fainted and not an egg
   def able?
     return !egg? && @hp > 0

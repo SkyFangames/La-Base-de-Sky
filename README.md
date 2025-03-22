@@ -6,6 +6,32 @@
 
 ### [DESCARGAR BASE](https://skyfangames.blogspot.com/2024/01/base-de-sky.html)
 
+### AÑADIDOS V 1.1.2
+
+- Refactor del BetterMoveRelearner.
+- Agrega opción de LoseText_F en el PBS de los trainers, este texto será usado cuando un trainer pierda cuando el jugador esté con el personajes femenino.
+- La incubadora ahora permite elegir los huevos desde el PC
+- Agrega opción para asignarle un estado a N Pokémon del equipo, puede ser en orden o aleatorio, se puede poner una probabilidad y además tiene en cuenta inmunidades por tipos o habilidades.
+- Al abrir la Pokedex desde el menú del equipo ahora, haciendolo con una forma alterna abre la Pokédex de esa forma.
+- Agrega opción para ordenar la caja del PC.
+- Agrega opción para buscar un Pokémon en la PC pulsando la W.
+- Correcciones pokedex quick access desde el PC.
+- Agrega opcion de pokevial infinito.
+- Agrega nombre de MT al encontrar una MT.
+- Agrega opcion fondo terreno y fondo TR a la vez.
+- Validacion para evitar crasheos Triple Axel DBK.
+- Correccion fiebre dorada.
+- Correcciones expshare, especialmente en nuevas partidas.
+- Correcciones NPC Random y Monotype.
+- Helper para ver si el primer pokemon del equipo es una especie en particular.
+- Actualizacion de las Luka's Scripting Utilities.
+- Agrega opcion de activar el turbo solo en combates.
+- Opción para asignarle un estado a N Pokémon del equipo.
+- Correcciones IA movs Paldea y Hisui.
+- Actualizada la pantalla de título de la base.
+- Actualiza MK
+
+
 ### AÑADIDOS V 1.1.1
 
 - Múltiples correcciones de bugs
@@ -16,7 +42,6 @@
 - Cambios de textos para que se adapten mejor a la UI
 - Mejoras en el scripts_combine y scripts_extract
 - La tecla SPECIAL (D) también cerrará el menu de objetos registrados basicamente conviertiendo la D en un toggle de este menú
-                                               
 
 ### AÑADIDOS V 1.1.0
 
@@ -196,3 +221,4 @@
 - Repelente Infinito como objeto clave.
 - Acceso directo a la pokédex desde el menu del pokemon y desde el PC.
 - Turbo con 3 velocidades, tanto para combates como para el juego en general, arriba a la izquierda muestra la velocidad al cambiarla.
+

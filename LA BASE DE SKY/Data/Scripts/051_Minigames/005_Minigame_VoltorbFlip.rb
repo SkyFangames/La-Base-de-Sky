@@ -405,7 +405,7 @@ class VoltorbFlip
     elsif Input.trigger?(Input::BACK)
       @sprites["curtain"].opacity = 100
       if @points == 0
-        if pbConfirmMessage("You haven't found any Coins! Are you sure you want to quit?")
+        if pbConfirmMessage("¡No has encontrado ninguna Moneda! ¿Estás segur#{$player.female? ? 'a' : 'o'} de que deseas salir?")
           @sprites["curtain"].opacity = 0
           pbShowAndDispose
           @quit = true

@@ -127,7 +127,6 @@ class PokemonSaveScreen
     return ret
   end
 end
-
 #===============================================================================
 #
 #===============================================================================
@@ -137,4 +136,3 @@ def pbSaveScreen
   ret = screen.pbSaveScreen
   return ret
 end
-

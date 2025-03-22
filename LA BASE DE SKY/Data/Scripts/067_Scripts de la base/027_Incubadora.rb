@@ -184,21 +184,28 @@ class Hatcher
         if $PokemonGlobal.eggs[@index] == nil
           ret = Kernel.pbConfirmMessage("La incubadora está vacía\\n¿Quieres agregar un Huevo?")
           if ret == true
-            chosen=0
-            pbFadeOutIn(99999){
-               scene = PokemonParty_Scene.new
-               screen = PokemonPartyScreen.new(scene, $player.party)
-               screen.pbStartScene(_INTL("Elige un Huevo."),false)
-               chosen=screen.pbChoosePokemon
-               screen.pbEndScene
-            }
-            if chosen != -1 && $player.party[chosen] != nil
-              if !$player.party[chosen].egg?
-                Kernel.pbMessage("El Pokémon elegido no es un Huevo.")
-              else
-                $PokemonGlobal.eggs[@index] = $player.party[chosen]
-                $player.party.delete_at(chosen)
-                $game_temp.bag_scene.pbHardRefresh if $game_temp && $game_temp.bag_scene && defined?($game_temp.bag_scene.pbHardRefresh)
+            if Settings::INCUBATOR_CHOOSE_EGG_FROM_PC
+              chosen = pbChooseEggFromPC
+              if chosen && chosen.is_a?(Pokemon)
+                $PokemonGlobal.eggs[@index] = chosen
+              end
+            else
+              chosen=0
+              pbFadeOutIn(99999){
+                scene = PokemonParty_Scene.new
+                screen = PokemonPartyScreen.new(scene, $player.party)
+                screen.pbStartScene(_INTL("Elige un Huevo."),false)
+                chosen=screen.pbChoosePokemon
+                screen.pbEndScene
+              }
+              if chosen != -1 && $player.party[chosen] != nil
+                if !$player.party[chosen].egg?
+                  Kernel.pbMessage("El Pokémon elegido no es un Huevo.")
+                else
+                  $PokemonGlobal.eggs[@index] = $player.party[chosen]
+                  $player.party.delete_at(chosen)
+                  $game_temp.bag_scene.pbHardRefresh if $game_temp && $game_temp.bag_scene && defined?($game_temp.bag_scene.pbHardRefresh)
+                end
               end
             end
           end
@@ -304,31 +311,103 @@ end
 
 EventHandlers.add(:on_step_taken, :incubadora, proc{|sender,e|
   next if !$player || !$PokemonGlobal.eggs
-  for i in 0...$PokemonGlobal.eggs.length
-   egg = $PokemonGlobal.eggs[i]
-   next if egg == nil
-   if egg.steps_to_hatch>0
-     egg.steps_to_hatch-=1
-     for poke in $player.party
-       if poke.hasAbility?(:FLAMEBODY) ||
-          poke.hasAbility?(:MAGMAARMOR)
-         egg.steps_to_hatch-=1
-         break
-       end
-     end
-     if egg.steps_to_hatch<=0
-      egg.steps_to_hatch=0
+  $PokemonGlobal.eggs.each_with_index do |egg, i|
+    next unless egg
+    next unless egg.steps_to_hatch.positive?
+    egg.steps_to_hatch -= 1
+    $player.pokemon_party.each do |poke|
+      next if !poke.ability&.has_flag?("FasterEggHatching")
+      egg.steps_to_hatch -= 1
+      break
+    end
+    if egg.steps_to_hatch <= 0
+      egg.steps_to_hatch = 0
       pbHatch(egg)
       takeEgg(egg,i)
-     end
-   end
+    end
   end
 })
+
 
 
 def openHatcher
   scene = Hatcher.new
   scene.update
+end
+
+
+class PokemonStorageScreen
+  def pbChooseEggFromPC
+    $game_temp.in_storage = true
+    @heldpkmn = nil
+    @scene.pbStartBox(self, 0)
+    retval = nil
+    to_delete =  []
+    loop do
+      selected = @scene.pbSelectBox(@storage.party)
+      if selected && selected[0] == -3   # Close box
+        if pbConfirm(_INTL("¿Salir del PC?"))
+          pbSEPlay("PC close")
+          break
+        end
+        next
+      end
+      if selected.nil?
+        next if pbConfirm(_INTL("¿Continuar operaciones?"))
+        break
+      elsif selected[0] == -4   # Box name
+        pbBoxCommands
+      else
+        pokemon = @storage[selected[0], selected[1]]
+        next if !pokemon
+        commands = [
+          _INTL("Elegir"),
+          _INTL("Datos"),
+        ]
+        commands.push(_INTL("Debug")) if $DEBUG
+        commands.push(_INTL("Cancelar"))
+        helptext = _INTL("Huevo elegido.")
+        command = pbShowCommands(helptext, commands)
+        case command
+        when 0   # Select
+          if pokemon.egg?
+            retval = pokemon
+            to_delete = selected
+            break
+          else
+            pbMessage(_INTL("¡Debes elegir un huevo!"))
+          end
+        when 1 # Summary
+          pbSummary(selected, nil)
+        when 2
+          if $DEBUG
+            pbPokemonDebug(pokemon, selected)
+          end
+        end
+      end
+    end
+    @scene.pbCloseBox
+    $game_temp.in_storage = false
+    if retval && retval.is_a?(Pokemon)
+      if to_delete[0] == -1
+        $player.party.delete_at(to_delete[1])
+        $game_temp&.bag_scene&.pbHardRefresh
+      else
+        @storage[to_delete[0], to_delete[1]] = nil
+      end
+    end
+    return retval
+  end
+end
+
+def pbChooseEggFromPC
+  chosen = nil
+  pbFadeOutIn {
+    scene = PokemonStorageScene.new
+    screen = PokemonStorageScreen.new(scene, $PokemonStorage)
+    chosen = screen.pbChooseEggFromPC
+  }
+  chosen
 end
 
 

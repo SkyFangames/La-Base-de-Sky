@@ -6,7 +6,7 @@
 module SaveData
   # Contiene la ruta del archivo de guardado.
   FILE_PATH = if File.directory?(System.data_directory)
-                System.data_directory + "/Game.rxdata"
+                File.join(System.data_directory, "Game.rxdata")
               else
                 "./Game.rxdata"
               end
@@ -84,4 +84,3 @@ module SaveData
     return hash
   end
 end
-

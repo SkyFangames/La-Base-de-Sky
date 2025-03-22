@@ -7,16 +7,16 @@ MenuHandlers.add(:party_menu, :pokedex, {
     "order"     => 60,
     "condition" => proc { next $player.has_pokedex && $player.pokedex.unlocked?(-1) },
     "effect"    => proc { |screen, party, party_idx|
-      openPokedexOnPokemon(party[party_idx].species)
+      openPokedexOnPokemon(party[party_idx].species, party[party_idx].gender, party[party_idx].form)
     }
 })
 
-def openPokedexOnPokemon(species)
-
+def openPokedexOnPokemon(species, gender, form = 0)
     region = -1
     pokedexScene = PokemonPokedexInfo_Scene.new
     pokedexScreen = PokemonPokedexInfoScreen.new(pokedexScene)
     dexlist, index = pbGetDexList(species, region)
+    $player.pokedex.set_last_form_seen(species, gender, form)
     pokedexScreen.pbStartScreen(dexlist, index, region)
 end
 
@@ -177,8 +177,8 @@ class PokemonStorageScreen
               elsif cmdRelease >= 0 && command == cmdRelease   # Release
                 pbRelease(selected, @heldpkmn)
               elsif cmdPokedex >= 0 && command == cmdPokedex    # Pokédex
-                  openPokedexOnPokemon(pokemon.species) if pokemon
-                  openPokedexOnPokemon(@heldpkmn.species) if !pokemon && @heldpkmn
+                  openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form) if pokemon
+                  openPokedexOnPokemon(@heldpkmn.species, @heldpkmn.gender, @heldpkmn.form) if !pokemon && @heldpkmn
               elsif cmdDebug >= 0 && command == cmdDebug   # Debug
                 pbPokemonDebug((@heldpkmn) ? @heldpkmn : pokemon, selected, heldpoke)
               end
@@ -222,7 +222,7 @@ class PokemonStorageScreen
               when 1 then pbSummary(selected, nil)
               when 2 then pbMark(selected, nil)
               when 3 then pbRelease(selected, nil)
-              when 4 then openPokedexOnPokemon(pokemon.species)
+              when 4 then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
             end
           end
         end
@@ -255,7 +255,7 @@ class PokemonStorageScreen
               when 1 then pbSummary([-1, selected], nil)
               when 2 then pbMark([-1, selected], nil)
               when 3 then pbRelease([-1, selected], nil)
-              when 4 then openPokedexOnPokemon(pokemon.species)
+              when 4 then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
             end
           end
         end

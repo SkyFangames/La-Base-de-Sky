@@ -497,7 +497,8 @@ def pbTrainerBattleEditor
             tr_data.trainer_type,
             tr_data.real_name,
             tr_data.version,
-            tr_data.real_lose_text
+            tr_data.real_lose_text,
+            tr_data.real_lose_text_f
           ]
           Settings::MAX_PARTY_SIZE.times do |i|
             data.push(tr_data.pokemon[i])
@@ -1115,7 +1116,6 @@ def pbRegionalDexEditorMain
   pbLoadRegionalDexes.each_with_index { |d, index| dex_lists[index] = d.clone }
   commands = []
   refresh_list = true
-  oldsel = -1
   cmd = [0, 0]   # [action, index in list]
   loop do
     # Populate commands
@@ -1127,7 +1127,6 @@ def pbRegionalDexEditorMain
       refresh_list = false
     end
     # Choose to do something
-    oldsel = -1
     cmd = pbCommands3(cmd_window, commands, -1, cmd[1], true)
     case cmd[0]
     when 1   # Swap Dex up
@@ -1271,7 +1270,6 @@ def pbAnimationsOrganiser
   info.z = 2
   commands = []
   refreshlist = true
-  oldsel = -1
   cmd = [0, 0]
   loop do
     if refreshlist
@@ -1281,7 +1279,6 @@ def pbAnimationsOrganiser
       end
     end
     refreshlist = false
-    oldsel = -1
     cmd = pbCommands3(cmdwin, commands, -1, cmd[1], true)
     case cmd[0]
     when 1   # Swap animation up

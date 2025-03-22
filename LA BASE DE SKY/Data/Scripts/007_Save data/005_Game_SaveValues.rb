@@ -125,4 +125,3 @@ SaveData.register(:stats) do
   new_game_value { GameStats.new }
   reset_on_new_game
 end
-

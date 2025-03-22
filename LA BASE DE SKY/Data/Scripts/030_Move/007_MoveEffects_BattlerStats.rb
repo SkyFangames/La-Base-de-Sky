@@ -455,7 +455,7 @@ class Battle::Move::LowerUserDefSpDef1RaiseUserAtkSpAtkSpd2 < Battle::Move
       end
     end
     if failed
-      @battle.pbDisplay(_INTL("Las estadísticas de {1} no pueden alterarse más!", user.pbThis))
+      @battle.pbDisplay(_INTL("Las estadísticas de {1} no pueden alterarse más!", user.pbThis(true)))
       return true
     end
     return false
@@ -875,7 +875,7 @@ class Battle::Move::RaiseTargetRandomStat2 < Battle::Move
       @statArray.push(s.id) if target.pbCanRaiseStatStage?(s.id, user, self)
     end
     if @statArray.length == 0
-      @battle.pbDisplay(_INTL("Las estadísticas de {1} no pueden aumentar más!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("Las estadísticas de {1} no pueden aumentar más!", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -1034,16 +1034,16 @@ class Battle::Move::LowerTargetSpAtk2IfCanAttract < Battle::Move::TargetStatDown
     return true if super
     return false if damagingMove?
     if user.gender == 2 || target.gender == 2 || user.gender == target.gender
-      @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true))) if show_message
       return true
     end
     if target.hasActiveAbility?(:OBLIVIOUS) && !@battle.moldBreaker
       if show_message
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis))
+          @battle.pbDisplay(_INTL("No afecta a {1}...", target.pbThis(true)))
         else
-          @battle.pbDisplay(_INTL("¡{1} de {2} le evita de caer enamorado!", target.pbThis, target.abilityName))
+          @battle.pbDisplay(_INTL("¡{1} de {2} le evita caer enamorado!", target.abilityName, target.pbThis(true)))
         end
         @battle.pbHideAbilitySplash(target)
       end
@@ -1402,7 +1402,7 @@ class Battle::Move::LowerPoisonedTargetAtkSpAtkSpd1 < Battle::Move
       if failed
         @battle.pbShowAbilitySplash(target)
         if !Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡Se activó {2} de {1}!", target.pbThis, target.abilityName))
+          @battle.pbDisplay(_INTL("¡Se activó {2} de {1}!", target.pbThis(true), target.abilityName))
         end
         user.pbCanLowerStatStage?(@statDown[0], target, self, true, false, true)   # Show fail message
         @battle.pbHideAbilitySplash(target)
@@ -1454,7 +1454,7 @@ class Battle::Move::RaiseAlliesAtkDef1 < Battle::Move
 
   def pbFailsAgainstTarget?(user, target, show_message)
     return false if @validTargets.any? { |b| b.index == target.index }
-    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis)) if show_message
+    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis(true))) if show_message
     return true
   end
 
@@ -1502,7 +1502,7 @@ class Battle::Move::RaisePlusMinusUserAndAlliesAtkSpAtk1 < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     return false if @validTargets.any? { |b| b.index == target.index }
     return true if !target.hasActiveAbility?([:MINUS, :PLUS])
-    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis)) if show_message
+    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis(true))) if show_message
     return true
   end
 
@@ -1555,7 +1555,7 @@ class Battle::Move::RaisePlusMinusUserAndAlliesDefSpDef1 < Battle::Move
   def pbFailsAgainstTarget?(user, target, show_message)
     return false if @validTargets.any? { |b| b.index == target.index }
     return true if !target.hasActiveAbility?([:MINUS, :PLUS])
-    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis)) if show_message
+    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis(true))) if show_message
     return true
   end
 
@@ -1600,7 +1600,7 @@ class Battle::Move::RaiseGroundedGrassBattlersAtkSpAtk1 < Battle::Move
     return false if @validTargets.include?(target.index)
     return true if !target.pbHasType?(:GRASS)
     return true if target.airborne? || target.semiInvulnerable?
-    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis)) if show_message
+    @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", target.pbThis(true))) if show_message
     return true
   end
 
@@ -1802,7 +1802,7 @@ class Battle::Move::ResetTargetStatStages < Battle::Move
     if target.damageState.calcDamage > 0 && !target.damageState.substitute &&
        target.hasAlteredStatStages?
       target.pbResetStatStages
-      @battle.pbDisplay(_INTL("¡Las características de {1} han vuelto a sus valores originales!", target.pbThis))
+      @battle.pbDisplay(_INTL("¡Las características de {1} han vuelto a sus valores originales!", target.pbThis(true)))
     end
   end
 end
@@ -2059,14 +2059,38 @@ end
 #===============================================================================
 # Lowers the user's Sp.Atk by 1 stage. Also scatters coins to be picked up.
 #-------------------------------------------------------------------------------
-class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
-  def pbEffectGeneral(user)
-    if user.pbOwnedByPlayer?
+#===============================================================================
+# Make it Rain
+#===============================================================================
+# Lowers the user's Sp.Atk by 1 stage. Also scatters coins to be picked up.
+#-------------------------------------------------------------------------------
+class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move
+  attr_reader :statDown
+  def initialize(battle, move)
+    super
+    @statDown = [:SPECIAL_ATTACK, 1]
+  end
+  
+  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
+    return if @battle.pbAllFainted?(user.idxOpposingSide)
+    hit_target = false
+    targets.each do |b|
+      next if b.damageState.missed
+      next if b.damageState.protected
+      next if b.damageState.unaffected
+      hit_target = true
+      # Money modifier
+      next if !user.pbOwnedByPlayer?
       @battle.field.effects[PBEffects::PayDay] += 5 * user.level
     end
-    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!"))
+    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!")) if hit_target
+    # Stats modifier
+    if user.pbCanLowerStatStage?(@statDown[0], user, self) && hit_target
+      user.pbLowerStatStage(@statDown[0], @statDown[1], user)
+    end
   end
 end
+
 
 #===============================================================================
 # Order Up
@@ -2112,7 +2136,7 @@ class Battle::Move::RaiseTargetAtkLowerTargetDef2 < Battle::Move
     failed = !target.pbCanRaiseStatStage?(@statUp[0], user, self) && 
              !target.pbCanLowerStatStage?(@statDown[0], user, self)
     if failed
-      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden cambiar más!", target.pbThis)) if show_message
+      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden cambiar más!", target.pbThis(true))) if show_message
       return true
     end
     return false
@@ -2150,7 +2174,7 @@ class Battle::Move::RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP < Battle::Move
       break
     end
     if failed
-      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden cambiar más!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden cambiar más!", user.pbThis(true)))
       return true
     end
     return false

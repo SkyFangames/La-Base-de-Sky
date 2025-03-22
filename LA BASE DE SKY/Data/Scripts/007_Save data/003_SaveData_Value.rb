@@ -286,4 +286,3 @@ module SaveData
     return save_data
   end
 end
-

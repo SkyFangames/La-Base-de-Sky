@@ -13,7 +13,6 @@ class Battle::AI::AIBattler
   end
 
   def refresh_battler
-    old_party_index = @party_index
     @battler = @ai.battle.battlers[@index]
     @party_index = battler.pokemonIndex
   end
@@ -615,7 +614,7 @@ class Battle::AI::AIBattler
       ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
     end
     
-   if Effectiveness.ineffective_type?(type, defend_type)
+    if Effectiveness.ineffective_type?(type, defend_type)
       if user&.has_active_ability?(:MINDSEYE) && defend_type == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end

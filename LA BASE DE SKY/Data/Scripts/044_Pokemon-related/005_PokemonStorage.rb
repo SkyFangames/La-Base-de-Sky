@@ -251,11 +251,19 @@ class PokemonStorage
     return -1
   end
 
-  def pbDelete(box, index)
-    if self[box, index]
-      self[box, index] = nil
-      self.party.compact! if box == -1
+  def pbDelete(box, indices)
+    if indices.is_a?(Range) || indices.is_a?(Array)
+      indices.each do |index|
+        if self[box, index]
+          self[box, index] = nil
+        end
+      end
+    else
+      if self[box, indices]
+        self[box, indices] = nil
+      end 
     end
+    self.party.compact! if box == -1
   end
 
   def clear

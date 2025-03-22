@@ -615,14 +615,14 @@ class Dir
   # Deletes a directory and all files/directories within, unless non_empty is false
   def self.delete(path, non_empty = true)
     if non_empty
-    for file in Dir.get_all(path)
-      if File.directory?(file)
-        Dir.delete(file, non_empty)
-      elsif File.file?(file)
-        File.delete(file)
+      for file in Dir.get_all(path)
+        if File.directory?(file)
+          Dir.delete(file, non_empty)
+        elsif File.file?(file)
+          File.delete(file)
+        end
       end
     end
-  end
     marin_delete(path)
   end
   

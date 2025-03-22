@@ -96,6 +96,7 @@ def fmtReplaceEscapes(text)
 end
 
 def toUnformattedText(text)
+
   text2 = text.gsub(FORMATREGEXP, "")
   fmtReplaceEscapes(text2)
   return text2
@@ -344,7 +345,7 @@ end
 #===============================================================================
 def getFormattedText(bitmap, xDst, yDst, widthDst, heightDst, text, lineheight = 32,
                      newlineBreaks = true, explicitBreaksOnly = false,
-                     collapseAlignments = false)
+                     collapseAlignments = false, msg_window = nil)
   dummybitmap = nil
   if !bitmap || bitmap.disposed?   # allows function to be called with nil bitmap
     dummybitmap = Bitmap.new(1, 1)
@@ -406,7 +407,12 @@ def getFormattedText(bitmap, xDst, yDst, widthDst, heightDst, text, lineheight =
   fontsize = defaultfontsize
   fontnamestack = []
   fontsizestack = []
-  defaultcolors = [oldfont.color.clone, nil]
+  # defaultcolors = [oldfont.color.clone, nil]
+  if msg_window
+    defaultcolors = [msg_window.baseColor, msg_window.shadowColor]
+  else
+    defaultcolors = [oldfont.color.clone, nil]
+  end
   if defaultfontname.is_a?(Array)
     defaultfontname = defaultfontname.find { |i| Font.exist?(i) } || "Arial"
   elsif !Font.exist?(defaultfontname)
@@ -941,17 +947,19 @@ def drawSingleFormattedChar(bitmap, ch)
   if ch[5]   # If a graphic
     graphic = Bitmap.new(ch[0])
     graphicRect = ch[15]
-    bitmap.blt(ch[1], ch[2], graphic, graphicRect, ch[8].alpha)
+    bitmap.blt(ch[1], ch[2] - (bitmap.text_offset_y || 0), graphic, graphicRect, ch[8].alpha)
     graphic.dispose
     return
   end
   bitmap.font.size = ch[13] if bitmap.font.size != ch[13]
   if ch[9]   # shadow
     if ch[10]   # underline
-      bitmap.fill_rect(ch[1], ch[2] + ch[4] - [(ch[4] - bitmap.font.size) / 2, 0].max - 2, ch[3], 4, ch[9])
+      # bitmap.fill_rect(ch[1], ch[2] + ch[4] - [(ch[4] - bitmap.font.size) / 2, 0].max - 2, ch[3], 4, ch[9])
+      bitmap.fill_rect(ch[1], ch[2] + ch[4] - [(ch[4] - bitmap.font.size) / 2, 0].max - 2 - (bitmap.text_offset_y || 0), ch[3], 4, ch[9])
     end
     if ch[11]   # strikeout
-      bitmap.fill_rect(ch[1], ch[2] + 2 + (ch[4] / 2), ch[3], 4, ch[9])
+      # bitmap.fill_rect(ch[1], ch[2] + 2 + (ch[4] / 2), ch[3], 4, ch[9])
+      bitmap.fill_rect(ch[1], ch[2] + 2 + (ch[4] / 2) - (bitmap.text_offset_y || 0), ch[3], 4, ch[9])
     end
   end
   if ch[0] == "\n" || ch[0] == "\r" || ch[0] == " " || isWaitChar(ch[0])
@@ -993,10 +1001,12 @@ def drawSingleFormattedChar(bitmap, ch)
     bitmap.draw_text(ch[1] + offset, ch[2] + offset, ch[3], ch[4], ch[0])
   end
   if ch[10]   # underline
-    bitmap.fill_rect(ch[1], ch[2] + ch[4] - [(ch[4] - bitmap.font.size) / 2, 0].max - 2, ch[3] - 2, 2, ch[8])
+    # bitmap.fill_rect(ch[1], ch[2] + ch[4] - [(ch[4] - bitmap.font.size) / 2, 0].max - 2, ch[3] - 2, 2, ch[8])
+    bitmap.fill_rect(ch[1], ch[2] + ch[4] - [(ch[4] - bitmap.font.size) / 2, 0].max - 2 - (bitmap.text_offset_y || 0), ch[3] - 2, 2, ch[8])
   end
   if ch[11]   # strikeout
-    bitmap.fill_rect(ch[1], ch[2] + 2 + (ch[4] / 2), ch[3] - 2, 2, ch[8])
+    # bitmap.fill_rect(ch[1], ch[2] + 2 + (ch[4] / 2), ch[3] - 2, 2, ch[8])
+    bitmap.fill_rect(ch[1], ch[2] + 2 + (ch[4] / 2) - (bitmap.text_offset_y || 0), ch[3] - 2, 2, ch[8])
   end
 end
 
@@ -1035,7 +1045,7 @@ end
 def drawFormattedTextEx(bitmap, x, y, width, text, baseColor = nil, shadowColor = nil, lineheight = 32)
   base = baseColor ? baseColor.clone : Color.new(96, 96, 96)
   shadow = shadowColor ? shadowColor.clone : Color.new(208, 208, 200)
-  text = shadowc3tag(base, shadow) + text
+  text = shadowc3tag(base, shadow) + (text || "")
   chars = getFormattedText(bitmap, x, y, width, -1, text, lineheight)
   drawFormattedChars(bitmap, chars)
 end
@@ -1106,7 +1116,9 @@ end
 #      shadow color is nil), there is no shadow. Otherwise, the text has a shadow.
 def pbDrawTextPositions(bitmap, textpos)
   textpos.each do |i|
-    textsize = bitmap.text_size(i[0])
+    text = i[0] 
+    text ||= ""
+    textsize = bitmap.text_size(text)
     x = i[1]
     y = i[2]
     case i[3]
@@ -1118,11 +1130,11 @@ def pbDrawTextPositions(bitmap, textpos)
     i[6] = :none if !i[5]   # No shadow color given, draw plain text
     case i[6]
     when :outline, true, 1   # outline text
-      pbDrawOutlineText(bitmap, x, y, textsize.width, textsize.height, i[0], i[4], i[5])
+      pbDrawOutlineText(bitmap, x, y, textsize.width, textsize.height, text, i[4], i[5])
     when :none
-      pbDrawPlainText(bitmap, x, y, textsize.width, textsize.height, i[0], i[4])
+      pbDrawPlainText(bitmap, x, y, textsize.width, textsize.height, text, i[4])
     else
-      pbDrawShadowText(bitmap, x, y, textsize.width, textsize.height, i[0], i[4], i[5])
+      pbDrawShadowText(bitmap, x, y, textsize.width, textsize.height, text, i[4], i[5])
     end
   end
 end

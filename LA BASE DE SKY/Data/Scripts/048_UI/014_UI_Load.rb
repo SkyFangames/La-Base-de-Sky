@@ -279,7 +279,7 @@ class PokemonLoadScreen
   end
 
   def pbStartLoadScreen
-    pbCheckForUpdates() if defined?(pbCheckForUpdates) # Required for PokéUpdater to check for gameupdates.
+    check_for_updates() if defined?(check_for_updates) # Required for PokéUpdater to check for gameupdates.
     commands = []
     cmd_continue     = -1
     cmd_new_game     = -1
@@ -339,7 +339,7 @@ class PokemonLoadScreen
       when cmd_debug
         pbFadeOutIn { pbDebugMenu(false) }
       when cmd_update
-        pbValidateGameVersionAndUpdate(true) if defined?(pbValidateGameVersionAndUpdate)   
+        validate_game_version_and_update(true) if defined?(validate_game_version_and_update)   
       when cmd_quit
         pbPlayCloseMenuSE
         @scene.pbEndScene

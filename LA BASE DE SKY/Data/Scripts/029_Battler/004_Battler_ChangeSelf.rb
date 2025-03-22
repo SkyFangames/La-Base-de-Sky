@@ -314,7 +314,7 @@ class Battle::Battler
       elsif @form != 0
         @battle.pbShowAbilitySplash(self, true)
         @battle.pbHideAbilitySplash(self)
-        pbChangeForm(0, _INTL("¡El banco de {1} se ha dispersado!", pbThis))
+        pbChangeForm(0, _INTL("¡El banco de {1} se ha dispersado!", pbThis(true)))
       end
     end
     # Zygarde - Power Construct

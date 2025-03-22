@@ -98,6 +98,12 @@ class Trainer
     return able_party.first
   end
 
+  def first_able_pokemon?(species)
+    return false unless GameData::Species.exists?(species)
+    pkmn = first_able_pokemon
+    return pkmn.isSpecies?(species)
+  end
+
   def last_party
     return (@party.length > 0) ? @party[@party.length - 1] : nil
   end
@@ -191,7 +197,7 @@ class Trainer
   # Returns whether there is a Pokémon with the given type in the trainer's
   # party. excluded_pokemon is an array of Pokemon objects to ignore.
   def has_pokemon_of_type?(type, excluded_pokemon = [])
-    return false if !GameData::Type.exists?(type)
+    return false unless GameData::Type.exists?(type)
     type = GameData::Type.get(type).id
     return pokemon_party.any? { |pkmn| pkmn&.hasType?(type) && !excluded_pokemon.include?(pkmn) }
   end
@@ -222,6 +228,44 @@ class Trainer
   # Fully heal all Pokémon in the party.
   def heal_party
     @party.each { |pkmn| pkmn.heal }
+  end
+
+  # status: el status que se desea asignar, puede ser un GameData::Status, un String o un Symbol
+  # status_count: a cuántos Pokémon se les aplicará el status
+  # probability: la probalidad de que se le asigne el status entre 1% y 100%
+  # in_order: Si se asignará el status a los Pokémon de acuerdo a su posición en el equipo o si se seleccionará uno aleatorio
+  def give_status_party_pokemon(status, status_count = 1, probability = 25, in_order = true)
+    return if !GameData::Status.exists?(status) || able_pokemon_count < 1 || status_count < 1
+    probability = [[probability, 1].max, 100].min
+    
+    able_party_aux = able_party
+    count = 0
+    
+    if in_order || status_count >= able_party_aux.length
+      able_party_aux.each do |pokemon|
+        break if count >= status_count
+        next unless pokemon.can_get_status?(status) && rand(100) < probability
+        pokemon.status = status
+        count += 1 
+      end
+    else
+      while count < status_count && !able_party_aux.empty?
+        pokemon = able_party_aux.sample
+        able_party_aux.delete(pokemon)
+        next unless pokemon&.can_get_status?(status) && rand(100) < probability
+        pokemon.status = status
+        count += 1
+      end
+    end
+  end
+
+  # Este metodo inicia un combate contra un NPC con tu mismo equipo.
+  def battle_self(trainer_name, trainer_type)
+    clone = NPCTrainer.new(trainer_name, trainer_type)
+    clone.party = Marshal.load(Marshal.dump($player.party))
+    # En caso de quererle dar items al rival como el mega aro seria
+    clone.items = [:MEGARING] if $bag.has?(:MEGARING)
+    TrainerBattle.start(clone)
   end
 
   #=============================================================================

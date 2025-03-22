@@ -706,6 +706,7 @@ module MessageTypes
   ITEM_PORTION_NAMES           = 28
   ITEM_PORTION_NAME_PLURALS    = 29
   POKEMON_NICKNAMES            = 30
+  TRAINER_SPEECHES_LOSE_F      = 31
   @@messages = Translation.new
 
   def self.load_default_messages

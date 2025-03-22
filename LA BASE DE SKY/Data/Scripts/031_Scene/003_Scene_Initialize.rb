@@ -140,7 +140,7 @@ class Battle::Scene
       baseX, baseY = Battle::Scene.pbBattlerPosition(side)
       base = pbAddSprite("base_#{side}", baseX, baseY,
                          (side == 0) ? playerBase : enemyBase, @viewport)
-      base.z = 1
+      base.z = 3
       if base.bitmap
         base.ox = base.bitmap.width / 2
         base.oy = (side == 0) ? base.bitmap.height : base.bitmap.height / 2

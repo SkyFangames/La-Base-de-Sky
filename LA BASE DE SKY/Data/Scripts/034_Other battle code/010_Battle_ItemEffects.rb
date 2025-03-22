@@ -591,11 +591,11 @@ Battle::ItemEffects::StatusCure.add(:MENTALHERB,
     battle.pbDisplay(_INTL("¡{1} ya no sufre los efectos de Otra Vez!", battler.pbThis)) if battler.effects[PBEffects::Encore] > 0
     battler.effects[PBEffects::Encore]     = 0
     battler.effects[PBEffects::EncoreMove] = nil
-    battle.pbDisplay(_INTL("¡Tormento ya no surte efecto en {1}!", battler.pbThis)) if battler.effects[PBEffects::Torment]
+    battle.pbDisplay(_INTL("¡Tormento ya no surte efecto en {1}!", battler.pbThis(true))) if battler.effects[PBEffects::Torment]
     battler.effects[PBEffects::Torment] = false
-    battle.pbDisplay(_INTL("¡El movimiento de {1} ya no está anulado!", battler.pbThis)) if battler.effects[PBEffects::Disable] > 0
+    battle.pbDisplay(_INTL("¡El movimiento de {1} ya no está anulado!", battler.pbThis(true))) if battler.effects[PBEffects::Disable] > 0
     battler.effects[PBEffects::Disable] = 0
-    battle.pbDisplay(_INTL("¡Se han pasado los efectos de Anticura en {1}!", battler.pbThis)) if battler.effects[PBEffects::HealBlock] > 0
+    battle.pbDisplay(_INTL("¡Se han pasado los efectos de Anticura en {1}!", battler.pbThis(true))) if battler.effects[PBEffects::HealBlock] > 0
     battler.effects[PBEffects::HealBlock] = 0
     next true
   }
@@ -1417,7 +1417,7 @@ Battle::ItemEffects::OnBeingHit.add(:ROCKYHELMET,
     next if !user.takesIndirectDamage?
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(user.totalhp / 6, false)
-    battle.pbDisplay(_INTL("¡{2} ha dañado a {1}!", user.pbThis, target.itemName))
+    battle.pbDisplay(_INTL("¡{2} ha dañado a {1}!", user.pbThis(true), target.itemName))
   }
 )
 
@@ -1466,7 +1466,7 @@ Battle::ItemEffects::OnBeingHit.add(:STICKYBARB,
       target.setInitialItem(nil)
     end
     battle.pbDisplay(_INTL("¡{2} de {1} fue transferida a {3}!",
-       target.pbThis, user.itemName, user.pbThis(true)))
+       target.pbThis(true), user.itemName, user.pbThis(true)))
   }
 )
 
@@ -1725,10 +1725,10 @@ Battle::ItemEffects::OnEndOfUsingMoveStatRestore.add(:WHITEHERB,
     PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
     battle.pbCommonAnimation("UseItem", battler) if !forced
     if forced
-      battle.pbDisplay(_INTL("¡Se ha restaurado las características de {1}!", battler.pbThis))
+      battle.pbDisplay(_INTL("¡Se ha restaurado las características de {1}!", battler.pbThis(true)))
     else
       battle.pbDisplay(_INTL("¡{2} ha restaurado las características de {1}!",
-         battler.pbThis, itemName))
+         battler.pbThis(true), itemName))
     end
     next true
   }
@@ -2013,7 +2013,7 @@ Battle::ItemEffects::OnOpposingStatGain.add(:MIRRORHERB,
     battler.mirrorHerbUsed = true
     statUps.each do |stat, increment|
       next if !battler.pbCanRaiseStatStage?(stat, battler)
-        if battler.pbRaiseStatStage(stat, increment, battler, showAnim)
+      if battler.pbRaiseStatStage(stat, increment, battler, showAnim)
         showAnim = false
       end
     end

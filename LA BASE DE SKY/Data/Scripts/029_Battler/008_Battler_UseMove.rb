@@ -81,7 +81,7 @@ class Battle::Battler
     # Outragers get confused anyway if they are disrupted during their final
     # turn of using the move
     if @effects[PBEffects::Outrage] == 1 && pbCanConfuseSelf?(false) && !full_cancel
-      pbConfuse(_INTL("¡El cansancio ha terminado confundiendo a {1}!", pbThis))
+      pbConfuse(_INTL("¡El cansancio ha terminado confundiendo a {1}!", pbThis(true)))
     end
     # Cancel usage of most multi-turn moves
     @effects[PBEffects::TwoTurnAttack] = nil
@@ -457,7 +457,7 @@ class Battle::Battler
         next if b.fainted?
         next if !b.damageState.magicCoat && !b.damageState.magicBounce
         @battle.pbShowAbilitySplash(b) if b.damageState.magicBounce
-        @battle.pbDisplay(_INTL("¡Capa Mágica hizo rebotar {2} de {1}!", b.pbThis, move.name))
+        @battle.pbDisplay(_INTL("¡Capa Mágica hizo rebotar {2} de {1}!", b.pbThis(true), move.name))
         @battle.pbHideAbilitySplash(b) if b.damageState.magicBounce
         newChoice = choice.clone
         newChoice[3] = user.index
@@ -485,7 +485,7 @@ class Battle::Battler
         if !mc.fainted?
           user.lastMoveFailed = true
           @battle.pbShowAbilitySplash(mc) if magicBouncer >= 0
-          @battle.pbDisplay(_INTL("¡Capa Mágica hizo rebotar {2} de {1}!", mc.pbThis, move.name))
+          @battle.pbDisplay(_INTL("¡Capa Mágica hizo rebotar {2} de {1}!", mc.pbThis(true), move.name))
           @battle.pbHideAbilitySplash(mc) if magicBouncer >= 0
           success = false
           if !move.pbMoveFailed?(mc, [])

@@ -347,7 +347,6 @@ def pbDownloadGiftWithoutPassword(trainer)
   end
   # Desencriptar los datos recibidos
   online = pbMysteryGiftDecrypt(data, false)
-  echoln online
   pending = []
   online.each do |gift|
     notgot = true
@@ -409,7 +408,6 @@ def pbDownloadGiftWithPassword(trainer)
   end
   # Desencriptar los datos recibidos
   online = pbMysteryGiftDecrypt(data, false)
-  echoln online
   pending = []
   online.each do |gift|
     notgot = true

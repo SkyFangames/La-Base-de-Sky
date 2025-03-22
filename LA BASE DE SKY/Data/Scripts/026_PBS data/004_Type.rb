@@ -26,6 +26,7 @@ module GameData
       "Immunities"    => [:immunities,    "*m"],
       "Flags"         => [:flags,         "*s"]
     }
+    ICON_SIZE = [64, 28]
 
     extend ClassMethodsSymbols
     include InstanceMethods

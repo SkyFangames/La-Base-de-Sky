@@ -351,21 +351,21 @@ class PokemonBagPartyPanel < Sprite
     @panelbgsprite = ChangelingSprite.new(0, 0, viewport)
     @panelbgsprite.z = self.z
     if @active   # Rounded panel
-      @panelbgsprite.addBitmap("APTO", "Graphics/UI/Bag Screen with Party/ptpanel_round_desel")
-      @panelbgsprite.addBitmap("APTOsel", "Graphics/UI/Bag Screen with Party/ptpanel_round_sel")
-      @panelbgsprite.addBitmap("fainted", "Graphics/UI/Bag Screen with Party/ptpanel_round_faint")
-      @panelbgsprite.addBitmap("faintedsel", "Graphics/UI/Bag Screen with Party/ptpanel_round_faint_sel")
-      @panelbgsprite.addBitmap("swap", "Graphics/UI/Bag Screen with Party/ptpanel_round_move")
-      @panelbgsprite.addBitmap("swapsel", "Graphics/UI/Bag Screen with Party/ptpanel_round_move_sel")
-      @panelbgsprite.addBitmap("swapsel2", "Graphics/UI/Bag Screen with Party/ptpanel_round_move_sel")
+      @panelbgsprite.add_bitmap(:APTO, "Graphics/UI/Bag Screen with Party/ptpanel_round_desel")
+      @panelbgsprite.add_bitmap(:APTOsel, "Graphics/UI/Bag Screen with Party/ptpanel_round_sel")
+      @panelbgsprite.add_bitmap(:fainted, "Graphics/UI/Bag Screen with Party/ptpanel_round_faint")
+      @panelbgsprite.add_bitmap(:faintedsel, "Graphics/UI/Bag Screen with Party/ptpanel_round_faint_sel")
+      @panelbgsprite.add_bitmap(:swap, "Graphics/UI/Bag Screen with Party/ptpanel_round_move")
+      @panelbgsprite.add_bitmap(:swapsel, "Graphics/UI/Bag Screen with Party/ptpanel_round_move_sel")
+      @panelbgsprite.add_bitmap(:swapsel2, "Graphics/UI/Bag Screen with Party/ptpanel_round_move_sel")
     else   # Rectangular panel
-      @panelbgsprite.addBitmap("APTO", "Graphics/UI/Bag Screen with Party/ptpanel_rect_desel")
-      @panelbgsprite.addBitmap("APTOsel", "Graphics/UI/Bag Screen with Party/ptpanel_rect_sel")
-      @panelbgsprite.addBitmap("fainted", "Graphics/UI/Bag Screen with Party/ptpanel_rect_faint")
-      @panelbgsprite.addBitmap("faintedsel", "Graphics/UI/Bag Screen with Party/ptpanel_rect_faint_sel")
-      @panelbgsprite.addBitmap("swap", "Graphics/UI/Bag Screen with Party/ptpanel_rect_move")
-      @panelbgsprite.addBitmap("swapsel", "Graphics/UI/Bag Screen with Party/ptpanel_rect_move_sel")
-      @panelbgsprite.addBitmap("swapsel2", "Graphics/UI/Bag Screen with Party/ptpanel_rect_move_sel")
+      @panelbgsprite.add_bitmap(:APTO, "Graphics/UI/Bag Screen with Party/ptpanel_rect_desel")
+      @panelbgsprite.add_bitmap(:APTOsel, "Graphics/UI/Bag Screen with Party/ptpanel_rect_sel")
+      @panelbgsprite.add_bitmap(:fainted, "Graphics/UI/Bag Screen with Party/ptpanel_rect_faint")
+      @panelbgsprite.add_bitmap(:faintedsel, "Graphics/UI/Bag Screen with Party/ptpanel_rect_faint_sel")
+      @panelbgsprite.add_bitmap(:swap, "Graphics/UI/Bag Screen with Party/ptpanel_rect_move")
+      @panelbgsprite.add_bitmap(:swapsel, "Graphics/UI/Bag Screen with Party/ptpanel_rect_move_sel")
+      @panelbgsprite.add_bitmap(:swapsel2, "Graphics/UI/Bag Screen with Party/ptpanel_rect_move_sel")
     end
     @pkmnsprite = PokemonIconSprite.new(pokemon, viewport)
     @pkmnsprite.setOffset(PictureOrigin::CENTER)
@@ -373,8 +373,8 @@ class PokemonBagPartyPanel < Sprite
     @pkmnsprite.z      = self.z + 1
     @hpbgsprite = ChangelingSprite.new(0, 0, viewport)
     @hpbgsprite.z = self.z + 2
-    @hpbgsprite.addBitmap("APTO", "Graphics/UI/Bag Screen with Party/overlay_hp_back")
-    @hpbgsprite.addBitmap("cursor", "Graphics/UI/Bag Screen with Party/overlay_hp_back")
+    @hpbgsprite.add_bitmap(:APTO, "Graphics/UI/Bag Screen with Party/overlay_hp_back")
+    @hpbgsprite.add_bitmap(:cursor, "Graphics/UI/Bag Screen with Party/overlay_hp_back")
     @helditemsprite = HeldItemIconSprite.new(0, 0, @pokemon, viewport)
     @helditemsprite.z = self.z + 3
     @overlaysprite = BitmapSprite.new(Graphics.width, Graphics.height, viewport)
@@ -472,15 +472,15 @@ class PokemonBagPartyPanel < Sprite
     @refreshing = true
     if @panelbgsprite && !@panelbgsprite.disposed?
       if self.selected
-        if self.preselected;     @panelbgsprite.changeBitmap("swapsel2")
-        elsif @switching;        @panelbgsprite.changeBitmap("swapsel")
-        elsif @pokemon.fainted?; @panelbgsprite.changeBitmap("faintedsel")
-        else;                    @panelbgsprite.changeBitmap("APTOsel")
+        if self.preselected;     @panelbgsprite.change_bitmap(:swapsel2)
+        elsif @switching;        @panelbgsprite.change_bitmap(:swapsel)
+        elsif @pokemon.fainted?; @panelbgsprite.change_bitmap(:faintedsel)
+        else;                    @panelbgsprite.change_bitmap(:APTOsel)
         end
       else
-        if self.preselected;     @panelbgsprite.changeBitmap("swap")
-        elsif @pokemon.fainted?; @panelbgsprite.changeBitmap("fainted")
-        else;                    @panelbgsprite.changeBitmap("APTO")
+        if self.preselected;     @panelbgsprite.change_bitmap(:swap)
+        elsif @pokemon.fainted?; @panelbgsprite.change_bitmap(:fainted)
+        else;                    @panelbgsprite.change_bitmap(:APTO)
         end
       end
       @panelbgsprite.x     = self.x
@@ -490,8 +490,8 @@ class PokemonBagPartyPanel < Sprite
     if @hpbgsprite && !@hpbgsprite.disposed?
       @hpbgsprite.visible = !@pokemon.egg?
       if @hpbgsprite.visible
-        if self.preselected || (self.selected); @hpbgsprite.changeBitmap("cursor")
-        else;                                   @hpbgsprite.changeBitmap("APTO")
+        if self.preselected || (self.selected); @hpbgsprite.change_bitmap(:cursor)
+        else;                                   @hpbgsprite.change_bitmap(:APTO)
         end
         @hpbgsprite.x     = self.x + 6
         @hpbgsprite.y     = self.y + 60

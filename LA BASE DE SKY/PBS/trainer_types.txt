@@ -399,3 +399,8 @@ Gender = Male
 BaseMoney = 100
 BattleBGM = Battle Champion
 VictoryBGM = Battle victory leader
+#---------------------------------
+[Doppelganger]
+Name = Doppelganger
+Gender = Male
+BaseMoney = 60

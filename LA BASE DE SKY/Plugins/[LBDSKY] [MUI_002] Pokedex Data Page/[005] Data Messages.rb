@@ -368,7 +368,7 @@ class PokemonPokedexInfo_Scene
         #-----------------------------------------------------------------------
         if species.species == :ALCREMIE
           name = t[1] + "#{prevo_data.name}" + t[0]
-          text = t[0] + "Usar varios " + t[2] + "Caramelos" + t[0] + " en #{name}."
+          text = t[0] + "Usar varios " + t[2] + "Confites" + t[0] + " en #{name}."
         else
           text = ""
           index = 0

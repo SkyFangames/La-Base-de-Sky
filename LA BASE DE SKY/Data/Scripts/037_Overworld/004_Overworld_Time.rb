@@ -180,8 +180,8 @@ def pbGetMonthName(month)
           _INTL("Diciembre")][month - 1]
 end
 
-def pbGetAbbrevMonthName(month)
-  return [_INTL("Ene."),
+def pbGetAbbrevMonthName(month, without_dot = false)
+  months = [_INTL("Ene."),
           _INTL("Feb."),
           _INTL("Mar."),
           _INTL("Abr."),
@@ -192,7 +192,9 @@ def pbGetAbbrevMonthName(month)
           _INTL("Sep."),
           _INTL("Oct."),
           _INTL("Nov."),
-          _INTL("Dic.")][month - 1]
+          _INTL("Dic.")]
+  month_name = months[month - 1]
+  return without_dot ? month_name.chomp(".") : month_name
 end
 
 #===============================================================================

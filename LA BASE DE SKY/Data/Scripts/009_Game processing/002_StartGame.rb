@@ -4,10 +4,10 @@ module Game
   def self.initialize
     $game_temp          = Game_Temp.new
     $game_system        = Game_System.new
-    $data_animations    = load_data("Data/Animations.rxdata")
-    $data_tilesets      = load_data("Data/Tilesets.rxdata")
-    $data_common_events = load_data("Data/CommonEvents.rxdata")
-    $data_system        = load_data("Data/System.rxdata")
+    $data_animations    = load_data(File.join("Data", "Animations.rxdata"))
+    $data_tilesets      = load_data(File.join("Data", "Tilesets.rxdata"))
+    $data_common_events = load_data(File.join("Data", "CommonEvents.rxdata"))
+    $data_system        = load_data(File.join("Data", "System.rxdata"))
     pbLoadBattleAnimations
     GameData.load_all
     map_file = sprintf("Data/Map%03d.rxdata", $data_system.start_map_id)
@@ -124,4 +124,3 @@ module Game
     return true
   end
 end
-

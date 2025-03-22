@@ -576,9 +576,9 @@ class Battle::Battler
       if showMsg
         @battle.pbShowAbilitySplash(self)
         if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡No afecta a {1}!", pbThis))
+          @battle.pbDisplay(_INTL("¡No afecta a {1}!", pbThis(true)))
         else
-          @battle.pbDisplay(_INTL("¡No afecta a {1} gracias a {2}!", pbThis, abilityName))
+          @battle.pbDisplay(_INTL("¡No afecta a {1} gracias a {2}!", pbThis(true), abilityName))
         end
         @battle.pbHideAbilitySplash(self)
       end
@@ -623,7 +623,7 @@ class Battle::Battler
   def affectedByPowder?(showMsg = false)
     return false if fainted?
     if pbHasType?(:GRASS) && Settings::MORE_TYPE_EFFECTS
-      @battle.pbDisplay(_INTL("¡No afecta a {1}!", pbThis)) if showMsg
+      @battle.pbDisplay(_INTL("¡No afecta a {1}!", pbThis(true))) if showMsg
       return false
     end
     if Settings::MECHANICS_GENERATION >= 6
@@ -631,9 +631,9 @@ class Battle::Battler
         if showMsg
           @battle.pbShowAbilitySplash(self)
           if Battle::Scene::USE_ABILITY_SPLASH
-            @battle.pbDisplay(_INTL("¡No afecta a {1}!", pbThis))
+            @battle.pbDisplay(_INTL("¡No afecta a {1}!", pbThis(true)))
           else
-            @battle.pbDisplay(_INTL("¡No afecta a {1} gracias a {2}!", pbThis, abilityName))
+            @battle.pbDisplay(_INTL("¡No afecta a {1} gracias a {2}!", pbThis(true), abilityName))
           end
           @battle.pbHideAbilitySplash(self)
         end
@@ -641,7 +641,7 @@ class Battle::Battler
       end
       if hasActiveItem?(:SAFETYGOGGLES)
         if showMsg
-          @battle.pbDisplay(_INTL("¡No afecta a {1} gracia a su {2}!", pbThis, itemName))
+          @battle.pbDisplay(_INTL("¡No afecta a {1} gracia a su {2}!", pbThis(true), itemName))
         end
         return false
       end

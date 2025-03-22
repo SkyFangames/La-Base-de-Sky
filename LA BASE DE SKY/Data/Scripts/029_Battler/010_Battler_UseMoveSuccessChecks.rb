@@ -20,7 +20,7 @@ class Battle::Battler
     # Disable
     if @effects[PBEffects::DisableMove] == move.id && !specialUsage
       if showMessages
-        msg = _INTL("¡El movimiento {2} de {1} está anulado!", pbThis, move.name)
+        msg = _INTL("¡El movimiento {2} de {1} está anulado!", pbThis(true), move.name)
         (commandPhase) ? @battle.pbDisplayPaused(msg) : @battle.pbDisplay(msg)
       end
       return false
@@ -296,7 +296,7 @@ class Battle::Battler
       @battle.pbDisplay(_INTL("¡{1} está enamorado de {2}!", pbThis,
                               @battle.battlers[@effects[PBEffects::Attract]].pbThis(true)))
       if @battle.pbRandom(100) < 50
-        @battle.pbDisplay(_INTL("¡El amor impide a {1} atacar!", pbThis))
+        @battle.pbDisplay(_INTL("¡El amor impide a {1} atacar!", pbThis(true)))
         PBDebug.log("[Move failed] #{pbThis} is immobilized by love")
         @lastMoveFailed = true
         return false
@@ -528,7 +528,7 @@ class Battle::Battler
     if target.effects[PBEffects::Substitute] > 0 && move.statusMove? &&
        !move.ignoresSubstitute?(user) && user.index != target.index
       PBDebug.log("[Target immune] #{target.pbThis} is protected by its Substitute")
-      @battle.pbDisplay(_INTL("¡{1} ha evitado el ataque!", target.pbThis(true))) if show_message
+      @battle.pbDisplay(_INTL("¡{1} ha evitado el ataque!", target.pbThis)) if show_message
       return false
     end
     return true
