@@ -1,5 +1,5 @@
-# Usando mkxp-z v2.4.2/e19a1bc - built 2024-12-05
-# https://github.com/mkxp-z/mkxp-z/actions/runs/12173899671
+# Usando mkxp-z v2.4.2/68a344a - built 2025-03-17
+# https://github.com/mkxp-z/mkxp-z/actions/runs/13881210994
 $VERBOSE = nil
 
 # Define Encoding if it's not already defined

@@ -1654,7 +1654,7 @@ class PokemonBagScreen
         end
         if qty > 0
           itemname = (qty > 1) ? itm.portion_name_plural : itm.portion_name
-          if pbConfirm(_INTL("¿Seguro que quieres tirar {1} {2}?", qty, itemname))
+          if pbConfirm(_INTL("¿Segur{1} que quieres tirar {2} {3}?",$player.female? ? 'a' : 'o', qty, itemname))
             pbDisplay(_INTL("Has tirado {1} {2}.", qty, itemname))
             qty.times { @bag.remove(item) }
             @scene.pbRefresh
@@ -1826,7 +1826,7 @@ class PokemonBagScreen
       end
       next if qty <= 0
       itemname = itemnameplural if qty > 1
-      next if !pbConfirm(_INTL("¿Seguro que quieres tirar {1} {2}?", qty, itemname))
+      next if !pbConfirm(_INTL("¿Segur{1} que quieres tirar {2} {3}?", $player.female? ? 'a' : 'o', qty, itemname))
       if !storage.remove(item, qty)
         raise "No se pueden borrar objetos del almacenamiento"
       end

@@ -228,7 +228,7 @@ class PokemonPhoneScreen
         Phone::Call.make_outgoing(contact)
       when 1   # Delete
         name = contact.display_name
-        if pbConfirmMessage(_INTL("¿Estás seguro de que quieres eliminar a {1} de tus contactos?", name))
+        if pbConfirmMessage(_INTL("¿Estás segur{1} de que quieres eliminar a {2} de tus contactos?", $player.female? ? 'a' : 'o', name))
           contact.visible = false
           $PokemonGlobal.phone.sort_contacts
           @scene.pbRefreshList
