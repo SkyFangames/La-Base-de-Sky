@@ -105,7 +105,7 @@ class PokemonSaveScreen
         pbMessage(_INTL("¡AVISO!") + "\1")
         pbMessage(_INTL("Tienes ya un archivo de guardado de una partida diferente.") + "\1")
         pbMessage(_INTL("Si guardas ahora, todos los datos de la otra partida se perderán para siempre.") + "\1")
-        if !pbConfirmMessageSerious(_INTL("¿Estás seguro de que quieres guardar la partida y sobreescribir el otro archivo?"))
+        if !pbConfirmMessageSerious(_INTL("¿Estás segur{1} de que quieres guardar la partida y sobreescribir el otro archivo?", $player.female? ? 'a' : 'o'))
           pbSEPlay("GUI save choice")
           @scene.pbEndScreen
           return false

@@ -592,7 +592,7 @@ class MiningGameScene
       elsif Input.trigger?(Input::USE)   # Hit
         pbHit
       elsif Input.trigger?(Input::BACK)   # Quit
-        break if pbConfirmMessage(_INTL("¿Estás seguro de que te quieres retirar?"))
+        break if pbConfirmMessage(_INTL("¿Estás segur{1} de que te quieres retirar?", $player.female? ? 'a' : 'o'))
       end
     end
     pbGiveItems

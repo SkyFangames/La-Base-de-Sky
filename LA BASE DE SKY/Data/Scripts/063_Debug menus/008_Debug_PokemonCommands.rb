@@ -1103,7 +1103,7 @@ MenuHandlers.add(:pokemon_debug_menu, :duplicate, {
   "parent"      => :main,
   "always_show" => false,
   "effect"      => proc { |pkmn, pkmnid, heldpoke, settingUpBattle, screen|
-    next false if !screen.pbConfirm(_INTL("¿Seguro que quieres copiar este Pokémon?"))
+    next false if !screen.pbConfirm(_INTL("¿Segur{1} que quieres copiar este Pokémon?", $player.female? ? 'a' : 'o'))
     clonedpkmn = pkmn.clone
     case screen
     when PokemonPartyScreen
@@ -1136,7 +1136,7 @@ MenuHandlers.add(:pokemon_debug_menu, :delete, {
   "parent"      => :main,
   "always_show" => false,
   "effect"      => proc { |pkmn, pkmnid, heldpoke, settingUpBattle, screen|
-    next false if !screen.pbConfirm(_INTL("¿Estás seguro de que quieres eliminar este Pokémon?"))
+    next false if !screen.pbConfirm(_INTL("¿Estás segur{1} de que quieres eliminar este Pokémon?", $player.female? ? 'a' : 'o'))
     case screen
     when PokemonPartyScreen
       screen.party.delete_at(pkmnid)
