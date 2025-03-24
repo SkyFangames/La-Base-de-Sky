@@ -1826,7 +1826,7 @@ class PokemonBagScreen
       end
       next if qty <= 0
       itemname = itemnameplural if qty > 1
-      next if !pbConfirm(_INTL("¿Segur{1} que quieres tirar {1} {2}?", $player.female? ? 'a' : 'o', qty, itemname))
+      next if !pbConfirm(_INTL("¿Segur{1} que quieres tirar {2} {3}?", $player.female? ? 'a' : 'o', qty, itemname))
       if !storage.remove(item, qty)
         raise "No se pueden borrar objetos del almacenamiento"
       end
