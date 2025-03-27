@@ -900,8 +900,8 @@ Flags = Fling_30
 Description = Si lo lleva el primer Pokémon del equipo, se reduce la probabilidad de que se acerquen Pokémon salvajes.
 #-------------------------------
 [CHOICEBAND]
-Name = Cinta Elegida
-NamePlural = Cintas Elegidas
+Name = Cinta Elección
+NamePlural = Cintas Elección
 Pocket = 1
 Price = 4000
 BPPrice = 25
@@ -909,8 +909,8 @@ Flags = Fling_10
 Description = Aumenta el Ataque pero solo permite usar un tipo de movimiento. Debe llevarla un Pokémon.
 #-------------------------------
 [CHOICESPECS]
-Name = Gafas Elegidas
-NamePlural = Gafas Elegidas
+Name = Gafas Elección
+NamePlural = Gafas Elección
 Pocket = 1
 Price = 4000
 BPPrice = 25
@@ -918,8 +918,8 @@ Flags = Fling_10
 Description = Potencian el At. Esp. pero solo permiten usar un tipo de movimiento. Debe llevarlas un Pokémon.
 #-------------------------------
 [CHOICESCARF]
-Name = Pañuelo Elegido
-NamePlural = Pañuelos Elegidos
+Name = Pañuelo Elección
+NamePlural = Pañuelos Elección
 Pocket = 1
 Price = 4000
 BPPrice = 25
