@@ -35,7 +35,9 @@ module Settings
   # Activa el nuevo repartir experiencia que se puede activar para cada pokemon del equipo.
   USE_NEW_EXP_SHARE = true
 
-  ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida
+  ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida, sin necesidad de dar ningun objeto
+  ## o de activar el $player.has_exp_all, si desean activar el expshare para todos los pokemons, con alguno
+  ## de los 2 metodos mencionados anteriormente, deben dejar esta variable en false.
   EXPSHARE_ENABLED = true
 
 
