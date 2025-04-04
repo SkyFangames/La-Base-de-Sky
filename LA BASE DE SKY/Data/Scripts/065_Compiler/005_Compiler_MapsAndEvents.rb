@@ -1734,7 +1734,7 @@ module Compiler
     changed = false
     Graphics.update
     commonEvents = load_data("Data/CommonEvents.rxdata")
-    Console.echo_li(_INTL("Procesando eventos comundes..."))
+    Console.echo_li(_INTL("Procesando eventos comunes..."))
     commonEvents.length.times do |key|
       newevent = fix_event_use(commonEvents[key], 0, mapData)
       if newevent
