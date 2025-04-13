@@ -2472,7 +2472,7 @@ EggMoves = ACIDSPRAY,AQUAJET,AQUATAIL,ASTONISH,BUBBLEBEAM,FLAIL,HAZE,SELFDESTRUC
 Pokedex = Segrega veneno a través de las agujas, razón por la que los pescadores lo odian. Los ejemplares de otras regiones presentan una forma diferente.
 Generation = 8
 Flags = InheritFormWithEverStone
-Evolutions = OVERQWIL,LevelUseMoveCount,BARBBARRAGE
+Evolutions = OVERQWIL,HasMove,BARBBARRAGE
 #-------------------------------
 [SNEASEL,1]
 FormName = Forma Hisui
