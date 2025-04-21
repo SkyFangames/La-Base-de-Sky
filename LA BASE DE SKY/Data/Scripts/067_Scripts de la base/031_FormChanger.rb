@@ -12,20 +12,37 @@ module GameData
       }
       forms
     end
+
+    def has_alternative_form?
+      forms = regional_forms
+      forms = forms.delete_if { |form| !form.form_name || form.form_name.empty? }
+      return !forms.empty?
+    end
   end
 end
 
-def change_pokemon_form
-  pbChoosePokemon(1, 2, proc { |pkmn|
+def change_pokemon_form(force_species = nil)
+  return false if force_species && !GameData::Species.exists?(force_species)
+  
+  pbChoosePokemon(1, 2, proc { |pkmn| 
+    (force_species && pkmn.species == force_species && GameData::Species.get(force_species).has_alternative_form?) || 
+    (!force_species &&
     !pkmn.egg? && !pkmn.shadowPokemon? && REGIONAL_SPECIES.include?(GameData::Species.get(pkmn.species).species)
+    )
   })
+  
   return false if $game_variables[1] == -1
+  
   pokemon = pbGetPokemon(1)
   species = GameData::Species.get(pokemon.species)
   forms = species.regional_forms.reject {|form| form.form == pokemon.form}
+  
+  return false if forms.empty?
+  
   form_names = forms.map { |form| 
     !form.form_name || form.form_name.empty? ? _INTL("Forma Normal") : form.form_name 
   }
+  
   form_names << _INTL("Cancelar")
   form_index = pbMessage(_INTL("¿Qué forma quieres que tenga {1}?", pokemon.name), form_names, -1)
   if form_index != -1 && form_index < forms.length
