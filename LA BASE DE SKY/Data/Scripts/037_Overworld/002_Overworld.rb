@@ -653,13 +653,17 @@ end
 #===============================================================================
 # Picking up an item found on the ground
 #===============================================================================
-def pbItemBall(item, quantity = 1)
+def pbItemBall(item, quantity = 1, outfit_change = nil)
   item = GameData::Item.get(item)
   return false if !item || quantity < 1
   itemname = (quantity > 1) ? item.portion_name_plural : item.portion_name
   pocket = item.pocket
   move = item.move
   if $bag.add(item, quantity)   # If item can be picked up
+    if outfit_change && outfit_change != $player.outfit
+      old_outfit = $player.outfit
+      $player.outfit = outfit_change
+    end
     meName = (item.is_key_item?) ? "Key item get" : "Item get"
     if item == :DNASPLICERS
       pbMessage("\\me[#{meName}]" + _INTL("¡Has encontrado \\c[1]{1}\\c[0]!", itemname) + "\\wtnp[40]")
@@ -680,22 +684,23 @@ def pbItemBall(item, quantity = 1)
     end
     pbMessage(_INTL("Has guardado {1} en\\nel bolsillo <icon=bagPocket{2}>\\c[1]{3}\\c[0].",
                     itemname, pocket, PokemonBag.pocket_names[pocket - 1]))
+    $player.outfit = old_outfit if outfit_change
     return true
   end
   # Can't add the item
-  if item.is_machine?   # TM or HM
-    if quantity > 1
-      pbMessage(_INTL("¡Has encontrado {1} \\c[1]{2} {3}\\c[0]!", quantity, itemname, GameData::Move.get(move).name))
-    else
-      pbMessage(_INTL("¡Has encontrado \\c[1]{1} {2}\\c[0]!", itemname, GameData::Move.get(move).name))
-    end
-  elsif quantity > 1
-    pbMessage(_INTL("¡Has encontrado {1} \\c[1]{2}\\c[0]!", quantity, itemname))
-  elsif itemname.starts_with_vowel?
-    pbMessage(_INTL("¡Has encontrado \\c[1]{1}\\c[0]!", itemname))
-  else
-    pbMessage(_INTL("¡Has encontrado \\c[1]{1}\\c[0]!", itemname))
-  end
+  # if item.is_machine?   # TM or HM
+  #   if quantity > 1
+  #     pbMessage(_INTL("¡Has encontrado {1} \\c[1]{2} {3}\\c[0]!", quantity, itemname, GameData::Move.get(move).name))
+  #   else
+  #     pbMessage(_INTL("¡Has encontrado \\c[1]{1} {2}\\c[0]!", itemname, GameData::Move.get(move).name))
+  #   end
+  # elsif quantity > 1
+  #   pbMessage(_INTL("¡Has encontrado {1} \\c[1]{2}\\c[0]!", quantity, itemname))
+  # elsif itemname.starts_with_vowel?
+  #   pbMessage(_INTL("¡Has encontrado \\c[1]{1}\\c[0]!", itemname))
+  # else
+  #   pbMessage(_INTL("¡Has encontrado \\c[1]{1}\\c[0]!", itemname))
+  # end
   pbMessage(_INTL("Pero tu Mochila está llena..."))
   return false
 end

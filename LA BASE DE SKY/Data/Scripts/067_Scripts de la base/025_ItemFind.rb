@@ -143,8 +143,8 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
   #-------------------------------------------------------------------------------
   
   alias pbItemBall_itemfind pbItemBall
-  def pbItemBall(item,quantity=1)
-    result = pbItemBall_itemfind(item,quantity)
+  def pbItemBall(item, quantity = 1, outfit = nil)
+    result = pbItemBall_itemfind(item, quantity, outfit)
     $item_log.register(item) if result
     return result
   end
