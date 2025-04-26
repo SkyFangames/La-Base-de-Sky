@@ -89,6 +89,8 @@ class Battle
   attr_reader   :endOfRound       # True during the end of round
   attr_accessor :moldBreaker      # True if Mold Breaker applies
   attr_reader   :struggle         # The Struggle move
+  attr_accessor :adjust_levels
+  attr_accessor :adjust_levels_reset_moves
   
   attr_accessor :abils_triggered # Used to track any once-per-battle ability triggers for each Pokemon.
   attr_accessor :rage_hit_count  # Used to track the number of hits that have been taken for Rage Fist.
@@ -181,6 +183,8 @@ class Battle
     @rage_hit_count  = [Array.new(@party1.length, 0), Array.new(@party2.length, 0)]
     @fainted_count   = [0, 0]
     @sideStatUps     = [{}, {}]
+    @adjust_levels   = false
+    @adjust_levels_reset_moves   = false
   end
   
   #-----------------------------------------------------------------------------
