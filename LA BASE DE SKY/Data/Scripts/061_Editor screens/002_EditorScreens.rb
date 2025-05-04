@@ -451,10 +451,11 @@ module TrainerBattleProperty
   def self.set(settingname, oldsetting)
     return nil if !oldsetting
     properties = [
-      [_INTL("Tipo de Entrenador"),  TrainerTypeProperty,     _INTL("Nombre del tipo de Entrenador de este Entrenador.")],
-      [_INTL("Nombre de Entrenador"),StringProperty,          _INTL("Nombre del Entrenador.")],
-      [_INTL("Versión"),             LimitProperty.new(9999), _INTL("Número usado para distinguir Entrenadorescon el mismo nombre y tipo de Entrenador.")],
-      [_INTL("Texto al perder"),     StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador.")]
+      [_INTL("Tipo de Entrenador"),   TrainerTypeProperty,     _INTL("Nombre del tipo de Entrenador de este Entrenador.")],
+      [_INTL("Nombre de Entrenador"), StringProperty,          _INTL("Nombre del Entrenador.")],
+      [_INTL("Versión"),              LimitProperty.new(9999), _INTL("Número usado para distinguir Entrenadorescon el mismo nombre y tipo de Entrenador.")],
+      [_INTL("Texto al perder"),      StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador.")],
+      [_INTL("Texto al perder F"),    StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador y estás jugando con el personaje femenino.")]
     ]
     Settings::MAX_PARTY_SIZE.times do |i|
       properties.push([_INTL("Pokémon {1}", i + 1), TrainerPokemonProperty, _INTL("Un Pokémon que pertenece al Entrenador.")])
