@@ -93,7 +93,7 @@ module Settings
   ADVANCED_DEX_PAGE = 4
 
   # # Mostrar Siluetas para los Pokemon no vistos en la dex
-  SHOW_SILHOUETTES_IN_DEX = true
+  SHOW_SILHOUETTES_IN_DEX = false
 
 
   
