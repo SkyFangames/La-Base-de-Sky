@@ -23,49 +23,7 @@ def pbStorePokemon(pkmn, allow_change_party = true)
   pkmn.record_first_moves
   if $player.party_full? 
     if allow_change_party
-      cmds = [_INTL("Añadir al equipo"),
-              _INTL("Enviarlo al PC"),
-              _INTL("Ver los datos de {1}", pkmn.name),
-              _INTL("Comprobar equipo")]
-      cmd = -1
-      loop do
-        cmd = pbMessage(_INTL("¿Qué quieres hacer con {1}?", pkmn.name), cmds, -1)
-        break if cmd == -1  # Cancelling = send to a Box
-        echoln "cmd: #{cmd}"
-        case cmd
-        when 0
-          pbMessage(_INTL("Elige un Pokémon de tu equipo para reemplazarlo."))
-          pbChoosePokemon(1, 2)
-          next if $game_variables[1] == -1
-          party_index = pbGet(1)
-          next if party_index == nil
-          send_pkmn = $player.party[party_index]
-          $player.party[party_index] = pkmn
-          stored_box = $PokemonStorage.pbStoreCaught(send_pkmn)
-          box_name   = $PokemonStorage[stored_box].name
-          pbMessage(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", send_pkmn.name, box_name))
-          pbMessage(_INTL("¡{1} fue agregado al equipo!", pkmn.name))
-          break
-        when 1
-          stored_box = $PokemonStorage.pbStoreCaught(pkmn)
-          box_name   = $PokemonStorage[stored_box].name
-          pbMessage(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", pkmn.name, box_name))
-          break
-        when 2   # See X's summary
-          pbFadeOutIn do
-            summary_scene = PokemonSummary_Scene.new
-            summary_screen = PokemonSummaryScreen.new(summary_scene, true)
-            summary_screen.pbStartScreen([pkmn], 0)
-          end
-        when 3   # Check party
-          pbPokemonScreen
-        end
-      end
-      if cmd == -1
-        stored_box = $PokemonStorage.pbStoreCaught(pkmn)
-        box_name   = $PokemonStorage[stored_box].name
-        pbMessage(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", pkmn.name, box_name))
-      end
+      pbShowUserStoreActions(pkmn)
     else
       stored_box = $PokemonStorage.pbStoreCaught(pkmn)
       box_name   = $PokemonStorage[stored_box].name
@@ -73,6 +31,55 @@ def pbStorePokemon(pkmn, allow_change_party = true)
     end
   else
     $player.party[$player.party.length] = pkmn
+  end
+end
+
+def pbShowUserStoreActions(pkmn)
+  cmds = [_INTL("Añadir al equipo"),
+          _INTL("Enviarlo al PC"),
+          _INTL("Ver los datos de {1}", pkmn.name),
+          _INTL("Comprobar equipo")]
+  cmd = -1
+  loop do
+    cmd = pbMessage(_INTL("¿Qué quieres hacer con {1}?", pkmn.name), cmds, -1)
+    break if cmd == -1  # Cancelling = send to a Box
+
+    case cmd
+    when 0
+      pbMessage(_INTL("Elige un Pokémon de tu equipo para reemplazarlo."))
+      pbChoosePokemon(1, 2)
+      next if $game_variables[1] == -1
+      party_index = pbGet(1)
+      next if party_index == nil
+
+      send_pkmn = $player.party[party_index]
+      $player.party[party_index] = pkmn
+      
+      stored_box = $PokemonStorage.pbStoreCaught(send_pkmn)
+      box_name   = $PokemonStorage[stored_box].name
+      
+      pbMessage(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", send_pkmn.name, box_name))
+      pbMessage(_INTL("¡{1} fue agregado al equipo!", pkmn.name))
+      break
+    when 1
+      stored_box = $PokemonStorage.pbStoreCaught(pkmn)
+      box_name   = $PokemonStorage[stored_box].name
+      pbMessage(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", pkmn.name, box_name))
+      break
+    when 2   # See X's summary
+    pbFadeOutIn do
+      summary_scene = PokemonSummary_Scene.new
+      summary_screen = PokemonSummaryScreen.new(summary_scene, true)
+      summary_screen.pbStartScreen([pkmn], 0)
+    end
+    when 3   # Check party
+      pbPokemonScreen
+    end
+  end
+  if cmd == -1
+    stored_box = $PokemonStorage.pbStoreCaught(pkmn)
+    box_name   = $PokemonStorage[stored_box].name
+    pbMessage(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", pkmn.name, box_name))
   end
 end
 
