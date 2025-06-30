@@ -7,13 +7,18 @@ class ::Dir
     #  creates all the required directories for filename path
     #---------------------------------------------------------------------------
     def create(path)
+      return if path.nil? || path.empty?
       full = ''
+      path_gsub = path.gsub!('\\', '/')
+      if path_gsub.nil? 
+        mkdir(path) unless safe?(path)
+      else
+        path_gsub.split('/').each do |dir|
+          full << dir + '/'
 
-      path.gsub!('\\', '/').split('/').each do |dir|
-        full << dir + '/'
-
-        # creates directories
-        mkdir(full) unless safe?(full)
+          # creates directories
+          mkdir(full) unless safe?(full)
+        end
       end
     end
     #---------------------------------------------------------------------------

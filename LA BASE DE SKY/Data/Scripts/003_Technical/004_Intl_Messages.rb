@@ -277,6 +277,7 @@ module Translator
       end
       Dir.all(dir_name).each { |f| File.delete(f) }
     else
+      echoln "dir_name: #{dir_name}"
       Dir.create(dir_name)
     end
     # Cree una función lambda que ayude a escribir archivos de texto
