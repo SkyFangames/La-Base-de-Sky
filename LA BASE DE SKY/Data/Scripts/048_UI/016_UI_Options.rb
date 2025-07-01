@@ -220,6 +220,37 @@ class SliderOption
   end
 end
 
+class ButtonOption
+  include PropertyMixin
+
+  def initialize(name, values, get_proc, set_proc)
+    @name = name
+    @values = [_INTL("")]
+    @get_proc = get_proc
+    @set_proc = set_proc
+  end
+
+  def values
+    return @values
+  end
+
+  def next(current)
+    return current
+  end
+
+  def prev(current)
+    return current
+  end
+
+  def action(scene)
+    @set_proc.call(0, scene)
+  end
+
+  def set(value, scene)
+    # Do nothing when the value is changed
+  end
+end
+
 #===============================================================================
 # Main options list
 #===============================================================================
@@ -231,11 +262,12 @@ class Window_PokemonOption < Window_DrawableCommand
   SEL_VALUE_BASE_COLOR   = Color.new(248, 48, 24)
   SEL_VALUE_SHADOW_COLOR = Color.new(248, 136, 128)
 
-  def initialize(options, x, y, width, height)
+  def initialize(options, x, y, width, height, is_sub_menu = false)
     @options = options
     @values = []
     @options.length.times { |i| @values[i] = 0 }
     @value_changed = false
+    @is_sub_menu = is_sub_menu
     super(x, y, width, height)
   end
 
@@ -260,7 +292,7 @@ class Window_PokemonOption < Window_DrawableCommand
     rect = drawCursor(index, rect)
     sel_index = self.index
     # Draw option's name
-    optionname = (index == @options.length) ? _INTL("Cerrar") : @options[index].name
+    optionname = (index == @options.length) ? (@is_sub_menu ? _INTL("Volver") : _INTL("Cerrar")) : @options[index].name
     optionwidth = rect.width * 9 / 20
     pbDrawShadowText(self.contents, rect.x, rect.y, optionwidth, rect.height, optionname,
                      (index == sel_index) ? SEL_NAME_BASE_COLOR : self.baseColor,
@@ -324,14 +356,23 @@ class Window_PokemonOption < Window_DrawableCommand
     super
     dorefresh = (self.index != oldindex)
     if self.active && self.index < @options.length
-      if Input.repeat?(Input::LEFT)
-        self[self.index] = @options[self.index].prev(self[self.index])
-        dorefresh = true
-        @value_changed = true
-      elsif Input.repeat?(Input::RIGHT)
-        self[self.index] = @options[self.index].next(self[self.index])
-        dorefresh = true
-        @value_changed = true
+      if @options[self.index].is_a?(ButtonOption)
+        if Input.trigger?(Input::USE)
+          self[self.index] = @options[self.index].prev(self[self.index])
+          dorefresh = true
+          @value_changed = true
+        end
+      else
+        if Input.repeat?(Input::LEFT)
+          self[self.index] = @options[self.index].prev(self[self.index])
+          dorefresh = true
+          @value_changed = true
+          
+        elsif Input.repeat?(Input::RIGHT)
+          self[self.index] = @options[self.index].next(self[self.index])
+          dorefresh = true
+          @value_changed = true
+        end
       end
     end
     refresh if dorefresh
@@ -345,13 +386,14 @@ class PokemonOption_Scene
   attr_reader :sprites
   attr_reader :in_load_screen
 
-  def pbStartScene(in_load_screen = false)
+  def pbStartScene(in_load_screen = false, options_menu = :options_menu, is_sub_menu = false)
     @in_load_screen = in_load_screen
+    @is_sub_menu = is_sub_menu
     # Get all options
     @options = []
     @hashes = []
     $PokemonSystem.vsync = $PokemonSystem.vsync_initial_value?
-    MenuHandlers.each_available(:options_menu) do |option, hash, name|
+    MenuHandlers.each_available(options_menu) do |option, hash, name|
       @options.push(
         hash["type"].new(name, hash["parameters"], hash["get_proc"], hash["set_proc"])
       )
@@ -370,7 +412,8 @@ class PokemonOption_Scene
     pbSetSystemFont(@sprites["textbox"].contents)
     @sprites["option"] = Window_PokemonOption.new(
       @options, 0, @sprites["title"].y + @sprites["title"].height - 16, Graphics.width,
-      Graphics.height - (@sprites["title"].y + @sprites["title"].height - 16) - @sprites["textbox"].height
+      Graphics.height - (@sprites["title"].y + @sprites["title"].height - 16) - @sprites["textbox"].height,
+      @is_sub_menu
     )
     @sprites["option"].viewport = @viewport
     @sprites["option"].visible  = true
@@ -404,22 +447,43 @@ class PokemonOption_Scene
   def pbOptions
     pbActivateWindow(@sprites, "option") do
       index = -1
+      submenu_open = false
+      @close_sub_menu = false
       loop do
         Graphics.update
         Input.update
         pbUpdate
-        if @sprites["option"].index != index
+        if @close_sub_menu
+          break
+        end
+        if @sprites["option"].index != index && !submenu_open
           pbChangeSelection
           index = @sprites["option"].index
         end
-        @options[index].set(@sprites["option"][index], self) if @sprites["option"].value_changed
-        if Input.trigger?(Input::BACK)
-          break
-        elsif Input.trigger?(Input::USE)
-          break if @sprites["option"].index == @options.length
+        if !submenu_open
+          if @options[index].is_a?(ButtonOption)
+            # Do nothing
+          else
+            @options[index].set(@sprites["option"][index], self) if @sprites["option"].value_changed
+            if (Input.trigger?(Input::USE) && @sprites["option"].index == @options.length)
+              break
+            end
+          end
+          if Input.trigger?(Input::BACK) && !submenu_open
+            break
+          elsif Input.trigger?(Input::USE) && @options[index].is_a?(ButtonOption) && !submenu_open
+            submenu_open = true
+            pbPlayDecisionSE
+            @options[index].instance_variable_get(:@set_proc).call(0, self)
+            submenu_open = false
+          end
         end
       end
     end
+  end
+
+  def pbCloseSubMenu
+    @close_sub_menu = true
   end
 
   def pbEndScene
@@ -448,8 +512,8 @@ class PokemonOptionScreen
     @scene = scene
   end
 
-  def pbStartScreen(in_load_screen = false)
-    @scene.pbStartScene(in_load_screen)
+  def pbStartScreen(in_load_screen = false, options_menu = :options_menu)
+    @scene.pbStartScene(in_load_screen, options_menu)
     @scene.pbOptions
     @scene.pbEndScene
   end
@@ -542,7 +606,7 @@ MenuHandlers.add(:options_menu, :movement_style, {
   "description" => _INTL("Elige la velocidad de movimiento. Pulsa el botón al moverte para elegir la otra."),
   "condition"   => proc { next $player&.has_running_shoes },
   "get_proc"    => proc { next $PokemonSystem.runstyle },
-  "set_proc"    => proc { |value, _sceme| $PokemonSystem.runstyle = value }
+  "set_proc"    => proc { |value, _scene| $PokemonSystem.runstyle = value }
 })
 
 MenuHandlers.add(:options_menu, :send_to_boxes, {
