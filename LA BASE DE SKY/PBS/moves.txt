@@ -2763,7 +2763,7 @@ TotalPP = 15
 Target = AllNearFoes
 FunctionCode = DestroyTargetBerryOrGem
 Flags = CanProtect,CanMirrorMove
-Description = Llamas que golpean a los objetivos adyacentes. Si llevan Bayas, se quemarány desaparecerán.
+Description = Llamas que golpean a los objetivos adyacentes. Si llevan Bayas, se quemarán y desaparecerán.
 #-------------------------------
 [FLAMECHARGE]
 Name = Nitrocarga
