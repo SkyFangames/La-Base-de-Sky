@@ -950,7 +950,7 @@ class PokemonSummary_Scene
         break if !switching
         @sprites["movepresel"].visible = false
         switching = false
-      elsif Input.trigger?(Input::USE)
+      elsif Input.trigger?(Input::USE) && @allow_learn_moves
         pbPlayDecisionSE
         if selmove == Pokemon::MAX_MOVES
           break if !switching
