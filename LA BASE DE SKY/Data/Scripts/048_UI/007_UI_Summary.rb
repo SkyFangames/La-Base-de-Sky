@@ -114,14 +114,15 @@ class PokemonSummary_Scene
     pbUpdateSpriteHash(@sprites)
   end
 
-  def pbStartScene(party, partyindex, inbattle = false)
+  def pbStartScene(party, partyindex, inbattle = false, page=1, allow_learn_moves = true)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 99999
     @party      = party
     @partyindex = partyindex
     @pokemon    = @party[@partyindex]
     @inbattle   = inbattle
-    @page = 1
+    @allow_learn_moves = allow_learn_moves
+    @page = page
     @typebitmap    = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
     @markingbitmap = AnimatedBitmap.new("Graphics/UI/Summary/markings")
     @sprites = {}
@@ -1342,13 +1343,14 @@ end
 #
 #===============================================================================
 class PokemonSummaryScreen
-  def initialize(scene, inbattle = false)
+  def initialize(scene, inbattle = false, allow_learn_moves = true)
     @scene = scene
     @inbattle = inbattle
+    @allow_learn_moves = allow_learn_moves
   end
 
   def pbStartScreen(party, partyindex)
-    @scene.pbStartScene(party, partyindex, @inbattle)
+    @scene.pbStartScene(party, partyindex, @inbattle, @allow_learn_moves)
     ret = @scene.pbScene
     @scene.pbEndScene
     return ret

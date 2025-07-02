@@ -108,6 +108,14 @@ class PokemonSummary_Scene
     commands = {}
     options = UIHandlers.get_info(:summary, @page_id, :options)
     options_labels = UIHandlers.get_info(:summary, @page_id, :options_labels)
+    
+    # No permitir acciones con movimientos si la UI se abrió desde el menú de borrar movimientos
+    if @page_id == :page_moves && !@allow_learn_moves
+      options = []
+      options_labels = {}
+    end
+
+    
     options.each do |cmd|
       case cmd
       when :item
