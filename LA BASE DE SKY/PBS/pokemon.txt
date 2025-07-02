@@ -14342,7 +14342,7 @@ Shape = Finned
 Category = Manso
 Pokedex = A pesar de diferenciarse de otros Basculin, como por su plácida naturaleza, se considera una forma regional por todas las características compartidas.
 Generation = 8
-Flags = InheritFormWithEverStone
+Flags = DefaultForm_0,InheritFormWithEverStone
 Evolutions = BASCULEGION,LevelRecoilDamageForm0,294
 #-------------------------------
 [SANDILE]
