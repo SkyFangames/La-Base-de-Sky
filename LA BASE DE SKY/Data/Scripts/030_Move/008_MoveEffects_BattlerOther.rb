@@ -1260,7 +1260,7 @@ class Battle::Move::IgnoreTargetAbility < Battle::Move
   end
   
   def pbOnStartUse(user, targets)
-    if @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
+    if @battle.moldBreaker && targets[0] && targets[0].hasActiveItem?(:ABILITYSHIELD)
       @battle.moldBreaker = false
     end
   end
