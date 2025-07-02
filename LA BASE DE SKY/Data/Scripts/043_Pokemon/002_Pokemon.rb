@@ -1358,7 +1358,11 @@ class Pokemon
     @hp               = 1
     @totalhp          = 1
     calc_stats
+    # echoln "recheck_form: #{recheck_form}"
     if @form == 0 && recheck_form
+      # echoln "Pokemon #{self.name}"
+      # echoln "Gender: #{gender}"
+      # echoln "Form: #{form}"
       f = MultipleForms.call("getFormOnCreation", self)
       if f
         self.form = f

@@ -2678,7 +2678,6 @@ Generation = 9
 #-------------------------------
 [BASCULEGION,1]
 FormName = Forma Hembra
-GenderRatio = AlwaysFemale
 BaseStats = 120,92,65,78,100,75
 #-------------------------------
 [ENAMORUS,1]

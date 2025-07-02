@@ -434,6 +434,9 @@ MultipleForms.register(:FURFROU, {
 MultipleForms.register(:ESPURR, {
   "getForm" => proc { |pkmn|
     next pkmn.gender
+  },
+  "getFormOnCreation" => proc { |pkmn|
+    next pkmn.gender
   }
 })
 
@@ -638,11 +641,11 @@ MultipleForms.register(:EISCUE, {
   }
 })
 
-MultipleForms.register(:INDEEDEE, {
-  "getForm" => proc { |pkmn|
-    next pkmn.gender
-  }
-})
+# MultipleForms.register(:INDEEDEE, {
+#   "getForm" => proc { |pkmn|
+#     next pkmn.gender
+#   }
+# })
 
 MultipleForms.register(:MORPEKO, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
@@ -815,4 +818,13 @@ MultipleForms.register(:TERAPAGOS, {
 })
 
 # Cambio de forma en base al género
-MultipleForms.copy(:ESPURR, :LECHONK, :OINKOLOGNE, :BASCULEGION)
+MultipleForms.copy(:ESPURR, :INDEEDEE, :LECHONK, :OINKOLOGNE, :BASCULEGION)
+
+# MultipleForms.register(:BASCULEGION, {
+#   "getForm" => proc { |pkmn|
+#     next pkmn.gender
+#   },
+#   "getFormOnCreation" => proc { |pkmn|
+#     next pkmn.gender
+#   }
+# })

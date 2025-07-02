@@ -23187,7 +23187,6 @@ Habitat = Sea
 Category = Gran Pez
 Pokedex = Durante las remontadas de los ríos, se envuelve de las almas de sus congéneres caídos en la ardua travesía. No tiene rival en ninguna de las corrientes que fluyen.
 Generation = 8
-Flags = DefaultForm_2,InheritFormWithEverStone
 WildItemUncommon = DEEPSEATOOTH
 #-------------------------------
 [SNEASLER]
