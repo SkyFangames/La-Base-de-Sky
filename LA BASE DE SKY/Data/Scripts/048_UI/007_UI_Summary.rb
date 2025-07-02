@@ -1349,8 +1349,8 @@ class PokemonSummaryScreen
     @allow_learn_moves = allow_learn_moves
   end
 
-  def pbStartScreen(party, partyindex)
-    @scene.pbStartScene(party, partyindex, @inbattle, @allow_learn_moves)
+  def pbStartScreen(party, partyindex, page = 1)
+    @scene.pbStartScene(party, partyindex, @inbattle, page, @allow_learn_moves)
     ret = @scene.pbScene
     @scene.pbEndScene
     return ret
