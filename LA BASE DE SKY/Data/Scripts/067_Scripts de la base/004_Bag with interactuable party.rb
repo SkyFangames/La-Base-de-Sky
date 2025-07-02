@@ -1890,7 +1890,7 @@ def pbBagUseItem(bag, item, scene, screen, chosen, bagscene=nil)
       max_at_once = [max_at_once, $bag.quantity(itm)].min	
       if max_at_once > 1
         qty = screen.pbChooseNumber(
-          _INTL("¿Qué cantidad {1} quieres usar?", GameData::Item.get(item).name), max_at_once
+          _INTL("¿Qué cantidad de {1} quieres usar?", GameData::Item.get(item).name), max_at_once
         )
         scene.pbSetHelpText("") if screen.is_a?(PokemonPartyScreen)
       end
