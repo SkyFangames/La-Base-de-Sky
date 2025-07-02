@@ -14342,7 +14342,6 @@ Shape = Finned
 Category = Manso
 Pokedex = A pesar de diferenciarse de otros Basculin, como por su plácida naturaleza, se considera una forma regional por todas las características compartidas.
 Generation = 8
-Flags = DefaultForm_0,InheritFormWithEverStone
 Evolutions = BASCULEGION,LevelRecoilDamageForm0,294
 #-------------------------------
 [SANDILE]
@@ -23188,6 +23187,7 @@ Category = Gran Pez
 Pokedex = Durante las remontadas de los ríos, se envuelve de las almas de sus congéneres caídos en la ardua travesía. No tiene rival en ninguna de las corrientes que fluyen.
 Generation = 8
 WildItemUncommon = DEEPSEATOOTH
+Flags = DefaultForm_0,InheritFormWithEverStone
 #-------------------------------
 [SNEASLER]
 Name = Sneasler
