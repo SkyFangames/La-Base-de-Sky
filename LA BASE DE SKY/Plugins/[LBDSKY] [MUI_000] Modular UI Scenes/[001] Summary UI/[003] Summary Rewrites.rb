@@ -167,7 +167,7 @@ class PokemonSummary_Scene
     #---------------------------------------------------------------------------
     # [:nickname] Nicknames the Pokemon. (Gen 9+)
     when :nickname
-      nickname = pbEnterPokemonName(_INTL("¿Qué mote quieres para {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, "", @pokemon, true)
+      nickname = pbEnterPokemonName(_INTL("¿Qué mote quieres para {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, (@pokemon.name != @pokemon.species_data.name ? @pokemon.name : "" ), @pokemon, true)
       @pokemon.name = nickname
       dorefresh = true
     #---------------------------------------------------------------------------
