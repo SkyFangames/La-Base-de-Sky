@@ -12753,7 +12753,7 @@ Flags = Legendary
 [CRESSELIA]
 Name = Cresselia
 Types = PSYCHIC
-BaseStats = 120,70,120,85,75,130
+BaseStats = 120,70,110,85,75,120
 GenderRatio = AlwaysFemale
 GrowthRate = Slow
 BaseExp = 300
@@ -22915,7 +22915,7 @@ Category = Kung-fu
 Pokedex = Al tirar de los mechones blancos de la cabeza, acrecienta su espíritu luchador y empieza a acumular fuerza en el órgano de su bajo vientre.
 Generation = 8
 Flags = Legendary
-Evolutions = URSHIFU,Event,1
+Evolutions = URSHIFU,Item,SCROLLOFDARKNESS,URSHIFU,Item,SCROLLOFWATERS
 #-------------------------------
 [URSHIFU]
 Name = Urshifu

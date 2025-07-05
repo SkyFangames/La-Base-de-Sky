@@ -4813,7 +4813,7 @@ TotalPP = 15
 Target = NearOther
 FunctionCode = TypeIsUserFirstType
 Flags = CanProtect,CanMirrorMove,Dance
-Description = Baile muy enérgico y cuyo tipo se corresponde con el del Pokémon que lo ejecuta.
+Description = Baile enérgico cuyo tipo será el primero del Pokémon que lo ejecuta. Si lo pierde, usará el segundo.
 #-------------------------------
 [ROCKCLIMB]
 Name = Treparrocas
