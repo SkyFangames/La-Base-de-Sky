@@ -878,12 +878,12 @@ def pbChooseApricorn(var = 0)
   return ret
 end
 
-def pbChooseFossil(var = 0)
+def pbChooseFossil(var = 0, exclude = [])
   ret = nil
   pbFadeOutIn do
     scene = PokemonBag_Scene.new
     screen = PokemonBagScreen.new(scene, $bag)
-    ret = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_fossil? })
+    ret = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_fossil? && !exclude.include?(item) })
   end
   $game_variables[var] = ret || :NONE if var > 0
   return ret
