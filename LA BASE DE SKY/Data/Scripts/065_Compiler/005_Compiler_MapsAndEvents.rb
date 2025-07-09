@@ -34,7 +34,12 @@ module Compiler
     ["get_character(-1)",            "get_player"],
     ["pbCheckAble",                  "$player.has_other_able_pokemon?"],
     ["$PokemonTemp.lastbattle",      "$game_temp.last_battle_record"],
-    ["calcStats",                    "calc_stats"]
+    ["calcStats",                    "calc_stats"],
+    ["PBTrainers:",                  ""],
+    ["PBItems:",                     ""],   
+    ["PBSpecies:",                   ""],
+    ["pbPlayCry",                    "Pokemon.play_cry"],   
+    ["EncounterTypes:",              ""],
   ]
 
   module_function
