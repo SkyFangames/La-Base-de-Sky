@@ -38,6 +38,10 @@ module Compiler
     ["PBTrainers:",                  ""],
     ["PBItems:",                     ""],   
     ["PBSpecies:",                   ""],
+    ["PBAbilities:",                 ""],
+    ["PBStatuses:",                  ""],
+    ["PBMoves:",                     ""],
+    ["PBTypes:",                     ""],
     ["pbPlayCry",                    "Pokemon.play_cry"],   
     ["EncounterTypes:",              ""],
   ]
