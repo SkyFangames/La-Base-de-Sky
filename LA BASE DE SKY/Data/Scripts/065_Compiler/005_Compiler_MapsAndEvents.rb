@@ -44,6 +44,10 @@ module Compiler
     ["PBTypes:",                     ""],
     ["pbPlayCry",                    "Pokemon.play_cry"],   
     ["EncounterTypes:",              ""],
+    ["pbWildBattle",                 "WildBattle.start"],
+    ["PokeBattle_Pokemon.new",       "Pokemon.new"],
+    ["makeShiny",                    "make_shiny"],
+    ["setNature",                    "set_nature"],
   ]
 
   module_function
