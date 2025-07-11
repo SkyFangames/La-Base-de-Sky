@@ -89,6 +89,15 @@ def get_pokeapi_data(species)
 			new_abs[ability_key] = [ability_name, ability_index, ability_hidden]
 		end
 		data["abilities"] = new_abs
+
+		types = data["types"]
+		new_types = []
+		types.each do |type|
+			type_key = type["type"]["name"].upcase.tr("-", "_").to_sym
+			next if !GameData::Type.exists?(type_key)
+			new_types << type_key
+		end
+		data["types"] = new_types
 	end
 	return data
 end
