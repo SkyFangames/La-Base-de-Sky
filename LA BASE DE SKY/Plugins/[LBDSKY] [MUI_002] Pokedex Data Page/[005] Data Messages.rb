@@ -148,6 +148,7 @@ class PokemonPokedexInfo_Scene
       nt = (s2 && s2.base_stat_total == species.base_stat_total) ? t[2] : t[1]
       text << " - " + nt + _ISPRINTF("Total: {1:3d}", species.base_stat_total)
       s1 = species.base_stats
+      @api_data = get_pokeapi_data(species) if !s2 && !@api_data && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
       s2 = s2.base_stats if s2
       stats_order = [[:HP, :SPECIAL_ATTACK], [:ATTACK, :SPECIAL_DEFENSE], [:DEFENSE, :SPEED]]
       stats_order.each_with_index do |st, i|
@@ -156,7 +157,19 @@ class PokemonPokedexInfo_Scene
           stat = (s == :SPECIAL_ATTACK) ? "At. Esp." : (s == :SPECIAL_DEFENSE) ? "Def. Esp." : GameData::Stat.get(s).name
           nt = (s2 && s2[s] == s1[s]) ? t[2] : t[0]
           names  += nt + _INTL("{1}", stat)
-          values += nt + _ISPRINTF("{1:3d}", s1[s])
+          if !s2 && @api_data
+            case
+            when s1[s] > @api_data["stats"][s]
+              color = t[3]
+            when s1[s] < @api_data["stats"][s]
+              color = t[1]
+            else
+              color = t[0]
+            end
+            values += color + _ISPRINTF("{1:3d}", s1[s])
+          else
+            values += nt + _ISPRINTF("{1:3d}", s1[s])
+          end
           names  += "\n" if j == 0
           values += "\n" if j == 0
         end

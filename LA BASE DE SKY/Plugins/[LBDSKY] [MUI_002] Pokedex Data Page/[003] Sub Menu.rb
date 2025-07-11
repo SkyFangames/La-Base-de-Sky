@@ -581,6 +581,51 @@ class PokemonPokedexInfo_Scene
         drawPage(@page)
         pbDrawDataNotes
         break
+      elsif Input.trigger?(Input::SPECIAL) && cursor == :ability && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+        show_ability_diffs
+      end
+    end
+  end
+
+  def show_ability_diffs
+    species = GameData::Species.get_species_form(@species, @form)
+    @api_data = get_pokeapi_data(species) if !@api_data
+    if @api_data
+      api_abilities = @api_data["abilities"]
+      abilities = species.abilities
+      hidden_abilities = species.hidden_abilities
+      game_abilities = {}
+      abilities.each_with_index do |ability, i|
+        game_abilities[ability.to_sym] = [GameData::Ability.get(ability).name, i + 1, false]
+      end
+      hidden_abilities.each do |ability|
+        game_abilities[ability.to_sym] = [GameData::Ability.get(ability).name, 3, true]
+      end
+      game_abilities = game_abilities.sort_by { |_key, value| value[1] }.to_h
+      api_abilities = api_abilities.sort_by { |_key, value| value[1] }.to_h
+      diff_abilities = []
+      game_abilities.each do |ability, data|
+        api_data = api_abilities[ability]
+        if !api_data
+          api_data = api_abilities.values.find { |v| v[1] == data[1] }
+        end
+        next if api_abilities.key?(ability)
+        diff_abilities.push([ability, data, api_data])
+      end
+      # Show ability differences in a popup window
+      if !diff_abilities.empty?
+        diff_text = "Diferencias de Habilidades:\n"
+        diff_abilities.each do |ability, game_data, api_data|
+          ability_name = game_data[0]
+          if api_data
+            diff_text += "#{api_data[0]} => #{ability_name}\n"
+          else
+            diff_text += "Habilidad #{game_data[1]} => #{ability_name}\n"
+          end
+        end
+        pbPlayDecisionSE
+        diff_text.chomp!
+        pbMessage(_INTL("{1}", diff_text))
       end
     end
   end

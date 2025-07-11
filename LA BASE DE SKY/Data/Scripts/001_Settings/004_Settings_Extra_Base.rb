@@ -95,6 +95,10 @@ module Settings
   # # Mostrar Siluetas para los Pokemon no vistos en la dex
   SHOW_SILHOUETTES_IN_DEX = false
 
+  # Mostrar cambios de stats respecto a los juegos oficiales
+  # Para esto se utiliza la PokeAPI, si no hay internet no hará nada
+  SHOW_STAT_CHANGES_WITH_POKEAPI = false
+
 
   
 ################################################################################

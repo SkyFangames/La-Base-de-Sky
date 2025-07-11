@@ -8,7 +8,9 @@ class PokemonPokedexInfo_Scene
   def pbDataPageMenu
     pbPlayDecisionSE
     pbDrawDataNotes
-    species = GameData::Species.get_species_form(@species, @form).id
+    species_data = GameData::Species.get_species_form(@species, @form)
+    species = species_data.id
+    @api_data = get_pokeapi_data(species_data) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
     loop do
       Graphics.update
       Input.update
@@ -39,6 +41,28 @@ class PokemonPokedexInfo_Scene
         end
         break if @forceRefresh
       #-------------------------------------------------------------------------
+      elsif Input.trigger?(Input::SPECIAL) && @cursor == :stats && @api_data && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+        pbPlayDecisionSE
+        stat_diffs = []
+        api_total = 0
+        species_data = GameData::Species.get_species_form(@species, @form)
+        @api_data["stats"].each do |stat, api_value|
+          api_total += api_value
+          base_stat = species_data.base_stats[stat]
+          diff = (base_stat - api_value).to_i
+          if diff > 0
+            diff = "\\c[3]+#{diff.abs}" + "\\c[0]\n"
+          elsif diff < 0
+            diff = "\\c[2]-#{diff.abs}" + "\\c[0]\n"
+          end
+          next if diff == 0
+          stat_diffs << _INTL("{1}: {2}", GameData::Stat.get(stat).name, diff)
+        end
+        total_diff = (species_data.base_stat_total > api_total) ? "\\c[3]#{species_data.base_stat_total.to_i}" + "\\c[0]\n" : "\\c[2]#{species_data.base_stat_total.to_i}" + "\\c[0]\n"
+        has_stat_diff = stat_diffs.length > 0 || species_data.base_stat_total != api_total.to_i
+        stat_diffs << _INTL("Total: {1} => {2}", api_total.to_i, total_diff)
+        stat_diffs[stat_diffs.length - 1] = stat_diffs[stat_diffs.length - 1].chomp!
+        pbMessage(_INTL("Cambios de estadisticas:\n{1}", stat_diffs.join)) if has_stat_diff
       elsif Input.repeat?(Input::UP)
         old_cursor = @cursor
         case @cursor
