@@ -316,7 +316,7 @@ Description = Si le alcanza un movimiento tipo Eléctrico, aumenta un nivel la V
 #-------------------------------
 [RIVALRY]
 Name = Rivalidad
-Description = Aumenta la potencia de sus movimientos en un 25% si el objetivo es del mismo sexo. Ya no disminuye un 25% si es del sexo contrario.
+Description = Aumenta la potencia de sus movimientos en un 25% si el objetivo es del mismo sexo y los reduce en un 25% si es del sexo contrario.
 #-------------------------------
 [STEADFAST]
 Name = Impasible
