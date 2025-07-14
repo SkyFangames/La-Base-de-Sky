@@ -2007,7 +2007,7 @@ NamePlural = Rocíos Bondad
 Pocket = 1
 Price = 0
 Flags = Fling_30
-Description = Un orbe fantástico que deben llevar Latios o Latias. Sube el At. Esp. y la Def. Esp.
+Description = Un orbe fantástico que deben llevar Latios o Latias. Potencia los movimientos de tipo Dragón y Psíquico en un 20%.
 #-------------------------------
 [DEEPSEATOOTH]
 Name = Diente Marino
@@ -5738,7 +5738,7 @@ Description = Aumenta 6 niveles el Ataque en combate. Al cambiar de Pokémon, el
 #-------------------------------
 [XDEFENSE]
 Name = Defensa X 1
-NamePlural = X Defenses
+NamePlural = Defensas X 1
 Pocket = 7
 Price = 2000
 BattleUse = OnBattler
@@ -5747,7 +5747,7 @@ Description = Aumenta 1 nivel la Defensa en combate. Al cambiar de Pokémon, el 
 #-------------------------------
 [XDEFENSE2]
 Name = Defensa X 2
-NamePlural = X Defense 2s
+NamePlural = Defensas X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5756,7 +5756,7 @@ Description = Aumenta 2 niveles la Defensa en combate. Al cambiar de Pokémon, e
 #-------------------------------
 [XDEFENSE3]
 Name = Defensa X 3
-NamePlural = X Defense 3s
+NamePlural = Defensas X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5765,7 +5765,7 @@ Description = Aumenta 3 niveles la Defensa en combate. Al cambiar de Pokémon, e
 #-------------------------------
 [XDEFENSE6]
 Name = Defensa X 6
-NamePlural = X Defense 6s
+NamePlural = Defensas X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5774,7 +5774,7 @@ Description = Aumenta 6 niveles la Defensa en combate. Al cambiar de Pokémon, e
 #-------------------------------
 [XSPATK]
 Name = Ataque Especial X 1
-NamePlural = X Sp. Atks
+NamePlural = Ataques Especiales X 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -5783,7 +5783,7 @@ Description = Aumenta 1 nivel el At. Especial en combate. Al cambiar de Pokémon
 #-------------------------------
 [XSPATK2]
 Name = Ataque Especial X 2
-NamePlural = X Sp. Atk 2s
+NamePlural = Ataques Especiales X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5792,7 +5792,7 @@ Description = Aumenta 2 niveles el At. Especial en combate. Al cambiar de Pokém
 #-------------------------------
 [XSPATK3]
 Name = Ataque Especial X 3
-NamePlural = X Sp. Atk 3s
+NamePlural = Ataques Especiales X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5801,7 +5801,7 @@ Description = Aumenta 3 niveles el At. Especial en combate. Al cambiar de Pokém
 #-------------------------------
 [XSPATK6]
 Name = Ataque Especial X 6
-NamePlural = X Sp. Atk 6s
+NamePlural = Ataques Especiales X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5810,7 +5810,7 @@ Description = Aumenta 6 niveles el At. Especial en combate. Al cambiar de Pokém
 #-------------------------------
 [XSPDEF]
 Name = Defensa Especial X 1
-NamePlural = Defensa Especial X
+NamePlural = Defensas Especiales X 1
 Pocket = 7
 Price = 2000
 BattleUse = OnBattler
@@ -5819,7 +5819,7 @@ Description = Aumenta 1 nivel la Def. Especial en combate. Al cambiar de Pokémo
 #-------------------------------
 [XSPDEF2]
 Name = Defensa Especial X 2
-NamePlural = Defensa Especial X 2
+NamePlural = Defensas Especiales X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5828,7 +5828,7 @@ Description = Aumenta 2 niveles la Def. Especial en combate. Al cambiar de Poké
 #-------------------------------
 [XSPDEF3]
 Name = Defensa Especial X 3
-NamePlural = Defensa Especial X 3
+NamePlural = Defensas Especiales X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5837,7 +5837,7 @@ Description = Aumenta 3 niveles la Def. Especial en combate. Al cambiar de Poké
 #-------------------------------
 [XSPDEF6]
 Name = Defensa Especial X 6
-NamePlural = Defensa Especial X 6
+NamePlural = Defensas Especiales X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5846,7 +5846,7 @@ Description = Aumenta 6 niveles la Def. Especial en combate. Al cambiar de Poké
 #-------------------------------
 [XSPEED]
 Name = Velocidad X 1
-NamePlural = Velocidad X
+NamePlural = Velocidades X 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -5855,7 +5855,7 @@ Description = Aumenta 1 nivel la Velocidad en combate. Al cambiar de Pokémon, e
 #-------------------------------
 [XSPEED2]
 Name = Velocidad X 2
-NamePlural = Velocidad X 2
+NamePlural = Velocidades X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5864,7 +5864,7 @@ Description = Aumenta 2 niveles la Velocidad en combate. Al cambiar de Pokémon,
 #-------------------------------
 [XSPEED3]
 Name = Velocidad X 3
-NamePlural = Velocidad X 3
+NamePlural = Velocidades X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5873,7 +5873,7 @@ Description = Aumenta 3 niveles la Velocidad en combate. Al cambiar de Pokémon,
 #-------------------------------
 [XSPEED6]
 Name = Velocidad X 6
-NamePlural = Velocidad X 6
+NamePlural = Velocidades X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5882,7 +5882,7 @@ Description = Aumenta 6 niveles la Velocidad en combate. Al cambiar de Pokémon,
 #-------------------------------
 [XACCURACY]
 Name = Precisión X 1
-NamePlural = Precisión X
+NamePlural = Precisiones X 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -5891,7 +5891,7 @@ Description = Aumenta 1 nivel la Precisión en combate. Al cambiar de Pokémon, 
 #-------------------------------
 [XACCURACY2]
 Name = Precisión X 2
-NamePlural = Precisión X 2
+NamePlural = Precisiones X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5900,7 +5900,7 @@ Description = Aumenta 2 niveles la Precisión en combate. Al cambiar de Pokémon
 #-------------------------------
 [XACCURACY3]
 Name = Precisión X 3
-NamePlural = Precisión X 3
+NamePlural = Precisiones X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5909,7 +5909,7 @@ Description = Aumenta 3 niveles la Precisión en combate. Al cambiar de Pokémon
 #-------------------------------
 [XACCURACY6]
 Name = Precisión X 6
-NamePlural = Precisión X 6
+NamePlural = Precisiones X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5927,7 +5927,7 @@ Description = Setas que aumentan todas las estadísticas de un Pokémon en comba
 #-------------------------------
 [DIREHIT]
 Name = Directo 1
-NamePlural = Directo
+NamePlural = Directos 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -5936,7 +5936,7 @@ Description = Aumenta 1 nivel el índice de golpe crítico en combate. Al cambia
 #-------------------------------
 [DIREHIT2]
 Name = Directo 2
-NamePlural = Directo 2
+NamePlural = Directos 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -5945,7 +5945,7 @@ Description = Aumenta 2 niveles el índice de golpe crítico en combate. Al camb
 #-------------------------------
 [DIREHIT3]
 Name = Directo 3
-NamePlural = Directo 3
+NamePlural = Directos 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
