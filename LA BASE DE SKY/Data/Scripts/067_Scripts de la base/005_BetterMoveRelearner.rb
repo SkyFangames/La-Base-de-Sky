@@ -147,8 +147,8 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     move_name = crop_text(move_name, 230)
     draw_text(move_name, x + 76, y + 6)
 
-    # Draw if move is a TM or HM
-    draw_text(move[1], x + 10, y + 36) if move[1]
+    # Draw move learn level or TM/HM
+    draw_text(move[1], x + 12, y + 36) if move[1]
 
     # Draw PP text
     if move_data.total_pp > 0
@@ -296,31 +296,32 @@ class UI::MoveReminder < UI::BaseScreen
     return if !@pokemon || @pokemon.egg? || @pokemon.shadowPokemon?
     @pokemon.getMoveList.each do |move|
       next if move[0] > @pokemon.level || @pokemon.hasMove?(move[1])
-      @moves.push(move[1]) if !@moves.include?(move[1])
+      # @moves.push(move[1]) if !@moves.include?(move[1])
+      @moves << [move[1], "Nv. #{move[0].to_i.abs}"] if !@moves.include?(move[1])
     end
     if Settings::MOVE_RELEARNER_CAN_TEACH_MORE_MOVES && @pokemon.first_moves
       first_moves = []
       @pokemon.first_moves.each do |move|
-        first_moves.push(move) if !@moves.include?(move) && !@pokemon.hasMove?(move)
+        first_moves.push([move, "Nv. 1"]) if !@moves.include?(move) && !@pokemon.hasMove?(move)
       end
       @moves = first_moves + @moves   # List first moves before level-up moves
     end
     @moves = @moves | []   # remove duplicates
 
-    new_moves = []
-    for move in @moves
-      new_moves.push([move, nil])
-    end
-    @moves = new_moves
+    # new_moves = []
+    # for move in @moves
+    #   new_moves.push([move, nil])
+    # end
+    # @moves = new_moves
     if Settings::SHOW_MTS_MOS_IN_MOVE_RELEARNER
       tms = pbGetTMMoves(@pokemon)
       for tm in tms
-        if !@moves.include?(tm[0])
-            new_moves.push([tm[0], tm[1]])
+        if !@moves.any? { |m| m[0] == tm[0] }
+            @moves.push([tm[0], tm[1]])
         end
       end
     end
-    @moves = new_moves
+    # @moves = new_moves 
   end
 
   def refresh_move_list
