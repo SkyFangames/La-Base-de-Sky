@@ -261,18 +261,22 @@ Description = Hiere a los Pokémon que intentan drenarle los PS. Estos pierden t
 [OVERGROW]
 Name = Espesura
 Description = Potencia los movimientos de tipo Planta del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = GRASS
 #-------------------------------
 [BLAZE]
 Name = Mar Llamas
 Description = Potencia los movimientos de tipo Fuego del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = FIRE
 #-------------------------------
 [TORRENT]
 Name = Torrente
 Description = Potencia los movimientos de tipo Agua del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = WATER
 #-------------------------------
 [SWARM]
 Name = Enjambre
 Description = Potencia los movimientos de tipo Bicho del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = BUG
 #-------------------------------
 [ROCKHEAD]
 Name = Cabeza Roca

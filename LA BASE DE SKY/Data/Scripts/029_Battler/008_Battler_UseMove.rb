@@ -376,6 +376,7 @@ class Battle::Battler
       # Reset whole damage state, perform various success checks (not accuracy)
       @battle.allBattlers.each do |b|
         b.droppedBelowHalfHP = false
+        b.droppedBelowThirdHP = false
         b.statsDropped = false
       end
       targets.each do |b|
@@ -505,6 +506,7 @@ class Battle::Battler
       pbEffectsAfterMove(user, targets, move, realNumHits)
       @battle.allBattlers.each do |b|
         b.droppedBelowHalfHP = false
+        b.droppedBelowThirdHP = false
         b.statsDropped = false
       end
     end

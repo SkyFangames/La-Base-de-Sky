@@ -332,6 +332,7 @@ class Battle
     if !skip_event_reset
       allBattlers.each do |b|
         b.droppedBelowHalfHP = false
+        b.droppedBelowThirdHP = false
         b.statsDropped = false
       end
     end
@@ -376,6 +377,7 @@ class Battle
     end
     allBattlers.each do |b|
       b.droppedBelowHalfHP = false
+      b.droppedBelowThirdHP = false
       b.statsDropped = false
     end
   end

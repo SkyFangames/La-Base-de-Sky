@@ -131,6 +131,7 @@ class Battle::Battler
     @lastHPLost              = 0
     @lastHPLostFromFoe       = 0
     @droppedBelowHalfHP      = false
+    @droppedBelowThirdHP     = false
     @statsDropped            = false
     @tookMoveDamageThisRound = false
     @tookDamageThisRound     = false

@@ -448,6 +448,26 @@ Battle::AbilityEffects::OnHPDroppedBelowHalf.add(:EMERGENCYEXIT,
 
 Battle::AbilityEffects::OnHPDroppedBelowHalf.copy(:EMERGENCYEXIT, :WIMPOUT)
 
+
+#===============================================================================
+# OnHPDroppedBelowThird handlers
+#===============================================================================
+Battle::AbilityEffects::AfterMoveUseFromTarget.add(:OVERGROW, proc { |ability, target, user, move, switched_battlers, battle|
+  next if !target.droppedBelowThirdHP
+  battle.pbShowAbilitySplash(target)
+  type = GameData::Ability.get(ability).flags[0] if !GameData::Ability.get(ability).flags.empty?
+  type = GameData::Type.get(type).name if type && GameData::Type.exists?(type)
+  if type
+    battle.pbDisplay(_INTL("¡{1} activado! Los ataques de tipo {2} de {3} ahora son más potentes.", target.abilityName, type, target.pbThis(true)))
+  else
+    battle.pbDisplay(_INTL("¡{1} activado! Los ataques del primer tipo de {2} ahora son más potentes.", target.abilityName, target.pbThis(true)))
+  end
+  battle.pbHideAbilitySplash(target)
+})
+
+Battle::AbilityEffects::AfterMoveUseFromTarget.copy(:OVERGROW, :TORRENT, :BLAZE, :SWARM)
+
+
 #===============================================================================
 # StatusCheckNonIgnorable handlers
 #===============================================================================
