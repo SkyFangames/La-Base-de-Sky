@@ -129,6 +129,7 @@ def pbRepel(item, steps)
   $stats.repel_count += 1
   pbUseItemMessage(item)
   $PokemonGlobal.repel = steps
+  $PokemonGlobal.repel_item = item
   return true
 end
 
@@ -156,12 +157,19 @@ EventHandlers.add(:on_player_step_taken, :repel_counter,
       next
     end
     next if !pbConfirmMessage(_INTL("¡El efecto del Repelente se ha terminado! ¿Quieres usar otro?"))
+    repel_items = repels.select { |item| $bag.has?(item) }
+    next if !repel_items || repel_items.empty?
+    commands = repel_items.map { |item| GameData::Item.get(item).name }
+    default_index = repel_items.index { |item| item == $PokemonGlobal.repel_item } || 0
+    commands << "Cancelar"
+    cmd = pbMessage(_INTL("¿Qué repelente quieres usar?"), commands, -1, nil, default_index)
     ret = nil
-    pbFadeOutIn do
-      scene = PokemonBag_Scene.new
-      screen = PokemonBagScreen.new(scene, $bag)
-      ret = screen.pbChooseItemScreen(proc { |item| repels.include?(item) })
-    end
+    ret = repel_items[cmd] if cmd > -1 && cmd < commands.length - 1
+    # pbFadeOutIn do
+    #   scene = PokemonBag_Scene.new
+    #   screen = PokemonBagScreen.new(scene, $bag)
+    #   ret = screen.pbChooseItemScreen(proc { |item| repels.include?(item) })
+    # end
     pbUseItem($bag, ret) if ret
   }
 )

@@ -145,6 +145,18 @@ class PokemonBag
     return ret
   end
 
+  def get_item_with_flag(flag)
+    items = {}
+    @pockets.each do |pocket|
+      next if !pocket
+      pocket.each do |item|
+        item_data = GameData::Item.try_get(item)
+        next if !item_data
+        items[item] if item_data.has_flag?(flag)
+      end
+    end
+  end
+
   #-----------------------------------------------------------------------------
 
   # Returns whether item has been registered for quick access in the Ready Menu.
