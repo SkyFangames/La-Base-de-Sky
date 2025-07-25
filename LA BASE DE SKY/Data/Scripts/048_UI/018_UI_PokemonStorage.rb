@@ -2035,7 +2035,7 @@ class PokemonStorageScreen
       _INTL("Fondo"),
       _INTL("Nombre"),
       _INTL("Liberar Caja"),
-      _INTL("Ordenar Caja"),
+      # _INTL("Ordenar Caja"),
       _INTL("Cancelar")
     ]
     command = pbShowCommands(_INTL("¿Qué hacer con?"), commands)
@@ -2058,8 +2058,8 @@ class PokemonStorageScreen
       @scene.pbBoxName(_INTL("¿Nombre de la caja?"), 0, 12)
     when 3
       pbReleaseBox(@storage.currentBox)
-    when 4
-      pbSortBox(@storage.currentBox)
+    # when 4
+    #   pbSortBox(@storage.currentBox)
     end
   end
 
