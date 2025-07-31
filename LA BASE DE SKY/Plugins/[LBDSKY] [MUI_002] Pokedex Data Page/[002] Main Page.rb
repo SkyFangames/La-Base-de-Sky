@@ -10,7 +10,7 @@ class PokemonPokedexInfo_Scene
     pbDrawDataNotes
     species_data = GameData::Species.get_species_form(@species, @form)
     species = species_data.id
-    @api_data = get_pokeapi_data(species_data) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+    @api_data = PokeAPI.get_data(species_data) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
     loop do
       Graphics.update
       Input.update

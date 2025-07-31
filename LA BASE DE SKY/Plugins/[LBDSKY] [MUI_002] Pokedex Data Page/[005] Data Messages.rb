@@ -148,7 +148,7 @@ class PokemonPokedexInfo_Scene
       nt = (s2 && s2.base_stat_total == species.base_stat_total) ? t[2] : t[1]
       text << " - " + nt + _ISPRINTF("Total: {1:3d}", species.base_stat_total)
       s1 = species.base_stats
-      @api_data = get_pokeapi_data(species) if !s2 && !@api_data && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+      @api_data = PokeAPI.get_data(species) if !s2 && !@api_data && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
       s2 = s2.base_stats if s2
       stats_order = [[:HP, :SPECIAL_ATTACK], [:ATTACK, :SPECIAL_DEFENSE], [:DEFENSE, :SPEED]]
       stats_order.each_with_index do |st, i|
