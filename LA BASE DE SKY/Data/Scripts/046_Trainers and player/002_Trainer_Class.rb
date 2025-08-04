@@ -209,6 +209,16 @@ class Trainer
     all ? pokemon_party.find_all { |p| p&.hasType?(type) } : pokemon_party.find { |p| p&.hasType?(type) }
   end
 
+  def has_pokemon_with_ability?(ability)
+    return false unless GameData::Ability.exists?(ability)
+    return pokemon_party.any? { |pkmn| pkmn&.hasAbility?(ability) }
+  end
+
+  def find_pokemon_with_ability(ability, all = false)
+    return false unless GameData::Ability.exists?(ability)
+    return all ? pokemon_party.find_all { |pkmn| pkmn&.hasAbility?(ability) } : pokemon_party.find { |pkmn| pkmn&.hasAbility?(ability) }
+  end
+
   # Checks whether any Pokémon in the party knows the given move, and returns
   # the first Pokémon it finds with that move, or nil if no Pokémon has that move.
   def get_pokemon_with_move(move)
