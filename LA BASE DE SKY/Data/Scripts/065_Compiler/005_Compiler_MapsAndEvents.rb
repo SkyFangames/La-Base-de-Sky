@@ -48,6 +48,16 @@ module Compiler
     ["PokeBattle_Pokemon.new",       "Pokemon.new"],
     ["makeShiny",                    "make_shiny"],
     ["setNature",                    "set_nature"],
+    [":PARLYZHEAL",                  ":PARALYZEHEAL"],
+    [":XDEFEND",                     ":XDEFENSE"],
+    [":XDEFEND2",                    ":XDEFENSE2"],
+    [":XDEFEND3",                    ":XDEFENSE3"],
+    [":XDEFEND6",                    ":XDEFENSE6"],
+    [":XSPECIAL",                    ":XSPATK"],
+    [":XSPECIAL2",                    ":XSPATK2"],
+    [":XSPECIAL3",                    ":XSPATK3"],
+    [":XSPECIAL6",                    ":XSPATK6"],
+    ["$PokemonGlobal.coins",          "$player.coins"],
   ]
 
   module_function
