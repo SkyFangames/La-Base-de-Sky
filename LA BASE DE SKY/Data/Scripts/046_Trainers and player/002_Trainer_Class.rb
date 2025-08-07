@@ -184,10 +184,25 @@ class Trainer
 
   # Returns true if there is a Pokémon of the given species in the trainer's
   # party. You may also specify a particular form it should be.
-  def has_species?(species, form = -1)
-    return pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) }
+  def has_species?(species, form = -1, exclude_form = -1, check_pc = false)
+    # Check party first
+    party_result = pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) && (exclude_form < 0 || pkmn.form != exclude_form) }
+    return true if party_result
+    
+    # If not found in party and check_pc is true, check PC storage
+    if check_pc && $PokemonStorage
+      (0...$PokemonStorage.maxBoxes).each do |i|
+        $PokemonStorage.maxPokemon(i).times do |j|
+          pkmn = $PokemonStorage[i, j]
+          if pkmn && pkmn.isSpecies?(species) && (form < 0 || pkmn.form == form) && (exclude_form < 0 || pkmn.form != exclude_form)
+            return true
+          end
+        end
+      end
+    end
+    
+    return false
   end
-
   # Returns whether there is a fatefully met Pokémon of the given species in the
   # trainer's party.
   def has_fateful_species?(species)
