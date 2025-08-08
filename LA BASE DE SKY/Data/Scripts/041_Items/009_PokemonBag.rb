@@ -166,6 +166,16 @@ class PokemonBag
     return @registered_items.include?(item_data.id)
   end
 
+  # Replaces a registered item with another item. Keeps the same index.
+  # Useful for items that are toggled on/off for example the infinite repel.
+  def replace_registered(old_item, new_item)
+    return unless GameData::Item.exists?(old_item) && GameData::Item.exists?(new_item)
+    if registered?(old_item)
+      index = @registered_items.index(old_item)
+      @registered_items[index] = new_item
+    end
+  end
+
   # Registers the item in the Ready Menu.
   def register(item)
     item_data = GameData::Item.try_get(item)
