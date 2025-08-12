@@ -297,22 +297,18 @@ class UI::MoveReminder < UI::BaseScreen
     @pokemon.getMoveList.each do |move|
       next if move[0] > @pokemon.level || @pokemon.hasMove?(move[1])
       # @moves.push(move[1]) if !@moves.include?(move[1])
-      @moves << [move[1], "Nv. #{move[0].to_i.abs}"] if !@moves.include?(move[1])
+      move_to_add = move.is_a?(GameData::Move) ? move.id : move[1]
+      @moves << [move_to_add, "Nv. #{move[0].to_i.abs}"] if !@moves.include?(move_to_add)
     end
     if Settings::MOVE_RELEARNER_CAN_TEACH_MORE_MOVES && @pokemon.first_moves
       first_moves = []
       @pokemon.first_moves.each do |move|
-        first_moves.push([move, "Nv. 1"]) if !@moves.include?(move) && !@pokemon.hasMove?(move)
+        first_moves.push([move, "Nv. 1"]) if !@moves.any? { |m| m[0] == move } && !@pokemon.hasMove?(move)
       end
       @moves = first_moves + @moves   # List first moves before level-up moves
     end
-    @moves = @moves | []   # remove duplicates
+    @moves = @moves.uniq { |move| move[0] }   # remove duplicates based on move ID
 
-    # new_moves = []
-    # for move in @moves
-    #   new_moves.push([move, nil])
-    # end
-    # @moves = new_moves
     if Settings::SHOW_MTS_MOS_IN_MOVE_RELEARNER
       tms = pbGetTMMoves(@pokemon)
       for tm in tms
@@ -321,7 +317,7 @@ class UI::MoveReminder < UI::BaseScreen
         end
       end
     end
-    # @moves = new_moves 
+
   end
 
   def refresh_move_list
