@@ -178,11 +178,11 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
 
     # Draw move category
     draw_text(_INTL("CATEGORÍA"), 278, 184)
-    draw_image(UI_FOLDER + "category", 455, 178,
+    draw_image(UI_FOLDER + "category", 436, 178,
                0, move_data.display_category(@pokemon) * GameData::Move::CATEGORY_ICON_SIZE[1], *GameData::Move::CATEGORY_ICON_SIZE)
 
     # Description
-    draw_paragraph_text(move_data.description, 275, 215, 246, 6, theme: :black)
+    draw_paragraph_text(move_data.description, 275, 215, 235, 5, theme: :black)
   end
 
   def draw_buttons
