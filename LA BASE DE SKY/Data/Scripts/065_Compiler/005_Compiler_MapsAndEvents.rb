@@ -54,10 +54,11 @@ module Compiler
     [":XDEFEND3",                    ":XDEFENSE3"],
     [":XDEFEND6",                    ":XDEFENSE6"],
     [":XSPECIAL",                    ":XSPATK"],
-    [":XSPECIAL2",                    ":XSPATK2"],
-    [":XSPECIAL3",                    ":XSPATK3"],
-    [":XSPECIAL6",                    ":XSPATK6"],
-    ["$PokemonGlobal.coins",          "$player.coins"],
+    [":XSPECIAL2",                   ":XSPATK2"],
+    [":XSPECIAL3",                   ":XSPATK3"],
+    [":XSPECIAL6",                   ":XSPATK6"],
+    ["$PokemonGlobal.coins",         "$player.coins"],
+    ["pbHasType?",                   "$player.has_pokemon_of_type?"]
   ]
 
   module_function
