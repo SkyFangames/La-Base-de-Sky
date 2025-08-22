@@ -1,48 +1,100 @@
-# Define a mapping of accented characters to unaccented characters
-ACCENTED_CHARACTERS = {
-  'á' => 'a', 'Á' => 'A', 'à' => 'a', 'ä' => 'a', 'â' => 'a', 'ã' => 'a', 'å' => 'a', 
-  'é' => 'e', 'É' => 'E', 'è' => 'e', 'ë' => 'e', 'ê' => 'e',
-  'í' => 'i', 'Í' => 'I', 'ì' => 'i', 'ï' => 'i', 'î' => 'i',
-  'ó' => 'o', 'Ó' => 'O', 'ò' => 'o', 'ö' => 'o', 'ô' => 'o', 'õ' => 'o',
-  'ú' => 'u', 'Ú' => 'U', 'ù' => 'u', 'ü' => 'u', 'û' => 'u',
-  'ç' => 'c'
-}
-
-$:.push File.join(Dir.pwd, "Ruby Library 3.3.0")
-
-def json_remove_comments(json_str)
-  json_str.gsub(/\/\/.*$/, '').gsub(/\/\*.*?\*\//m, '')
-end
-
-############### Workaround para el ordenamiento en JoiPlay ###############
-def remove_accents_joiplay(str)
-  str.chars.map { |char| ACCENTED_CHARACTERS[char] || char }.join
-end
-
-# Natural sort comparison method 
-def natural_sort_key_joiplay(str)
-  # Remove accents and non-alphanumeric characters, and split into chunks of numbers and non-numbers
-  str = remove_accents_joiplay(str).downcase
-  remove_accents_joiplay(str).gsub(/[^a-z0-9]/, '').scan(/\d+|\D+/).map { |chunk| chunk =~ /\d/ ? chunk.to_i : chunk }
-end
-############### Workaround para el ordenamiento en JoiPlay ###############
-
-# Helper function to remove accents from a string using Unicode normalization
-def remove_accents(str)
-  str.unicode_normalize(:nfd).gsub(/[^\u0000-\u007F]/, '') # Remove non-ASCII characters after normalization
-end
-  
-# Natural sort comparison method
-def natural_sort_key(str)
-  # Remove accents, non-alphanumeric characters, and split into chunks of numbers and non-numbers
-  return natural_sort_key_joiplay(str) if $joiplay
-  remove_accents(str.downcase).gsub(/[^a-z0-9]/, '').scan(/\d+|\D+/).map { |chunk| chunk.match?(/\d/) ? chunk.to_i : chunk }
+# Add pokeapi_cache attribute to PokemonGlobalMetadata
+class PokemonGlobalMetadata
+	attr_accessor :pokeapi_cache
 end
 
 module PokeAPI
 	module_function
 	
+	CACHE_DURATION = 60 * 24 * 60 * 60 # 60 days in seconds
+	
+	# Initialize cache in PokemonGlobalMetadata if it doesn't exist
+	def initialize_cache
+		$PokemonGlobal.pokeapi_cache = {} if $PokemonGlobal.pokeapi_cache.nil?
+	end
+	
+	# Get cache from PokemonGlobalMetadata
+	def get_cache
+		initialize_cache
+		return $PokemonGlobal.pokeapi_cache
+	end
+	
+	# Get cached data if it exists and is not expired
+	def get_cached_data(cache_key)
+		cache = get_cache
+		cached_entry = cache[cache_key]
+		return nil unless cached_entry
+		
+		# Check if cache entry has expired
+		if Time.now - cached_entry[:timestamp] > CACHE_DURATION
+			# Remove expired entry
+			cache.delete(cache_key)
+			return nil
+		end
+		
+		return cached_entry[:data]
+	end
+	
+	# Store data in cache
+	def cache_data(cache_key, data)
+		cache = get_cache
+		cache[cache_key] = {
+			data: data,
+			timestamp: Time.now
+		}
+	end
+	
+	# Generate cache key for a species
+	def generate_cache_key(species)
+		if species.is_a?(GameData::Species)
+			return "#{species.id}_#{species.form}"
+		else
+			return species.to_s.downcase
+		end
+	end
+	
+	# Clean up expired cache entries
+	def cleanup_expired_cache
+		cache = get_cache
+		expired_keys = []
+		
+		cache.each do |key, entry|
+			if Time.now - entry[:timestamp] > CACHE_DURATION
+				expired_keys << key
+			end
+		end
+		
+		expired_keys.each { |key| cache.delete(key) }
+		
+		if expired_keys.length > 0
+			puts "Cleaned up #{expired_keys.length} expired cache entries"
+		end
+	end
+	
+	# Clear entire cache (useful for debugging or forcing refresh)
+	def clear_cache
+		initialize_cache
+		$PokemonGlobal.pokeapi_cache.clear
+		puts "Pokemon API cache cleared"
+	end
+	
 	def get_data(species)
+		# Generate cache key for this species
+		cache_key = generate_cache_key(species)
+		
+		# Try to get cached data first
+		cached_data = get_cached_data(cache_key)
+		if cached_data
+			puts "Using cached data for #{cache_key}"
+			return cached_data
+		end
+		
+		# Check network connectivity before attempting API call
+		unless network_available?
+			puts "No internet connection available. Cannot fetch Pokemon data from API."
+			return nil
+		end
+		
 		if species.is_a?(GameData::Species)
 			species_name = get_species_name(species)
 
@@ -55,8 +107,8 @@ module PokeAPI
 			end
 		else
 			species_name = species.downcase
-
 		end
+
 		uri = "https://pokeapi.co/api/v2/pokemon/#{species_name}"
 		begin 
 			response = pbDownloadToString(uri)
@@ -65,7 +117,15 @@ module PokeAPI
 		end
 		return nil if response.nil? || response.empty?
 		data = HTTPLite::JSON.parse(response)
-		return parse_data(data, species)
+		parsed_data = parse_data(data, species)
+		
+		# Cache the successful result
+		if parsed_data
+			cache_data(cache_key, parsed_data)
+			puts "Cached new data for #{cache_key}"
+		end
+		
+		return parsed_data
 	end
 
 	def get_species_name(species)
