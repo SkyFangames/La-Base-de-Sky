@@ -215,7 +215,7 @@ MenuHandlers.add(:debug_menu, :item_ball_print_all, {
   "description" => _INTL("Imprime todos los mapas en {1}.", ItemBallPrinter.file_full_name),
   "effect"      => proc{
     msgwindow = pbCreateMessageWindow
-    if safeExists?(ItemBallPrinter.file_full_name) && !pbConfirmMessageSerious(
+    if FileTest.exist?(ItemBallPrinter.file_full_name) && !pbConfirmMessageSerious(
        _INTL("{1} already exists. Overwrite it?",ItemBallPrinter.file_full_name)
     )
       pbDisposeMessageWindow(msgwindow)
