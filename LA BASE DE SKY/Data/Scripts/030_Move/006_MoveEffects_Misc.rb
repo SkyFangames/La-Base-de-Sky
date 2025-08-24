@@ -610,7 +610,7 @@ class Battle::Move::AttackTwoTurnsLater < Battle::Move
     if @id == :DOOMDESIRE
       @battle.pbDisplay(_INTL("¡{1} ha sido alcanzado por Deseo Oculto!", user.pbThis))
     else
-      @battle.pbDisplay(_INTL("¡{1} ha sido alcanzado por Premonición!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡{1} previó un ataque!", user.pbThis))
     end
   end
 
