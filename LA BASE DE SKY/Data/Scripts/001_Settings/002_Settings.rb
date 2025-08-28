@@ -539,6 +539,16 @@ module Settings
     "choice 27",
     "choice 28"
   ]
+
+
+  #-----------------------------------------------------------------------------
+  # Files
+  #-----------------------------------------------------------------------------
+  DEFAULT_WILD_BATTLE_BGM     = "Battle wild"
+  DEFAULT_WILD_VICTORY_BGM    = "Battle victory"
+  DEFAULT_WILD_CAPTURE_ME     = "Battle capture success"
+  DEFAULT_TRAINER_BATTLE_BGM  = "Battle trainer"
+  DEFAULT_TRAINER_VICTORY_BGM = "Battle victory"
   
   #=============================================================================
   # Weather Settings (Hail/Snow)
