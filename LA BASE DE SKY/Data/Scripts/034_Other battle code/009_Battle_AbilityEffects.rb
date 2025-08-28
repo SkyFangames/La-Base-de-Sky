@@ -2023,7 +2023,7 @@ Battle::AbilityEffects::OnBeingHit.add(:ELECTROMORPHOSIS,
 Battle::AbilityEffects::OnBeingHit.add(:FLAMEBODY,
   proc { |ability, user, target, move, battle|
     next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
-    next if user.burned? || || !user.pbCanBurn?(target, false) 
+    next if user.burned? || !user.pbCanBurn?(target, false) 
     next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(target)
     msg = nil
