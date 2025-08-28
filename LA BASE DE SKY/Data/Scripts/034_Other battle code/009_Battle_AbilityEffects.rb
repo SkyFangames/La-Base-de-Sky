@@ -425,10 +425,10 @@ Battle::AbilityEffects::OnHPDroppedBelowHalf.add(:EMERGENCYEXIT,
     next false if !battle.pbCanSwitchOut?(battler.index)   # Battler can't switch out
     next false if !battle.pbCanChooseNonActive?(battler.index)   # No Pokémon can switch in
     battle.pbShowAbilitySplash(battler, true)
-    battle.pbHideAbilitySplash(battler)
     if !Battle::Scene::USE_ABILITY_SPLASH
       battle.pbDisplay(_INTL("¡La habilidad {2} de {1} se ha activado!", battler.pbThis(true), battler.abilityName))
     end
+    battle.pbHideAbilitySplash(battler)
     battle.pbDisplay(_INTL("¡{1} regresó con {2}!",
        battler.pbThis, battle.pbGetOwnerName(battler.index)))
     if battle.endOfRound   # Just switch out
@@ -612,7 +612,7 @@ Battle::AbilityEffects::OnStatusInflicted.add(:SYNCHRONIZE,
         msg = nil
         if !Battle::Scene::USE_ABILITY_SPLASH
           msg = _INTL("¡La habilidad {2} de {1} paralizó a {3}! ¡Quizás no se pueda mover!",
-             battler.pbThis(true), battler.abilityName, user.pbThis(true))
+                       battler.pbThis(true), battler.abilityName, user.pbThis(true))
         end
         user.pbParalyze(nil, msg)
         battler.battle.pbHideAbilitySplash(battler)
@@ -1887,28 +1887,12 @@ Battle::AbilityEffects::OnBeingHit.add(:AFTERMATH,
   proc { |ability, user, target, move, battle|
     next if !target.fainted?
     next if !move.pbContactMove?(user)
+    next if !user.takesIndirectDamage? || !user.affectedByContactEffect?
+    next if battle.pbCheckGlobalAbility(:DAMP, true)
     battle.pbShowAbilitySplash(target)
-    if !battle.moldBreaker
-      dampBattler = battle.pbCheckGlobalAbility(:DAMP)
-      if dampBattler
-        battle.pbShowAbilitySplash(dampBattler)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          battle.pbDisplay(_INTL("¡{1} no puede usar la habilidad {2}!", target.pbThis, target.abilityName))
-        else
-          battle.pbDisplay(_INTL("{1} no puede usar la habilidad {2} por la habilidad {4} de {3}!",
-             target.pbThis, target.abilityName, dampBattler.pbThis(true), dampBattler.abilityName))
-        end
-        battle.pbHideAbilitySplash(dampBattler)
-        battle.pbHideAbilitySplash(target)
-        next
-      end
-    end
-    if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      battle.scene.pbDamageAnimation(user)
-      user.pbReduceHP(user.totalhp / 4, false)
-      battle.pbDisplay(_INTL("¡{1} fue atrapado en las consecuencias!", user.pbThis))
-    end
+    battle.scene.pbDamageAnimation(user)
+    user.pbReduceHP(user.totalhp / 4, false)
+    battle.pbDisplay(_INTL("¡{1} fue atrapado en las consecuencias!", user.pbThis))
     battle.pbHideAbilitySplash(target)
   }
 )
@@ -1953,21 +1937,19 @@ Battle::AbilityEffects::OnBeingHit.add(:CURSEDBODY,
       break
     end
     next if !regularMove || (regularMove.pp == 0 && regularMove.total_pp > 0)
+    next if move.pbMoveFailedAromaVeil?(target, user, false)
     next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(target)
-    if !move.pbMoveFailedAromaVeil?(target, user, Battle::Scene::USE_ABILITY_SPLASH)
-      user.effects[PBEffects::Disable]     = 3
-      user.effects[PBEffects::DisableMove] = regularMove.id
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} de {2} fue deshabilitado!", user.pbThis, regularMove.name))
-      else
-        battle.pbDisplay(_INTL("¡{1} de {2} fue deshabilitado por la habilidad {4} de {3}!",
-           user.pbThis, regularMove.name, target.pbThis(true), target.abilityName))
-      end
-      battle.pbHideAbilitySplash(target)
-      user.pbItemStatusCureCheck
+    user.effects[PBEffects::Disable]     = 3
+    user.effects[PBEffects::DisableMove] = regularMove.id
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡{1} de {2} fue deshabilitado!", user.pbThis, regularMove.name))
+    else
+      battle.pbDisplay(_INTL("¡{1} de {2} fue deshabilitado por la habilidad {4} de {3}!",
+                              user.pbThis, regularMove.name, target.pbThis(true), target.abilityName))
     end
     battle.pbHideAbilitySplash(target)
+    user.pbItemStatusCureCheck
   }
 )
 
@@ -1975,17 +1957,16 @@ Battle::AbilityEffects::OnBeingHit.add(:CUTECHARM,
   proc { |ability, user, target, move, battle|
     next if target.fainted?
     next if !move.pbContactMove?(user)
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
+    next if !user.pbCanAttract?(target, false)
     next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(target)
-    if user.pbCanAttract?(target, Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      msg = nil
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        msg = _INTL("¡{1} de {2} hizo que {3} se enamorara!", target.pbThis,
-           target.abilityName, user.pbThis(true))
-      end
-      user.pbAttract(target, msg)
+    msg = nil
+    if !Battle::Scene::USE_ABILITY_SPLASH
+      msg = _INTL("¡{1} de {2} hizo que {3} se enamorara!", target.pbThis,
+                  target.abilityName, user.pbThis(true))
     end
+    user.pbAttract(target, msg)
     battle.pbHideAbilitySplash(target)
   }
 )
@@ -1995,44 +1976,34 @@ Battle::AbilityEffects::OnBeingHit.add(:EFFECTSPORE,
     # NOTE: This ability has a 30% chance of triggering, not a 30% chance of
     #       inflicting a status condition. It can try (and fail) to inflict a
     #       status condition that the user is immune to.
-    next if !move.pbContactMove?(user)
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
+    next if !user.affectedByPowder?
     next if battle.pbRandom(100) >= 30
     r = battle.pbRandom(3)
-    next if r == 0 && user.asleep?
-    next if r == 1 && user.poisoned?
-    next if r == 2 && user.paralyzed?
+    next if r == 0 && (user.asleep? || !user.pbCanSleep?(target, false))
+    next if r == 1 && (user.poisoned? || !user.pbCanPoison?(target, false))
+    next if r == 2 && (user.paralyzed? || !user.pbCanParalyze?(target, false))
     battle.pbShowAbilitySplash(target)
-    if user.affectedByPowder?(Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      case r
-      when 0
-        if user.pbCanSleep?(target, Battle::Scene::USE_ABILITY_SPLASH)
-          msg = nil
-          if !Battle::Scene::USE_ABILITY_SPLASH
-            msg = _INTL("¡{1} de {2} durmió a {3}!", target.pbThis,
-               target.abilityName, user.pbThis(true))
-          end
-          user.pbSleep(msg)
-        end
-      when 1
-        if user.pbCanPoison?(target, Battle::Scene::USE_ABILITY_SPLASH)
-          msg = nil
-          if !Battle::Scene::USE_ABILITY_SPLASH
-            msg = _INTL("¡{1} de {2} envenenó a {3}!", target.pbThis,
-               target.abilityName, user.pbThis(true))
-          end
-          user.pbPoison(target, msg)
-        end
-      when 2
-        if user.pbCanParalyze?(target, Battle::Scene::USE_ABILITY_SPLASH)
-          msg = nil
-          if !Battle::Scene::USE_ABILITY_SPLASH
-            msg = _INTL("¡{1} de {2} paralizó a {3}! ¡Quizás no se pueda mover!",
-               target.pbThis, target.abilityName, user.pbThis(true))
-          end
-          user.pbParalyze(target, msg)
-        end
+    msg = nil
+    case r
+    when 0
+      if !Battle::Scene::USE_ABILITY_SPLASH
+        msg = _INTL("¡{1} de {2} durmió a {3}!", target.pbThis,
+            target.abilityName, user.pbThis(true))
       end
+      user.pbSleep(msg)
+    when 1
+      if !Battle::Scene::USE_ABILITY_SPLASH
+        msg = _INTL("¡{1} de {2} envenenó a {3}!", target.pbThis,
+            target.abilityName, user.pbThis(true))
+      end
+      user.pbPoison(target, msg)
+    when 2
+      if !Battle::Scene::USE_ABILITY_SPLASH
+        msg = _INTL("¡{1} de {2} paralizó a {3}! ¡Quizás no se pueda mover!",
+            target.pbThis, target.abilityName, user.pbThis(true))
+      end
+      user.pbParalyze(target, msg)
     end
     battle.pbHideAbilitySplash(target)
   }
@@ -2051,17 +2022,15 @@ Battle::AbilityEffects::OnBeingHit.add(:ELECTROMORPHOSIS,
 
 Battle::AbilityEffects::OnBeingHit.add(:FLAMEBODY,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
-    next if user.burned? || battle.pbRandom(100) >= 30
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
+    next if user.burned? || || !user.pbCanBurn?(target, false) 
+    next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(target)
-    if user.pbCanBurn?(target, Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      msg = nil
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        msg = _INTL("¡{1} de {2} quemó a {3}!", target.pbThis, target.abilityName, user.pbThis(true))
-      end
-      user.pbBurn(target, msg)
+    msg = nil
+    if !Battle::Scene::USE_ABILITY_SPLASH
+      msg = _INTL("¡{1} de {2} quemó a {3}!", target.pbThis, target.abilityName, user.pbThis(true))
     end
+    user.pbBurn(target, msg)
     battle.pbHideAbilitySplash(target)
   }
 )
@@ -2091,16 +2060,15 @@ Battle::AbilityEffects::OnBeingHit.add(:ILLUSION,
 Battle::AbilityEffects::OnBeingHit.add(:INNARDSOUT,
   proc { |ability, user, target, move, battle|
     next if !target.fainted? || user.dummy
+    next if !user.takesIndirectDamage?
     battle.pbShowAbilitySplash(target)
-    if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
-      battle.scene.pbDamageAnimation(user)
-      user.pbReduceHP(target.damageState.hpLost, false)
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} sufrió daño!", user.pbThis))
-      else
-        battle.pbDisplay(_INTL("¡{1} sufrió daño por parte de la habilidad {3} de {2}!", user.pbThis,
-           target.pbThis(true), target.abilityName))
-      end
+    battle.scene.pbDamageAnimation(user)
+    user.pbReduceHP(target.damageState.hpLost, false)
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡{1} sufrió daño!", user.pbThis))
+    else
+      battle.pbDisplay(_INTL("¡{1} sufrió daño por parte de la habilidad {3} de {2}!", user.pbThis,
+          target.pbThis(true), target.abilityName))
     end
     battle.pbHideAbilitySplash(target)
   }
@@ -2108,18 +2076,16 @@ Battle::AbilityEffects::OnBeingHit.add(:INNARDSOUT,
 
 Battle::AbilityEffects::OnBeingHit.add(:IRONBARBS,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
+    next if !user.takesIndirectDamage?
     battle.pbShowAbilitySplash(target)
-    if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      battle.scene.pbDamageAnimation(user)
-      user.pbReduceHP(user.totalhp / 8, false)
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} sufrió daño!", user.pbThis))
-      else
-        battle.pbDisplay(_INTL("¡{1} sufrió daño por parte de la habilidad {3} de {2}!", user.pbThis,
-           target.pbThis(true), target.abilityName))
-      end
+    battle.scene.pbDamageAnimation(user)
+    user.pbReduceHP(user.totalhp / 8, false)
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡{1} sufrió daño!", user.pbThis))
+    else
+      battle.pbDisplay(_INTL("¡{1} sufrió daño por parte de la habilidad {3} de {2}!", user.pbThis,
+          target.pbThis(true), target.abilityName))
     end
     battle.pbHideAbilitySplash(target)
   }
@@ -2136,7 +2102,7 @@ Battle::AbilityEffects::OnBeingHit.add(:JUSTIFIED,
 
 Battle::AbilityEffects::OnBeingHit.add(:MUMMY,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
     next if user.fainted?
     next if user.unstoppableAbility? || user.ability == ability
     next if [:MUMMY, :LINGERINGAROMA].include?(user.ability)
@@ -2171,39 +2137,35 @@ Battle::AbilityEffects::OnBeingHit.copy(:MUMMY, :LINGERINGAROMA)
 
 Battle::AbilityEffects::OnBeingHit.add(:PERISHBODY,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
     next if user.fainted?
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
     next if user.effects[PBEffects::PerishSong] > 0 || target.effects[PBEffects::PerishSong] > 0
     battle.pbShowAbilitySplash(target)
-    if user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      user.effects[PBEffects::PerishSong] = 4
-      user.effects[PBEffects::PerishSongUser] = target.index
-      target.effects[PBEffects::PerishSong] = 4
-      target.effects[PBEffects::PerishSongUser] = target.index
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡Ambos Pokémon se debilitarán en tres turnos!"))
-      else
-        battle.pbDisplay(_INTL("¡Ambos Pokémon se debilitarán en tres turnos por la habilidad {2} de {1}!",
-           target.pbThis(true), target.abilityName))
-      end
+    [user, target].each do |battler|
+      battler.effects[PBEffects::PerishSong]     = 4
+      battler.effects[PBEffects::PerishSongUser] = target.index
     end
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡Ambos Pokémon se debilitarán en tres turnos!"))
+    else
+      battle.pbDisplay(_INTL("¡Ambos Pokémon se debilitarán en tres turnos por la habilidad {2} de {1}!",
+          target.pbThis(true), target.abilityName))
+    end   
     battle.pbHideAbilitySplash(target)
   }
 )
 
 Battle::AbilityEffects::OnBeingHit.add(:POISONPOINT,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
-    next if user.poisoned? || battle.pbRandom(100) >= 30
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
+    next if user.poisoned? || !user.pbCanPoison?(target, false)
+    next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(target)
-    if user.pbCanPoison?(target, Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      msg = nil
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        msg = _INTL("¡La habilidad {2} de {1} envenenó a {3}!", target.pbThis(true), target.abilityName, user.pbThis(true))
-      end
-      user.pbPoison(target, msg)
+    msg = nil
+    if !Battle::Scene::USE_ABILITY_SPLASH
+      msg = _INTL("¡La habilidad {2} de {1} envenenó a {3}!", target.pbThis(true), target.abilityName, user.pbThis(true))
     end
+    user.pbPoison(target, msg)
     battle.pbHideAbilitySplash(target)
   }
 )
@@ -2238,18 +2200,16 @@ Battle::AbilityEffects::OnBeingHit.add(:STAMINA,
 
 Battle::AbilityEffects::OnBeingHit.add(:STATIC,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
-    next if user.paralyzed? || (battle.pbRandom(100) >= 30)
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
+    next if user.paralyzed? || !user.pbCanParalyze?(target, false)
+    next if (battle.pbRandom(100) >= 30)
     battle.pbShowAbilitySplash(target)
-    if user.pbCanParalyze?(target, Battle::Scene::USE_ABILITY_SPLASH) &&
-       user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      msg = nil
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        msg = _INTL("¡La habilidad {2} de {1} paralizó a {3}! ¡Quizás no pueda moverse!",
-           target.pbThis(true), target.abilityName, user.pbThis(true))
-      end
-      user.pbParalyze(target, msg)
+    msg = nil
+    if !Battle::Scene::USE_ABILITY_SPLASH
+      msg = _INTL("¡La habilidad {2} de {1} paralizó a {3}! ¡Quizás no pueda moverse!",
+          target.pbThis(true), target.abilityName, user.pbThis(true))
     end
+    user.pbParalyze(target, msg)
     battle.pbHideAbilitySplash(target)
   }
 )
@@ -2276,35 +2236,38 @@ Battle::AbilityEffects::OnBeingHit.add(:TOXICDEBRIS,
 
 Battle::AbilityEffects::OnBeingHit.add(:WANDERINGSPIRIT,
   proc { |ability, user, target, move, battle|
-    next if !move.pbContactMove?(user)
+    next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
     next if user.ungainableAbility? || [:RECEIVER, :WONDERGUARD].include?(user.ability_id)
     next if user.uncopyableAbility?
     next if user.hasActiveItem?(:ABILITYSHIELD) || target.hasActiveItem?(:ABILITYSHIELD)
     oldUserAbil   = nil
     oldTargetAbil = nil
     battle.pbShowAbilitySplash(target) if user.opposes?(target)
-    if user.affectedByContactEffect?(Battle::Scene::USE_ABILITY_SPLASH)
-      battle.pbShowAbilitySplash(user, true, false) if user.opposes?(target)
-      oldUserAbil   = user.ability
-      oldTargetAbil = target.ability
-      user.ability   = oldTargetAbil
-      target.ability = oldUserAbil
-      if user.opposes?(target)
-        battle.pbReplaceAbilitySplash(user)
-        battle.pbReplaceAbilitySplash(target)
-      end
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} ha cambiado habilidades con {2}!", target.pbThis, user.pbThis(true)))
-      else
-        battle.pbDisplay(_INTL("¡{1} combió su habilidad {2} con la habilidad {4} de {3}!",
-           target.pbThis, user.abilityName, user.pbThis(true), target.abilityName))
-      end
-      if user.opposes?(target)
-        battle.pbHideAbilitySplash(user)
-        battle.pbHideAbilitySplash(target)
-      end
+    battle.pbShowAbilitySplash(user, true, false) if user.opposes?(target)
+    oldUserAbil   = user.ability
+    oldTargetAbil = target.ability
+    user.ability   = oldTargetAbil
+    target.ability = oldUserAbil
+    battle.pbReplaceAbilitySplash(target)
+    battle.pbReplaceAbilitySplash(user) if user.opposes?(target)
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡{1} ha cambiado habilidades con {2}!", target.pbThis, user.pbThis(true)))
+    else
+      battle.pbDisplay(_INTL("¡{1} combió su habilidad {2} con la habilidad {4} de {3}!",
+          target.pbThis, user.abilityName, user.pbThis(true), target.abilityName))
     end
-    battle.pbHideAbilitySplash(target) if user.opposes?(target)
+    battle.pbHideAbilitySplash(target)
+    if user.opposes?(target)
+      battle.pbHideAbilitySplash(user)
+      battle.pbHideAbilitySplash(target)
+    elsif Battle::Scene::USE_ABILITY_SPLASH
+      newUserAbil = user.ability
+      user.ability = oldUserAbil
+      battle.pbShowAbilitySplash(user, true, false)
+      user.ability = newUserAbil
+      battle.pbReplaceAbilitySplash(user)
+      battle.pbHideAbilitySplash(user)
+    end
     user.pbOnLosingAbility(oldUserAbil)
     target.pbOnLosingAbility(oldTargetAbil)
     user.pbTriggerAbilityOnGainingIt
@@ -2351,21 +2314,16 @@ Battle::AbilityEffects::OnDealingHit.add(:POISONTOUCH,
   proc { |ability, user, target, move, battle|
     next if !move.contactMove?
     next if battle.pbRandom(100) >= 30
+    next if !target.affectedByAdditionalEffects?
+    next if !target.pbCanPoison?(user, false)
+    next if target.hasActiveAbility?(:SHIELDDUST) && !target.being_mold_broken?
     next if target.hasActiveItem?(:COVERTCLOAK)
     battle.pbShowAbilitySplash(user)
-    if target.hasActiveAbility?(:SHIELDDUST) && !battle.moldBreaker
-      battle.pbShowAbilitySplash(target)
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} no se ve afectado!", target.pbThis))
-      end
-      battle.pbHideAbilitySplash(target)
-    elsif target.pbCanPoison?(user, Battle::Scene::USE_ABILITY_SPLASH)
-      msg = nil
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        msg = _INTL("¡La habilidad {2} de {1} envenenó a {3}!", user.pbThis(true), user.abilityName, target.pbThis(true))
-      end
-      target.pbPoison(user, msg)
+    msg = nil
+    if !Battle::Scene::USE_ABILITY_SPLASH
+      msg = _INTL("¡La habilidad {2} de {1} envenenó a {3}!", user.pbThis(true), user.abilityName, target.pbThis(true))
     end
+    target.pbPoison(user, msg)
     battle.pbHideAbilitySplash(user)
   }
 )
@@ -2374,20 +2332,13 @@ Battle::AbilityEffects::OnDealingHit.add(:TOXICCHAIN,
   proc { |ability, user, target, move, battle|
     next if battle.pbRandom(100) >= 30
     next if target.hasActiveItem?(:COVERTCLOAK)
+    next if !target.pbCanPoison?(user, false)
+    next if target.hasActiveAbility?(:SHIELDDUST) && !target.being_mold_broken?
     battle.pbShowAbilitySplash(user)
-    if target.hasActiveAbility?(:SHIELDDUST) && !battle.moldBreaker
-      battle.pbShowAbilitySplash(target)
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} no se ve afectado!", target.pbThis))
-      end
-      battle.pbHideAbilitySplash(target)
-    elsif target.pbCanPoison?(user, Battle::Scene::USE_ABILITY_SPLASH)
-      msg = nil
-      if !Battle::Scene::USE_ABILITY_SPLASH
-        msg = _INTL("¡{1} fue gravemente envenenado!", target.pbThis)
-      end
-      target.pbPoison(user, msg, true)
+    if !Battle::Scene::USE_ABILITY_SPLASH
+      msg = _INTL("¡{1} fue gravemente envenenado!", target.pbThis)
     end
+    target.pbPoison(user, msg, true)
     battle.pbHideAbilitySplash(user)
   }
 )
@@ -2478,37 +2429,36 @@ Battle::AbilityEffects::OnEndOfUsingMove.add(:MAGICIAN,
     next if !move.pbDamagingMove?
     next if user.item
     next if user.wild?
-    targets.each do |b|
-      next if b.damageState.unaffected || b.damageState.substitute
-      next if !b.item
-      next if b.unlosableItem?(b.item) || user.unlosableItem?(b.item)
-      battle.pbShowAbilitySplash(user)
-      if b.hasActiveAbility?(:STICKYHOLD)
-        battle.pbShowAbilitySplash(b) if user.opposes?(b)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          battle.pbDisplay(_INTL("¡El objeto de {1} no puede ser robado!", b.pbThis(true)))
-        end
-        battle.pbHideAbilitySplash(b) if user.opposes?(b)
-        next
-      end
-      user.item = b.item
-      b.item = nil
-      b.effects[PBEffects::Unburden] = true if b.hasActiveAbility?(:UNBURDEN)
-      if battle.wildBattle? && !user.initialItem && user.item == b.initialItem
-        user.setInitialItem(user.item)
-        b.setInitialItem(nil)
-      end
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} robó {2} de {3}!", user.pbThis,
-           b.pbThis(true), user.itemName))
-      else
-        battle.pbDisplay(_INTL("¡{1} robó {2} de {3} con la habilidad {4}!", user.pbThis,
-           b.pbThis(true), user.itemName, user.abilityName))
-      end
-      battle.pbHideAbilitySplash(user)
-      user.pbHeldItemTriggerCheck
-      break
+
+    valid_targets = []
+    
+    targets.each do |battler|
+      next if battler.damageState.unaffected || battler.damageState.substitute
+      next if !battler.item
+      next if battler.unlosableItem?(battler.item) || user.unlosableItem?(battler.item)
+      next if battler.hasActiveAbility?(:STICKYHOLD)
+      valid_targets.push(battler)
     end
+    next if valid_targets.empty?
+    
+    battle.pbShowAbilitySplash(user)
+    battler = valid_targets.first
+    user.item = battler.item
+    battler.item = nil
+    battler.effects[PBEffects::Unburden] = true if battler.hasActiveAbility?(:UNBURDEN)
+    if battle.wildBattle? && !user.initialItem && user.item == battler.initialItem
+      user.setInitialItem(user.item)
+      battler.setInitialItem(nil)
+    end
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡{1} robó {2} de {3}!", user.pbThis,
+          battler.pbThis(true), user.itemName))
+    else
+      battle.pbDisplay(_INTL("¡{1} robó {2} de {3} con la habilidad {4}!", user.pbThis,
+          battler.pbThis(true), user.itemName, user.abilityName))
+    end
+    battle.pbHideAbilitySplash(user)
+    user.pbHeldItemTriggerCheck
   }
 )
 
@@ -2700,13 +2650,15 @@ Battle::AbilityEffects::EndOfRoundWeather.add(:SOLARPOWER,
 Battle::AbilityEffects::EndOfRoundHealing.add(:HEALER,
   proc { |ability, battler, battle|
     next if battle.pbRandom(100) >= 30
-    battler.allAllies.each do |b|
-      next if b.status == :NONE
-      battle.pbShowAbilitySplash(battler)
-      oldStatus = b.status
-      b.pbCureStatus(Battle::Scene::USE_ABILITY_SPLASH)
+    showing_splash = false
+    battler.allAllies.each do |ally|
+      next if ally.status == :NONE
+      battle.pbShowAbilitySplash(battler) if !showing_splash
+      showing_splash = true
+      old_status = ally.status
+      ally.pbCureStatus(Battle::Scene::USE_ABILITY_SPLASH)
       if !Battle::Scene::USE_ABILITY_SPLASH
-        case oldStatus
+        case old_status
         when :SLEEP
           battle.pbDisplay(_INTL("¡La habilidad {2} de {1} despertó a su compañero!", battler.pbThis(true), battler.abilityName))
         when :POISON
@@ -2721,8 +2673,8 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HEALER,
           battle.pbDisplay(_INTL("¡La habilidad {2} de {1} descongelo a su compañero!", battler.pbThis(true), battler.abilityName))
         end
       end
-      battle.pbHideAbilitySplash(battler)
     end
+    battle.pbHideAbilitySplash(battler)
   }
 )
 
@@ -2756,12 +2708,12 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HYDRATION,
 Battle::AbilityEffects::EndOfRoundHealing.add(:SHEDSKIN,
   proc { |ability, battler, battle|
     next if battler.status == :NONE
-    next unless battle.pbRandom(100) < 30
+    next if battle.pbRandom(100) >= 30
     battle.pbShowAbilitySplash(battler)
-    oldStatus = battler.status
+    old_status = battler.status
     battler.pbCureStatus(Battle::Scene::USE_ABILITY_SPLASH)
     if !Battle::Scene::USE_ABILITY_SPLASH
-      case oldStatus
+      case old_status
       when :SLEEP
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} le despertó!", battler.pbThis(true), battler.abilityName))
       when :POISON
@@ -2786,10 +2738,12 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:SHEDSKIN,
 
 Battle::AbilityEffects::EndOfRoundEffect.add(:BADDREAMS,
   proc { |ability, battler, battle|
+    showing_splash = false
     battle.allOtherSideBattlers(battler.index).each do |b|
       next if !b.near?(battler) || !b.asleep?
-      battle.pbShowAbilitySplash(battler)
-      next if !b.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
+      next if !b.takesIndirectDamage?
+      battle.pbShowAbilitySplash(battler) if !showing_splash
+      showing_splash = true
       b.pbTakeEffectDamage(b.totalhp / 8) do |hp_lost|
         if Battle::Scene::USE_ABILITY_SPLASH
           battle.pbDisplay(_INTL("¡{1} está inmerso en un sueño agitado!", b.pbThis))
@@ -2797,9 +2751,9 @@ Battle::AbilityEffects::EndOfRoundEffect.add(:BADDREAMS,
           battle.pbDisplay(_INTL("{1} está inmerso en un sueño agitado debido a {3} de {2}!",
              b.pbThis, battler.pbThis(true), battler.abilityName))
         end
-        battle.pbHideAbilitySplash(battler)
       end
     end
+    battle.pbHideAbilitySplash(battler) if showing_splash
   }
 )
 
@@ -2835,19 +2789,19 @@ Battle::AbilityEffects::EndOfRoundEffect.add(:MOODY,
         randomDown.push(s.id) if battler.pbCanLowerStatStage?(s.id, battler)
       end
     end
-    next if randomUp.length == 0 && randomDown.length == 0
+    next if randomUp.empty? && randomDown.empty?
     battle.pbShowAbilitySplash(battler)
     if randomUp.length > 0
-      r = battle.pbRandom(randomUp.length)
-      battler.pbRaiseStatStageByAbility(randomUp[r], 2, battler, false)
-      randomDown.delete(randomUp[r])
+      up_idx = battle.pbRandom(randomUp.length)
+      battler.pbRaiseStatStageByAbility(randomUp[up_idx], 2, battler, false)
+      randomDown.delete(randomUp[up_idx])
     end
     if randomDown.length > 0
-      r = battle.pbRandom(randomDown.length)
-      battler.pbLowerStatStageByAbility(randomDown[r], 1, battler, false)
+      down_idx = battle.pbRandom(randomDown.length)
+      battler.pbLowerStatStageByAbility(randomDown[down_idx], 1, battler, false)
     end
     battle.pbHideAbilitySplash(battler)
-    battler.pbItemStatRestoreCheck if randomDown.length > 0
+    battler.pbItemStatRestoreCheck if !randomDown.empty?
     battler.pbItemOnStatDropped
   }
 )
@@ -2886,7 +2840,7 @@ Battle::AbilityEffects::EndOfRoundGainItem.add(:HARVEST,
     next if battler.item
     next if !battler.recycleItem || !GameData::Item.get(battler.recycleItem).is_berry?
     if ![:Sun, :HarshSun].include?(battler.effectiveWeather)
-      next unless battle.pbRandom(100) < 50
+      next if battle.pbRandom(100) >= 50
     end
     battle.pbShowAbilitySplash(battler)
     battler.item = battler.recycleItem
@@ -2998,11 +2952,10 @@ Battle::AbilityEffects::OnSwitchIn.add(:ANTICIPATION,
       end
       break if found
     end
-    if found
-      battle.pbShowAbilitySplash(battler)
-      battle.pbDisplay(_INTL("¡{1} se ha estremecido!", battler.pbThis))
-      battle.pbHideAbilitySplash(battler)
-    end
+    next if !found
+    battle.pbShowAbilitySplash(battler)
+    battle.pbDisplay(_INTL("¡{1} se ha estremecido!", battler.pbThis))
+    battle.pbHideAbilitySplash(battler)
   }
 )
 
@@ -3248,18 +3201,18 @@ Battle::AbilityEffects::OnSwitchIn.add(:FOREWARN,
         highestPower = power
       end
     end
-    if forewarnMoves.length > 0
-      battle.pbShowAbilitySplash(battler)
-      forewarnMoveName = forewarnMoves[battle.pbRandom(forewarnMoves.length)]
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡Se ha detectado el movimiento {2} de {1}!",
-          battler.pbThis(true), forewarnMoveName))
-      else
-        battle.pbDisplay(_INTL("¡Alerta de {1} ha detectado el movimiento {2}!",
-          battler.pbThis(true), forewarnMoveName))
-      end
-      battle.pbHideAbilitySplash(battler)
+    next if forewarnMoves.empty?
+    battle.pbShowAbilitySplash(battler)
+    forewarnMoveName = forewarnMoves[battle.pbRandom(forewarnMoves.length)]
+    if Battle::Scene::USE_ABILITY_SPLASH
+      battle.pbDisplay(_INTL("¡Se ha detectado el movimiento {2} de {1}!",
+        battler.pbThis(true), forewarnMoveName))
+    else
+      battle.pbDisplay(_INTL("¡Alerta de {1} ha detectado el movimiento {2}!",
+        battler.pbThis(true), forewarnMoveName))
     end
+    battle.pbHideAbilitySplash(battler)
+
   }
 )
 
@@ -3267,20 +3220,19 @@ Battle::AbilityEffects::OnSwitchIn.add(:FRISK,
   proc { |ability, battler, battle, switch_in|
     next if !battler.pbOwnedByPlayer?
     foes = battle.allOtherSideBattlers(battler.index).select { |b| b.item }
-    if foes.length > 0
-      battle.pbShowAbilitySplash(battler)
-      if Settings::MECHANICS_GENERATION >= 6
-        foes.each do |b|
-          battle.pbDisplay(_INTL("{1} ha cacheado a {2} y ha hallado {3}!",
-             battler.pbThis, b.pbThis(true), b.itemName))
-        end
-      else
-        foe = foes[battle.pbRandom(foes.length)]
-        battle.pbDisplay(_INTL("¡{1} ha cacheado al rival y ha hallado {2}!",
-           battler.pbThis, foe.itemName))
+    next if foes.empty?
+    battle.pbShowAbilitySplash(battler)
+    if Settings::MECHANICS_GENERATION >= 6
+      foes.each do |b|
+        battle.pbDisplay(_INTL("{1} ha cacheado a {2} y ha hallado {3}!",
+            battler.pbThis, b.pbThis(true), b.itemName))
       end
-      battle.pbHideAbilitySplash(battler)
+    else
+      foe = foes[battle.pbRandom(foes.length)]
+      battle.pbDisplay(_INTL("¡{1} ha cacheado al rival y ha hallado {2}!",
+          battler.pbThis, foe.itemName))
     end
+    battle.pbHideAbilitySplash(battler)
   }
 )
 
@@ -3460,14 +3412,14 @@ Battle::AbilityEffects::OnSwitchIn.add(:ORICHALCUMPULSE,
 
 Battle::AbilityEffects::OnSwitchIn.add(:PASTELVEIL,
   proc { |ability, battler, battle, switch_in|
-    next if battler.allAllies.none? { |b| b.status == :POISON }
+    next if battler.allAllies.none? { |ally| ally.status == :POISON }
     battle.pbShowAbilitySplash(battler)
-    battler.allAllies.each do |b|
-      next if b.status != :POISON
-      b.pbCureStatus(Battle::Scene::USE_ABILITY_SPLASH)
+    battler.allAllies.each do |ally|
+      next if ally.status != :POISON
+      ally.pbCureStatus(Battle::Scene::USE_ABILITY_SPLASH)
       if !Battle::Scene::USE_ABILITY_SPLASH
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó el envenenamiento de {3}!",
-           battler.pbThis, battler.abilityName, b.pbThis(true)))
+           battler.pbThis, battler.abilityName, ally.pbThis(true)))
       end
     end
     battle.pbHideAbilitySplash(battler)
@@ -3878,28 +3830,27 @@ Battle::AbilityEffects::OnTerrainChange.add(:MIMICRY,
       battler.pbResetTypes
       battle.pbDisplay(_INTL("¡{1} ha cambiado de nuevo a su tipo normal!", battler.pbThis))
       battle.pbHideAbilitySplash(battler)
-    else
-      # Change to new typing
-      terrain_hash = {
-        :Electric => :ELECTRIC,
-        :Grassy   => :GRASS,
-        :Misty    => :FAIRY,
-        :Psychic  => :PSYCHIC
-      }
-      new_type = terrain_hash[battle.field.terrain]
-      new_type_name = nil
-      if new_type
-        type_data = GameData::Type.try_get(new_type)
-        new_type = nil if !type_data
-        new_type_name = type_data.name if type_data
-      end
-      if new_type
-        battle.pbShowAbilitySplash(battler)
-        battler.pbChangeTypes(new_type)
-        battle.pbDisplay(_INTL("¡El tipo de {1} cambió a tipo {2}!", battler.pbThis(true), new_type_name))
-        battle.pbHideAbilitySplash(battler)
-      end
+      next
     end
+    # Change to new typing
+    terrain_hash = {
+      :Electric => :ELECTRIC,
+      :Grassy   => :GRASS,
+      :Misty    => :FAIRY,
+      :Psychic  => :PSYCHIC
+    }
+    new_type = terrain_hash[battle.field.terrain]
+    new_type_name = nil
+    if new_type
+      type_data = GameData::Type.try_get(new_type)
+      new_type = nil if !type_data
+      new_type_name = type_data.name if type_data
+    end
+    next if !new_type
+    battle.pbShowAbilitySplash(battler)
+    battler.pbChangeTypes(new_type)
+    battle.pbDisplay(_INTL("¡El tipo de {1} cambió a tipo {2}!", battler.pbThis(true), new_type_name))
+    battle.pbHideAbilitySplash(battler)
   }
 )
 
