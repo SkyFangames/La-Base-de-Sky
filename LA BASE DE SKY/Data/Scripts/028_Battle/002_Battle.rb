@@ -122,7 +122,6 @@ class Battle
     @time              = 0
     @environment       = :None   # e.g. Tall grass, cave, still water
     @turnCount         = 0
-    @battle.abilitiesUsedPerSwitchIn[idxOwnSide][@pokemonIndex].clear
     @decision          = 0
     @caughtPokemon     = []
     player   = [player] if !player.nil? && !player.is_a?(Array)
