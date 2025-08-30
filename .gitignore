@@ -32,3 +32,4 @@ check-ruby-syntax-local.ps1
 ruby-style-suggestions.ps1
 PRE-COMMIT-SETUP-GUIDE.md
 .rubocop.yml
+.ruby-version
