@@ -69,8 +69,10 @@ module Settings
   # especies nuevas.
   SHOW_TYPE_EFFECTIVENESS_FOR_NEW_SPECIES = false
 
-
-
+  # Cuando un Pokemon es debilitado todos sus sprites se veran grisados
+  # Al curarlo vuelven a su color original
+  GREY_OUT_FAINTED = true
+  
 ################################################################################
 #  POKÉDEX AVANZADA
 ################################################################################

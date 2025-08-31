@@ -73,5 +73,6 @@ class PokemonStorageScene
     end
     pbDrawTextPositions(overlay, textstrings)
     @sprites["pokemon"].setPokemonBitmap(pokemon)
+    @sprites["pokemon"].make_grey_if_fainted = pokemon.fainted? if pokemon
   end
 end	

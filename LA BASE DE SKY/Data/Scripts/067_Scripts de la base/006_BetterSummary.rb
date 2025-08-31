@@ -18,11 +18,13 @@ class PokemonSummary_Scene
       @sprites["background"] = IconSprite.new(0, 0, @viewport)
       @sprites["pokemon"] = PokemonSprite.new(@viewport)
       @sprites["pokemon"].setOffset(PictureOrigin::CENTER)
+      @sprites["pokemon"].make_grey_if_fainted = @pokemon.fainted?
       @sprites["pokemon"].x = 104
       @sprites["pokemon"].y = 206
       @sprites["pokemon"].setPokemonBitmap(@pokemon)
       @sprites["pokeicon"] = PokemonIconSprite.new(@pokemon, @viewport)
       @sprites["pokeicon"].setOffset(PictureOrigin::CENTER)
+      @sprites["pokeicon"].make_grey_if_fainted = @pokemon.fainted?
       @sprites["pokeicon"].x       = 46
       @sprites["pokeicon"].y       = 92
       @sprites["pokeicon"].visible = false

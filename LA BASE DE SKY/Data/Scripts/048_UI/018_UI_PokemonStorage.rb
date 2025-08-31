@@ -6,11 +6,17 @@ class PokemonBoxIcon < IconSprite
     super(0, 0, viewport)
     @pokemon = pokemon
     @release_timer_start = nil
+    @should_be_grey = @pokemon&.fainted? && Settings::GREY_OUT_FAINTED
     refresh
   end
 
   def releasing?
     return !@release_timer_start.nil?
+  end
+
+  def make_grey_if_fainted=(value)
+    return if !Settings::GREY_OUT_FAINTED
+    @should_be_grey = value
   end
 
   def release
@@ -30,6 +36,12 @@ class PokemonBoxIcon < IconSprite
   def update
     super
     self.color = Color.new(0, 0, 0, 0)
+    # Apply tone after any bitmap changes
+    if @should_be_grey
+      self.tone = Tone.new(0, 0, 0, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0)
+    end
     if releasing?
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
@@ -110,6 +122,11 @@ end
 #===============================================================================
 class AutoMosaicPokemonSprite < MosaicPokemonSprite
   INITIAL_MOSAIC = 10   # Pixellation factor
+  
+  def initialize(*args)
+    super(*args)
+    @should_be_grey = false
+  end
 
   def mosaic=(value)
     @mosaic = value
@@ -123,6 +140,11 @@ class AutoMosaicPokemonSprite < MosaicPokemonSprite
     @mosaic_timer_start = System.uptime if @mosaic_duration > 0
   end
 
+  def make_grey_if_fainted=(value)
+    return if !Settings::GREY_OUT_FAINTED
+    @should_be_grey = value
+  end
+
   def update
     super
     if @mosaic_timer_start
@@ -134,6 +156,12 @@ class AutoMosaicPokemonSprite < MosaicPokemonSprite
         @mosaic_timer_start = nil
         @start_mosaic = nil
       end
+    end
+    # Apply tone after any bitmap changes
+    if @should_be_grey
+      self.tone = Tone.new(0, 0, 0, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0)
     end
   end
 end
@@ -1570,6 +1598,8 @@ class PokemonStorageScene
     end
     pbDrawTextPositions(overlay, textstrings)
     @sprites["pokemon"].setPokemonBitmap(pokemon)
+    # Set grey state for animated sprite if Pokemon is fainted
+    @sprites["pokemon"].make_grey_if_fainted = pokemon.fainted?
   end
 
   def update

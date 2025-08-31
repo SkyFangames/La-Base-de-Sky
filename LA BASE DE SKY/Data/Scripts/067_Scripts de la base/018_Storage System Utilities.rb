@@ -234,7 +234,7 @@ class PokemonBoxIcon < IconSprite
   def update
     super
     @type = :Clear if !@type
-	return update_21 if pbVersion21?
+	  return update_21 if pbVersion21?
     @release.update
     do_colours
     dispose if @startRelease && !releasing?
@@ -242,6 +242,12 @@ class PokemonBoxIcon < IconSprite
   
   def update_21
     do_colours
+    # Apply tone after any bitmap changes
+    if @should_be_grey
+      self.tone = Tone.new(0, 0, 0, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0)
+    end
     if releasing?
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
@@ -251,6 +257,7 @@ class PokemonBoxIcon < IconSprite
         dispose
       end
     end
+    
   end
   
   def do_colours
@@ -720,7 +727,10 @@ class PokemonStorageScene
       if sels.include?(i)
         boxpokesprite&.make_green
       else
-        boxpokesprite&.make_clear
+        pokemon = boxpokesprite&.getPokemon
+        if pokemon && !pokemon.fainted?
+          boxpokesprite&.make_clear
+        end
       end
     end
   end
