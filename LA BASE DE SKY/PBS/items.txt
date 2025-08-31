@@ -1994,8 +1994,8 @@ Flags = Fling_90
 Description = Un extraño tipo de hueso que potencia el Ataque. Suelen llevarlo Cubone o Marowak.
 #-------------------------------
 [LEEK]
-Name = Palo
-NamePlural = Palos
+Name = Puerro
+NamePlural = Puerros
 Pocket = 1
 Price = 1000
 Flags = Fling_60
