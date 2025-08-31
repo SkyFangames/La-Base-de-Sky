@@ -1,8 +1,9 @@
 #===============================================================================
 # * Debug Passability Script for Pokémon Essentials by shiney570.
 # * Adaptado a Essentials V21 por DPertierra
+# * Optimizado para dibujar solo área visible alrededor del jugador
 #
-# Current Version: V2.0
+# Current Version: V2.1 - Optimized
 #
 #
 # * If you have any questions or found a bug let me know.
@@ -17,6 +18,9 @@ SHOW_EVENTS = true
 SHOW_PASSIBILITY = true
 # When true, the terrain tags will be visible.
 SHOW_TERRAIN_TAGS = true
+
+# NUEVA CONFIGURACIÓN: Distancia de renderizado (en casillas)
+RENDER_DISTANCE = 10
 
 # Size of the field square. (choose a number between 1 and 15.)
 $passa_field_size = 4
@@ -44,7 +48,18 @@ class Debug_Passability
     $passa_event_size=16 if ($passa_event_size>32 || $passa_field_size<1)
     $passa_event_size_outline=2 if ($passa_event_size_outline>32 || $passa_event_size_outline<1)
     $passa_opacity=200 if ($passa_opacity>255 || $passa_opacity<1)
-    # Creating bitmap and sprite.
+    
+    # Calcular área visible alrededor del jugador
+    player_x = $game_player.x
+    player_y = $game_player.y
+    
+    # Límites del área a dibujar
+    min_x = [0, player_x - RENDER_DISTANCE].max
+    max_x = [$game_map.width - 1, player_x + RENDER_DISTANCE].min
+    min_y = [0, player_y - RENDER_DISTANCE].max  
+    max_y = [$game_map.height - 1, player_y + RENDER_DISTANCE].min
+    
+    # Creating bitmap and sprite con tamaño completo del mapa
     if $passa_bitmap
       $passa_bitmap.clear
       $passa_sprite.dispose
@@ -59,16 +74,18 @@ class Debug_Passability
     
     $passa_terrain_bitmap=BitmapSprite.new($game_map.width*32,$game_map.height*32)
     $passa_terrain_bitmap.z=$passa_sprite.z
-    $passa_terrain_bitmap.bitmap.font.name="Arial"
+    $passa_terrain_bitmap.bitmap.font.name="Sword"
     $passa_terrain_bitmap.bitmap.font.size=20
     $passa_terrain=[]
     $passa_data = nil
     $map_id = nil
-    # Filling the fields.
-    for xval in 0..$game_map.width
-      for yval in 0..$game_map.height
+    
+    # Filling the fields SOLO EN EL ÁREA VISIBLE
+    for xval in min_x..max_x
+      for yval in min_y..max_y
         x=16+xval*32
         y=16+yval*32
+        
         if isEvent?(xval,yval)
           $passa_bitmap.fill_rect(x+16-($passa_event_size/2),
           y+16-($passa_event_size/2),$passa_event_size,
@@ -86,6 +103,7 @@ class Debug_Passability
           y+16-($passa_event_size/2),$passa_event_size_outline,$passa_event_size,
           $passa_event_color2)
         end
+        
         if !playerPassable?(xval,yval,2) # DOWN
           $passa_bitmap.fill_rect(x,y+32-$passa_field_size,32,
           $passa_field_size,$passa_field_color)
@@ -106,6 +124,10 @@ class Debug_Passability
       end
     end
     pbDrawTextPositions($passa_terrain_bitmap.bitmap,$passa_terrain)
+    
+    # Guardar última posición del jugador para detectar movimiento
+    $passa_last_player_x = player_x
+    $passa_last_player_y = player_y
   end
 
   # Method which returns the passability of a field.
@@ -162,16 +184,20 @@ end
 
 # Updating Game_Map so the passable method won't have undefined methods.
 class Game_Map
-  alias old_setup_kodsn :setup
+  alias old_setup_kodsn setup
   def setup(map_id)
     old_setup_kodsn(map_id)
+    passability_setup(map_id)
+  end
+  # def data; return @map.data; end
+
+  def passability_setup(map_id)
     $map_id=map_id
     $passa_passages=@passages
     $passa_priorities=@priorities
     $passa_terrain_tags=@terrain_tags
     $passa_data = @data
   end
-  # def data; return @map.data; end
 
 end
 
@@ -183,16 +209,40 @@ def dispose_Debug_Passability
   $passa_sprite=nil
   $passa_bitmap=nil
   $passa_terrain_bitmap=nil
+  $passa_last_player_x=nil
+  $passa_last_player_y=nil
 end
 
-# Weird method which checks whether the Debug Passability needs an update or not.
+# Método optimizado que detecta si el jugador se movió lo suficiente para requerir actualización
 def passability_needs_update?
   $passa_event_array="" if !$passa_event_array
   $passa_event_array2=""
-  for event in $game_map.events.values
-    $passa_event_array2.insert($passa_event_array2.length,"#{event.x}") if SHOW_EVENTS
-    $passa_event_array2.insert($passa_event_array2.length,"#{event.y}") if SHOW_EVENTS
+  
+  # Verificar si el jugador se movió fuera del área renderizada
+  if $passa_last_player_x && $passa_last_player_y
+    player_moved_distance = [($game_player.x - $passa_last_player_x).abs, 
+                            ($game_player.y - $passa_last_player_y).abs].max
+    if player_moved_distance > 3 # Re-renderizar cuando se mueva 3+ casillas
+      return true
+    end
   end
+  
+  # Solo verificar eventos en el área visible alrededor del jugador
+  player_x = $game_player.x
+  player_y = $game_player.y
+  min_x = [0, player_x - RENDER_DISTANCE].max
+  max_x = [$game_map.width - 1, player_x + RENDER_DISTANCE].min
+  min_y = [0, player_y - RENDER_DISTANCE].max  
+  max_y = [$game_map.height - 1, player_y + RENDER_DISTANCE].min
+  
+  for event in $game_map.events.values
+    # Solo verificar eventos dentro del área visible
+    if event.x >= min_x && event.x <= max_x && event.y >= min_y && event.y <= max_y
+      $passa_event_array2.insert($passa_event_array2.length,"#{event.x}") if SHOW_EVENTS
+      $passa_event_array2.insert($passa_event_array2.length,"#{event.y}") if SHOW_EVENTS
+    end
+  end
+  
   if $PokemonMap
     $passa_event_array2.insert($passa_event_array2.length,"#{$PokemonGlobal.bridge}") if SHOW_PASSIBILITY
     $passa_event_array2.insert($passa_event_array2.length,"#{$PokemonMap.movedEvents}") if SHOW_PASSIBILITY
@@ -202,6 +252,7 @@ def passability_needs_update?
   $passa_event_array2.insert($passa_event_array2.length,"#{$PokemonGlobal.surfing}") if SHOW_PASSIBILITY
   $passa_event_array2.insert($passa_event_array2.length,"#{$PokemonGlobal.ice_sliding}") if SHOW_PASSIBILITY
   $passa_event_array2.insert($passa_event_array2.length,"#{$game_map}") if SHOW_PASSIBILITY
+  
   if $passa_event_array == $passa_event_array2
     return false
   else
