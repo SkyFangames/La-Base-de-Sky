@@ -1672,12 +1672,13 @@ class PokemonStorageScreen
               commands[cmdMove = commands.length] = (pokemon) ? _INTL("Cambiar") : _INTL("Dejar")
             elsif pokemon
               helptext = _INTL("Has seleccionado a {1}.", pokemon.name)
-              commands[cmdMove = commands.length] = _INTL("Move")
+              commands[cmdMove = commands.length] = _INTL("Mover")
             end
             commands[cmdSummary = commands.length]  = _INTL("Datos")
             commands[cmdWithdraw = commands.length] = (selected[0] == -1) ? _INTL("Guardar") : _INTL("Sacar")
             commands[cmdItem = commands.length]     = _INTL("Objeto")
             commands[cmdMark = commands.length]     = _INTL("Marcas")
+            commands[cmdPokedex = commands.length]  = _INTL("Pokédex")
             commands[cmdRelease = commands.length]  = _INTL("Liberar")
             commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
             commands[commands.length]               = _INTL("Cancelar")
@@ -1696,6 +1697,9 @@ class PokemonStorageScreen
               pbItem(selected, @heldpkmn)
             elsif cmdMark >= 0 && command == cmdMark   # Mark
               pbMark(selected, @heldpkmn)
+            elsif cmdPokedex >= 0 && command == cmdPokedex   # Pokédex
+              openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form) if pokemon
+              openPokedexOnPokemon(@heldpkmn.species, @heldpkmn.gender, @heldpkmn.form) if !pokemon && @heldpkmn
             elsif cmdRelease >= 0 && command == cmdRelease   # Release
               pbRelease(selected, @heldpkmn)
             elsif cmdDebug >= 0 && command == cmdDebug   # Debug
