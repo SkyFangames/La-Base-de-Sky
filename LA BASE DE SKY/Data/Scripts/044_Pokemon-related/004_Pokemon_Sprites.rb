@@ -68,7 +68,6 @@ class PokemonSprite < Sprite
     @_iconbitmap&.dispose
     @_iconbitmap = GameData::Species.sprite_bitmap(species, form, gender, shiny, shadow, back, egg)
     self.bitmap = (@_iconbitmap) ? @_iconbitmap.bitmap : nil
-    self.make_grey_if_fainted = pokemon.fainted?
     changeOrigin
   end
 
