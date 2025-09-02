@@ -22,7 +22,7 @@ def pbStorePokemon(pkmn, allow_change_party = true)
   end
   pkmn.record_first_moves
   if $player.party_full? 
-    if allow_change_party
+    if allow_change_party && $PokemonSystem.sendtoboxes == 0
       pbShowUserStoreActions(pkmn)
     else
       stored_box = $PokemonStorage.pbStoreCaught(pkmn)
