@@ -787,6 +787,174 @@ end
 # PokemonStorageScreen Override
 #===============================================================================
 class PokemonStorageScreen
+  def pbStartScreen(command)
+    $game_temp.in_storage = true
+    @heldpkmn = nil
+    case command
+    when 0   # Organise
+      @scene.pbStartBox(self, command)
+      loop do
+        selected = @scene.pbSelectBox(@storage.party)
+        if selected.nil?
+          if pbHeldPokemon
+            pbDisplay(_INTL("¡Estás sosteniendo un Pokémon!"))
+            next
+          elsif @scene.grabber.carrying
+            pbDisplay(_INTL("¡Estás sosteniendo un Pokémon!"))
+            next
+          end
+          next if pbConfirm(_INTL("¿Desea hacer más operaciones?"))
+          break
+        elsif selected[0] == -3   # Close box
+          if pbHeldPokemon
+            pbDisplay(_INTL("¡Estás sosteniendo un Pokémon!"))
+            next
+          elsif @scene.grabber.carrying
+            pbDisplay(_INTL("¡Estás sosteniendo un Pokémon!"))
+            next
+          end
+          if pbConfirm(_INTL("¿Desea salir de la caja?"))
+            pbSEPlay("PC close")
+            break
+          end
+          next
+        elsif selected[0] == -4   # Box name
+          if @scene.grabber.carrying && CAN_BOX_POUR
+              if pbPour(selected)
+                @scene.grabber.carrying = false
+                @scene.grabber.clear
+                @scene.release_tension
+              end
+          else
+            pbBoxCommands
+          end
+        else
+          pokemon = @storage[selected[0], selected[1]]
+          heldpoke = pbHeldPokemon
+          next if !pokemon && !heldpoke && !@scene.grabber.carrying
+          if @scene.quickswap
+            if @heldpkmn
+              (pokemon) ? pbSwap(selected) : pbPlace(selected)
+            else
+              pbHold(selected)
+            end
+          elsif @scene.multi
+            if !@scene.grabber.carrying
+              if @scene.grabber.holding_anything?
+                @scene.grabber.carrying = true
+                # Gathers held mons data in @carried_mons in the grabber
+                @scene.grabber.pack_up(@storage, selected[0])
+                # Deletes mon off storage
+                pbHold_Multi(selected)
+                @scene.start_tension
+                # Moves the hand to mock pivot position
+                @scene.quick_change(@scene.grabber.mock_pivot)
+                selected[1] = @scene.grabber.mock_pivot
+              else
+                # Start tension here
+                @scene.grabber.setPivot(selected[1])
+                @scene.grabber.do_with(selected[1])
+                @scene.do_green
+                @scene.set_tension
+              end
+            else
+              # Drop Off If Possible
+              if @scene.grabber.place_with_positions(@storage, selected[0], selected[1])
+                pbPlace_Multi(selected)
+                # @scene.grabber.get_new_carried_mons
+                @scene.grabber.carrying = false
+                @scene.grabber.clear
+                @scene.release_tension
+              else
+                next
+              end
+            end
+          else
+            organise_commands(selected, pokemon)
+          end
+        end
+      end
+      @scene.pbCloseBox
+    when 1   # Withdraw
+      @scene.pbStartBox(self, command)
+      loop do
+        selected = @scene.pbSelectBox(@storage.party)
+        if selected.nil?
+          next if pbConfirm(_INTL("¿Desea hacer más operaciones?"))
+          break
+        else
+          case selected[0]
+          when -2   # Party Pokémon
+            pbDisplay(_INTL("¿Cuál tomarás?"))
+            next
+          when -3   # Close box
+            if pbConfirm(_INTL("¿Desea salir de la caja?"))
+              pbSEPlay("PC close")
+              break
+            end
+            next
+          when -4   # Box name
+            pbBoxCommands
+            next
+          end
+          pokemon = @storage[selected[0], selected[1]]
+          next if !pokemon
+          command = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name),
+                                    [_INTL("Retirar"),
+                                    _INTL("Datos"),
+                                    _INTL("Marcas"),
+                                    _INTL("Pokédex"),
+                                    _INTL("Liberar"),
+                                    _INTL("Cancelar")])
+          case command
+            when 0 then pbWithdraw(selected, nil)
+            when 1 then pbSummary(selected, nil)
+            when 2 then pbMark(selected, nil)
+            when 3 then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
+            when 4 then pbRelease(selected, nil)
+          end
+        end
+      end
+      @scene.pbCloseBox
+    when 2   # Deposit
+      @scene.pbStartBox(self, command)
+      loop do
+        selected = @scene.pbSelectParty(@storage.party)
+        if selected == -3   # Close box
+          if pbConfirm(_INTL("¿Desea salir de la caja?"))
+            pbSEPlay("PC close")
+            break
+          end
+          next
+        elsif selected < 0
+          next if pbConfirm(_INTL("¿Desea hacer más operaciones?"))
+          break
+        else
+          pokemon = @storage[-1, selected]
+          next if !pokemon
+          command = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name),
+                                    [_INTL("Dejar"),
+                                    _INTL("Datos"),
+                                    _INTL("Marcas"),
+                                    _INTL("Pokédex"),
+                                    _INTL("Liberar"),
+                                    _INTL("Cancelar")])
+          case command
+            when 0 then pbStore([-1, selected], nil)
+            when 1 then pbSummary([-1, selected], nil)
+            when 2 then pbMark([-1, selected], nil)
+            when 3 then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
+            when 4 then pbRelease([-1, selected], nil)
+          end
+        end
+      end
+      @scene.pbCloseBox
+    when 3
+      @scene.pbStartBox(self, command)
+      @scene.pbCloseBox
+    end
+    $game_temp.in_storage = false
+  end
   
   #===============================================================================
   # pbBoxCommands Override

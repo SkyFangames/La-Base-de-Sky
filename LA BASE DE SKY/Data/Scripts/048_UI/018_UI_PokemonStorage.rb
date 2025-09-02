@@ -1621,6 +1621,56 @@ class PokemonStorageScreen
     @pbHeldPokemon = nil
   end
 
+  def organise_commands(selected, pokemon)
+    commands = []
+    cmdMove     = -1
+    cmdSummary  = -1
+    cmdWithdraw = -1
+    cmdItem     = -1
+    cmdMark     = -1
+    cmdRelease  = -1
+    cmdDebug    = -1
+    heldpoke = pbHeldPokemon
+    if heldpoke
+      helptext = _INTL("Has seleccionado a {1}.", heldpoke.name)
+      commands[cmdMove = commands.length] = (pokemon) ? _INTL("Cambiar") : _INTL("Dejar")
+    elsif pokemon
+      helptext = _INTL("Has seleccionado a {1}.", pokemon.name)
+      commands[cmdMove = commands.length] = _INTL("Mover")
+    end
+    commands[cmdSummary = commands.length]  = _INTL("Datos")
+    commands[cmdWithdraw = commands.length] = (selected[0] == -1) ? _INTL("Guardar") : _INTL("Sacar")
+    commands[cmdItem = commands.length]     = _INTL("Objeto")
+    commands[cmdMark = commands.length]     = _INTL("Marcas")
+    commands[cmdPokedex = commands.length]  = _INTL("Pokédex")
+    commands[cmdRelease = commands.length]  = _INTL("Liberar")
+    commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
+    commands[commands.length]               = _INTL("Cancelar")
+    command = pbShowCommands(helptext, commands)
+    if cmdMove >= 0 && command == cmdMove   # Move/Shift/Place
+      if @heldpkmn
+        (pokemon) ? pbSwap(selected) : pbPlace(selected)
+      else
+        pbHold(selected)
+      end
+    elsif cmdSummary >= 0 && command == cmdSummary   # Summary
+      pbSummary(selected, @heldpkmn)
+    elsif cmdWithdraw >= 0 && command == cmdWithdraw   # Store/Withdraw
+      (selected[0] == -1) ? pbStore(selected, @heldpkmn) : pbWithdraw(selected, @heldpkmn)
+    elsif cmdItem >= 0 && command == cmdItem   # Item
+      pbItem(selected, @heldpkmn)
+    elsif cmdMark >= 0 && command == cmdMark   # Mark
+      pbMark(selected, @heldpkmn)
+    elsif cmdPokedex >= 0 && command == cmdPokedex   # Pokédex
+      openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form) if pokemon
+      openPokedexOnPokemon(@heldpkmn.species, @heldpkmn.gender, @heldpkmn.form) if !pokemon && @heldpkmn
+    elsif cmdRelease >= 0 && command == cmdRelease   # Release
+      pbRelease(selected, @heldpkmn)
+    elsif cmdDebug >= 0 && command == cmdDebug   # Debug
+      pbPokemonDebug((@heldpkmn) ? @heldpkmn : pokemon, selected, heldpoke)
+    end
+  end
+
   def pbStartScreen(command)
     $game_temp.in_storage = true
     @heldpkmn = nil
@@ -1659,55 +1709,11 @@ class PokemonStorageScreen
               pbHold(selected)
             end
           else
-            commands = []
-            cmdMove     = -1
-            cmdSummary  = -1
-            cmdWithdraw = -1
-            cmdItem     = -1
-            cmdMark     = -1
-            cmdRelease  = -1
-            cmdDebug    = -1
-            if heldpoke
-              helptext = _INTL("Has seleccionado a {1}.", heldpoke.name)
-              commands[cmdMove = commands.length] = (pokemon) ? _INTL("Cambiar") : _INTL("Dejar")
-            elsif pokemon
-              helptext = _INTL("Has seleccionado a {1}.", pokemon.name)
-              commands[cmdMove = commands.length] = _INTL("Mover")
-            end
-            commands[cmdSummary = commands.length]  = _INTL("Datos")
-            commands[cmdWithdraw = commands.length] = (selected[0] == -1) ? _INTL("Guardar") : _INTL("Sacar")
-            commands[cmdItem = commands.length]     = _INTL("Objeto")
-            commands[cmdMark = commands.length]     = _INTL("Marcas")
-            commands[cmdPokedex = commands.length]  = _INTL("Pokédex")
-            commands[cmdRelease = commands.length]  = _INTL("Liberar")
-            commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
-            commands[commands.length]               = _INTL("Cancelar")
-            command = pbShowCommands(helptext, commands)
-            if cmdMove >= 0 && command == cmdMove   # Move/Shift/Place
-              if @heldpkmn
-                (pokemon) ? pbSwap(selected) : pbPlace(selected)
-              else
-                pbHold(selected)
-              end
-            elsif cmdSummary >= 0 && command == cmdSummary   # Summary
-              pbSummary(selected, @heldpkmn)
-            elsif cmdWithdraw >= 0 && command == cmdWithdraw   # Store/Withdraw
-              (selected[0] == -1) ? pbStore(selected, @heldpkmn) : pbWithdraw(selected, @heldpkmn)
-            elsif cmdItem >= 0 && command == cmdItem   # Item
-              pbItem(selected, @heldpkmn)
-            elsif cmdMark >= 0 && command == cmdMark   # Mark
-              pbMark(selected, @heldpkmn)
-            elsif cmdPokedex >= 0 && command == cmdPokedex   # Pokédex
-              openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form) if pokemon
-              openPokedexOnPokemon(@heldpkmn.species, @heldpkmn.gender, @heldpkmn.form) if !pokemon && @heldpkmn
-            elsif cmdRelease >= 0 && command == cmdRelease   # Release
-              pbRelease(selected, @heldpkmn)
-            elsif cmdDebug >= 0 && command == cmdDebug   # Debug
-              pbPokemonDebug((@heldpkmn) ? @heldpkmn : pokemon, selected, heldpoke)
-            end
+            organise_commands(selected, pokemon)
           end
         end
       end
+      
       @scene.pbCloseBox
     when 1   # Withdraw
       @scene.pbStartBox(self, command)
@@ -1885,6 +1891,7 @@ class PokemonStorageScreen
           if heldpoke
             @storage.pbMoveCaughtToBox(heldpoke, destbox)
             @heldpkmn = nil
+            @scene&.grabber&.carrying = false
           else
             @storage.pbMove(destbox, -1, -1, index)
           end
