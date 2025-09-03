@@ -158,8 +158,9 @@ end
 #===============================================================================
 class PokemonBag
   def has_compatible_tm?(pokemon)
-    GameData::Item.each do |itm|
-      move = GameData::Item.get(itm).move
+    @pockets[4].each do |itm|
+      tm = itm[0]
+      move = GameData::Item.get(tm).move
       return true if move && pokemon.compatible_with_move?(move) && !pokemon.hasMove?(move)
     end
     return false
