@@ -94,7 +94,7 @@ module ItemBallPrinter
   def self.get_item_ball_string(map_id, mapinfos=nil, type = :item_balls)
     mapinfos = load_data(File.join("Data", "MapInfos.rxdata")) if !mapinfos
     map_file_name = sprintf(File.join("Data", "Map%03d.rxdata"), map_id)
-    return "" if !File.exist?(map_file_name)
+    return "" if !FileTest.exist?(map_file_name)
     map = load_data(map_file_name)
     ret = sprintf("Map ID: %03d. %s", map_id, mapinfos[map_id].name)
     event_and_scripts = self.get_events_and_ball_scripts(map.events.values, type)
@@ -116,33 +116,96 @@ module ItemBallPrinter
   def self.get_events_and_ball_scripts(events, type = :item_balls)
     ret = []
     event_name = type == :item_balls ? "pbItemBall" : "pbReceiveItem"
+    
     for event in events
       next if !self.include_hidden_items? && self.is_hidden_item?(event)
       next if !self.include_non_hidden_items? && !self.is_hidden_item?(event)
-      for page in event.pages
-        for command_index in 0...page.list.size
+      
+      for page_index in 0...event.pages.size
+        page = event.pages[page_index]
+        
+        # Track conditional branch conditions to understand context
+        condition_stack = []
+        
+        command_index = 0
+        while command_index < page.list.size
           command = page.list[command_index]
           case command.code
           when 111  # Conditional Branch
+            # Parse and track the condition
+            condition_text = self.parse_condition(command)
+            condition_stack.push(condition_text)
+            
             if command.parameters[0] == 12 # Script
               ret.push([event, command.parameters[1]]) if command.parameters[1].include?(event_name)
             end
+            
+          when 411  # Else
+            # Negate the current condition when entering else branch
+            if !condition_stack.empty?
+              condition_stack[-1] = "NOT(#{condition_stack[-1]})"
+            end
+            
+          when 412  # End branch
+            # Pop condition when exiting conditional branch
+            condition_stack.pop if !condition_stack.empty?
+            
           when 355  # Script
             next if !INCLUDE_SCRIPT_COMMANDS
             script = command.parameters[0]
-            i = command_index+1
-            while page.list[i].code == 655
-              script+=";"+page.list[i].parameters[0] 
-              i+=1
+            
+            i = command_index + 1
+            # Collect continuation lines (code 655)
+            while i < page.list.size && page.list[i].code == 655
+              script += ";" + page.list[i].parameters[0] 
+              i += 1
             end
-            ret.push([event, script]) if script.include?(event_name)
+            
+            if script.include?(event_name)
+              # Don't include condition information - just the script
+              ret.push([event, script])
+            end
+            command_index = i - 1  # Skip the continuation lines we already processed
           end
+          command_index += 1
         end
       end
     end
+    
     return ret.sort{|a,b| 
       self.give_priority_to_event(a[0], a[1]) <=> self.give_priority_to_event(b[0], b[1])
     }
+  end
+
+  # Parse condition from conditional branch command
+  def self.parse_condition(command)
+    case command.parameters[0]
+    when 0   # Switch
+      switch_id = command.parameters[1]
+      state = command.parameters[2] == 0 ? "ON" : "OFF"
+      return "Switch #{switch_id} = #{state}"
+    when 1   # Variable
+      var_id = command.parameters[1]
+      value = command.parameters[3]
+      op = ["==", ">=", "<=", ">", "<", "!="][command.parameters[4]] || "=="
+      return "Variable #{var_id} #{op} #{value}"
+    when 2   # Self Switch
+      switch_ch = command.parameters[1]
+      state = command.parameters[2] == 0 ? "ON" : "OFF"
+      return "Self Switch #{switch_ch} = #{state}"
+    when 3   # Timer
+      return "Timer condition"
+    when 6   # Character direction
+      return "Character direction condition"
+    when 7   # Gold
+      return "Gold condition"
+    when 11  # Button
+      return "Button condition"
+    when 12  # Script
+      return "Script: #{command.parameters[1]}"
+    else
+      return "Unknown condition type #{command.parameters[0]}"
+    end
   end
 
   # Return a score for event. Used for sorting events
@@ -183,15 +246,6 @@ module ItemBallPrinter
   end
 end
 
-# module MenuHandlers # For compatibility
-#   def self.add(menu, option, hash)
-#     option = option.to_s
-#     hash["parent"] = hash["parent"].to_s if hash["parent"]
-#     hash["parent"] = "itemsmenu" if hash["parent"] == "items_menu"
-#     DebugMenuCommands.register(option, hash)
-#   end
-# end unless defined?(MenuHandlers)
-
 MenuHandlers.add(:debug_menu, :item_ball_printer, {
   "parent"      => :items_menu,
   "name"        => _INTL("Imprimir eventos de objetos"),
@@ -216,7 +270,7 @@ MenuHandlers.add(:debug_menu, :item_ball_print_all, {
   "effect"      => proc{
     msgwindow = pbCreateMessageWindow
     if FileTest.exist?(ItemBallPrinter.file_full_name) && !pbConfirmMessageSerious(
-       _INTL("{1} already exists. Overwrite it?",ItemBallPrinter.file_full_name)
+       _INTL("{1} ya existe. ¿Quieres sobrescribirlo?",ItemBallPrinter.file_full_name)
     )
       pbDisposeMessageWindow(msgwindow)
       next
