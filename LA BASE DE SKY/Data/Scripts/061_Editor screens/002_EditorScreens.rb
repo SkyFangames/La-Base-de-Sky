@@ -897,7 +897,7 @@ def pbItemEditorNew(default_name)
     end
   end
   if GameData::Item.exists?(id)
-    pbMessage(_INTL("Error al crear el objeto. Elije un nombre diferente."))
+    pbMessage(_INTL("Error al crear el objeto. Elige un nombre diferente."))
     return
   end
   # Choose a pocket
