@@ -1169,7 +1169,7 @@ Target = NearOther
 FunctionCode = TypeDependsOnUserMorpekoFormRaiseUserSpeed1
 Flags = CanProtect,CanMirrorMove,CannotMetronome
 EffectChance = 100
-Description = Ataca y sube su Velocidad del usuario. Cambia de tipo dependiendo de la forma del usuario.
+Description = Ataca y sube la Velocidad del usuario. Cambia de tipo dependiendo de la forma del usuario.
 #-------------------------------
 [THUNDER]
 Name = Trueno
