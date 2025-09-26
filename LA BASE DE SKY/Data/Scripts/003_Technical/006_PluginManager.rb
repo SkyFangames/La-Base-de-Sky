@@ -409,7 +409,7 @@ module PluginManager
     message += "Error en el Plugin: [#{name}]\r\n"
     message += "Excepción: #{e.class}\r\n"
     message += "Mensaje: "
-    message += e.message
+    message += e.message || ""
     # muestra las últimas 10 líneas de la traza de llamadas
     message += "\r\n\r\nTraza de llamadas:\r\n"
     e.backtrace[0, 10].each { |i| message += "#{i}\r\n" }
