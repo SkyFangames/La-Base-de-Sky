@@ -623,8 +623,8 @@ def pbSpriteSetAnimFrame(sprite, frame, user = nil, target = nil, inEditor = fal
                         animwidth, animwidth)
   else
     sprite.src_rect.set(0, 0,
-                        (sprite.bitmap) ? sprite.bitmap.width : 128,
-                        (sprite.bitmap) ? sprite.bitmap.height : 128)
+                        (sprite.bitmap) && !sprite.bitmap.disposed? ? sprite.bitmap.width : 128,
+                        (sprite.bitmap) && !sprite.bitmap.disposed? ? sprite.bitmap.height : 128)
   end
   sprite.zoom_x = frame[AnimFrame::ZOOMX] / 100.0
   sprite.zoom_y = frame[AnimFrame::ZOOMY] / 100.0
