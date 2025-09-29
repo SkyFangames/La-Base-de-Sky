@@ -223,13 +223,14 @@ class PokemonSummary_Scene
       pbFadeOutIn {
         scene  = PokemonBag_Scene.new
         screen = PokemonBagScreen.new(scene, $bag)
-        item = screen.pbChooseItemScreen(Proc.new{ |itm|
+        item = screen.pbChooseItemScreen( Proc.new{ |itm|
           move = GameData::Item.get(itm).move  
-          next false if !move || @pokemon.hasMove?(move) || !@pokemon.compatible_with_move?(move)
+          next false if !move || @pokemon.hasMove?(move) #|| !@pokemon.compatible_with_move?(move)
           next true
         })
       }
-      if item
+      move = GameData::Item.try_get(item)&.move
+      if item && move && @pokemon.compatible_with_move?(move) && !@pokemon.hasMove?(move)
         pbUseItemOnPokemon(item, @pokemon, self)
         dorefresh = true
       end
