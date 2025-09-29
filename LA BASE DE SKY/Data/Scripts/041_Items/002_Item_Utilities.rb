@@ -579,7 +579,7 @@ end
 #===============================================================================
 # Teach and forget a move
 #===============================================================================
-def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, &block)
+def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, relearn = false, &block)
   return false if !pkmn
   move = GameData::Move.get(move).id
   if pkmn.egg? && !$DEBUG
@@ -599,8 +599,9 @@ def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, &block)
     pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]", &block)
     return true
   end
-  pbMessage(_INTL("{1} quiere recordar {2}, pero ya conoce {3} movimientos.",
-                  pkmn_name, move_name, pkmn.numMoves.to_word) + "\1", &block)
+  relearn_text = (relearn) ? "recordar" : "aprender"
+  pbMessage(_INTL("{1} quiere {2} {3}, pero ya conoce {4} movimientos.",
+                  pkmn_name, relearn_text, move_name, pkmn.numMoves.to_word) + "\1", &block)
   if pbConfirmMessage(_INTL("¿Quieres que {1} olvide un movimiento y aprenda {2}?", pkmn_name, move_name), &block)
     loop do
       move_index = pbForgetMove(pkmn, move)
