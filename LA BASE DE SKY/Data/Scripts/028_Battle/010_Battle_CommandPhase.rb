@@ -145,6 +145,8 @@ class Battle
     else
       ret = pbPartyScreen(idxBattler, false, true, true)
     end
+    battler = @battlers[idxBattler]
+    @battlers[idxBattler].refresh_moves if !battler.effects[PBEffects::Transform]
     return ret >= 0
   end
 

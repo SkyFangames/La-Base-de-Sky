@@ -90,6 +90,12 @@ class Battle::Battler
     end
   end
 
+  def refresh_moves
+    @pokemon.moves.each_with_index do |m, i|
+      @moves[i] = Battle::Move.from_pokemon_move(@battle, m)
+    end
+  end
+
   def pbInitEffects(batonPass)
     if batonPass
       # These effects are passed on if Baton Pass is used, but they need to be
