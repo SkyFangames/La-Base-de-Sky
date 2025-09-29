@@ -3715,6 +3715,20 @@ Battle::AbilityEffects::OnSwitchIn.add(:ZEROTOHERO,
   }
 )
 
+Battle::AbilityEffects::OnSwitchIn.add(:OVERGROW, proc { |ability, battler, battle, switch_in|
+  next if battler.hp > (battler.totalhp / 3).floor
+  battle.pbShowAbilitySplash(battler)
+  type = GameData::Ability.get(ability).flags[0] if !GameData::Ability.get(ability).flags.empty?
+  type = GameData::Type.get(type).name if type && GameData::Type.exists?(type)
+  if type
+    battle.pbDisplay(_INTL("¡{1} activado! Los ataques de tipo {2} de {3} ahora son más potentes.", battler.abilityName, type, battler.pbThis(true)))
+  else
+    battle.pbDisplay(_INTL("¡{1} activado! Los ataques del primer tipo de {2} ahora son más potentes.", battler.abilityName, battler.pbThis(true)))
+  end
+  battle.pbHideAbilitySplash(battler)
+})
+Battle::AbilityEffects::OnSwitchIn.copy(:OVERGROW, :TORRENT, :BLAZE, :SWARM)
+
 #===============================================================================
 # OnSwitchOut handlers
 #===============================================================================
