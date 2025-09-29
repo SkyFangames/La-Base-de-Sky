@@ -674,6 +674,7 @@ MenuHandlers.add(:options_menu, :screen_size, {
   "name"        => _INTL("Tamaño Pantalla"),
   "order"       => 120,
   "type"        => EnumOption,
+  "condition"   => proc { next !$joiplay },
   "parameters"  => [_INTL("S"), _INTL("M"), _INTL("L"), _INTL("XL"), _INTL("Full")],
   "description" => _INTL("Elige el tamaño de la ventana de juego."),
   "get_proc"    => proc { next [$PokemonSystem.screensize, 4].min },
