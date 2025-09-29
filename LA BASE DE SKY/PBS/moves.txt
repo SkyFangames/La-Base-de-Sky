@@ -3832,7 +3832,7 @@ Accuracy = 0
 TotalPP = 5
 Target = UserAndAllies
 FunctionCode = CureUserPartyStatus
-Description = Cura s los problemas de estado del equipo con un suave aroma.
+Description = Cura los problemas de estado del equipo con un suave aroma.
 #-------------------------------
 [COTTONGUARD]
 Name = Rizo Algodón
@@ -4681,7 +4681,7 @@ TotalPP = 5
 Target = NearOther
 FunctionCode = FailsIfUserHasUnusedMove
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Este movimiento solo puede usarse tras haber usado s los demás conocidos por el Pokémon.
+Description = Este movimiento solo puede usarse tras haber usado los demás conocidos por el Pokémon.
 #-------------------------------
 [SKULLBASH]
 Name = Cabezazo
@@ -7531,7 +7531,7 @@ TotalPP = 10
 Target = BothSides
 FunctionCode = StartNegateHeldItems
 Flags = CanMirrorMove
-Description = Crea un espacio misterioso que inutiliza s los objetos de los Pokémon durante cinco turnos.
+Description = Crea un espacio misterioso que inutiliza los objetos de los Pokémon durante cinco turnos.
 #-------------------------------
 [MEDITATE]
 Name = Meditación
@@ -7625,7 +7625,7 @@ Accuracy = 0
 TotalPP = 10
 Target = User
 FunctionCode = HealUserFullyAndFallAsleep
-Description = Restaura s los PS y cura s los problemas de estado del usuario. Duerme los dos próximos turnos.
+Description = Restaura los PS y cura los problemas de estado del usuario. Duerme los dos próximos turnos.
 #-------------------------------
 [ROLEPLAY]
 Name = Imitación
