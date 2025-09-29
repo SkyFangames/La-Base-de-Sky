@@ -579,12 +579,12 @@ Battle::AI::Handlers::MoveEffectScore.add("StartSlowerBattlersActFirst",
     ai.each_battler do |b, i|
       if b.opposes?(user)
         foe_speeds.push(b.rough_stat(:SPEED))
-        foe_speeds.last *= 2 if user.pbOpposingSide.effects[PBEffects::Tailwind] > 1
-        foe_speeds.last /= 2 if user.pbOpposingSide.effects[PBEffects::Swamp] > 1
+        foe_speeds[-1] *= 2 if user.pbOpposingSide.effects[PBEffects::Tailwind] > 1
+        foe_speeds[-1] /= 2 if user.pbOpposingSide.effects[PBEffects::Swamp] > 1
       else
         ally_speeds.push(b.rough_stat(:SPEED))
-        ally_speeds.last *= 2 if user.pbOwnSide.effects[PBEffects::Tailwind] > 1
-        ally_speeds.last /= 2 if user.pbOwnSide.effects[PBEffects::Swamp] > 1
+        ally_speeds[-1] *= 2 if user.pbOwnSide.effects[PBEffects::Tailwind] > 1
+        ally_speeds[-1] /= 2 if user.pbOwnSide.effects[PBEffects::Swamp] > 1
       end
     end
     # Just in case a side has no battlers
@@ -889,10 +889,11 @@ Battle::AI::Handlers::MoveFailureCheck.add("SwitchOutUserStartHailWeather",
     next cannot_switch
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("SwitchOutUserStartHailWeather",
-  proc { |score, move, user, ai, battle|
+
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SwitchOutUserStartHailWeather",
+  proc { |score, move, user, target, ai, battle|
     switchout_score = Battle::AI::Handlers.apply_move_effect_against_target_score("SwitchOutUserStatusMove",
-        0, move, user, b, ai, battle)
+        0, move, user, target, ai, battle)
     score += switchout_score if switchout_score != Battle::AI::MOVE_USELESS_SCORE
     next Battle::AI::MOVE_USELESS_SCORE if switchout_score == Battle::AI::MOVE_USELESS_SCORE && 
                                           (battle.pbCheckGlobalAbility(:AIRLOCK) ||

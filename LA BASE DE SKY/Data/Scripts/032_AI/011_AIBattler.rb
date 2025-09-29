@@ -31,6 +31,8 @@ class Battle::AI::AIBattler
   def statStageAtMax?(stat); return battler.statStageAtMax?(stat); end
   def statStageAtMin?(stat); return battler.statStageAtMin?(stat); end
   def moves;       return battler.moves;       end
+  def form;        return battler.form;        end
+  def eachMoveWithIndex(&block); battler.eachMoveWithIndex(&block); end
 
   def wild?
     return @ai.battle.wildBattle? && opposes?

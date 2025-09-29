@@ -955,7 +955,7 @@ class Battle::Move::UserLosesFireType < Battle::Move
   end
 
   def pbEffectAfterAllHits(user, target)
-    if !user.effects[PBEffects::BurnUp]
+    if !user.effects[PBEffects::BurnUp] && !target.damageState.unaffected
       user.effects[PBEffects::BurnUp] = true
       @battle.pbDisplay(_INTL("¡El fuego interior de {1} se ha extinguido!", user.pbThis(true)))
     end
@@ -1593,7 +1593,7 @@ class Battle::Move::UserLosesElectricType < Battle::Move
   end
 
   def pbEffectAfterAllHits(user, target)
-    if !user.effects[PBEffects::DoubleShock]
+    if !user.effects[PBEffects::DoubleShock] && !target.damageState.unaffected
       user.effects[PBEffects::DoubleShock] = true
       @battle.pbDisplay(_INTL("¡{1} ha usado toda su electricidad!", user.pbThis))
     end

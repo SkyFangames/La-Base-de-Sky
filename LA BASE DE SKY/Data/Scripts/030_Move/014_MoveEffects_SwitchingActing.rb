@@ -630,7 +630,7 @@ class Battle::Move::TargetUsesItsLastUsedMoveAgain < Battle::Move
       return true
     end
     targetMove = @battle.choices[target.index][2]
-    if targetMove && (targetMove.function_code == "FailsIfUserDamagedThisTurn" ||   # Focus Punch
+    if targetMove && targetMove.is_a?(Battle::Move) && (targetMove.function_code == "FailsIfUserDamagedThisTurn" ||   # Focus Punch
                       targetMove.function_code == "UsedAfterUserTakesPhysicalDamage" ||   # Shell Trap
                       targetMove.function_code == "BurnAttackerBeforeUserActs")    # Beak Blast
       @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message

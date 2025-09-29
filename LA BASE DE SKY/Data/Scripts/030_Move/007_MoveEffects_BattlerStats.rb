@@ -2025,6 +2025,7 @@ class Battle::Move::RaiseUserSpAtkSpDef1CureStatus < Battle::Move::MultiStatUpMo
   end
   
   def pbEffectGeneral(user)
+    super
     user.pbCureStatus if user.pbHasAnyStatus?
   end 
 end

@@ -482,6 +482,7 @@ class Battle::Battler
     return false if hasActiveAbility?(:KLUTZ, ignoreFainted)
     return true
   end
+  alias item_active? itemActive?
 
   def hasActiveItem?(check_item, ignore_fainted = false)
     return false if !itemActive?(ignore_fainted)
