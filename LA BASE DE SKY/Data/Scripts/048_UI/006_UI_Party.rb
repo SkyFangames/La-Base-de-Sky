@@ -1472,7 +1472,7 @@ MenuHandlers.add(:party_menu_item, :move, {
       else
         screen.pbDisplay(_INTL("{1} ya tiene equipado {2}.", newpkmn.name, newitemname) + "\1")
       end
-      next if !screen.pbConfirm(_INTL("Would you like to switch the two items?"))
+      next if !screen.pbConfirm(_INTL("Quieres intercambiar estos dos objetos?"))
       newpkmn.item = item
       pkmn.item = newitem
       screen.scene.pbClearSwitching
