@@ -150,8 +150,8 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
   end
   
   alias pbReceiveItem_itemfind pbReceiveItem
-  def pbReceiveItem(item,quantity=1)
-    result = pbReceiveItem_itemfind(item,quantity)
+  def pbReceiveItem(item, quantity = 1, outfit_change = nil)
+    result = pbReceiveItem_itemfind(item, quantity, outfit_change)
     $item_log.register(item) if result
     return result
   end

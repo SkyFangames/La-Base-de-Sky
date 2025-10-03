@@ -708,13 +708,17 @@ end
 #===============================================================================
 # Being given an item
 #===============================================================================
-def pbReceiveItem(item, quantity = 1)
+def pbReceiveItem(item, quantity = 1, outfit_change = nil)
   item = GameData::Item.get(item)
   return false if !item || quantity < 1
   itemname = (quantity > 1) ? item.portion_name_plural : item.portion_name
   pocket = item.pocket
   move = item.move
   meName = (item.is_key_item?) ? "Key item get" : "Item get"
+  if outfit_change && outfit_change != $player.outfit
+    old_outfit = $player.outfit
+    $player.outfit = outfit_change
+  end
   if item == :DNASPLICERS
     pbMessage("\\me[#{meName}]" + _INTL("¡Has obtenido \\c[1]{1}\\c[0]!", itemname) + "\\wtnp[40]")
   elsif item.is_machine?   # TM or HM
@@ -735,8 +739,10 @@ def pbReceiveItem(item, quantity = 1)
   if $bag.add(item, quantity)   # If item can be added
     pbMessage(_INTL("Has guardado {1} en\\nel bolsillo <icon=bagPocket{2}>\\c[1]{3}\\c[0].",
                     itemname, pocket, PokemonBag.pocket_names[pocket - 1]))
+    $player.outfit = old_outfit if outfit_change && $player.outfit != old_outfit
     return true
   end
+  $player.outfit = old_outfit if outfit_change && $player.outfit != old_outfit
   return false   # Can't add the item
 end
 
