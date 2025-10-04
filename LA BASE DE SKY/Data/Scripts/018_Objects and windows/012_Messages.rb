@@ -752,6 +752,22 @@ def pbMessageChooseNumber(message, params, &block)
   return ret
 end
 
+def pbMessageWithHelp(message, help, commands = nil, cmdIfCancel = 0, skin = nil, defaultCmd = 0, lines = 2, &block)
+  ret = 0
+  msgwindow = pbCreateMessageWindow(nil, skin, lines)
+  if commands
+    ret = pbMessageDisplay(msgwindow, message, true,
+                           proc { |msgwndw|
+                             next Kernel.pbShowCommandsWithHelp(msgwndw, commands, help, cmdIfCancel, defaultCmd, &block)
+                           }, &block)
+  else
+    pbMessageDisplay(msgwindow, message, &block)
+  end
+  pbDisposeMessageWindow(msgwindow)
+  Input.update
+  return ret
+end
+
 def pbShowCommands(msgwindow, commands = nil, cmdIfCancel = 0, defaultCmd = 0)
   return 0 if !commands
   cmdwindow = Window_AdvancedCommandPokemon.new(commands)
