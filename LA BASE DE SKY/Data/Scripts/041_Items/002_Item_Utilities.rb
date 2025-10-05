@@ -810,6 +810,7 @@ def pbGiveItemToPokemon(item, pkmn, scene, pkmnid = 0)
         end
       else
         pkmn.item = item
+        scene.pbRefreshSingle(pkmnid) if defined?(scene.pbRefreshSingle)
         scene.pbDisplay(_INTL("Has quitado {1} de {2} y le has equipado {3}.", olditemname, pkmn.name, newitemname))
         return true
       end

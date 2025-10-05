@@ -373,6 +373,7 @@ class Battle::Battler
     return self.ability == check_ability
   end
   alias hasWorkingAbility hasActiveAbility?
+  alias has_active_ability? hasActiveAbility?
 
   # Applies to both losing self's ability (i.e. being replaced by another) and
   # having self's ability be negated.
