@@ -1,3 +1,4 @@
+HAZARD_OPACITY = 180
 class Battle::Scene
   
   def sceneWait(numframes)
