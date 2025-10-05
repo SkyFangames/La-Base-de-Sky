@@ -170,6 +170,7 @@ class Battle::Battler
     if abilityActive? && @proteanTrigger # Protean/Libero
       Battle::AbilityEffects.triggerOnTypeChange(self.ability, self, newType)
     end 
+    @battle.scene.pbRefreshOne(self.index) if @battle.scene && !fainted?
   end
 
   def pbResetTypes
@@ -178,6 +179,7 @@ class Battle::Battler
     @effects[PBEffects::BurnUp] = false
     @effects[PBEffects::Roost]  = false
     @effects[PBEffects::DoubleShock] = false
+    @battle.scene.pbRefreshOne(self.index) if @battle.scene && !fainted?
   end
 
   #=============================================================================

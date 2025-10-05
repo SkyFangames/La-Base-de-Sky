@@ -918,6 +918,7 @@ class Battle::Move::AddGhostTypeToTarget < Battle::Move
     target.effects[PBEffects::ExtraType] = :GHOST
     typeName = GameData::Type.get(:GHOST).name
     @battle.pbDisplay(_INTL("¡{1} ha cambiado a tipo {2}!", target.pbThis, typeName))
+    @battle.scene.pbRefreshOne(target.index)
   end
 end
 
@@ -939,6 +940,7 @@ class Battle::Move::AddGrassTypeToTarget < Battle::Move
     target.effects[PBEffects::ExtraType] = :GRASS
     typeName = GameData::Type.get(:GRASS).name
     @battle.pbDisplay(_INTL("¡{1} ha cambiado a tipo {2}!", target.pbThis, typeName))
+    @battle.scene.pbRefreshOne(target.index)
   end
 end
 
@@ -958,6 +960,7 @@ class Battle::Move::UserLosesFireType < Battle::Move
     if !user.effects[PBEffects::BurnUp] && !target.damageState.unaffected
       user.effects[PBEffects::BurnUp] = true
       @battle.pbDisplay(_INTL("¡El fuego interior de {1} se ha extinguido!", user.pbThis(true)))
+      @battle.scene.pbRefreshOne(user.index)
     end
   end
 end
