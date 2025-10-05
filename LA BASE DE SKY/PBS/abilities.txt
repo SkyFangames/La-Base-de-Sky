@@ -1073,7 +1073,7 @@ Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y
 #-------------------------------
 [ASONEGRIMNEIGH]
 Name = Unidad Ecuestre
-Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y Relincho Blanco (al derrotar a un objetivo aumenta su At. Especial).
+Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y Relincho Negro (al derrotar a un objetivo aumenta su At. Especial).
 #-------------------------------
 
 
