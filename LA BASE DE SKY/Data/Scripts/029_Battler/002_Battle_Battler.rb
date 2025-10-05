@@ -164,6 +164,11 @@ class Battle::Battler
 
   def inHyperMode?; return false; end
 
+  def affectedByAdditionalEffects?
+    return false if hasActiveItem?(:COVERTCLOAK)
+    return true
+  end
+
   #=============================================================================
   # Display-only properties
   #=============================================================================
