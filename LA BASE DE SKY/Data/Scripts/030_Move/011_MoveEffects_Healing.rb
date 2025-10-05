@@ -21,7 +21,7 @@ class Battle::Move::HealUserFullyAndFallAsleep < Battle::Move::HealingMove
   end
 
   def pbEffectGeneral(user)
-    user.pbSleepSelf(_INTL("¡{1} se ha recuperado tras descansar un poco!", user.pbThis), 3)
+    user.pbSleepSelf(_INTL("¡{1} se ha recuperado tras descansar un poco!", user.pbThis), 2)
     super
   end
 end
