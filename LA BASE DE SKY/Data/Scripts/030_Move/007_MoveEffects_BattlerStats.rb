@@ -2195,6 +2195,7 @@ class Battle::Move::RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP < Battle::Move
         showAnim = false
       end
     end
+    user.pbItemHPHealCheck
   end
 end
 
