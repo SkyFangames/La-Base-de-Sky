@@ -90,7 +90,7 @@ class Battle::Battler
     when :SLEEP
       # No type is immune to sleep
     when :POISON
-      if !(user && user.hasActiveAbility?(:CORROSION))
+      if !(user && user.hasActiveAbility?(:CORROSION) && move && !move.damagingMove?)
         hasImmuneType |= pbHasType?(:POISON)
         hasImmuneType |= pbHasType?(:STEEL)
       end
