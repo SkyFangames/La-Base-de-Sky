@@ -134,6 +134,8 @@ module Settings
 
     # Agrega el porcentaje de vida restante del Pokémon enemigo debajo de la barra de vida.
     SHOW_ENEMY_HP_PERCENTAGE = true
+
+    SHOW_HAZARDS_IN_BATTLE = false
     
 end
   
