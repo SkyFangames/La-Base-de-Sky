@@ -819,6 +819,7 @@ class Battle
         battler.effects[PBEffects::Charge]   += 1 if battler.effects[PBEffects::Charge]     > 0
       end
       battler.effects[PBEffects::GlaiveRush] -= 1 if battler.effects[PBEffects::GlaiveRush] > 0
+      @scene.pbRefreshOne(battler.index)
     end
     # Reset/count down side-specific effects (no messages)
     2.times do |side|
