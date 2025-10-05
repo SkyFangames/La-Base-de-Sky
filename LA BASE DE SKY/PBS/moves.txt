@@ -9192,7 +9192,7 @@ Category = Status
 Accuracy = 0
 TotalPP = 10
 Target = NearOther
-FunctionCode = RaiseUserAtk2SpAtk2Speed2LoseHalfOfTotalHP
+FunctionCode = RaiseUserAtkSpAtkSpeed2LoseHalfOfTotalHP
 Flags = CannotMetronome
 Description = Aumenta mucho el Ataque, el Ataque Especial y la Velocidad del usuario a costa de parte de sus PS. 
 #-------------------------------
