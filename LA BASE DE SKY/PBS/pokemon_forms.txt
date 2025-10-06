@@ -1846,7 +1846,7 @@ Pokedex = Convoca a los muertos con su danza de ensueño. De su malicia extrae p
 Abilities = OWNTEMPO
 HiddenAbilities = OWNTEMPO
 Flags = InheritFormFromMother
-Evolutions = LYCANROC,LevelEvening,25
+Evolutions = LYCANROC,Level,25
 #-------------------------------
 [LYCANROC,1]
 FormName = Forma Nocturna
