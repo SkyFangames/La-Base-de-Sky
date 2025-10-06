@@ -746,6 +746,7 @@ class Battle::Move::RemoveTerrainIceSpinner < Battle::Move
       @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
     end
     @battle.field.terrain = :None
+    @battle.scene.pbDeleteField
     @battle.allBattlers.each { |battler| battler.pbAbilityOnTerrainChange }
   end
 end
