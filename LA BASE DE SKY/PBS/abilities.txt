@@ -10,7 +10,7 @@ Description = Cuando entra en combate invoca una lluvia que dura 5 turnos. Si el
 #-------------------------------
 [SPEEDBOOST]
 Name = Impulso
-Description = Aumenta en un nivel la Velocidad  del usuario al final de cada turno.
+Description = Aumenta en un nivel la Velocidad del usuario al final de cada turno.
 #-------------------------------
 [BATTLEARMOR]
 Name = Armadura Batalla

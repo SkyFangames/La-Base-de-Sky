@@ -4305,7 +4305,7 @@ BPPrice = 32
 FieldUse = TM
 Flags = Fling_110
 Move = FIREBLAST
-Description = Llama intensa que lo chamusca  y puede causar quemaduras.
+Description = Llama intensa que lo chamusca y puede causar quemaduras.
 #-------------------------------
 [TM39]
 Name = MT39

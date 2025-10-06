@@ -1753,7 +1753,7 @@ FormName = Tamaño Grande
 BaseStats = 75,95,122,69,58,75
 Height = 1.1
 Weight = 14.0
-Pokedex =  Los Gourgeist Tamaño Grande se hacen pasar por adultos para tomar a los niños de la mano y llevárselos al otro mundo.
+Pokedex = Los Gourgeist Tamaño Grande se hacen pasar por adultos para tomar a los niños de la mano y llevárselos al otro mundo.
 #-------------------------------
 [GOURGEIST,3]
 FormName = Tamaño Extragrande
@@ -2091,7 +2091,7 @@ Pokedex = Puede liberar descargas eléctricas de hasta 15.000 V. Se enfrenta a c
 #-------------------------------
 [SINISTEA,1]
 FormName = Forma Genuina
-Pokedex =  Espera a que algún incauto intente bebérselo para absorber su energía vital, pero suelen escupirlo enseguida debido a su mal sabor.
+Pokedex = Espera a que algún incauto intente bebérselo para absorber su energía vital, pero suelen escupirlo enseguida debido a su mal sabor.
 Evolutions = POLTEAGEIST,Item,CHIPPEDPOT
 #-------------------------------
 [POLTEAGEIST,1]
@@ -2425,7 +2425,7 @@ Moves = 1,TAILWHIP,1,TACKLE,5,WORKUP,10,DOUBLEKICK,15,FLAMECHARGE,20,HEADBUTT,25
 TutorMoves = BODYPRESS,BODYSLAM,BULKUP,BULLDOZE,CLOSECOMBAT,CURSE,DIG,DOUBLEEDGE,DRILLRUN,EARTHQUAKE,ENDEAVOR,ENDURE,FACADE,FIREBLAST,FIRESPIN,FLAMECHARGE,FLAMETHROWER,FLAREBLITZ,GIGAIMPACT,HIGHHORSEPOWER,HYPERBEAM,IRONHEAD,LASHOUT,OUTRAGE,OVERHEAT,PROTECT,RAINDANCE,REST,REVERSAL,ROCKSLIDE,ROCKTOMB,SANDSTORM,SCARYFACE,SLEEPTALK,SMARTSTRIKE,STOMPINGTANTRUM,STONEEDGE,SUBSTITUTE,SUNNYDAY,TAKEDOWN,TEMPERFLARE,THIEF,TRAILBLAZE,WILDCHARGE,WILLOWISP,ZENHEADBUTT
 Weight = 85.0
 Color = Black
-Pokedex =  La Variedad Ardiente debe su nombre a la capacidad de exhalar aire a altas temperaturas por el hocico. Lleva las tres colas trenzadas.
+Pokedex = La Variedad Ardiente debe su nombre a la capacidad de exhalar aire a altas temperaturas por el hocico. Lleva las tres colas trenzadas.
 Generation = 9
 Flags = InheritFormWithEverStone
 #-------------------------------

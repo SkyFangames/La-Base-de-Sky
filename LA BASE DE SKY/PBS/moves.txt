@@ -2521,7 +2521,7 @@ Target = NearOther
 FunctionCode = BurnTarget
 Flags = CanProtect,CanMirrorMove
 EffectChance = 10
-Description = Llama intensa que lo chamusca  y puede causar quemaduras.
+Description = Llama intensa que lo chamusca y puede causar quemaduras.
 #-------------------------------
 [FUSIONFLARE]
 Name = Llama Fusión
@@ -4029,7 +4029,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = None
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Asesta un golpe devastador usando  su cuerpo.
+Description = Asesta un golpe devastador usando su cuerpo.
 #-------------------------------
 [EARTHPOWER]
 Name = Tierra Viva
@@ -4863,7 +4863,7 @@ Target = NearOther
 FunctionCode = ParalyzeTarget
 Flags = Contact,CanProtect,CanMirrorMove,TramplesMinimize
 EffectChance = 30
-Description = Salta sobre el objetivo con  su peso. Puede paralizar.
+Description = Salta sobre el objetivo con su peso. Puede paralizar.
 #-------------------------------
 [EXTREMESPEED]
 Name = Velocidad Extrema
@@ -5272,7 +5272,7 @@ TotalPP = 40
 Target = NearOther
 FunctionCode = CannotMakeTargetFaint
 Flags = Contact,CanProtect,CanMirrorMove
-Description = El usuario se contiene a la hora de atacar y deja al Pokémon objetivo  con al menos 1 PS.
+Description = El usuario se contiene a la hora de atacar y deja al Pokémon objetivo con al menos 1 PS.
 #-------------------------------
 [PAYDAY]
 Name = Día de Pago
@@ -5333,7 +5333,7 @@ TotalPP = 35
 Target = NearOther
 FunctionCode = None
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Embiste con  el cuerpo.
+Description = Embiste con el cuerpo.
 #-------------------------------
 [DOUBLEHIT]
 Name = Doble Golpe
