@@ -338,6 +338,7 @@ class Battle::Move::RemoveTerrain < Battle::Move
       @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
     end
     @battle.field.terrain = :None
+    @battle.scene.pbDeleteField
   end
 end
 
