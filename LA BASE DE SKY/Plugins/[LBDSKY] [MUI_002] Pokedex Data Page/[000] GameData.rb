@@ -268,7 +268,7 @@ GameData::Evolution.each do |evo|
   when :LevelNight, :ItemNight, :TradeNight    then evo.description = _INTL("de noche")
   when :LevelMorning                           then evo.description = _INTL("por la mañana")
   when :LevelAfternoon                         then evo.description = _INTL("por la tarde")
-  when :LevelEvening                           then evo.description = _INTL("purante la noche")
+  when :LevelEvening                           then evo.description = _INTL("durante el anochecer (de 17 a 20)")
   when :LevelNoWeather                         then evo.description = _INTL("con clima despejado")
   when :LevelSun                               then evo.description = _INTL("con sol fuerte")
   when :LevelRain                              then evo.description = _INTL("mientras llueve")
