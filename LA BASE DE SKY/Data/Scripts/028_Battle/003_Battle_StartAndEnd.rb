@@ -276,7 +276,7 @@ class Battle
     return @decision
   end
 
-  def pbStartBattleCore
+  def pbStartBattleCore(battle_loop = true)
     # Set up the battlers on each side
     sendOuts = pbSetUpSides
     @battleAI.create_ai_objects
@@ -313,8 +313,8 @@ class Battle
     # Abilities upon entering battle
     pbOnAllBattlersEnteringBattle
     # Main battle loop
-    pbBattleLoop
-  end
+    pbBattleLoop if battle_loop
+  end 
 
   #=============================================================================
   # Main battle loop

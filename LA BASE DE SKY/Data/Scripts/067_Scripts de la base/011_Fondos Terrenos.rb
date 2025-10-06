@@ -235,7 +235,7 @@ class Battle::Scene
 end
 
 class Battle
-  def pbStartBattleCore
+  def pbStartBattleCore(battle_loop = true)
     # Set up the battlers on each side
     sendOuts = pbSetUpSides
     @battleAI.create_ai_objects
@@ -275,7 +275,7 @@ class Battle
     # Abilities upon entering battle
     pbOnAllBattlersEnteringBattle
     # Main battle loop
-    pbBattleLoop
+    pbBattleLoop if battle_loop
   end
 
 
