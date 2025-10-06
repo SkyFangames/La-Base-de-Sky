@@ -4,12 +4,14 @@
 #===============================================================================
 
 module ContinuousWeatherSettings
-  ENABLED = false
+  ENABLED = true
   # How often to restart weather animations (in frames, 60 = 1 second)
   ANIMATION_RESTART_INTERVAL = 600  # 10 seconds
   
   # Weather types that should NOT use continuous animation (keep original end-of-turn behavior)
   EXCLUDED_WEATHER_TYPES = []
+
+  VOLUME = 50 # Volume for weather sound effects (0-100)
 end
 
 class Battle::Scene
@@ -112,6 +114,7 @@ class Battle::Scene
     @weatherAnimationPlayer&.dispose
     
     # Create animation player using the scene (same as original approach)
+    animation.volume = ContinuousWeatherSettings::VOLUME if ContinuousWeatherSettings::VOLUME
     @weatherAnimationPlayer = PBAnimationPlayerX.new(animation, nil, nil, self, false)
     
     # Start the animation
