@@ -1605,6 +1605,7 @@ class Battle::Move::UserLosesElectricType < Battle::Move
     if !user.effects[PBEffects::DoubleShock] && !target.damageState.unaffected
       user.effects[PBEffects::DoubleShock] = true
       @battle.pbDisplay(_INTL("¡{1} ha usado toda su electricidad!", user.pbThis))
+      @battle.scene.pbRefreshOne(user.index)
     end
   end
 end
