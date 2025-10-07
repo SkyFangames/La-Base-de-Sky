@@ -189,8 +189,15 @@ class PokemonPokedexInfo_Scene
     family = species.get_family_species
     family_evos_temp = species.get_evolutions(true)
     family_evos = []
+    family_evos_with_forms = []  # Store species IDs with specific forms
     for i in family_evos_temp
       family_evos << (i[0])
+      # Check if evolution method includes "Form" and extract form number
+      if i[1].to_s.include?("Form") && i[1].to_s =~ /Form(\d+)$/
+        form_number = $1.to_i
+        form_species = GameData::Species.get_species_form(i[0], form_number)
+        family_evos_with_forms << form_species.id if form_species
+      end
     end
     family_to_insert = []
     blacklisted = [:PICHU_2, :FLOETTE_5, :GIMMIGHOUL_1].include?(species.id) ||
@@ -296,6 +303,9 @@ class PokemonPokedexInfo_Scene
       # Add forms that match the species form directly
       if fam.form == species.form
         @data_hash[:family] << fam.id
+      # Check if this specific form ID is in the evolution list with forms
+      elsif family_evos_with_forms.include?(fam.id)
+        @data_hash[:family] << fam.id
       else
         # Skip if there's another form of this species already added
         # or if this species isn't in the evolution family
@@ -305,7 +315,6 @@ class PokemonPokedexInfo_Scene
         @data_hash[:family] << fam.id
       end
     end
-
     @data_hash.each_key do |key|
 	  next if key == :species
       list = @data_hash[key].clone

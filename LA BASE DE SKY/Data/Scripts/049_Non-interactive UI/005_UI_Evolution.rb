@@ -214,6 +214,7 @@ class PokemonEvolutionScene
     @sprites["msgwindow"].text = ""
     # Check for consumed item and check if Pokémon should be duplicated
     pbEvolutionMethodAfterEvolution
+    @pokemon.form # gets the form after evolution
     # Modify Pokémon to make it evolved
     was_fainted = @pokemon.fainted?
     @pokemon.species = @newspecies
