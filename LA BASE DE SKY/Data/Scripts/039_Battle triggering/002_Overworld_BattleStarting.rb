@@ -302,18 +302,19 @@ module BattleCreationHelperMethods
         battle.time = 0
       end
     end
-
-    battle.adjust_levels = battleRules["adjustLevels"] if !battleRules["adjustLevels"].nil?
-    battle.adjust_levels_reset_moves = battleRules["adjustLevelsResetMoves"] if !battleRules["adjustLevelsResetMoves"].nil?
-    if battle.adjust_levels || battle.adjust_levels_reset_moves
-      trainer_max_level = battle.pbParty(0).max_by{ |pokemon| pokemon.level }.level
-      foe_max_level = battle.pbOpposingParty(0).max_by{ |pokemon| pokemon.level }.level
-      battle.pbOpposingParty(0).map! do |pokemon|
-        substract = foe_max_level - pokemon.level
-        pokemon.level = trainer_max_level - substract
-        pokemon.calc_stats
-        pokemon.reset_moves if battle.adjust_levels_reset_moves
-        pokemon
+    if defined?(battle.adjust_levels)
+      battle.adjust_levels = battleRules["adjustLevels"] if !battleRules["adjustLevels"].nil?
+      battle.adjust_levels_reset_moves = battleRules["adjustLevelsResetMoves"] if !battleRules["adjustLevelsResetMoves"].nil?
+      if battle.adjust_levels || battle.adjust_levels_reset_moves
+        trainer_max_level = battle.pbParty(0).max_by{ |pokemon| pokemon.level }.level
+        foe_max_level = battle.pbOpposingParty(0).max_by{ |pokemon| pokemon.level }.level
+        battle.pbOpposingParty(0).map! do |pokemon|
+          substract = foe_max_level - pokemon.level
+          pokemon.level = trainer_max_level - substract
+          pokemon.calc_stats
+          pokemon.reset_moves if battle.adjust_levels_reset_moves
+          pokemon
+        end
       end
     end
   end
