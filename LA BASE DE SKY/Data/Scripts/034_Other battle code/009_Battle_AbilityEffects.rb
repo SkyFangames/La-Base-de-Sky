@@ -3473,10 +3473,10 @@ Battle::AbilityEffects::OnSwitchIn.add(:PROTOSYNTHESIS,
         when :PROTOSYNTHESIS then cause = "sol"
         when :QUARKDRIVE     then cause = "Terreno Eléctrico"
         end
-        battle.pbDisplay(_INTL("El #{cause} activó {2} de {1}!", battler.pbThis(true), battler.abilityName))
+        battle.pbDisplay(_INTL("¡El #{cause} activó {2} de {1}!", battler.pbThis(true), battler.abilityName))
       elsif battler.item_id == :BOOSTERENERGY
         battler.effects[PBEffects::BoosterEnergy] = true
-        battle.pbDisplay(_INTL("{1} usó un {2} para activar su {3}!", battler.pbThis, battler.itemName, battler.abilityName))
+        battle.pbDisplay(_INTL("¡{1} usó un {2} para activar su {3}!", battler.pbThis, battler.itemName, battler.abilityName))
         battler.pbHeldItemTriggered(battler.item)
       end
       if [:ATTACK, :SPATK].include?(highestStat)
