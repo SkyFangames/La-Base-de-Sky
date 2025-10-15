@@ -378,7 +378,7 @@ def pbCreateStatusWindow(viewport = nil)
   return msgwindow
 end
 
-def pbCreateMessageWindow(viewport = nil, skin = nil)
+def pbCreateMessageWindow(viewport = nil, skin = nil, lines = 2)
   msgwindow = Window_AdvancedTextPokemon.new("")
   if viewport
     msgwindow.viewport = viewport
@@ -388,7 +388,7 @@ def pbCreateMessageWindow(viewport = nil, skin = nil)
   msgwindow.visible = true
   msgwindow.letterbyletter = true
   msgwindow.back_opacity = MessageConfig::WINDOW_OPACITY
-  pbBottomLeftLines(msgwindow, 2)
+  pbBottomLeftLines(msgwindow, lines)
   $game_temp.message_window_showing = true if $game_temp
   skin = MessageConfig.pbGetSpeechFrame if !skin
   msgwindow.setSkin(skin)
