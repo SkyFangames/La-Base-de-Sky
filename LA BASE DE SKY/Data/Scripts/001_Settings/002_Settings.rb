@@ -574,7 +574,16 @@ module Settings
   # Desactiva el sonido de "bump" al chocarte con cosas.
   DISABLE_BUMP_SOUND = false
   #=============================================================================
+  
+  # Cuando hayas completado el almacenamiento de las cajas, si intentas guardar
+  # más Pokémon, se añadirán más cajas automáticamente.
+  STORAGE_EXTEND_ON_FULL = true
 
+  # Limite de cuantas totales puede haber si STORAGE_EXTEND_ON_FULL
+  # Este numero deberia ser mayor a NUM_STORAGE_BOXES
+  MAX_STORAGE_BOXES_EXTEND = 42
+
+  #=============================================================================
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 
   # dentro de un _INTL() para que sea fácil de traducirlas a otros idiomas.
   # Para que una línea se separe en dos columnas, pon "<s>" entre ellas.
