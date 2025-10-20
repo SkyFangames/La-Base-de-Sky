@@ -577,11 +577,11 @@ module Settings
   
   # Cuando hayas completado el almacenamiento de las cajas, si intentas guardar
   # más Pokémon, se añadirán más cajas automáticamente.
-  STORAGE_EXTEND_ON_FULL = true
+  STORAGE_EXTEND_ON_FULL = false
 
   # Limite de cuantas totales puede haber si STORAGE_EXTEND_ON_FULL
   # Este numero deberia ser mayor a NUM_STORAGE_BOXES
-  MAX_STORAGE_BOXES_EXTEND = 42
+  MAX_STORAGE_BOXES_EXTEND = 70
 
   #=============================================================================
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 
