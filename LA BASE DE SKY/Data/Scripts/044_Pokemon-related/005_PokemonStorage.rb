@@ -253,6 +253,7 @@ class PokemonStorage
       if self[@currentBox, i].nil?
         self[@currentBox, i] = pkmn
         ret = @currentBox
+        break
       end
     end
     
