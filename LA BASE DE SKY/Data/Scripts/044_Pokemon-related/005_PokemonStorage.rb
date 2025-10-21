@@ -75,6 +75,14 @@ class PokemonStorage
     end
   end
 
+  def check_max_boxes_changed
+    if @boxes.length < Settings::NUM_STORAGE_BOXES
+      (Settings::NUM_STORAGE_BOXES - @boxes.length).times do |i|
+        create_new_box(@boxes.length)
+      end
+    end
+  end
+
   def allWallpapers
     return [
       # Basic wallpapers
