@@ -264,6 +264,7 @@ class PokemonStorage
           self[j, i] = pkmn
           @currentBox = j
           ret = @currentBox
+          break
         end
       end
     end
