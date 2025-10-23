@@ -258,14 +258,17 @@ class PokemonStorage
     end
     
     if ret < 0 
+      should_break = false
       self.maxBoxes.times do |j|
         maxPokemon(j).times do |i|
           next unless self[j, i].nil?
           self[j, i] = pkmn
           @currentBox = j
           ret = @currentBox
+          should_break = true
           break
         end
+        break if should_break
       end
     end
 
