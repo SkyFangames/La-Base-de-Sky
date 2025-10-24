@@ -899,19 +899,23 @@ class PokemonStorageScreen
           end
           pokemon = @storage[selected[0], selected[1]]
           next if !pokemon
-          command = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name),
-                                    [_INTL("Retirar"),
-                                    _INTL("Datos"),
-                                    _INTL("Marcas"),
-                                    _INTL("Pokédex"),
-                                    _INTL("Liberar"),
-                                    _INTL("Cancelar")])
+          commands_symbols = [:WITHDRAW, :SUMMARY, :MARK, :POKEDEX, :RELEASE, :CANCEL]
+          commands_text = [_INTL("Retirar"),
+                      _INTL("Datos"),
+                      _INTL("Marcas")]
+          commands_text.push(_INTL("Pokédex")) if $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+          commands_text.push(_INTL("Liberar"),
+                        _INTL("Cancelar"))
+
+          command_index = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name), commands_text)
+          next if command_index < 0
+          command = commands_symbols[command_index]
           case command
-            when 0 then pbWithdraw(selected, nil)
-            when 1 then pbSummary(selected, nil)
-            when 2 then pbMark(selected, nil)
-            when 3 then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
-            when 4 then pbRelease(selected, nil)
+          when :WITHDRAW then pbWithdraw(selected, nil)
+          when :SUMMARY then pbSummary(selected, nil)
+          when :MARK then pbMark(selected, nil)
+          when :POKEDEX then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
+          when :RELEASE then pbRelease(selected, nil)
           end
         end
       end
@@ -932,19 +936,22 @@ class PokemonStorageScreen
         else
           pokemon = @storage[-1, selected]
           next if !pokemon
-          command = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name),
-                                    [_INTL("Dejar"),
-                                    _INTL("Datos"),
-                                    _INTL("Marcas"),
-                                    _INTL("Pokédex"),
-                                    _INTL("Liberar"),
-                                    _INTL("Cancelar")])
+          commands_symbols = [:DEPOSIT, :SUMMARY, :MARK, :POKEDEX, :RELEASE, :CANCEL]
+          commands_texts = [_INTL("Dejar"),
+                      _INTL("Datos"),
+                      _INTL("Marcas")]
+          commands_texts.push(_INTL("Pokédex")) if $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+          commands_texts.push(_INTL("Liberar"),
+                        _INTL("Cancelar"))
+          command_index = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name), commands_texts)
+          next if command_index < 0
+          command = commands_symbols[command_index]
           case command
-            when 0 then pbStore([-1, selected], nil)
-            when 1 then pbSummary([-1, selected], nil)
-            when 2 then pbMark([-1, selected], nil)
-            when 3 then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
-            when 4 then pbRelease([-1, selected], nil)
+          when :DEPOSIT then pbStore([-1, selected], nil)
+          when :SUMMARY then pbSummary([-1, selected], nil)
+          when :MARK then pbMark([-1, selected], nil)
+          when :POKEDEX then openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form)
+          when :RELEASE then pbRelease([-1, selected], nil)
           end
         end
       end

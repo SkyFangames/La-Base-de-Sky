@@ -1642,7 +1642,7 @@ class PokemonStorageScreen
     commands[cmdWithdraw = commands.length] = (selected[0] == -1) ? _INTL("Guardar") : _INTL("Sacar")
     commands[cmdItem = commands.length]     = _INTL("Objeto")
     commands[cmdMark = commands.length]     = _INTL("Marcas")
-    commands[cmdPokedex = commands.length]  = _INTL("Pokédex")
+    commands[cmdPokedex = commands.length]  = _INTL("Pokédex") if $player.has_pokedex && ((pokemon && $player.pokedex.species_in_unlocked_dex?(pokemon.species)) || (!pokemon && @heldpkmn && $player.pokedex.species_in_unlocked_dex?(@heldpkmn.species)))
     commands[cmdRelease = commands.length]  = _INTL("Liberar")
     commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
     commands[commands.length]               = _INTL("Cancelar")

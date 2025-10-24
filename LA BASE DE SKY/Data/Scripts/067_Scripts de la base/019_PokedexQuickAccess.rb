@@ -5,19 +5,27 @@
 MenuHandlers.add(:party_menu, :pokedex, {
     "name"      => _INTL("Pokédex"),
     "order"     => 60,
-    "condition" => proc { next $player.has_pokedex && $player.pokedex.unlocked?(-1) },
+    "condition" => proc { |screen, party, party_idx| next $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(party[party_idx].species) },
     "effect"    => proc { |screen, party, party_idx|
       openPokedexOnPokemon(party[party_idx].species, party[party_idx].gender, party[party_idx].form)
     }
 })
 
 def openPokedexOnPokemon(species, gender, form = 0)
-    region = -1
-    pokedexScene = PokemonPokedexInfo_Scene.new
-    pokedexScreen = PokemonPokedexInfoScreen.new(pokedexScene)
-    dexlist, index = pbGetDexList(species, region)
-    $player.pokedex.set_last_form_seen(species, gender, form)
-    pokedexScreen.pbStartScreen(dexlist, index, region)
+  if Settings::USE_CURRENT_REGION_DEX
+    region = pbGetCurrentRegion
+    region = -1 if region >= $player.pokedex.dexes_count - 1
+  else
+    region = $PokemonGlobal.pokedexDex  # National Dex -1, regional Dexes 0, 1, etc.
+  end
+  pokedexScene = PokemonPokedexInfo_Scene.new
+  pokedexScreen = PokemonPokedexInfoScreen.new(pokedexScene)
+  dexlist, index = pbGetDexList(species, region)
+  $player.pokedex.set_last_form_seen(species, gender, form)
+  if dexlist[index][:species] != species
+    return pbMessage(_INTL("No se encontró a {1} en la Pokédex.", GameData::Species.get(species).name))
+  end
+  pokedexScreen.pbStartScreen(dexlist, index, region)
 end
 
 def pbGetDexList(species_to_find = nil, region = -1)
