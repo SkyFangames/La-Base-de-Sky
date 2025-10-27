@@ -1524,6 +1524,89 @@ def pbChoosePokemon(variableNumber, nameVarNumber, ableProc = nil, allowIneligib
   end
 end
 
+# Choose a Pokémon from party or PC storage.
+# Stores result in variable _variableNumber_ as an array [box, index] where:
+# - box = -1 for party Pokémon, box >= 0 for PC box number
+# - index = position within party or box
+# Stores the chosen Pokémon's name in variable _nameVarNumber_
+# Result is nil if no Pokémon was chosen
+def pbChoosePokemonFromPartyOrPC(variableNumber, nameVarNumber, ableProc = nil, allowIneligible = false)
+  chosen = nil
+  chosen_pokemon = nil
+  
+  pbFadeOutIn do
+    $game_temp.in_storage = true
+    storage_scene = PokemonStorageScene.new
+    storage_screen = PokemonStorageScreen.new(storage_scene, $PokemonStorage)
+    storage_scene.pbStartBox(storage_screen, 0)
+    
+    loop do
+      selected = storage_scene.pbSelectBox($PokemonStorage.party)
+      
+      if selected && selected[0] == -3   # Close box
+        if pbConfirmMessage(_INTL("¿Salir del PC?"))
+          pbSEPlay("PC close")
+          break
+        end
+        next
+      end
+      
+      if selected.nil?
+        next if pbConfirmMessage(_INTL("¿Continuar operaciones?"))
+        break
+      elsif selected[0] == -4   # Box name
+        storage_screen.pbBoxCommands
+      else
+        pokemon = $PokemonStorage[selected[0], selected[1]]
+        next if !pokemon
+        
+        commands = [
+          _INTL("Seleccionar"),
+          _INTL("Datos"),
+        ]
+        commands.push(_INTL("Debug")) if $DEBUG
+        commands.push(_INTL("Cancelar"))
+        
+        helptext = _INTL("Has elegido a {1}.", pokemon.name)
+        command = storage_screen.pbShowCommands(helptext, commands)
+        
+        case command
+        when 0   # Select
+          # If there's an ability check, verify it
+          if ableProc && !ableProc.call(pokemon) && !allowIneligible
+            pbMessage(_INTL("Este Pokémon no puede ser elegido."))
+            next
+          end
+          
+          chosen = selected
+          chosen_pokemon = pokemon
+          break
+        when 1   # Summary
+          storage_screen.pbSummary(selected, nil)
+        when 2   # Debug
+          if $DEBUG
+            storage_screen.pbPokemonDebug(pokemon, selected)
+          end
+        end
+      end
+    end
+    
+    storage_scene.pbCloseBox
+    $game_temp.in_storage = false
+  end
+  
+  # Store results
+  pbSet(variableNumber, chosen)
+  if chosen_pokemon
+    pbSet(variableNumber, chosen_pokemon)
+    pbSet(nameVarNumber, chosen_pokemon.name)
+  else
+    pbSet(nameVarNumber, "")
+  end
+  
+  return chosen_pokemon
+end
+
 def pbChooseNonEggPokemon(variableNumber, nameVarNumber)
   pbChoosePokemon(variableNumber, nameVarNumber, proc { |pkmn| !pkmn.egg? })
 end
