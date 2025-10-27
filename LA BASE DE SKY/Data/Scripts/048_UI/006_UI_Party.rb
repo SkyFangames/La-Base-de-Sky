@@ -1598,7 +1598,6 @@ def pbChoosePokemonFromPartyOrPC(variableNumber, nameVarNumber, ableProc = nil, 
   # Store results
   pbSet(variableNumber, chosen)
   if chosen_pokemon
-    pbSet(variableNumber, chosen_pokemon)
     pbSet(nameVarNumber, chosen_pokemon.name)
   else
     pbSet(nameVarNumber, "")
