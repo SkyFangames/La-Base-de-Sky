@@ -358,6 +358,11 @@ module Settings
   # Desactivar si no quieres mostrar las MOs en el menú de la D (Objetos registrados).
   SHOW_HMS_IN_SPECIAL_MENU = true
 
+  # Si se permite el uso de ratón/táctil en los menús de batalla (comandos,
+  # movimientos y selección de objetivos). Si está en false, solo se podrá
+  # usar el teclado/mando para navegar por los menús.
+  ENABLE_MOUSE_INPUT_IN_BATTLE = false
+
   #=============================================================================
   
   # Par de IDs de mapas, en los que el mensaje con el nombre de la zona no se 
