@@ -76,6 +76,7 @@ class StorageGrabber
       ret.push([pkmn, x, y])
     end
     @carried_mons = ret
+    @source_box = box_num  # Track the source box
   end
   
   #===============================================================================
@@ -158,6 +159,7 @@ class StorageGrabber
     @mock_pivot   = nil
     @carrying     = false
     @carried_mons = []
+    @source_box   = nil
   end
   
   #===============================================================================
@@ -180,6 +182,10 @@ class StorageGrabber
   
   def carried_mons
     return @carried_mons
+  end
+  
+  def source_box
+    return @source_box
   end
 end
 
@@ -1089,7 +1095,7 @@ class PokemonStorageScreen
   def pbPour(selected)
     # box = @storage.currentBox
     mons_to_place = @scene.grabber.carried_mons.clone
-    needed_space = mons_to_place.size > 0 ?  mons_to_place.size : 1
+    needed_space = mons_to_place && mons_to_place.size > 0 ? mons_to_place.size : 1
     box = @scene.pbChooseBoxWithSpace("¿Dejar en qué caja?", needed_space)
     return false if box < 0
     count = 0

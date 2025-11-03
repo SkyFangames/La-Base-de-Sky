@@ -10,6 +10,10 @@ class PokemonBoxIcon < IconSprite
     refresh
   end
 
+  def getPokemon
+    return @pokemon
+  end
+
   def releasing?
     return !@release_timer_start.nil?
   end
@@ -1334,15 +1338,29 @@ class PokemonStorageScene
   def pbChooseBoxWithSpace(msg, min_space = 1)
     commands = []
     box_num = []
+    source_box = @grabber&.source_box
+    
+    # Add source box first if it has space
+    if source_box && source_box >= 0 && source_box < @storage.maxBoxes
+      box = @storage[source_box]
+      if box && box.length - box.nitems >= min_space
+        box_num << source_box
+        commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
+      end
+    end
+    
+    # Add other boxes with space
     @storage.maxBoxes.times do |i|
       box = @storage[i]
       if box
-        next if box.length - min_space <= box.nitems && i != @storage.currentBox
+        next if box.length - box.nitems < min_space
+        next if i == source_box  # Skip if already added as source box
         box_num << i
         commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
       end
     end
-    chosen_box = pbShowCommands(msg, commands, @storage.currentBox)
+    
+    chosen_box = pbShowCommands(msg, commands, 0)  # Default to first option (source box if available)
     return chosen_box if chosen_box == -1
     return box_num[chosen_box]
   end
@@ -1628,6 +1646,7 @@ class PokemonStorageScreen
     cmdWithdraw = -1
     cmdItem     = -1
     cmdMark     = -1
+    cmdPokedex  = -1
     cmdRelease  = -1
     cmdDebug    = -1
     heldpoke = pbHeldPokemon
