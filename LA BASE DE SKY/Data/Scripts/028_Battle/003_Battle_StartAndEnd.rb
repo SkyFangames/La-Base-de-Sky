@@ -502,6 +502,7 @@ class Battle
       next if !b
       pbCancelChoice(b.index)   # Restore unused items to Bag
       Battle::AbilityEffects.triggerOnSwitchOut(b.ability, b, true) if b.abilityActive?
+      b.pokemon.makeUnmega if b.mega? 
     end
     pbParty(0).each_with_index do |pkmn, i|
       next if !pkmn

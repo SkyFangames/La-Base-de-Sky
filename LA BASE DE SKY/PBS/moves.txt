@@ -9858,3 +9858,15 @@ FunctionCode = None
 Flags = Contact,CanProtect,CanMirrorMove
 Description = Movimiento cuyo tipo varia al del usuario en caso de que éste haya teracristalizado.
 #-------------------------------
+[NIHILLIGHT]
+Name = Luz Devastadora
+Type = DRAGON
+Category = Special
+Power = 200
+Accuracy = 100
+TotalPP = 10
+Target = NearOther
+FunctionCode = HitsFairysIgnoreTargetDefSpDefEvaStatStages
+Flags = CanProtect,CanMirrorMove
+Description = Luz devastadora que pega de forma neutra a los Pokémon de tipo hada. Ignora cambios de Def. Esp. y Evasión.
+#-------------------------------

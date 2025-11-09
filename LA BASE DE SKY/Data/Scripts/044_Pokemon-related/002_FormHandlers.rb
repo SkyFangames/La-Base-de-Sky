@@ -472,6 +472,11 @@ MultipleForms.register(:XERNEAS, {
 MultipleForms.register(:ZYGARDE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
+  },
+  "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+    if endBattle
+      pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
+    end
   }
 })
 
