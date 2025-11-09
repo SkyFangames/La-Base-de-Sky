@@ -1286,17 +1286,7 @@ end
 #===============================================================================
 # Nihil Light / Luz Devastadora
 #===============================================================================
-class Battle::Move::HitsFairysIgnoreTargetDefSpDefEvaStatStages < Battle::Move
-  def pbCalcAccuracyModifiers(user, target, modifiers)
-    super
-    modifiers[:evasion_stage] = 0
-  end
-
-  def pbGetDefenseStats(user, target)
-    ret1, _ret2 = super
-    return ret1, Battle::Battler::STAT_STAGE_MAXIMUM   # Def/SpDef stat stage
-  end
-
+class Battle::Move::HitsFairysIgnoreTargetDefSpDefEvaStatStages < Battle::Move::IgnoreTargetDefSpDefEvaStatStages
   def pbCalcTypeModSingle(moveType, defType, user, target)
     return Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if moveType == :DRAGON && defType == :FAIRY
     return super
