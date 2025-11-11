@@ -1,0 +1,4 @@
+Name         = Battle Speed Control
+Version      = 1.3
+Essentials   = 21.1
+Credits      = Nononever

@@ -1,0 +1,4 @@
+Name = Mr. Gela's HGSS Trainer Card Scene
+Essentials = 21.1
+Credits =  Mr. Gela, DeepBlue PacificWaves, komeiji514, Skyflyer
+Website = https://reliccastle.com/resources/388/

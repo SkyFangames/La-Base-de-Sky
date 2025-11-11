@@ -1,0 +1,41 @@
+Name       = [DBK] Animated Pokémon System
+Version    = 1.1
+Essentials = 21.1
+Requires   = Deluxe Battle Kit,1.2.7
+Optional   = [DBK] Dynamax,1.1.2
+Optional   = [DBK] Terastallization,1.1.5
+Conflicts  = Generation 8 Pack Scripts,1.0
+Website    = https://lucidious89-tutorials.gitbook.io/deluxe-battle-kit-tutorial/deluxe-battle-kit-for-v21.1/add-on-tutorials/animated-pokemon-system
+Credits    = Lucidious89, Golisopod User, Luka S.J., Tenshi of War, DPertierra, Skyflyer, Hellfire_raptor, Antiant, arinoelle, AshnixsLaw, AyanoCloud, Azrita, BR0DE0, Caruban, Creobnil, DanEx, Diegotoon20, dimbly, ekurepu, Ebaru, EricLostie, Falcon7, Federico97_ez, Fleimer_, Franark122k, Hellfire0raptor, hexagonereal, HM100, HyperactiveFlummi, iametrine, Involuntary-Twitch, ItsYugen, jinta, justnyxnow, kayzering, KingOfThe-X-Roads, kiriaura, Legitimate Username, localghost, lucasomi, MallowOut, mangalos810, Marty, MCH4R1Z4RD, N-Kin, NoelleMBrooks, Noobiess, Nolo33, OldSoulja, OmegalingYT, PKMarioG, PomPomKing, Pokepachito, Poki Papillon, PumpkinPastel, Regis, RetroNC, RadicalCharizard, Rod, seleccion, SelenaArmorclaw, SkidMarc25, Snivy101, Sopita_Yorita, SoulWardenInfinity, TheAetherPlayer, TheCynicalPoet, Tinkatooni, Typhlito, uppababy.
+
+############################################################
+# Sprite Credits
+############################################################
+# Battler Sprites
+#-----------------------------------------------------------
+#   Gen 1-5: Luka S.J.
+#   Gen 6: All Contributors To Smogon X/Y Sprite Project
+#   Gen 7: All Contributors To Smogon Sun/Moon Sprite Project
+#   Gen 8: All Contributors To Smogon Sword/Shield Sprite Project
+#   Gen 9: All Contributors To Smogon Scarlet/Violet Sprite Project
+#   Contributors to the original "Sprites Animados" spanish plugin:
+#     Tenshi of War, DPertierra, Skyflyer, Hellfire_raptor, Antiant, AshnixsLaw, AyanoCloud, Azrita, BR0DE0, Caruban, Creobnil, DanEx, Diegotoon20, dimbly, ekurepu, Ebaru, EricLostie, Falcon7, Federico97_ez, Fleimer_, Franark122k, Hellfire0raptor, HM100, HyperactiveFlummi, iametrine, Involuntary-Twitch, ItsYugen, jinta, justnyxnow, KingOfThe-X-Roads, kiriaura, Legitimate Username, localghost, lucasomi, MallowOut, mangalos810, MCH4R1Z4RD, N-Kin, NoelleMBrooks, Noobiess, Nolo33, OldSoulja, OmegalingYT, PKMarioG, PomPomKing, Poki Papillon, PumpkinPastel, RetroNC, RadicalCharizard, seleccion, SelenaArmorclaw, SkidMarc25, Snivy101, Sopita_Yorita, SoulWardenInfinity, TheAetherPlayer, TheCynicalPoet, Typhlito, uppababy
+#   Other Contributors: Lucidious89, Regis, Rod, Kayzering, LcorpOfficial
+#-----------------------------------------------------------
+# Icon Sprites
+#-----------------------------------------------------------
+#   Gen 1-6: Alaguesia, harveydentmd
+#   Gen 7: Marin, MapleBranchWing, Contributors to the DS Styled Gen 7+ Repository
+#   Gen 8: Larry Turbo, Leparagon
+#   Gen 1-8 (Shiny): StarrWolf, Pokemon Shattered Light Team
+#   PLA Icons: LuigiTKO
+#   Gen 9: ezerart, JordanosArt
+#   Resource Compilation: Golisopod User, UberDunsparce, Caruban
+#-----------------------------------------------------------
+# Footprint Sprites
+#-----------------------------------------------------------
+#   Gen 6: भाग्य ज्योति
+#   Gen 7-8: WolfPP
+#   Gen 9 & PLA: Caruban
+#   Resource Compilation: komeiji514
+#-----------------------------------------------------------

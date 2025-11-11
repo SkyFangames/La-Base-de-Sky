@@ -1,0 +1,4 @@
+Name       = Barra Dominantes/Bosses
+Version    = 1.0
+Essentials = 21.1
+Credits    = Maryn @cosmic_pipo/@PkmnRadiante(en TW/X)

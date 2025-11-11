@@ -1,0 +1,120 @@
+Name       = Modern Quest System + UI
+Version    = 1.2.1
+Essentials = 21.1
+Website    = https://eeveeexpo.com/resources/709/
+Credits    = ThatWelshOne_,mej71,derFischae,Marin,dpertierra,DarmaÍñigo,Turi
+
+#===============================================================================
+# Créditos más detallados
+#===============================================================================
+# mej71 - El sistema de misiones subyacente utiliza gran parte del script del sistema de misiones original de mej71 para versiones anteriores de Pokémon Essentials (https://eeveeexpo.com/resources/80/)
+# derFischae - Actualización del script del sistema de misiones de mej71 para v17.2 y v18/18.1. (https://www.pokecommunity.com/showthread.php?t=429037)
+# Marin - Me inspiré para algunos de los componentes de la interfaz de usuario en Easy Questing Interface de Marin (https://eeveeexpo.com/resources/62/)
+# ThatWelshOne_ - Actualizar y reelaborar la entrada de datos de la misión y la interfaz de usuario
+# dpertierra - Actualización del script del sistema de misiones para v21.1
+# DarmanÍñigo - Ideas para las mejoras y correción de errores
+# Turi - Traducción, adaptación al español e implementación de nuevas funcionalidades
+# 
+#===============================================================================
+# Instalación
+#===============================================================================
+# 1. Extrae el contenido de esta descarga en la carpeta principal del proyecto (donde está Game.exe).
+# 2. Permite que las carpetas Audio, Graphics y Plugins de esta descarga se fusionen las carpetas ya existentes.
+# 3. Compila tu juego. Sabrás que se ha compilado correctamente si aparece el nombre de este plugin en la ventana de la consola de depuración.
+# Si no aparece este mensaje, prueba a eliminar PluginScripts.rxdata de la carpeta de Datos antes de volver a intentarlo.
+# 4. DEBES iniciar un nuevo archivo guardado.
+# ¡Con esto ya deberías haber instalado con éxito el sistema de misiones!
+# 
+#===============================================================================
+# Configuración inicial
+#===============================================================================
+# En el archivo 001_Quest_Config.rb se ofrecen distintas opciones de personalización rápidas, sin necesidad de editar el resto del código.
+# Alternando entre verdadero (true) y falso (false) se puede habilitar que exista la posibilidad de fallar las misiones o de ordenarlas cronológicamente o por su ID.
+# También aquí se da la opción de personalizar los efectos de sonido que se reproducen cuando se activa, completa o falla una misión.
+# Por último, se da la opción de elegir si acceder a la interfaz de las misiones desde el menú de pausa o desde un objeto clave (Libro de Misiones) en la mochila, ya implementado.
+#
+#===============================================================================
+# Cómo usar
+#===============================================================================
+# Hay cuatro métodos con los que te familiarizarás mucho:
+# 1. activateQuest(:quest) - para activar una misión y agregarla al registro de misiones
+# 2. advanceQuestToStage(:quest, stageNumber) - para avanzar una misión a la etapa dada (para misiones con más de una etapa)
+# 3. completeQuest(:quest) - para marcar una misión como completa
+# 4. failQuest(:quest) - para marcar una misión como fallida
+# 
+# El argumento de la misión debe ser el nombre simbólico de la misión relevante definida en el módulo QuestModule (más sobre esto en la siguiente sección).
+# Por ejemplo, si los datos de tu misión se indican como "Quest1", entonces el argumento de la misión proporcionado a estos cuatro métodos debería ser: Quest1. <-- sin incluir ese punto al final
+# Recibirás un error si olvidas los dos puntos iniciales o si la misión dada no existe.
+# 
+# El argumento stageNumber debe ser un número que represente el progreso hacia la finalización de una misión. Esto sólo es necesario para el método advancedQuestToStage.
+# Las etapas no necesitan ser lineales. Puedes avanzar una misión de la etapa 1 a la 3 y luego volver a la 2, si así lo deseas. Incluso puedes avanzar una misión a la misma etapa, ¡así que ten cuidado!
+# Por último, este script no controla cuándo se activa una misión, cuándo avanza a una nueva etapa, cuándo se completa o falla; sólo otorga los métodos para ello.
+# 
+# Más allá de lo descrito anteriormente, los cuatro métodos tienen algunos parámetros opcionales que puedes especificar para alterar la apariencia de la interfaz de usuario:
+# 1. activateQuest(quest, color, story)
+# 2. advanceQuestToStage(quest, stageNum, color, story)
+# 3. completeQuest(quest, color, story)
+# 4. failQuest(quest, color, story)
+# 
+# Aquí, el color refleja el color del nombre de la misión tal como aparece en la interfaz de usuario.
+# Debe ser una combinación de dos códigos de color RGB hexadecimales de 15 bits del formato XXXXyyyy, XXXX para el color base y yyyy para el color de sombra.
+# Este es un sitio web útil para convertir entre códigos de color hexadecimales y códigos de color hexadecimales de 15 bits: http://www.budmelvin.es/dev/15bitconverter.html
+# En 001_Quest_Config.rb hay un método de utilidad llamado colorQuest(color) al que puedes agregar tus nuevos colores.
+# Aquí está la lista de colores que ya están definidos:
+# azul
+# rojo
+# verde
+# cian
+# magenta
+# amarillo
+# gris
+# blanco
+# morado
+# naranja
+# El color predeterminado es el color gris oscuro, como se ve cuando se usa un comando Show Text en cualquier caso.
+# DEBES poner comillas alrededor de estos colores al llamar a colorQuest(color), por ejemplo colorQuest("rojo").
+#
+# Finalmente, el parámetro "story" debe ser falso (predeterminada) o verdadero. Establecerlo en verdadero hace que el nombre de la misión en la interfaz de usuario aparezca en negrita.
+# Esta opción existe como una forma de diferenciar ciertas misiones en la interfaz de usuario. No tienes por qué usarlo.
+#
+# Poniendo todo esto junto, puedes activar una misión y hacer que su nombre aparezca en color morado y en negrita en la interfaz de usuario de esta manera:
+# activateQuest(quest, colorQuest("morado"), true)
+# Una nota final sobre los colores: puedes cambiar el color del texto cada vez que una misión avanza/completa/falla si quieres que las misiones completadas tengan un color diferente, por ejemplo.
+# De forma predeterminada, el color del texto se heredará de la llamada activateeQuest original.
+# 
+#===============================================================================
+# Entrada de datos de misión
+#===============================================================================
+# Debes abrir y editar el archivo llamado 004_Quest_Data.rb en Plugins/MQS.
+# Recomiendo encarecidamente editar el texto desde un editor de código como Notepad++ o Visual Studio Code, antes que con el Bloc de Notas.
+# 
+# El módulo QuestModule es donde necesitarás agregar manualmente información sobre tus misiones.
+# Hay proporcionados una serie de ejemplos para que veas cómo formatear los datos de tu misión en 004_Quest_Data.rb.
+# En general, debes especificar los siguientes datos para tus misiones:
+# 1. ID number - un número que puede usarse para ordenar misiones en la interfaz de usuario
+# 2. Name - nombre de tu misión que aparecerá en la interfaz de usuario una vez que se active la misión
+# 3. Quest giver - nombre del personaje que te hace entrega de la misión
+# 4. Stage - breve descripción de la etapa actual de una misión determinada
+# 5. Location - ubicación de la etapa actual de la misión
+# 6. Quest description - descripción de la misión general
+# 7. Reward string - descripción de lo que el jugador puede ganar al completar la misión
+# 8. Quest giver OW - localización del gráfico del personaje que te hace entrega de la misión
+# 
+# Ninguno de estos es estrictamente obligatorio, pero de lo contrario la interfaz de usuario estará prácticamente en blanco.
+# Una nota sobre la longitud del texto de estos campos: ¡Intenta ser conciso! De lo contrario, corre el riesgo de que el texto se corte o desborde los cuadros de texto.
+# No hay límite en la cantidad de etapas que puede tener una misión.
+# El número de ubicaciones de etapas especificadas no tiene por qué coincidir con el número de escenarios. Cualquier ubicación faltante o nula ("nil") se mostrará en la interfaz de usuario como "???".
+# Hablando de información faltante, el otorgante de la misión y la cadena de recompensa también aparecerán como "???" si son nulos ("nil") o faltan.
+# 
+# La entrada al gráfico del personaje que otorga la misión está pensada para overworlds, pero puede funcionar con cualquier otro gráfico con una estructura similar.
+# Para evitar errores, copia la dirección del gráfico que elijas en QuestGiverOW como los ejemplos otorgados. 
+# La función está pensada para soportar y mostrar correctamente overworlds de cualquier estilo gráfico de cualquier generación de los juegos oficiales.
+# Si no se define el gráfico del personaje que te hace entrega de la misión, aparecerá en su lugar un icono de "?".
+# 
+#===============================================================================
+# ¿Algún problema?
+#===============================================================================
+# Si tiene problemas para que este sistema funcione, solicita ayuda en la sección de discusión de la publicación de recursos.
+# Alternativamente, puedes enviar un mensaje en Discord al responsable de la última versión inglesa (ThatWelshOne_#3324).
+# Para reportar cualquier bug o duda respecto a esta versión actualizada y tarducida puedes escribirme por Discord (j_turi).
+# 

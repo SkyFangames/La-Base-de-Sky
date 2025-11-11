@@ -1,0 +1,4 @@
+Name         = Storage Pokemon Gain Expo
+Version      = 1.0
+Essentials   = 21.1
+Credits      = Kyu(original), DPertierra

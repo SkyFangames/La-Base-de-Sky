@@ -1,0 +1,4 @@
+Name       = Lens of truth
+Version    = 1.1
+Essentials = 21.1
+Credits    = Drimer,PkmOlympus(LaCabraPalMonte,Adaptación v21)

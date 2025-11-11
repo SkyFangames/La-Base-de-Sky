@@ -1,0 +1,13 @@
+Name      = [Dracrixco] Menu Custom
+Version   = 1.1.0
+Credits   = Dracrixco,TÓBAL
+Essentials= 21,21.1
+#=====================================================================
+# Description
+#=====================================================================
+# Script hecho por Dracrixco con los gráficos proporcionados por Tobal.
+# Este script personaliza el menú del juego, ofreciendo una experiencia
+# visualmente atractiva y funcional para los jugadores y... ¿Realmente
+# estas leyendo esto?
+#=====================================================================
+# https://discord.com/channels/671093185929543718/1346771932267155486
