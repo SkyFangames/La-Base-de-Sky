@@ -1,0 +1,5 @@
+Name         = Fancy Badges
+Version      = 1.1
+Website      = https://luka-sj.com/res/fcbd
+Credits      = Luka S.J., DPetrierra, Skyflyer
+Essentials   = 21.1

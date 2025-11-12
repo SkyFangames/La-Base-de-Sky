@@ -1,0 +1,8 @@
+Name       = Type Icons in Battle
+Version    = 1.1.1
+Essentials = 21.1
+Website    = https://www.youtube.com/watch?v=dQw4w9WgXcQ
+Conflicts  = Elite Battle: DX
+Conflicts  = Focus Meter System
+Optional   = Boss Battles EX, 1.0.0
+Credits    = Golisopod User, Portv21-PkmOlympus(LaCabraPalMonte), DPertierra, Iconos-Cripxoo, Iconos-Nuluxe,Horo

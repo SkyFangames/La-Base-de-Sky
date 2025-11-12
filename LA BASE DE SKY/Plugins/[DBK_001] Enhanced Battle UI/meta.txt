@@ -1,0 +1,6 @@
+Name         = [DBK] Enhanced Battle UI
+Version      = 2.0.8
+Essentials   = 21.1
+Requires     = Deluxe Battle Kit,1.2.7
+Website      = https://lucidious89-tutorials.gitbook.io/deluxe-battle-kit-tutorial/deluxe-battle-kit-for-v21.1/add-on-tutorials/enhanced-battle-ui
+Credits      = Lucidious89, Skyflyer

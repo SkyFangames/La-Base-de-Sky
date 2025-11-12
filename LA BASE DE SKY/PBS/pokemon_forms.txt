@@ -1,4 +1,4 @@
-﻿# See the documentation on the wiki to learn how to edit this file.
+﻿# Consulta la documentación en la wiki para aprender cómo editar este archivo.
 #-------------------------------
 [VENUSAUR,1]
 FormName = Mega Venusaur
@@ -96,78 +96,64 @@ WildItemUncommon = PECHABERRY
 #-------------------------------
 [PIKACHU,2]
 FormName = Forma Coqueta
-GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,3]
 FormName = Forma Aristócrata
-GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,4]
 FormName = Forma Enmascarada
-GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,5]
 FormName = Forma Erudita
-GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,6]
 FormName = Forma Superstar
-GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,7]
 FormName = Forma Roquera
-GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,8]
 FormName = Forma Gorra Original
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,9]
 FormName = Forma Gorra Hoenn
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,10]
 FormName = Forma Gorra Sinnoh
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,11]
 FormName = Forma Gorra Teselia
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,12]
 FormName = Forma Gorra Kalos
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,13]
 FormName = Forma Gorra Alola
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,14]
 FormName = Forma Gorra Compañero
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,15]
 FormName = Forma Gorra Trotamundos
-GenderRatio = AlwaysMale
 Evolutions = RAICHU,None,
 #-------------------------------
 [RAICHU,1]
@@ -1262,7 +1248,6 @@ BaseExp = 182
 Pokedex = Ha tomado posesión de un cortacésped que funciona con un motor especial. Esparce por todos lados la hierba que ha cortado.
 #-------------------------------
 [GIRATINA,1]
-FormName = Forma Origen
 BaseStats = 150,120,100,90,120,100
 Abilities = LEVITATE
 HiddenAbilities = LEVITATE
@@ -1428,7 +1413,6 @@ BaseStats = 38,55,85,30,30,65
 Abilities = WANDERINGSPIRIT
 Moves = 1,ASTONISH,1,PROTECT,4,HAZE,8,NIGHTSHADE,12,DISABLE,16,BRUTALSWING,20,CRAFTYSHIELD,24,HEX,28,MEANLOOK,32,SLAM,36,CURSE,40,SHADOWBALL,44,EARTHQUAKE,48,POWERSPLIT,48,GUARDSPLIT,52,DESTINYBOND
 TutorMoves = ALLYSWITCH,ATTRACT,BRUTALSWING,CALMMIND,CAPTIVATE,CONFIDE,DARKPULSE,DOUBLEEDGE,DOUBLETEAM,EARTHPOWER,EARTHQUAKE,ENDURE,ENERGYBALL,FACADE,FAKETEARS,FRUSTRATION,HEX,HIDDENPOWER,IMPRISON,IRONDEFENSE,MIMIC,NASTYPLOT,NATURALGIFT,PAYBACK,POLTERGEIST,PROTECT,PSYCHIC,RAINDANCE,REST,RETURN,ROCKSLIDE,ROCKTOMB,ROUND,SAFEGUARD,SANDSTORM,SECRETPOWER,SHADOWBALL,SKILLSWAP,SLEEPTALK,SNORE,SUBSTITUTE,SWAGGER,THIEF,TOXIC,TOXICSPIKES,TRICK,TRICKROOM,WILLOWISP,WONDERROOM,ZENHEADBUTT
-EggMoves = MEMENTO
 Pokedex = Yamask ha sido poseído por una tabla de arcilla sobre la que pesa una maldición. Se dice que absorbe y se nutre de rencor e inquina.
 Generation = 8
 Flags = InheritFormWithEverStone
@@ -1846,7 +1830,6 @@ Pokedex = Convoca a los muertos con su danza de ensueño. De su malicia extrae p
 Abilities = OWNTEMPO
 HiddenAbilities = OWNTEMPO
 Flags = InheritFormFromMother
-Evolutions = LYCANROC,Level,25
 #-------------------------------
 [LYCANROC,1]
 FormName = Forma Nocturna
@@ -2499,7 +2482,7 @@ Color = Gray
 Habitat = Mountain
 Pokedex = Sus robustas garras son ideales para moverse por los riscos más escarpados. De sus puntas rezuma un veneno que daña los nervios de las presas que captura.
 Generation = 8
-Flags = InheritFormWithEverStone
+Flags = InheritFormWithEverStone,HasGenderedSprites
 Evolutions = SNEASLER,DayHoldItem,RAZORCLAW
 #-------------------------------
 [DIALGA,1]
@@ -2552,27 +2535,27 @@ Generation = 8
 [BASCULIN,2]
 FormName = Forma Raya Roja
 Abilities = RECKLESS,ADAPTABILITY
-Moves=1,WATERGUN,1,TAILWHIP,4,TACKLE,8,FLAIL,12,AQUAJET,16,BITE,20,SCARYFACE,24,HEADBUTT,28,SOAK,32,CRUNCH,36,TAKEDOWN,40,FINALGAMBIT,44,AQUATAIL,44,WAVECRASH,48,THRASH,52,DOUBLEEDGE,56,HEADSMASH
+Moves = 1,WATERGUN,1,TAILWHIP,4,TACKLE,8,FLAIL,12,AQUAJET,16,BITE,20,SCARYFACE,24,HEADBUTT,28,SOAK,32,CRUNCH,36,TAKEDOWN,40,FINALGAMBIT,44,AQUATAIL,44,WAVECRASH,48,THRASH,52,DOUBLEEDGE,56,HEADSMASH
 TutorMoves = AGILITY,AQUATAIL,ASSURANCE,ATTRACT,BOUNCE,BRINE,CAPTIVATE,CONFIDE,CRUNCH,CUT,DIVE,DOUBLETEAM,ENDEAVOR,ENDURE,FACADE,FLIPTURN,FRUSTRATION,HAIL,HIDDENPOWER,HYDROPUMP,ICEBEAM,ICEFANG,ICYWIND,LIQUIDATION,MIMIC,MUDDYWATER,MUDSHOT,NATURALGIFT,PROTECT,PSYCHICFANGS,RAINDANCE,REST,RETURN,REVENGE,REVERSAL,ROUND,SCALD,SCALESHOT,SCARYFACE,SECRETPOWER,SLEEPTALK,SNORE,SUBSTITUTE,SUPERPOWER,SURF,SWAGGER,SWIFT,TAUNT,TOXIC,UPROAR,WATERFALL,WHIRLPOOL,ZENHEADBUTT,BLIZZARD,CHILLINGWATER,DOUBLEEDGE,SNOWSCAPE,TAKEDOWN,WATERPULSE
 EggMoves = BUBBLEBEAM,ENDEAVOR
 Category = Violento
 Pokedex = Los Basculin con la raya roja y aquellos con la raya azul se llevan fatal, pero algunos tienden a agruparse.
 Generation = 5
-WildItemUncommon = DEEPSEATOOTH
 Flags = InheritFormFromMother
+WildItemUncommon = DEEPSEATOOTH
 Evolutions = BASCULEGION,None,
 #-------------------------------
 [BASCULIN,3]
 FormName = Forma Raya Azul
 Abilities = ROCKHEAD,ADAPTABILITY
-Moves=1,WATERGUN,1,TAILWHIP,4,TACKLE,8,FLAIL,12,AQUAJET,16,BITE,20,SCARYFACE,24,HEADBUTT,28,SOAK,32,CRUNCH,36,TAKEDOWN,40,FINALGAMBIT,44,AQUATAIL,44,WAVECRASH,48,THRASH,52,DOUBLEEDGE,56,HEADSMASH
+Moves = 1,WATERGUN,1,TAILWHIP,4,TACKLE,8,FLAIL,12,AQUAJET,16,BITE,20,SCARYFACE,24,HEADBUTT,28,SOAK,32,CRUNCH,36,TAKEDOWN,40,FINALGAMBIT,44,AQUATAIL,44,WAVECRASH,48,THRASH,52,DOUBLEEDGE,56,HEADSMASH
 TutorMoves = AGILITY,AQUATAIL,ASSURANCE,ATTRACT,BOUNCE,BRINE,CAPTIVATE,CONFIDE,CRUNCH,CUT,DIVE,DOUBLETEAM,ENDEAVOR,ENDURE,FACADE,FLIPTURN,FRUSTRATION,HAIL,HIDDENPOWER,HYDROPUMP,ICEBEAM,ICEFANG,ICYWIND,LIQUIDATION,MIMIC,MUDDYWATER,MUDSHOT,NATURALGIFT,PROTECT,PSYCHICFANGS,RAINDANCE,REST,RETURN,REVENGE,REVERSAL,ROUND,SCALD,SCALESHOT,SCARYFACE,SECRETPOWER,SLEEPTALK,SNORE,SUBSTITUTE,SUPERPOWER,SURF,SWAGGER,SWIFT,TAUNT,TOXIC,UPROAR,WATERFALL,WHIRLPOOL,ZENHEADBUTT
 EggMoves = BUBBLEBEAM,ENDEAVOR
 Category = Violento
 Pokedex = Los Basculin con la raya roja y aquellos con la raya azul se llevan fatal, pero algunos tienden a agruparse.
 Generation = 5
-WildItemUncommon = DEEPSEASCALE
 Flags = InheritFormFromMother
+WildItemUncommon = DEEPSEASCALE
 Evolutions = BASCULEGION,None,
 #-------------------------------
 [ZORUA,1]
@@ -2771,7 +2754,6 @@ Color = White
 #-------------------------------
 [GIMMIGHOUL,1]
 FormName = Forma Andante
-CatchRate = 45
 Abilities = RUNAWAY
 Height = 0.1
 Weight = 0.1
@@ -2874,7 +2856,6 @@ Height = 0.3
 Weight = 16.0
 Shape = Head
 Pokedex = Cuando presiente peligro, se prepara para combatir formando un caparazón de cristales muy resistente mediante la teracristalización.
-Flags = Legendary,TeraType_STELLAR
 #-------------------------------
 [TERAPAGOS,2]
 FormName = Forma Astral
@@ -2885,4 +2866,3 @@ Height = 1.7
 Weight = 77.0
 Shape = Head
 Pokedex = Adopta esta forma cuando su energía Teracristal se ve amplificada descomunalmente. Se asemeja a la imagen del mundo que la gente tenía antaño.
-Flags = Legendary,TeraType_STELLAR

@@ -1,0 +1,911 @@
+﻿# Consulta la documentación en la wiki para aprender cómo editar este archivo.
+#-------------------------------
+[GROWLITHE,1]
+BackSprite = 0,49
+FrontSprite = 6,16
+ShadowSprite = 2,-19,-3
+#-------------------------------
+[ARCANINE,1]
+BackSprite = 0,26
+FrontSprite = 2,20
+ShadowSprite = 1,-5,-2
+AnimationSpeed = 2,3
+#-------------------------------
+[VOLTORB,1]
+BackSprite = 0,51
+FrontSprite = 0,2
+ShadowSprite = 0,-19,6
+AnimationSpeed = 2,3
+#-------------------------------
+[ELECTRODE,1]
+BackSprite = 0,40
+FrontSprite = 0,2
+ShadowSprite = 0,-11,9
+#-------------------------------
+[TAUROS,1]
+BackSprite = -1,26
+FrontSprite = 1,17
+ShadowSprite = 0,-10,-6
+AnimationSpeed = 4,1
+#-------------------------------
+[TAUROS,2]
+BackSprite = 1,26
+FrontSprite = 1,17
+ShadowSprite = 0,-10,-6
+AnimationSpeed = 4,2
+#-------------------------------
+[TAUROS,3]
+BackSprite = 1,26
+FrontSprite = 1,17
+ShadowSprite = 3,-10,-9
+AnimationSpeed = 4,2
+#-------------------------------
+[TYPHLOSION,1]
+BackSprite = 6,34
+FrontSprite = 0,13
+ShadowSprite = 0,-6,1
+AnimationSpeed = 2,3
+#-------------------------------
+[WOOPER,1]
+BackSprite = 3,23
+FrontSprite = 1,5
+ShadowSprite = 1,-5,-2
+AnimationSpeed = 3,2
+#-------------------------------
+[QWILFISH,1]
+BackSprite = -5,4
+FrontSprite = 3,14
+ShadowSprite = 0,25,7
+#-------------------------------
+[SNEASEL,1]
+BackSprite = 8,31
+FrontSprite = 4,23
+ShadowSprite = 1,-6,-7
+AnimationSpeed = 1,2
+#-------------------------------
+[DIALGA,1]
+BackSprite = -6,30
+FrontSprite = 2,12
+ShadowSprite = 0,4,5
+#-------------------------------
+[PALKIA,1]
+BackSprite = -8,26
+FrontSprite = 9,15
+ShadowSprite = 2,0,2
+#-------------------------------
+[SAMUROTT,1]
+BackSprite = 6,23
+FrontSprite = -1,3
+ShadowSprite = 0,2,6
+#-------------------------------
+[LILLIGANT,1]
+BackSprite = 4,34
+FrontSprite = 4,7
+ShadowSprite = 0,-2,5
+AnimationSpeed = 1,2
+#-------------------------------
+[BASCULIN,2]
+BackSprite = 3,7
+FrontSprite = 3,-7
+ShadowSprite = 0,12,16
+AnimationSpeed = 4,3
+#-------------------------------
+[ZORUA,1]
+BackSprite = 4,24
+FrontSprite = 0,17
+ShadowSprite = 1,-3,1
+AnimationSpeed = 1,2
+#-------------------------------
+[ZOROARK,1]
+BackSprite = 8,18
+FrontSprite = -4,2
+ShadowSprite = 3,3,6
+AnimationSpeed = 2,3
+#-------------------------------
+[BRAVIARY,1]
+BackSprite = -1,27
+FrontSprite = 0,2
+ShadowSize = -2
+ShadowSprite = 4,15,23
+AnimationSpeed = 1,2
+#-------------------------------
+[SLIGGOO,1]
+BackSprite = 2,40
+FrontSprite = 0,4
+ShadowSprite = 0,-4,9
+#-------------------------------
+[GOODRA,1]
+BackSprite = 3,13
+FrontSprite = -3,10
+ShadowSprite = 1,7,3
+#-------------------------------
+[AVALUGG,1]
+BackSprite = 3,50
+FrontSprite = -3,14
+ShadowSize = 2
+ShadowSprite = -1,-34,-4
+#-------------------------------
+[DECIDUEYE,1]
+BackSprite = 1,23
+FrontSprite = 4,9
+ShadowSprite = 0,0,5
+#-------------------------------
+[WYRDEER]
+BackSprite = 13,28
+FrontSprite = -7,2
+ShadowSprite = 0,4,7
+#-------------------------------
+[KLEAVOR]
+BackSprite = 8,31
+FrontSprite = -5,12
+ShadowSprite = 1,-3,4
+AnimationSpeed = 1,2
+#-------------------------------
+[URSALUNA]
+BackSprite = 1,31
+FrontSprite = 2,7
+ShadowSprite = 0,-11,3
+#-------------------------------
+[URSALUNA,1]
+BackSprite = 9,20
+FrontSprite = -3,1
+ShadowSprite = 1,1,6
+AnimationSpeed = 4,2
+#-------------------------------
+[BASCULEGION]
+BackSprite = -16,39
+FrontSprite = 12,16
+ShadowSize = -1
+ShadowSprite = 4,-6,6
+AnimationSpeed = 3
+#-------------------------------
+[SNEASLER]
+BackSprite = 4,35
+FrontSprite = 2,8
+ShadowSprite = 1,-9,5
+AnimationSpeed = 1
+#-------------------------------
+[OVERQWIL]
+BackSprite = 18,29
+FrontSprite = -5,0
+ShadowSize = -1
+ShadowSprite = 4,20,26
+#-------------------------------
+[ENAMORUS]
+BackSprite = 4,11
+FrontSprite = 1,-10
+ShadowSize = -1
+ShadowSprite = -2,23,26
+AnimationSpeed = 1,2
+#-------------------------------
+[ENAMORUS,1]
+BackSprite = 2,40
+FrontSprite = 0,19
+ShadowSize = -1
+ShadowSprite = 4,1,8
+#-------------------------------
+[SPRIGATITO]
+BackSprite = 2,13
+FrontSprite = -1,28
+ShadowSprite = 0,2,-8
+#-------------------------------
+[FLORAGATO]
+BackSprite = -2,21
+FrontSprite = 3,15
+ShadowSprite = 0,3,0
+#-------------------------------
+[MEOWSCARADA]
+BackSprite = 0,35
+FrontSprite = 10,8
+ShadowSprite = -1,4,5
+#-------------------------------
+[FUECOCO]
+BackSprite = -2,14
+FrontSprite = 1,22
+ShadowSprite = 1,5,-5
+AnimationSpeed = 2,3
+#-------------------------------
+[CROCALOR]
+BackSprite = 8,16
+FrontSprite = 0,21
+ShadowSprite = 2,4,-3
+#-------------------------------
+[SKELEDIRGE]
+BackSprite = -4,24
+FrontSprite = 2,6
+ShadowSprite = 0,-6,7
+#-------------------------------
+[QUAXLY]
+BackSprite = 1,42
+FrontSprite = 0,21
+ShadowSprite = 0,-16,-5
+#-------------------------------
+[QUAXWELL]
+BackSprite = 4,20
+FrontSprite = 0,16
+ShadowSprite = 0,1,0
+#-------------------------------
+[QUAQUAVAL]
+BackSprite = 5,29
+FrontSprite = 2,6
+ShadowSprite = -1,5,7
+#-------------------------------
+[LECHONK]
+BackSprite = 1,32
+FrontSprite = 0,15
+ShadowSprite = 1,-12,2
+#-------------------------------
+[OINKOLOGNE]
+BackSprite = -1,38
+FrontSprite = -1,1
+ShadowSprite = 1,-13,6
+#-------------------------------
+[OINKOLOGNE,1]
+BackSprite = 2,38
+FrontSprite = 2,1
+ShadowSprite = 1,-13,10
+#-------------------------------
+[TAROUNTULA]
+BackSprite = 1,24
+FrontSprite = 4,11
+ShadowSprite = 0,-3,4
+#-------------------------------
+[SPIDOPS]
+BackSprite = 13,30
+FrontSprite = -1,12
+ShadowSprite = 1,-4,4
+#-------------------------------
+[NYMBLE]
+BackSprite = 0,33
+FrontSprite = 0,8
+ShadowSprite = 0,-11,1
+#-------------------------------
+[LOKIX]
+BackSprite = 4,30
+FrontSprite = 5,4
+ShadowSprite = 1,-3,9
+AnimationSpeed = 3
+#-------------------------------
+[PAWMI]
+BackSprite = 4,26
+FrontSprite = 5,2
+ShadowSprite = 0,-4,11
+#-------------------------------
+[PAWMO]
+BackSprite = 0,30
+FrontSprite = 3,1
+ShadowSprite = 0,-4,11
+#-------------------------------
+[PAWMOT]
+BackSprite = 3,24
+FrontSprite = 3,2
+ShadowSprite = 0,2,9
+#-------------------------------
+[TANDEMAUS]
+BackSprite = 0,19
+FrontSprite = 2,18
+ShadowSprite = 0,-3,-6
+#-------------------------------
+[MAUSHOLD]
+BackSprite = 1,27
+FrontSprite = 0,19
+ShadowSprite = 1,-7,-5
+#-------------------------------
+[MAUSHOLD,1]
+BackSprite = 3,28
+FrontSprite = 2,19
+ShadowSprite = 0,-7,-5
+#-------------------------------
+[FIDOUGH]
+BackSprite = 5,13
+FrontSprite = 4,35
+ShadowSprite = 0,12,-15
+#-------------------------------
+[DACHSBUN]
+BackSprite = 10,31
+FrontSprite = -5,35
+ShadowSprite = 1,-6,-14
+AnimationSpeed = 1,2
+#-------------------------------
+[SMOLIV]
+BackSprite = 6,13
+FrontSprite = 4,33
+ShadowSprite = 0,3,-11
+AnimationSpeed = 2,3
+#-------------------------------
+[DOLLIV]
+BackSprite = 3,32
+FrontSprite = 0,21
+ShadowSprite = 0,-7,-3
+#-------------------------------
+[ARBOLIVA]
+BackSprite = 5,17
+FrontSprite = 5,10
+ShadowSize = -2
+ShadowSprite = 0,7,5
+#-------------------------------
+[SQUAWKABILLY]
+BackSprite = 10,32
+FrontSprite = 2,21
+ShadowSprite = -1,-7,-5
+#-------------------------------
+[NACLI]
+BackSprite = -3,45
+FrontSprite = 2,2
+ShadowSprite = 0,-14,4
+#-------------------------------
+[NACLSTACK]
+BackSprite = -2,35
+FrontSprite = 4,19
+ShadowSprite = -1,-9,-3
+#-------------------------------
+[GARGANACL]
+BackSprite = 2,41
+FrontSprite = 0,14
+ShadowSprite = -1,-2,7
+#-------------------------------
+[CHARCADET]
+BackSprite = 0,15
+FrontSprite = 0,33
+ShadowSprite = 1,1,-11
+AnimationSpeed = 3
+#-------------------------------
+[ARMAROUGE]
+BackSprite = 0,14
+FrontSprite = 0,7
+ShadowSprite = 0,6,7
+#-------------------------------
+[CERULEDGE]
+BackSprite = 0,28
+FrontSprite = 2,16
+ShadowSprite = 0,5,0
+#-------------------------------
+[TADBULB]
+BackSprite = 3,28
+FrontSprite = 3,-4
+ShadowSprite = 0,4,16
+#-------------------------------
+[BELLIBOLT]
+BackSprite = 11,20
+FrontSprite = 0,6
+ShadowSize = 2
+ShadowSprite = 2,2,11
+#-------------------------------
+[WATTREL]
+BackSprite = -3,11
+FrontSprite = 4,8
+ShadowSprite = 0,2,12
+AnimationSpeed = 2,3
+#-------------------------------
+[KILOWATTREL]
+BackSprite = -6,39
+FrontSprite = 1,14
+ShadowSize = -2
+ShadowSprite = 0,9,16
+AnimationSpeed = 3
+#-------------------------------
+[MASCHIFF]
+BackSprite = -3,38
+FrontSprite = 3,14
+ShadowSprite = -1,-15,1
+#-------------------------------
+[MABOSSTIFF]
+BackSprite = 1,26
+FrontSprite = 2,16
+ShadowSprite = 3,-4,-1
+AnimationSpeed = 3
+#-------------------------------
+[SHROODLE]
+BackSprite = 3,4
+FrontSprite = -8,14
+ShadowSprite = 1,3,-1
+#-------------------------------
+[GRAFAIAI]
+BackSprite = 0,21
+FrontSprite = 0,15
+ShadowSprite = 0,-4,-4
+AnimationSpeed = 4,1
+#-------------------------------
+[BRAMBLIN]
+BackSprite = 0,37
+FrontSprite = -2,15
+ShadowSprite = 0,-22,4
+AnimationSpeed = 2,1
+#-------------------------------
+[BRAMBLEGHAST]
+BackSprite = 0,32
+FrontSprite = 1,19
+ShadowSprite = 0,0,0
+AnimationSpeed = 2,1
+#-------------------------------
+[TOEDSCOOL]
+BackSprite = 2,15
+FrontSprite = 6,7
+ShadowSprite = 1,3,9
+#-------------------------------
+[TOEDSCRUEL]
+BackSprite = 3,19
+FrontSprite = 0,13
+ShadowSprite = 1,4,6
+AnimationSpeed = 3,2
+#-------------------------------
+[KLAWF]
+BackSprite = 7,52
+FrontSprite = 6,18
+ShadowSprite = 0,-17,1
+AnimationSpeed = 2,1
+#-------------------------------
+[CAPSAKID]
+BackSprite = 5,24
+FrontSprite = 0,3
+ShadowSprite = 2,-3,12
+#-------------------------------
+[SCOVILLAIN]
+BackSprite = 5,20
+FrontSprite = -5,1
+ShadowSprite = 0,1,9
+#-------------------------------
+[RELLOR]
+BackSprite = 5,14
+FrontSprite = 1,12
+ShadowSprite = 1,1,1
+#-------------------------------
+[RABSCA]
+BackSprite = 3,3
+FrontSprite = -1,-4
+ShadowSprite = 2,31,21
+#-------------------------------
+[FLITTLE]
+BackSprite = 3,-1
+FrontSprite = 0,5
+ShadowSprite = 0,13,14
+#-------------------------------
+[ESPATHRA]
+BackSprite = 0,10
+FrontSprite = 4,10
+ShadowSprite = 1,5,5
+AnimationSpeed = 2,3
+#-------------------------------
+[TINKATINK]
+BackSprite = 2,11
+FrontSprite = 10,30
+ShadowSprite = 2,-1,-9
+AnimationSpeed = 2,3
+#-------------------------------
+[TINKATUFF]
+BackSprite = -1,12
+FrontSprite = -1,13
+ShadowSprite = 0,-1,3
+#-------------------------------
+[TINKATON]
+BackSprite = -13,9
+FrontSprite = 12,23
+ShadowSprite = 1,4,2
+AnimationSpeed = 1,2
+#-------------------------------
+[WIGLETT]
+BackSprite = 7,6
+FrontSprite = -4,24
+ShadowSprite = 0,1,-6
+AnimationSpeed = 4,3
+#-------------------------------
+[WUGTRIO]
+BackSprite = 7,12
+FrontSprite = 0,18
+ShadowSprite = 0,7,2
+#-------------------------------
+[BOMBIRDIER]
+BackSprite = 10,12
+FrontSprite = 2,4
+ShadowSize = -2
+ShadowSprite = 4,22,20
+#-------------------------------
+[FINIZEN]
+BackSprite = 0,19
+FrontSprite = 11,-4
+ShadowSprite = 0,11,21
+#-------------------------------
+[PALAFIN]
+BackSprite = -4,15
+FrontSprite = 11,-4
+ShadowSprite = 0,12,21
+AnimationSpeed = 3,2
+#-------------------------------
+[PALAFIN,1]
+BackSprite = 0,27
+FrontSprite = 8,9
+ShadowSprite = 1,0,10
+AnimationSpeed = 3
+#-------------------------------
+[VAROOM]
+BackSprite = -1,34
+FrontSprite = 3,14
+ShadowSprite = 0,-9,1
+#-------------------------------
+[REVAVROOM]
+BackSprite = -6,38
+FrontSprite = 7,12
+ShadowSprite = 1,-21,7
+#-------------------------------
+[CYCLIZAR]
+BackSprite = -2,19
+FrontSprite = -5,9
+ShadowSprite = 0,7,3
+#-------------------------------
+[ORTHWORM]
+BackSprite = -3,64
+FrontSprite = -6,17
+ShadowSprite = 2,-41,-1
+#-------------------------------
+[GLIMMET]
+BackSprite = -1,-7
+FrontSprite = 0,-9
+ShadowSprite = 4,18,24
+#-------------------------------
+[GLIMMORA]
+BackSprite = -2,7
+FrontSprite = 3,2
+ShadowSize = -1
+ShadowSprite = 2,16,18
+AnimationSpeed = 3,2
+#-------------------------------
+[GREAVARD]
+BackSprite = 3,31
+FrontSprite = 1,21
+ShadowSprite = 0,-12,-5
+#-------------------------------
+[HOUNDSTONE]
+BackSprite = 0,28
+FrontSprite = 4,3
+ShadowSprite = 2,0,6
+#-------------------------------
+[FLAMIGO]
+BackSprite = 15,37
+FrontSprite = 1,12
+ShadowSprite = -1,0,2
+AnimationSpeed = 3
+#-------------------------------
+[CETODDLE]
+BackSprite = 2,18
+FrontSprite = 2,10
+ShadowSize = 2
+ShadowSprite = 0,-10,3
+AnimationSpeed = 3
+#-------------------------------
+[CETITAN]
+BackSprite = -17,41
+FrontSprite = 3,6
+ShadowSize = 2
+ShadowSprite = -1,-14,7
+AnimationSpeed = 3
+#-------------------------------
+[VELUZA]
+BackSprite = 7,21
+FrontSprite = 3,19
+ShadowSprite = 0,5,3
+#-------------------------------
+[DONDOZO]
+BackSprite = -20,79
+FrontSprite = 5,12
+ShadowSprite = 0,-22,5
+#-------------------------------
+[TATSUGIRI]
+BackSprite = 4,5
+FrontSprite = 0,2
+ShadowSprite = 0,6,2
+#-------------------------------
+[TATSUGIRI,1]
+BackSprite = -2,9
+FrontSprite = 0,2
+ShadowSprite = 0,2,2
+#-------------------------------
+[TATSUGIRI,2]
+BackSprite = 0,8
+FrontSprite = 0,2
+ShadowSprite = 0,2,2
+#-------------------------------
+[ANNIHILAPE]
+BackSprite = 0,21
+FrontSprite = 0,16
+ShadowSprite = 0,0,0
+AnimationSpeed = 2,1
+#-------------------------------
+[CLODSIRE]
+BackSprite = -3,36
+FrontSprite = 2,14
+ShadowSprite = 0,-12,2
+#-------------------------------
+[FARIGIRAF]
+BackSprite = 8,15
+FrontSprite = -8,4
+ShadowSprite = 0,4,8
+AnimationSpeed = 3
+#-------------------------------
+[DUDUNSPARCE]
+BackSprite = 0,13
+FrontSprite = -2,31
+ShadowSprite = 1,6,-9
+AnimationSpeed = 2,1
+#-------------------------------
+[DUDUNSPARCE,1]
+BackSprite = 17,73
+FrontSprite = 2,12
+ShadowSprite = 1,-24,-1
+#-------------------------------
+[KINGAMBIT]
+BackSprite = 3,29
+FrontSprite = 1,17
+ShadowSprite = 1,0,3
+AnimationSpeed = 3
+#-------------------------------
+[GREATTUSK]
+BackSprite = 7,28
+FrontSprite = -1,26
+ShadowSprite = -1,-14,-5
+#-------------------------------
+[SCREAMTAIL]
+BackSprite = -4,15
+FrontSprite = 9,2
+ShadowSprite = 0,-1,8
+#-------------------------------
+[BRUTEBONNET]
+BackSprite = 4,28
+FrontSprite = 4,9
+ShadowSize = 2
+ShadowSprite = 0,-1,3
+AnimationSpeed = 3
+#-------------------------------
+[FLUTTERMANE]
+BackSprite = -4,6
+FrontSprite = 5,-6
+ShadowSprite = 0,17,22
+#-------------------------------
+[SLITHERWING]
+BackSprite = 0,13
+FrontSprite = 2,1
+ShadowSprite = 0,2,8
+#-------------------------------
+[SANDYSHOCKS]
+BackSprite = -3,23
+FrontSprite = 0,14
+ShadowSprite = -1,2,2
+#-------------------------------
+[IRONTREADS]
+BackSprite = 5,34
+FrontSprite = 1,8
+ShadowSprite = 1,-15,2
+AnimationSpeed = 3
+#-------------------------------
+[IRONBUNDLE]
+BackSprite = 3,32
+FrontSprite = 1,23
+ShadowSprite = 1,-8,-5
+#-------------------------------
+[IRONHANDS]
+BackSprite = 18,18
+FrontSprite = 8,22
+ShadowSprite = 0,4,-2
+#-------------------------------
+[IRONJUGULIS]
+BackSprite = 6,17
+FrontSprite = 3,7
+ShadowSize = -1
+ShadowSprite = 4,19,19
+AnimationSpeed = 3
+#-------------------------------
+[IRONMOTH]
+BackSprite = 7,9
+FrontSprite = 8,1
+ShadowSize = -1
+ShadowSprite = 0,18,21
+AnimationSpeed = 3
+#-------------------------------
+[IRONTHORNS]
+BackSprite = -4,23
+FrontSprite = 10,8
+ShadowSprite = 0,-1,5
+#-------------------------------
+[FRIGIBAX]
+BackSprite = 4,34
+FrontSprite = 1,-1
+ShadowSprite = 0,-11,3
+AnimationSpeed = 4,2
+#-------------------------------
+[ARCTIBAX]
+BackSprite = 0,32
+FrontSprite = 2,8
+ShadowSprite = 5,-12,1
+AnimationSpeed = 3,2
+#-------------------------------
+[BAXCALIBUR]
+BackSprite = 4,32
+FrontSprite = 1,11
+ShadowSprite = 3,0,8
+#-------------------------------
+[GIMMIGHOUL]
+BackSprite = -4,14
+FrontSprite = -1,7
+ShadowSprite = 0,1,2
+#-------------------------------
+[GIMMIGHOUL,1]
+BackSprite = 4,8
+FrontSprite = -1,1
+ShadowSprite = 0,0,6
+#-------------------------------
+[GHOLDENGO]
+BackSprite = 4,18
+FrontSprite = 7,20
+ShadowSize = -1
+ShadowSprite = 0,6,7
+#-------------------------------
+[WOCHIEN]
+BackSprite = -2,19
+FrontSprite = 3,5
+ShadowSprite = 0,-6,6
+AnimationSpeed = 4,2
+#-------------------------------
+[CHIENPAO]
+BackSprite = 18,40
+FrontSprite = -7,12
+ShadowSprite = 0,-22,-1
+#-------------------------------
+[TINGLU]
+BackSprite = 14,20
+FrontSprite = -17,7
+ShadowSprite = 0,0,2
+AnimationSpeed = 4,3
+#-------------------------------
+[CHIYU]
+BackSprite = 4,-1
+FrontSprite = 0,0
+ShadowSize = -1
+ShadowSprite = 2,17,11
+AnimationSpeed = 3
+#-------------------------------
+[ROARINGMOON]
+BackSprite = 7,44
+FrontSprite = 1,6
+ShadowSize = -2
+ShadowSprite = 4,23,22
+AnimationSpeed = 3
+#-------------------------------
+[IRONVALIANT]
+BackSprite = 11,17
+FrontSprite = 15,9
+ShadowSprite = 0,6,6
+#-------------------------------
+[KORAIDON]
+BackSprite = -13,24
+FrontSprite = -10,18
+ShadowSprite = 0,4,6
+AnimationSpeed = 3
+#-------------------------------
+[MIRAIDON]
+BackSprite = -3,43
+FrontSprite = 6,13
+ShadowSize = -1
+ShadowSprite = 0,0,15
+#-------------------------------
+[WALKINGWAKE]
+BackSprite = -16,23
+FrontSprite = 14,35
+ShadowSprite = -1,-1,-12
+AnimationSpeed = 3
+#-------------------------------
+[IRONLEAVES]
+BackSprite = 1,11
+FrontSprite = -2,18
+ShadowSprite = 0,4,-3
+AnimationSpeed = 3
+#-------------------------------
+[DIPPLIN]
+BackSprite = -2,7
+FrontSprite = 2,21
+ShadowSize = 2
+ShadowSprite = 2,1,-4
+#-------------------------------
+[POLTCHAGEIST]
+BackSprite = 16,-3
+FrontSprite = 4,17
+ShadowSprite = 2,28,4
+#-------------------------------
+[SINISTCHA]
+BackSprite = 11,1
+FrontSprite = -3,-5
+ShadowSize = -1
+ShadowSprite = 4,18,18
+#-------------------------------
+[OKIDOGI]
+BackSprite = 11,13
+FrontSprite = 1,11
+ShadowSprite = 0,4,1
+AnimationSpeed = 4,2
+#-------------------------------
+[MUNKIDORI]
+BackSprite = 0,17
+FrontSprite = 1,1
+ShadowSprite = 0,5,6
+AnimationSpeed = 2,3
+#-------------------------------
+[FEZANDIPITI]
+BackSprite = -5,15
+FrontSprite = 0,14
+ShadowSprite = 1,3,1
+#-------------------------------
+[OGERPON]
+BackSprite = 3,15
+FrontSprite = 13,1
+ShadowSprite = 0,6,8
+#-------------------------------
+[OGERPON,8]
+BackSprite = 5,70
+FrontSprite = 9,8
+ShadowSprite = 1,21,7
+#-------------------------------
+[OGERPON,9]
+BackSprite = 5,70
+FrontSprite = 10,8
+ShadowSprite = 1,18,7
+#-------------------------------
+[OGERPON,10]
+BackSprite = 0,70
+FrontSprite = 6,3
+ShadowSprite = 1,20,11
+#-------------------------------
+[OGERPON,11]
+BackSprite = 12,70
+FrontSprite = 4,3
+ShadowSprite = 1,18,10
+#-------------------------------
+[ARCHALUDON]
+BackSprite = 0,24
+FrontSprite = 0,15
+ShadowSize = 2
+ShadowSprite = 1,2,2
+#-------------------------------
+[HYDRAPPLE]
+BackSprite = 4,28
+FrontSprite = 3,2
+ShadowSprite = 0,-5,7
+#-------------------------------
+[GOUGINGFIRE]
+BackSprite = -4,34
+FrontSprite = 7,6
+ShadowSprite = 0,-5,1
+#-------------------------------
+[RAGINGBOLT]
+BackSprite = 2,25
+FrontSprite = -2,4
+ShadowSprite = 0,-1,8
+AnimationSpeed = 3
+#-------------------------------
+[IRONBOULDER]
+BackSprite = 10,24
+FrontSprite = 0,9
+ShadowSprite = 0,-4,3
+#-------------------------------
+[IRONCROWN]
+BackSprite = 4,24
+FrontSprite = 0,14
+ShadowSprite = 0,0,0
+#-------------------------------
+[TERAPAGOS]
+BackSprite = 7,11
+FrontSprite = 2,3
+ShadowSprite = 0,0,0
+AnimationSpeed = 3
+#-------------------------------
+[TERAPAGOS,1]
+BackSprite = -24,93
+FrontSprite = 3,3
+ShadowSprite = -1,-48,13
+#-------------------------------
+[TERAPAGOS,2]
+BackSprite = 4,27,2
+FrontSprite = 1,1
+ShadowSprite = 0,13,16
+#-------------------------------
+[PECHARUNT]
+BackSprite = 3,22
+FrontSprite = -1,-1
+ShadowSprite = 0,12,16

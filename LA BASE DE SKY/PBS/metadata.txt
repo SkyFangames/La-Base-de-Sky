@@ -1,4 +1,4 @@
-﻿# See the documentation on the wiki to learn how to edit this file.
+﻿# Consulta la documentación en la wiki para aprender cómo editar este archivo.
 #-------------------------------
 [0]
 StartMoney = 3000
@@ -21,13 +21,15 @@ SurfCharset = boy_surf
 DiveCharset = boy_surf
 FishCharset = boy_fish_offset
 SurfFishCharset = boy_fish_offset
+Home = 78,6,21,4
 #-------------------------------
 [2]
 TrainerType = POKEMONTRAINER_Leaf
-WalkCharset = trainer_POKEMONTRAINER_Leaf
+WalkCharset = trchar001
 RunCharset = girl_run
 CycleCharset = girl_bike
 SurfCharset = girl_surf
 DiveCharset = girl_surf
 FishCharset = girl_fish_offset
 SurfFishCharset = girl_fish_offset
+Home = 78,7,21,4

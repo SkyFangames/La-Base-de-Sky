@@ -1,0 +1,16 @@
+Name       = Deluxe Battle Kit 
+Version    = 1.2.7
+Essentials = 21.1
+Requires   = v21.1 Hotfixes,1.0.9
+Optional   = Generation 9 Pack,3.3.0
+Optional   = Generation 8 Pack Scripts,1.0
+Optional   = Bag Screen w/int. Party,2.5
+Optional   = Customizable Battle UI,1.0
+Optional   = Modular UI Scenes,2.0.8
+Conflicts  = Essentials Deluxe,1.0
+Conflicts  = Mid Battle Dialogue,1.0
+Conflicts  = Elite Battle: DX,1.0
+Conflicts  = SOS Battles,1.0
+Conflicts  = Rejuv-style Bosses,1.0
+Website    = https://lucidious89-tutorials.gitbook.io/deluxe-battle-kit-tutorial
+Credits    = Lucidious89, Skyflyer
