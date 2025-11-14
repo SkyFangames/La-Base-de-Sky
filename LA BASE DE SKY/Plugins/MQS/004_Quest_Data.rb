@@ -18,8 +18,31 @@ module QuestModule
     :QuestGiverOW => "Graphics/Characters/BW_Heladero"
   }
 
-  # Extensión de lo anterior que incluye múltiples etapas
   Quest2 = {
+    :ID => "2",
+    :Name => "Entrega mi Ramo",
+    :QuestGiver => "Ianto en su casa de Pueblo Berdán",
+    :Stage1 => "Entrega este ramo en la tumba de mi difunta esposa en Jardín Freya.",
+    :Location1 => "Jardín Freya",
+    :QuestDescription => "Deja el Ramo en la tumba al final del Jardín Freya.",
+    :RewardString => "Campana Alivio",
+    :QuestGiverOW => "Graphics/Characters/BW_Abuelo"
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # Extensión de lo anterior que incluye múltiples etapas
+  Quest22 = {
     :ID => "2",
     :Name => "Introducciones 2",
     :QuestGiver => "Niño pequeño",
@@ -36,7 +59,7 @@ module QuestModule
   }
 
   # Ejemplo de una misión con muchas etapas que tampoco tiene una ubicación definida para cada una
-  Quest3 = {
+  Quest23 = {
     :ID => "3",
     :Name => "Tareas de última hora",
     :QuestGiver => "Abuela",
@@ -62,7 +85,7 @@ module QuestModule
 
 
   # Otros ejemplos aleatorios para consultar si se desea completar la interfaz de usuario y comprobar el desplazamiento de la página
-  Quest5 = {
+  Quest25 = {
     :ID => "5",
     :Name => "Todos mis amigos",
     :QuestGiver => "Israel",
@@ -71,7 +94,7 @@ module QuestModule
     :RewardString => "No ganas nada por ceder a la presión de tus compañeros"
   }
 
-  Quest6 = {
+  Quest26 = {
     :ID => "6",
     :Name => "El viaje comienza",
     :QuestGiver => "Profesor Oak",
@@ -83,7 +106,7 @@ module QuestModule
     :RewardString => "nil"
   }
 
-  Quest7 = {
+  Quest27 = {
     :ID => "7",
     :Name => "¿Encuentros cercanos de la... primera fase?",
     :QuestGiver => "nil",
@@ -93,7 +116,7 @@ module QuestModule
     :RewardString => "Un posible interrogatorio."
   }
 
-  Quest8 = {
+  Quest28 = {
     :ID => "8",
     :Name => "Estas botas fueron hechas para caminar.",
     :QuestGiver => "Músico 1",
@@ -104,7 +127,7 @@ module QuestModule
     :QuestDescription => "Un músico se siente deprimido porque cree que a nadie le gusta su música. Debería ayudarlo a conseguir algún negocio."
   }
 
-  Quest9 = {
+  Quest29 = {
     :ID => "9",
     :Name => "¿Tienes uvas?",
     :QuestGiver => "Pato",
@@ -115,7 +138,7 @@ module QuestModule
     :RewardString => "Una pérdida de neuronas. ¡Viva!"
   }
 
-  Quest10 = {
+  Quest100 = {
     :ID => "10",
     :Name => "Cantando bajo la lluvia",
     :QuestGiver => "Un hombre mayor",
@@ -126,7 +149,7 @@ module QuestModule
     :RewardString => "Ropa mojada"
   }
 
-  Quest11 = {
+  Quest110 = {
     :ID => "11",
     :Name => "¿Cuándo terminará esta lista?",
     :QuestGiver => "Me",
@@ -138,7 +161,7 @@ module QuestModule
     :RewardString => "nil"
   }
 
-  Quest12 = {
+  Quest120 = {
     :ID => "12",
     :Name => "La úuultima",
     :QuestGiver => "Un dodo estúpido",

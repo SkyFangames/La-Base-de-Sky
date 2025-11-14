@@ -6820,3 +6820,11 @@ FieldUse = Direct
 Flags = KeyItem
 Description = Incubadora que permite mantener 6 huevos hasta que eclosionen.
 #-------------------------------
+[RAMOFLORESIANTO]
+Name = Ramo flores de Ianto
+NamePlural = Ramo flores de Ianto
+Pocket = 8
+Price = 0
+Flags = KeyItem
+Description = Es un ramo de flores por el aniversario.Hay que dejarlo en la tumba del Jardín Freya.
+#-------------------------------
