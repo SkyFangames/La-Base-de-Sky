@@ -268,3 +268,9 @@ ItemHandlers::UseInField.add(:RADAR, proc{ |item|
   screen.pbStartScreen
   next 1
 })
+
+def pbStartRadar
+  scene = EncounterList_Scene.new
+  screen = EncounterList_Screen.new(scene)
+  screen.pbStartScreen
+end
