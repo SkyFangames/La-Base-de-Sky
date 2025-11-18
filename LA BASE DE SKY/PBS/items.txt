@@ -6828,3 +6828,11 @@ Price = 0
 Flags = KeyItem
 Description = Es un ramo de flores por el aniversario.Hay que dejarlo en la tumba del Jardín Freya.
 #-------------------------------
+[FRAGMENTOCRYOGONAL]
+Name = Fragmento de Cryogonal
+NamePlural = Fragmentos de Cryogonal
+Pocket = 8
+Price = 0
+Flags = KeyItem
+Description = Es un fragmento del cuerpo de un Cryagonal.
+#-------------------------------

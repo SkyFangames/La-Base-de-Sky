@@ -1,0 +1,25 @@
+
+=================
+
+[2025-11-18 12:16:35 +0100]
+[Pokémon Essentials versión 21.1]
+[v21.1 Hotfixes 1.0.9]
+[LA BASE DE SKY versión 1.2.0]
+Error de script en el evento 1 (coordenadas 21,9), en el mapa 127 (Interior Cámara)
+Excepción: RuntimeError
+Mensaje: Unknown ID FRAGMENTOCRYOGONAL.
+
+***Script completo:
+pbReceiveItem(:FRAGMENTOCRYOGONAL)
+
+Rastro de la traza:
+002_GameData.rb:103:in `get'
+002_Overworld.rb:712:in `pbReceiveItem'
+025_ItemFind.rb:154:in `pbReceiveItem'
+(eval):1:in `execute_script'
+004_Interpreter.rb:138:in `eval'
+004_Interpreter.rb:138:in `execute_script'
+005_Interpreter_Commands.rb:1177:in `command_355'
+005_Interpreter_Commands.rb:116:in `execute_command'
+004_Interpreter.rb:130:in `block in update'
+004_Interpreter.rb:86:in `loop'
