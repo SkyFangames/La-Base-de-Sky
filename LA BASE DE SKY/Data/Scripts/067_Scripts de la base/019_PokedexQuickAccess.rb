@@ -5,7 +5,7 @@
 MenuHandlers.add(:party_menu, :pokedex, {
     "name"      => _INTL("Pokédex"),
     "order"     => 60,
-    "condition" => proc { |screen, party, party_idx| next $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(party[party_idx].species) },
+    "condition" => proc { |screen, party, party_idx| next $player.has_pokedex && !party[party_idx].egg? && $player.pokedex.species_in_unlocked_dex?(party[party_idx].species) },
     "effect"    => proc { |screen, party, party_idx|
       openPokedexOnPokemon(party[party_idx].species, party[party_idx].gender, party[party_idx].form)
     }

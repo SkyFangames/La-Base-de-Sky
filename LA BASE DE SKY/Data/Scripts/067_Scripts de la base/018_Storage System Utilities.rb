@@ -909,7 +909,7 @@ class PokemonStorageScreen
           commands_text = [_INTL("Retirar"),
                       _INTL("Datos"),
                       _INTL("Marcas")]
-          commands_text.push(_INTL("Pokédex")) if $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+          commands_text.push(_INTL("Pokédex")) if $player.has_pokedex && !pokemon.egg? &&$player.pokedex.species_in_unlocked_dex?(pokemon.species)
           commands_text.push(_INTL("Liberar"),
                         _INTL("Cancelar"))
 
@@ -946,7 +946,7 @@ class PokemonStorageScreen
           commands_texts = [_INTL("Dejar"),
                       _INTL("Datos"),
                       _INTL("Marcas")]
-          commands_texts.push(_INTL("Pokédex")) if $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+          commands_texts.push(_INTL("Pokédex")) if $player.has_pokedex && !pokemon.egg? && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
           commands_texts.push(_INTL("Liberar"),
                         _INTL("Cancelar"))
           command_index = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name), commands_texts)
