@@ -135,6 +135,7 @@ module Settings
     # Agrega el porcentaje de vida restante del Pokémon enemigo debajo de la barra de vida.
     SHOW_ENEMY_HP_PERCENTAGE = true
 
+    # Muestra los peligros de entrada (púas, trampa rocas, tela de araña) en la pantalla de batalla.
     SHOW_HAZARDS_IN_BATTLE = false
     
 end
