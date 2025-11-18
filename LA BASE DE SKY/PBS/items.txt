@@ -3019,15 +3019,15 @@ BattleUse = OnPokemon
 Flags = Fling_30
 Description = Especialidad de la Vieja Mansión. Cura los problemas de estado de un Pokémon.
 #-------------------------------
-[CASTELIACONE]
-Name = Porcehelado
-NamePlural = Porcehelados
+[BERDAHELADO]
+Name = Berdahelado
+NamePlural = Berdahelados
 Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Especialidad de Ciudad Porcelana. Cura los problemas de estado de un Pokémon.
+Description = Especialidad de Pueblo Berdán. Cura los problemas de estado de un Pokémon.
 #-------------------------------
 [LUMIOSEGALETTE]
 Name = Crêpe Luminalia

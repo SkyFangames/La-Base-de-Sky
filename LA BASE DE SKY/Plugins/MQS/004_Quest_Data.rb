@@ -29,6 +29,18 @@ module QuestModule
     :QuestGiverOW => "Graphics/Characters/BW_Abuelo"
   }
 
+  Quest3 = {
+    :ID => "3",
+    :Name => "Desenvename",
+    :QuestGiver => "Policía Envenenado",
+    :Stage1 => "Entrega este ramo en la tumba de mi difunta esposa en Jardín Freya.",
+    :Location1 => "Clase Químicos",
+    :QuestDescription => "Entrega el antídoto al Policía Envenenado en la Clase de Químicos.",
+    :RewardString => "Flecha venenosa",
+    :QuestGiverOW => "Graphics/Characters/BW_PoliciaKO"
+  }
+
+
 
 
 
