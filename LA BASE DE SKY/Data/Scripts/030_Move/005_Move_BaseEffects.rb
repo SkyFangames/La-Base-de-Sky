@@ -342,18 +342,8 @@ end
 # Lower multiple of user's stats, only once.
 # If it is a multitarget move, the stat lower only occur once, and not per target.
 #===============================================================================
-class Battle::Move::StatDownMoveOnce < Battle::Move::TargetMultiStatDownMove
+class Battle::Move::StatDownMoveOnce < Battle::Move
   attr_reader :statDown
-
-  def pbEffectAgainstTarget(user, target)
-    return super if !damagingMove?
-    return if damagingMove?
-  end
-
-  def pbAdditionalEffect(user, target)
-    return super if !target.damageState.substitute
-    return if damagingMove?
-  end
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
     return if !damagingMove?
@@ -367,7 +357,13 @@ class Battle::Move::StatDownMoveOnce < Battle::Move::TargetMultiStatDownMove
       break
     end
     return if !hit_target
-    pbLowerTargetMultipleStats(user, target)
+    showAnim = true
+    (@statDown.length / 2).times do |i|
+      next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
+      if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
+        showAnim = false
+      end
+    end
   end
 end
 
