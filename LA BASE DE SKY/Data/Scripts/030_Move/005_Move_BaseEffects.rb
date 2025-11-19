@@ -281,6 +281,92 @@ class Battle::Move::TargetMultiStatDownMove < Battle::Move
   end
 end
 
+#===================================================================================
+# Raise multiple of user's stats, only once.
+# If it is a multitarget move, the stat raises only occur once, and not per target.
+#===================================================================================
+class Battle::Move::MultiStatUpMoveOnce < Battle::Move
+  attr_reader :statUp
+
+  def canSnatch?; return true; end
+
+  def pbMoveFailed?(user, targets)
+    return false if damagingMove?
+    failed = true
+    (@statUp.length / 2).times do |i|
+      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      failed = false
+      break
+    end
+    if failed
+      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", user.pbThis(true)))
+      return true
+    end
+    return false
+  end
+
+  def pbEffectGeneral(user)
+    return if damagingMove?
+    showAnim = true
+    (@statUp.length / 2).times do |i|
+      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
+        showAnim = false
+      end
+    end
+  end
+
+  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
+    return if !damagingMove?
+    return if @battle.pbAllFainted?(user.idxOpposingSide)
+    hit_target = false
+    targets.each do |t|
+      next if t.damageState.unaffected
+      next if t.damageState.protected
+      next if t.damageState.missed
+      hit_target = true
+      break
+    end
+    return if !hit_target
+    showAnim = true
+    (@statUp.length / 2).times do |i|
+      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
+      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
+        showAnim = false
+      end
+    end
+  end
+end
+
+#===============================================================================
+# Lower multiple of user's stats, only once.
+# If it is a multitarget move, the stat lower only occur once, and not per target.
+#===============================================================================
+class Battle::Move::StatDownMoveOnce < Battle::Move
+  attr_reader :statDown
+
+  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
+    return if !damagingMove?
+    return if @battle.pbAllFainted?(user.idxOpposingSide)
+    hit_target = false
+    targets.each do |t|
+      next if t.damageState.unaffected
+      next if t.damageState.protected
+      next if t.damageState.missed
+      hit_target = true
+      break
+    end
+    return if !hit_target
+    showAnim = true
+    (@statDown.length / 2).times do |i|
+      next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
+      if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
+        showAnim = false
+      end
+    end
+  end
+end
+
 #===============================================================================
 # Fixed damage-inflicting move.
 #===============================================================================
