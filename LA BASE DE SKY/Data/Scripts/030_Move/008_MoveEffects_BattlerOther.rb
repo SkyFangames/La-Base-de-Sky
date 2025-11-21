@@ -180,13 +180,55 @@ end
 # Paralyzes the target. Accuracy perfect in rain, 50% in sunshine. Hits some
 # semi-invulnerable targets. (Thunder)
 #===============================================================================
-class Battle::Move::ParalyzeTargetAlwaysHitsInRainHitsTargetInSky < Battle::Move::ParalyzeTarget
+class Battle::Move::ParalyzeTargetAlwaysHitsInRainHitsDecreasesInSunTargetInSky < Battle::Move::ParalyzeTarget
   def hitsFlyingTargets?; return true; end
 
   def pbBaseAccuracy(user, target)
     case target.effectiveWeather
     when :Sun, :HarshSun
       return 50
+    when :Rain, :HeavyRain
+      return 0
+    end
+    return super
+  end
+end
+
+#===============================================================================
+# Paralyzes the target. Accuracy perfect in rain.
+# Electormenta / WILDBOLTSTORM
+#===============================================================================
+class Battle::Move::ParalyzeTargetAlwaysHitsInRain < Battle::Move::ParalyzeTarget
+  def pbBaseAccuracy(user, target)
+    case target.effectiveWeather
+    when :Rain, :HeavyRain
+      return 0
+    end
+    return super
+  end
+end
+
+#===============================================================================
+# Burns the target. Accuracy perfect in rain.
+# Simún de Arena / SANDSEARSTORM
+#===============================================================================
+class Battle::Move::BurnTargetAlwaysHitsInRain < Battle::Move::BurnTarget
+  def pbBaseAccuracy(user, target)
+    case target.effectiveWeather
+    when :Rain, :HeavyRain
+      return 0
+    end
+    return super
+  end
+end
+
+#===============================================================================
+# Lowers the target's Speed. Accuracy perfect in rain.
+# Vendaval Gélido / BLEAKWINDSTORM
+#===============================================================================
+class Battle::Move::LowerTargetSpeed1AlwaysHitsInRain < Battle::Move::LowerTargetSpeed1
+  def pbBaseAccuracy(user, target)
+    case target.effectiveWeather
     when :Rain, :HeavyRain
       return 0
     end
