@@ -311,6 +311,11 @@ module UI
 
     BACKGROUND_FILENAME = "bg"
 
+    # Input icons in order as they appear in Graphics/UI/input_icons.png.
+    INPUT_ICONS_ORDER = [Input::UP, Input::LEFT, Input::DOWN, Input::RIGHT,
+                         Input::USE, Input::BACK, Input::ACTION,
+                         Input::QUICK_UP, Input::QUICK_DOWN]
+
     include SpriteContainerMixin
 
     def initialize
@@ -678,6 +683,18 @@ module UI
     end
 
     #---------------------------------------------------------------------------
+
+    def draw_input_icon(input_x, input_y, input, text = nil, text_spacing = 6, theme: :default, overlay: :overlay)
+      input_index = INPUT_ICONS.index(input) || 0
+      draw_image(@bitmaps[:input_icons], input_x, input_y,
+                input_index * @bitmaps[:input_icons].height, 0,
+                @bitmaps[:input_icons].height, @bitmaps[:input_icons].height,
+                overlay: overlay)
+      if text
+        draw_text(text, input_x + @bitmaps[:input_icons].height + text_spacing, input_y + 8,
+                  theme: theme, overlay: overlay)
+      end
+    end
 
     def update_input
       if Input.trigger?(Input::BACK)

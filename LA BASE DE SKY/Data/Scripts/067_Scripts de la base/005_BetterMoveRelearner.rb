@@ -261,10 +261,10 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
       else
         @index = @moves.length - 1 if @index >= @moves.length
       end
-    elsif Input.repeat?(Input::JUMPUP)
+    elsif Input.repeat?(Input::QUICK_UP)
       @index -= VISIBLE_MOVES
       @index = 0 if @index < 0
-    elsif Input.repeat?(Input::JUMPDOWN)
+    elsif Input.repeat?(Input::QUICK_DOWN)
       @index += VISIBLE_MOVES
       @index = @moves.length - 1 if @index >= @moves.length
     end
