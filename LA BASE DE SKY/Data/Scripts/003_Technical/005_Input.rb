@@ -15,15 +15,16 @@ module Input
   USE                   = C   # 13
   QUICK_UP   = JUMPUP   = X   # 14
   QUICK_DOWN = JUMPDOWN = Y   # 15
+  SPECIAL    = Z
 #  Z = 16
-#  L = 17
-#  R = 18
+  AUX1     = L
+  AUX2     = R
 # 19 and 20 are unused.
 #  SHIFT = 21
 #  CTRL  = 22
-#  ALT   = 23
+ ALT   = 23
 # 24 is unused.
-#  F5 = 25
+ F5 = 25
 #  F6 = 26
 #  F7 = 27
 #  F8 = 28
