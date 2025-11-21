@@ -198,6 +198,7 @@ module GameData
     def is_mulch?;           return has_flag?("Mulch"); end
     def is_mega_stone?;      return has_flag?("MegaStone"); end   # Does NOT include Red Orb/Blue Orb
     def is_scent?;           return has_flag?("Scent"); end
+    def is_unlosable?;       return has_flag?("Unlosable"); end
 
     def is_important?
       return true if is_key_item? || is_HM? || is_TM?
@@ -225,6 +226,7 @@ module GameData
     end
 
     def unlosable?(species, ability)
+      return true if is_unlosable?
       return false if species == :ARCEUS && ability != :MULTITYPE
       return false if species == :SILVALLY && ability != :RKSSYSTEM
       combos = {

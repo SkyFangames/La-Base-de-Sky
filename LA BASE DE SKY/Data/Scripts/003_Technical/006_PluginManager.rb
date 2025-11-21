@@ -350,26 +350,52 @@ module PluginManager
   #     0 si v1 es igual a v2
   #     -1 si v1 es menor que v2
   def self.compare_versions(v1, v2)
-    d1 = v1.chars
-    d1.insert(0, "0") if d1[0] == "."   # Convierte ".123" en "0.123"
-    while d1[-1] == "."                 # Convierte "123." en "123"
-      d1 = d1[0..-2]
+    version_chunks1 = v1.split(".")
+    version_chunks1.each_with_index do |val, i|
+      next if val != ""
+      version_chunks1[i] = (i == 0) ? "0" : nil
     end
-    d2 = v2.chars
-    d2.insert(0, "0") if d2[0] == "."   # Convierte ".123" en "0.123"
-    while d2[-1] == "."                 # Convierte "123." into "123"
-      d2 = d2[0..-2]
+    version_chunks1.compact!
+    
+    version_chunks2 = v2.split(".")
+    version_chunks2.each_with_index do |val, i|
+      next if val != ""
+      version_chunks2[i] = (i == 0) ? "0" : nil
     end
-    [d1.size, d2.size].max.times do |i| # Compara cada dígito por turno
-      c1 = d1[i]
-      c2 = d2[i]
-      if c1
-        return 1 if !c2
-        return 1 if c1.to_i(16) > c2.to_i(16)
-        return -1 if c1.to_i(16) < c2.to_i(16)
-      elsif c2
-        return -1
+    version_chunks2.compact!
+    
+    # Compare each chunk in turn
+    decision = :equal   # Could be :higher or :lower
+    
+    [version_chunks1.length, version_chunks2.length].max.times do |i|
+      chunk1 = version_chunks1[i]
+      chunk2 = version_chunks2[i]
+      if !chunk1
+        decision = :lower if decision == :equal
+        break
+      elsif !chunk2
+        decision = :higher if decision == :equal
+        break
       end
+    
+      # Make both chunks the same left by pre-padding with "0"
+      chars_count = [chunk1.length, chunk2.length].max
+      chunk1 = chunk1.rjust(chars_count, "0").chars
+      chunk2 = chunk2.rjust(chars_count, "0").chars
+      chunk1.length.times do |j|
+        c1 = chunk1[j]
+        c2 = chunk2[j]
+        next if c1 == c2
+        decision = (c1.to_i(16) > c2.to_i(16)) ? :higher : :lower
+        break
+      end
+      break if decision != :equal
+    end
+    
+    case decision
+    when :equal  then return 0
+    when :higher then return 1
+    when :lower  then return -1
     end
     return 0
   end
@@ -383,7 +409,7 @@ module PluginManager
     message += "Error en el Plugin: [#{name}]\r\n"
     message += "Excepción: #{e.class}\r\n"
     message += "Mensaje: "
-    message += e.message
+    message += e.message || ""
     # muestra las últimas 10 líneas de la traza de llamadas
     message += "\r\n\r\nTraza de llamadas:\r\n"
     e.backtrace[0, 10].each { |i| message += "#{i}\r\n" }

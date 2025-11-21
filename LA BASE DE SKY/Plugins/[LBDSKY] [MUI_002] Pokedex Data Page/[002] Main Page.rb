@@ -8,7 +8,9 @@ class PokemonPokedexInfo_Scene
   def pbDataPageMenu
     pbPlayDecisionSE
     pbDrawDataNotes
-    species = GameData::Species.get_species_form(@species, @form).id
+    species_data = GameData::Species.get_species_form(@species, @form)
+    species = species_data.id
+    @api_data = PokeAPI.get_data(species_data) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
     loop do
       Graphics.update
       Input.update
@@ -39,6 +41,40 @@ class PokemonPokedexInfo_Scene
         end
         break if @forceRefresh
       #-------------------------------------------------------------------------
+      elsif Input.trigger?(Input::SPECIAL) && @api_data && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+        pbPlayDecisionSE
+        if @cursor == :stats
+          stat_diffs = []
+          api_total = 0
+          species_data = GameData::Species.get_species_form(@species, @form)
+          @api_data["stats"].each do |stat, api_value|
+            api_total += api_value
+            base_stat = species_data.base_stats[stat]
+            diff = (base_stat - api_value).to_i
+            if diff > 0
+              diff = "\\c[3]+#{diff.abs}" + "\\c[0]\n"
+            elsif diff < 0
+              diff = "\\c[2]-#{diff.abs}" + "\\c[0]\n"
+            end
+            next if diff == 0
+            stat_diffs << _INTL("{1}: {2}", GameData::Stat.get(stat).name, diff)
+          end
+          total_diff = (species_data.base_stat_total > api_total) ? "\\c[3]#{species_data.base_stat_total.to_i}" + "\\c[0]\n" : "\\c[2]#{species_data.base_stat_total.to_i}" + "\\c[0]\n"
+          has_stat_diff = stat_diffs.length > 0 || species_data.base_stat_total != api_total.to_i
+          stat_diffs << _INTL("Total: {1} => {2}", api_total.to_i, total_diff)
+          stat_diffs[stat_diffs.length - 1] = stat_diffs[stat_diffs.length - 1].chomp!
+          pbMessage(_INTL("Cambios de estadisticas:\n{1}", stat_diffs.join)) if has_stat_diff
+        elsif @cursor == :general
+          types_diff = []
+          api_types = @api_data["types"]
+          species_data = GameData::Species.get_species_form(@species, @form)
+
+          species_types_name = species_data.types.map { |type| GameData::Type.get(type).name }
+          api_types_name = api_types.map { |type| GameData::Type.get(type).name }
+
+          types_diff = species_types_name - api_types_name
+          pbMessage(_INTL("Cambios de tipos:\nTipos Originales: {1}\nTipos nuevos: {2}", api_types_name.join(', '), species_types_name.join(', '))) if types_diff.length > 0
+        end
       elsif Input.repeat?(Input::UP)
         old_cursor = @cursor
         case @cursor
@@ -153,8 +189,15 @@ class PokemonPokedexInfo_Scene
     family = species.get_family_species
     family_evos_temp = species.get_evolutions(true)
     family_evos = []
+    family_evos_with_forms = []  # Store species IDs with specific forms
     for i in family_evos_temp
       family_evos << (i[0])
+      # Check if evolution method includes "Form" and extract form number
+      if i[1].to_s.include?("Form") && i[1].to_s =~ /Form(\d+)$/
+        form_number = $1.to_i
+        form_species = GameData::Species.get_species_form(i[0], form_number)
+        family_evos_with_forms << form_species.id if form_species
+      end
     end
     family_to_insert = []
     blacklisted = [:PICHU_2, :FLOETTE_5, :GIMMIGHOUL_1].include?(species.id) ||
@@ -260,6 +303,9 @@ class PokemonPokedexInfo_Scene
       # Add forms that match the species form directly
       if fam.form == species.form
         @data_hash[:family] << fam.id
+      # Check if this specific form ID is in the evolution list with forms
+      elsif family_evos_with_forms.include?(fam.id)
+        @data_hash[:family] << fam.id
       else
         # Skip if there's another form of this species already added
         # or if this species isn't in the evolution family
@@ -269,7 +315,6 @@ class PokemonPokedexInfo_Scene
         @data_hash[:family] << fam.id
       end
     end
-
     @data_hash.each_key do |key|
 	  next if key == :species
       list = @data_hash[key].clone

@@ -62,7 +62,7 @@ module GameData
         ret["PokedexForm"]    = [:pokedex_form,       "u"]
         ret["MegaStone"]      = [:mega_stone,         "e", :Item]
         ret["MegaMove"]       = [:mega_move,          "e", :Move]
-        ret["UnmegaForm"]     = [:unmega_form,        "u"]
+        ret["UnmegaForm"]     = [:unmega_form,        "i"]
         ret["MegaMessage"]    = [:mega_message,       "u"]
       end
       ret["Types"]            = [:types,              "*e", :Type]

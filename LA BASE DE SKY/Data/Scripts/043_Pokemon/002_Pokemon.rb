@@ -1077,7 +1077,17 @@ class Pokemon
     return nil if hasAbility?(:BATTLEBOND)
     species_data.get_evolutions(true).each do |evo|   # [new_species, method, parameter, boolean]
       next if evo[3]   # Prevolution
-      ret = yield self, evo[0], evo[1], evo[2]   # pkmn, new_species, method, parameter
+      new_species = evo[0]
+      # Check if evolution method includes "Form" and extract form number
+      if evo[1].to_s.include?("Form")
+        # Extract form number from method name (e.g., "LevelNightForm1" -> 1)
+        if evo[1].to_s =~ /Form(\d+)$/
+          form_number = $1.to_i
+          # Build species ID with form (e.g., :LYCANROC_1)
+          new_species = GameData::Species.get_species_form(evo[0], form_number).id
+        end
+      end
+      ret = yield self, new_species, evo[1], evo[2]   # pkmn, new_species, method, parameter
       return ret if ret
     end
     return nil
@@ -1358,7 +1368,11 @@ class Pokemon
     @hp               = 1
     @totalhp          = 1
     calc_stats
+    # echoln "recheck_form: #{recheck_form}"
     if @form == 0 && recheck_form
+      # echoln "Pokemon #{self.name}"
+      # echoln "Gender: #{gender}"
+      # echoln "Form: #{form}"
       f = MultipleForms.call("getFormOnCreation", self)
       if f
         self.form = f

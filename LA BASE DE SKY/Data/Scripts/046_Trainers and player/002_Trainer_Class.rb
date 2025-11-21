@@ -184,10 +184,25 @@ class Trainer
 
   # Returns true if there is a Pokémon of the given species in the trainer's
   # party. You may also specify a particular form it should be.
-  def has_species?(species, form = -1)
-    return pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) }
+  def has_species?(species, form = -1, exclude_form = -1, check_pc = false)
+    # Check party first
+    party_result = pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) && (exclude_form < 0 || pkmn.form != exclude_form) }
+    return true if party_result
+    
+    # If not found in party and check_pc is true, check PC storage
+    if check_pc && $PokemonStorage
+      (0...$PokemonStorage.maxBoxes).each do |i|
+        $PokemonStorage.maxPokemon(i).times do |j|
+          pkmn = $PokemonStorage[i, j]
+          if pkmn && pkmn.isSpecies?(species) && (form < 0 || pkmn.form == form) && (exclude_form < 0 || pkmn.form != exclude_form)
+            return true
+          end
+        end
+      end
+    end
+    
+    return false
   end
-
   # Returns whether there is a fatefully met Pokémon of the given species in the
   # trainer's party.
   def has_fateful_species?(species)
@@ -207,6 +222,16 @@ class Trainer
 
     type = GameData::Type.get(type).id
     all ? pokemon_party.find_all { |p| p&.hasType?(type) } : pokemon_party.find { |p| p&.hasType?(type) }
+  end
+
+  def has_pokemon_with_ability?(ability)
+    return false unless GameData::Ability.exists?(ability)
+    return pokemon_party.any? { |pkmn| pkmn&.hasAbility?(ability) }
+  end
+
+  def find_pokemon_with_ability(ability, all = false)
+    return false unless GameData::Ability.exists?(ability)
+    return all ? pokemon_party.find_all { |pkmn| pkmn&.hasAbility?(ability) } : pokemon_party.find { |pkmn| pkmn&.hasAbility?(ability) }
   end
 
   # Checks whether any Pokémon in the party knows the given move, and returns

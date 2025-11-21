@@ -13,7 +13,7 @@
     // Note that the "Game Title" defined in RPG Maker XP should not have
     // accented characters in it, which is why this property is useful.
     //
-    "windowTitle": "La Base De Sky 1.1.1",
+    "windowTitle": "La Base De Sky 1.2.0",
 
     // The game window's width and height, in pixels.
     //

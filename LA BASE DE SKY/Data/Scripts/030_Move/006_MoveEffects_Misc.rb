@@ -338,6 +338,7 @@ class Battle::Move::RemoveTerrain < Battle::Move
       @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
     end
     @battle.field.terrain = :None
+    @battle.scene.pbDeleteField
   end
 end
 
@@ -357,6 +358,7 @@ class Battle::Move::AddSpikesToFoeSide < Battle::Move
 
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::Spikes] += 1
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas!",
                             user.pbOpposingTeam(true)))
   end
@@ -379,6 +381,7 @@ class Battle::Move::AddToxicSpikesToFoeSide < Battle::Move
 
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas tóxicas!",
                             user.pbOpposingTeam()))
   end
@@ -400,6 +403,7 @@ class Battle::Move::AddStealthRocksToFoeSide < Battle::Move
 
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::StealthRock] = true
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} está rodeado de piedras puntiagudas!",
                             user.pbOpposingTeam()))
   end
@@ -421,6 +425,7 @@ class Battle::Move::AddStickyWebToFoeSide < Battle::Move
 
   def pbEffectGeneral(user)
     user.pbOpposingSide.effects[PBEffects::StickyWeb] = true
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡Una red viscosa se extiende a los pies de {1}!",
                             user.pbOpposingTeam()))
   end
@@ -487,6 +492,7 @@ class Battle::Move::SwapSideEffects < Battle::Move
     @boolean_effects.each do |e|
       side0.effects[e], side1.effects[e] = side1.effects[e], side0.effects[e]
     end
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} ha intercambiado los efectos del campo de combate!", user.pbThis))
   end
 end
@@ -549,18 +555,22 @@ class Battle::Move::RemoveUserBindingAndEntryHazards < Battle::Move::StatUpMove
     end
     if user.pbOwnSide.effects[PBEffects::StealthRock]
       user.pbOwnSide.effects[PBEffects::StealthRock] = false
+      @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
       @battle.pbDisplay(_INTL("Las piedras puntiagudas lanzadas a {1} han desaparecido.", user.pbTeam))
     end
     if user.pbOwnSide.effects[PBEffects::Spikes] > 0
       user.pbOwnSide.effects[PBEffects::Spikes] = 0
+      @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
       @battle.pbDisplay(_INTL("Las púas lanzadas a {1} han desaparecido.", user.pbTeam))
     end
     if user.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0
       user.pbOwnSide.effects[PBEffects::ToxicSpikes] = 0
+      @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
       @battle.pbDisplay(_INTL("Las púas tóxicas lanzadas a {1} han desaparecido.", user.pbTeam))
     end
     if user.pbOwnSide.effects[PBEffects::StickyWeb]
       user.pbOwnSide.effects[PBEffects::StickyWeb] = false
+      @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
       @battle.pbDisplay(_INTL("La red viscosa lanzada a {1} ha desaparecido.", user.pbTeam))
     end
   end
@@ -610,7 +620,7 @@ class Battle::Move::AttackTwoTurnsLater < Battle::Move
     if @id == :DOOMDESIRE
       @battle.pbDisplay(_INTL("¡{1} ha sido alcanzado por Deseo Oculto!", user.pbThis))
     else
-      @battle.pbDisplay(_INTL("¡{1} ha sido alcanzado por Premonición!", user.pbThis))
+      @battle.pbDisplay(_INTL("¡{1} previó un ataque!", user.pbThis))
     end
   end
 
@@ -737,6 +747,7 @@ class Battle::Move::RemoveTerrainIceSpinner < Battle::Move
       @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
     end
     @battle.field.terrain = :None
+    @battle.scene.pbDeleteField
     @battle.allBattlers.each { |battler| battler.pbAbilityOnTerrainChange }
   end
 end
@@ -852,6 +863,7 @@ class Battle::Move::DamageTargetAddSpikesToFoeSide < Battle::Move
     return if target.pbOwnSide.effects[PBEffects::Spikes] == 3
     target.pbOwnSide.effects[PBEffects::Spikes] += 1
     @battle.pbAnimation(:SPIKES, user, target)
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡Hay púas esparcidas alrededor de los pies de {1}!", user.pbOpposingTeam(true)))
   end
 end
@@ -866,6 +878,7 @@ class Battle::Move::DamageTargetAddStealthRocksToFoeSide < Battle::Move
     return if target.pbOwnSide.effects[PBEffects::StealthRock]
     target.pbOwnSide.effects[PBEffects::StealthRock] = true
     @battle.pbAnimation(:STEALTHROCK, user, target)
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡Piedras puntiagudas flotan en el aire alrededor de {1}!", user.pbOpposingTeam(true)))
   end
 end

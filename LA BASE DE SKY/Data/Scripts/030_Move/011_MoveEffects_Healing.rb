@@ -21,7 +21,7 @@ class Battle::Move::HealUserFullyAndFallAsleep < Battle::Move::HealingMove
   end
 
   def pbEffectGeneral(user)
-    user.pbSleepSelf(_INTL("¡{1} se ha recuperado tras descansar un poco!", user.pbThis), 3)
+    user.pbSleepSelf(_INTL("¡{1} se ha recuperado tras descansar un poco!", user.pbThis), 2)
     super
   end
 end
@@ -269,17 +269,17 @@ class Battle::Move::HealUserAndAlliesQuarterOfTotalHPCureStatus < Battle::Move
       target.pbCureStatus(false)
       case old_status
       when :SLEEP
-        @battle.pbDisplay(_INTL("{1} se ha despertado.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha despertado!", target.pbThis))
       when :POISON
-        @battle.pbDisplay(_INTL("{1} se ha curado del envenenamiento.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha curado del envenenamiento!", target.pbThis))
       when :BURN
-        @battle.pbDisplay(_INTL("La quemadura de {1} se ha curado.", target.pbThis(true)))
+        @battle.pbDisplay(_INTL("¡La quemadura de {1} se ha curado!", target.pbThis(true)))
       when :PARALYSIS
-        @battle.pbDisplay(_INTL("{1} se ha curado de paralisis.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha curado de paralisis!", target.pbThis))
       when :FROZEN
-        @battle.pbDisplay(_INTL("{1} se ha descongelado.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", target.pbThis))
       when :FROSTBITE
-        @battle.pbDisplay(_INTL("{1} se ha descongelado.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", target.pbThis))
       end
     end
   end

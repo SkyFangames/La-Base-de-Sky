@@ -61,6 +61,27 @@ class Battle::Battler
     end
   end
 
+
+  # These abilities can only be used once while the battler remains in battle.
+  # Switching out and back in allows the ability to be used again.
+  def markAbilityUsedThisSwitchIn
+    @battle.abilitiesUsedPerSwitchIn[idxOwnSide][@pokemonIndex].push(@ability_id)
+  end
+
+  def abilityUsedThisSwitchIn?
+    return @battle.abilitiesUsedPerSwitchIn[idxOwnSide][@pokemonIndex].include?(@ability_id)
+  end
+
+  # These abilities can only be used once per battle, regardless of if the
+  # battler switches out/faints.
+  def markAbilityUsedOnce
+    @battle.abilitiesUsedOnce[idxOwnSide][@pokemonIndex].push(@ability_id)
+  end
+
+  def abilityUsedOnce?
+    return @battle.abilitiesUsedOnce[idxOwnSide][@pokemonIndex].include?(@ability_id)
+  end
+
   # Called when a Pokémon (self) enters battle, at the end of each move used,
   # and at the end of each round.
   def pbContinualAbilityChecks(onSwitchIn = false)
@@ -187,6 +208,7 @@ class Battle::Battler
         @battle.pbSetSeen(self)
       end
     end
+    @battle.abilitiesUsedPerSwitchIn[idxOwnSide][@pokemonIndex].delete(oldAbil)
     @effects[PBEffects::GastroAcid] = false if unstoppableAbility?
     @effects[PBEffects::SlowStart]  = 0 if self.ability != :SLOWSTART
     @effects[PBEffects::Truant]     = false if self.ability != :TRUANT

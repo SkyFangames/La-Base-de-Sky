@@ -131,5 +131,12 @@ module Settings
     # this is true, Judgment's displayed type will depend on the Plate being held
     # by the Pokémon that knows it.
     SHOW_MODIFIED_MOVE_PROPERTIES = true
+
+    # Agrega el porcentaje de vida restante del Pokémon enemigo debajo de la barra de vida.
+    SHOW_ENEMY_HP_PERCENTAGE = true
+
+    # Muestra los peligros de entrada (púas, trampa rocas, tela de araña) en la pantalla de batalla.
+    SHOW_HAZARDS_IN_BATTLE = false
+    
 end
   

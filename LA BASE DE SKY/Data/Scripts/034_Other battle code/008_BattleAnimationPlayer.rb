@@ -403,6 +403,7 @@ class PBAnimation < Array
   attr_writer   :speed
   attr_reader   :array
   attr_reader   :timing
+  attr_accessor :volume
 
   MAX_SPRITES = 60
 
@@ -421,10 +422,19 @@ class PBAnimation < Array
     size.times { addFrame }
     @timing   = []
     @scope    = 0
+    @volume   = nil
   end
 
   def length
     @array.length
+  end
+
+  def volume=(value)
+    @volume = value.clamp(0, 100) if value
+  end
+
+  def volume
+    return @volume
   end
 
   def each
@@ -529,11 +539,12 @@ class PBAnimation < Array
 
       case i.timingType
       when 0 # Play SE
+        volume_aux = self.volume || i.volume 
         if i.name && i.name != ''
-          pbSEPlay("Anim/#{i.name}", i.volume, i.pitch)
+          pbSEPlay("Anim/#{i.name}", volume_aux, i.pitch)
         elsif user&.pokemon
           name = GameData::Species.cry_filename_from_pokemon(user.pokemon)
-          pbSEPlay(name, i.volume, i.pitch) if name
+          pbSEPlay(name, volume_aux, i.pitch) if name
         end
 #        if sprite
 #          sprite.flash(i.flashColor, i.flashDuration * 2) if i.flashScope == 1
@@ -623,8 +634,8 @@ def pbSpriteSetAnimFrame(sprite, frame, user = nil, target = nil, inEditor = fal
                         animwidth, animwidth)
   else
     sprite.src_rect.set(0, 0,
-                        (sprite.bitmap) ? sprite.bitmap.width : 128,
-                        (sprite.bitmap) ? sprite.bitmap.height : 128)
+                        (sprite.bitmap) && !sprite.bitmap.disposed? ? sprite.bitmap.width : 128,
+                        (sprite.bitmap) && !sprite.bitmap.disposed? ? sprite.bitmap.height : 128)
   end
   sprite.zoom_x = frame[AnimFrame::ZOOMX] / 100.0
   sprite.zoom_y = frame[AnimFrame::ZOOMY] / 100.0

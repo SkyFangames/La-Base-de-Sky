@@ -90,7 +90,7 @@ class Battle::Battler
     when :SLEEP
       # No type is immune to sleep
     when :POISON
-      if !(user && user.hasActiveAbility?(:CORROSION))
+      if !(user && user.hasActiveAbility?(:CORROSION) && move && !move.damagingMove?)
         hasImmuneType |= pbHasType?(:POISON)
         hasImmuneType |= pbHasType?(:STEEL)
       end
@@ -479,12 +479,12 @@ class Battle::Battler
     self.status = :NONE
     if showMessages
       case oldStatus
-      when :SLEEP     then @battle.pbDisplay(_INTL("{1} se ha despertado.", pbThis))
-      when :POISON    then @battle.pbDisplay(_INTL("{1} se ha curado del envenenamiento.", pbThis))
-      when :BURN      then @battle.pbDisplay(_INTL("La quemadura de {1} se ha curado.", pbThis))
-      when :PARALYSIS then @battle.pbDisplay(_INTL("{1} se ha curado de paralisis.", pbThis))
-      when :FROZEN    then @battle.pbDisplay(_INTL("{1} se ha descongelado", pbThis))
-      when :FROSTBITE then @battle.pbDisplay(_INTL("{1} se ha descongelado", pbThis))
+      when :SLEEP     then @battle.pbDisplay(_INTL("¡{1} se ha despertado!", pbThis))
+      when :POISON    then @battle.pbDisplay(_INTL("¡{1} se ha curado del envenenamiento!", pbThis))
+      when :BURN      then @battle.pbDisplay(_INTL("¡La quemadura de {1} se ha curado!", pbThis))
+      when :PARALYSIS then @battle.pbDisplay(_INTL("¡{1} se ha curado de paralisis!", pbThis))
+      when :FROZEN    then @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", pbThis))
+      when :FROSTBITE then @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", pbThis))
       end
     end
     PBDebug.log("[Status change] #{pbThis}'s status was cured") if !showMessages

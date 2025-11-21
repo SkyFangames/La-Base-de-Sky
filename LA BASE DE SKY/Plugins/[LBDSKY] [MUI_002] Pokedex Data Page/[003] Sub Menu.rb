@@ -581,6 +581,89 @@ class PokemonPokedexInfo_Scene
         drawPage(@page)
         pbDrawDataNotes
         break
+      elsif Input.trigger?(Input::SPECIAL) && cursor == :ability && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+        show_ability_diffs
+      end
+    end
+  end
+
+  def show_ability_diffs
+    species = GameData::Species.get_species_form(@species, @form)
+    @api_data = PokeAPI.get_data(species) if !@api_data || @api_data["species"] != species.id || @api_data["form"] != @form
+    
+    if @api_data
+      api_abilities = @api_data["abilities"]
+      abilities = species.abilities
+      hidden_abilities = species.hidden_abilities
+      
+      # Prepare game abilities with slot numbers
+      game_abilities = {}
+      abilities.each_with_index do |ability, i|
+        game_abilities[ability.to_sym] = [GameData::Ability.get(ability).name, i + 1, false]
+      end
+      hidden_abilities.each do |ability|
+        game_abilities[ability.to_sym] = [GameData::Ability.get(ability).name, 3, true]
+      end
+      
+      # Sort by slot number
+      game_abilities = game_abilities.sort_by { |_key, value| value[1] }.to_h
+      api_abilities = api_abilities.sort_by { |_key, value| value[1] }.to_h
+      
+      # Find differences for each slot
+      changed_abilities = []
+      added_abilities = []
+      removed_abilities = []
+      
+      # Check slots 1, 2, and 3 (hidden)
+      (1..3).each do |slot|
+        game_ability = game_abilities.find { |_key, data| data[1] == slot }
+        api_ability = api_abilities.find { |_key, data| data[1] == slot }
+        
+        if game_ability && api_ability
+          # Both have abilities in this slot
+          game_key, game_data = game_ability
+          api_key, api_data = api_ability
+          
+          if game_key != api_key
+            # Ability changed (Scenario 1: Ability A => Ability B)
+            slot_name = slot == 3 ? "Habilidad Oculta" : "Habilidad #{slot}"
+            changed_abilities.push([slot_name, api_data[0], game_data[0]])
+          end
+        elsif game_ability && !api_ability
+          # Game has ability, API doesn't (Scenario 3: Added ability)
+          game_key, game_data = game_ability
+          slot_name = slot == 3 ? "Habilidad Oculta" : "Habilidad #{slot}"
+          added_abilities.push([slot_name, game_data[0]])
+        elsif !game_ability && api_ability
+          # API has ability, game doesn't (Scenario 2: Removed ability)
+          api_key, api_data = api_ability
+          slot_name = slot == 3 ? "Habilidad Oculta" : "Habilidad #{slot}"
+          removed_abilities.push([slot_name, api_data[0]])
+        end
+      end
+      
+      # Build difference text
+      if !changed_abilities.empty? || !added_abilities.empty? || !removed_abilities.empty?
+        diff_text = "Diferencias de Habilidades:\n"
+        
+        # Show changes first (in slot order)
+        changed_abilities.each do |slot_name, old_ability, new_ability|
+          diff_text += "\\c[1]#{old_ability} => #{new_ability}\\c[0]\n"
+        end
+        
+        # Show added abilities
+        added_abilities.each do |slot_name, ability_name|
+          diff_text += "\\c[3]#{slot_name}: #{ability_name}\\c[0]\n"
+        end
+        
+        # Show removed abilities
+        removed_abilities.each do |slot_name, ability_name|
+          diff_text += "\\c[2]Eliminada: #{ability_name}\\c[0]\n"
+        end
+        
+        pbPlayDecisionSE
+        diff_text.chomp!
+        pbMessage(_INTL("{1}", diff_text))
       end
     end
   end

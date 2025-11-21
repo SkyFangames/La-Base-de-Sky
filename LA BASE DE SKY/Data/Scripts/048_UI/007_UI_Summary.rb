@@ -114,25 +114,32 @@ class PokemonSummary_Scene
     pbUpdateSpriteHash(@sprites)
   end
 
-  def pbStartScene(party, partyindex, inbattle = false)
+  def gray_out_fainted_pokemon
+    @sprites["pokeicon"].make_grey_if_fainted = @pokemon.fainted?
+  end
+
+  def pbStartScene(party, partyindex, inbattle = false, page=1, allow_learn_moves = true)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 99999
     @party      = party
     @partyindex = partyindex
     @pokemon    = @party[@partyindex]
     @inbattle   = inbattle
-    @page = 1
+    @allow_learn_moves = allow_learn_moves
+    @page = page
     @typebitmap    = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
     @markingbitmap = AnimatedBitmap.new("Graphics/UI/Summary/markings")
     @sprites = {}
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["pokemon"] = PokemonSprite.new(@viewport)
+    @sprites["pokemon"].make_grey_if_fainted = @pokemon.fainted?
     @sprites["pokemon"].setOffset(PictureOrigin::CENTER)
     @sprites["pokemon"].x = 104
     @sprites["pokemon"].y = 206
     @sprites["pokemon"].setPokemonBitmap(@pokemon)
     @sprites["pokeicon"] = PokemonIconSprite.new(@pokemon, @viewport)
     @sprites["pokeicon"].setOffset(PictureOrigin::CENTER)
+    @sprites["pokeicon"].make_grey_if_fainted = @pokemon.fainted?
     @sprites["pokeicon"].x       = 46
     @sprites["pokeicon"].y       = 92
     @sprites["pokeicon"].visible = false
@@ -195,6 +202,7 @@ class PokemonSummary_Scene
     pbSetSystemFont(@sprites["overlay"].bitmap)
     @sprites["pokeicon"] = PokemonIconSprite.new(@pokemon, @viewport)
     @sprites["pokeicon"].setOffset(PictureOrigin::CENTER)
+    @sprites["pokeicon"].make_grey_if_fainted = @pokemon.fainted?
     @sprites["pokeicon"].x       = 46
     @sprites["pokeicon"].y       = 92
     @sprites["movesel"] = MoveSelectionSprite.new(@viewport, !move_to_learn.nil?)
@@ -306,7 +314,9 @@ class PokemonSummary_Scene
       return
     end
     @sprites["pokemon"].setPokemonBitmap(@pokemon)
+    @sprites["pokemon"].make_grey_if_fainted = @pokemon.fainted?
     @sprites["pokeicon"].pokemon = @pokemon
+    @sprites["pokeicon"].make_grey_if_fainted = @pokemon.fainted?
     @sprites["itemicon"].item = @pokemon.item_id
     overlay = @sprites["overlay"].bitmap
     overlay.clear
@@ -949,7 +959,7 @@ class PokemonSummary_Scene
         break if !switching
         @sprites["movepresel"].visible = false
         switching = false
-      elsif Input.trigger?(Input::USE)
+      elsif Input.trigger?(Input::USE) && @allow_learn_moves
         pbPlayDecisionSE
         if selmove == Pokemon::MAX_MOVES
           break if !switching
@@ -1342,13 +1352,14 @@ end
 #
 #===============================================================================
 class PokemonSummaryScreen
-  def initialize(scene, inbattle = false)
+  def initialize(scene, inbattle = false, allow_learn_moves = true)
     @scene = scene
     @inbattle = inbattle
+    @allow_learn_moves = allow_learn_moves
   end
 
-  def pbStartScreen(party, partyindex)
-    @scene.pbStartScene(party, partyindex, @inbattle)
+  def pbStartScreen(party, partyindex, page = 1)
+    @scene.pbStartScene(party, partyindex, @inbattle, page, @allow_learn_moves)
     ret = @scene.pbScene
     @scene.pbEndScene
     return ret

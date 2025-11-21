@@ -119,7 +119,7 @@ module PBEffects
   WaterSport          = 114
   WeightChange        = 115
   Yawn                = 116
-    AllySwitch        = 400 # Used to determine if Ally Switch should fail.
+  AllySwitch          = 400 # Used to determine if Ally Switch should fail.
   BoosterEnergy       = 401 # Used to flag whether or not ParadoxStat should persist due to Booster Energy.
   Commander           = 402 # Used for storing data related to Commander.
   CudChew             = 403 # Used to count the remaining rounds until Cud Chew triggers.

@@ -97,7 +97,7 @@ class PokemonSummary_Scene
         break
       elsif Input.trigger?(Input::ACTION)
         newScene = PokemonSummary_Scene.new
-        newScreen = PokemonSummaryScreen.new(newScene)
+        newScreen = PokemonSummaryScreen.new(newScene, @inbattle, false)
         newScreen.pbStartScreen(@party, @partyindex, 3)
       elsif Input.trigger?(Input::UP)
         selmove -= 1
@@ -158,8 +158,9 @@ end
 #===============================================================================
 class PokemonBag
   def has_compatible_tm?(pokemon)
-    GameData::Item.each do |itm|
-      move = GameData::Item.get(itm).move
+    @pockets[4].each do |itm|
+      tm = itm[0]
+      move = GameData::Item.get(tm).move
       return true if move && pokemon.compatible_with_move?(move) && !pokemon.hasMove?(move)
     end
     return false

@@ -579,7 +579,7 @@ end
 #===============================================================================
 # Teach and forget a move
 #===============================================================================
-def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, &block)
+def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, relearn = false, &block)
   return false if !pkmn
   move = GameData::Move.get(move).id
   if pkmn.egg? && !$DEBUG
@@ -599,8 +599,9 @@ def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, &block)
     pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]", &block)
     return true
   end
-  pbMessage(_INTL("{1} quiere recordar {2}, pero ya conoce {3} movimientos.",
-                  pkmn_name, move_name, pkmn.numMoves.to_word) + "\1", &block)
+  relearn_text = (relearn) ? "recordar" : "aprender"
+  pbMessage(_INTL("{1} quiere {2} {3}, pero ya conoce {4} movimientos.",
+                  pkmn_name, relearn_text, move_name, pkmn.numMoves.to_word) + "\1", &block)
   if pbConfirmMessage(_INTL("¿Quieres que {1} olvide un movimiento y aprenda {2}?", pkmn_name, move_name), &block)
     loop do
       move_index = pbForgetMove(pkmn, move)
@@ -809,6 +810,7 @@ def pbGiveItemToPokemon(item, pkmn, scene, pkmnid = 0)
         end
       else
         pkmn.item = item
+        scene.pbRefreshSingle(pkmnid) if defined?(scene.pbRefreshSingle)
         scene.pbDisplay(_INTL("Has quitado {1} de {2} y le has equipado {3}.", olditemname, pkmn.name, newitemname))
         return true
       end
@@ -878,12 +880,12 @@ def pbChooseApricorn(var = 0)
   return ret
 end
 
-def pbChooseFossil(var = 0)
+def pbChooseFossil(var = 0, exclude = [])
   ret = nil
   pbFadeOutIn do
     scene = PokemonBag_Scene.new
     screen = PokemonBagScreen.new(scene, $bag)
-    ret = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_fossil? })
+    ret = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_fossil? && !exclude.include?(item) })
   end
   $game_variables[var] = ret || :NONE if var > 0
   return ret

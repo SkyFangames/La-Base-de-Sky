@@ -34,7 +34,31 @@ module Compiler
     ["get_character(-1)",            "get_player"],
     ["pbCheckAble",                  "$player.has_other_able_pokemon?"],
     ["$PokemonTemp.lastbattle",      "$game_temp.last_battle_record"],
-    ["calcStats",                    "calc_stats"]
+    ["calcStats",                    "calc_stats"],
+    ["PBTrainers:",                  ""],
+    ["PBItems:",                     ""],   
+    ["PBSpecies:",                   ""],
+    ["PBAbilities:",                 ""],
+    ["PBStatuses:",                  ""],
+    ["PBMoves:",                     ""],
+    ["PBTypes:",                     ""],
+    ["pbPlayCry",                    "Pokemon.play_cry"],   
+    ["EncounterTypes:",              ""],
+    ["pbWildBattle",                 "WildBattle.start"],
+    ["PokeBattle_Pokemon.new",       "Pokemon.new"],
+    ["makeShiny",                    "make_shiny"],
+    ["setNature",                    "set_nature"],
+    [":PARLYZHEAL",                  ":PARALYZEHEAL"],
+    [":XDEFEND",                     ":XDEFENSE"],
+    [":XDEFEND2",                    ":XDEFENSE2"],
+    [":XDEFEND3",                    ":XDEFENSE3"],
+    [":XDEFEND6",                    ":XDEFENSE6"],
+    [":XSPECIAL",                    ":XSPATK"],
+    [":XSPECIAL2",                   ":XSPATK2"],
+    [":XSPECIAL3",                   ":XSPATK3"],
+    [":XSPECIAL6",                   ":XSPATK6"],
+    ["$PokemonGlobal.coins",         "$player.coins"],
+    ["pbHasType?",                   "$player.has_pokemon_of_type?"]
   ]
 
   module_function
@@ -1734,7 +1758,7 @@ module Compiler
     changed = false
     Graphics.update
     commonEvents = load_data("Data/CommonEvents.rxdata")
-    Console.echo_li(_INTL("Procesando eventos comundes..."))
+    Console.echo_li(_INTL("Procesando eventos comunes..."))
     commonEvents.length.times do |key|
       newevent = fix_event_use(commonEvents[key], 0, mapData)
       if newevent

@@ -451,10 +451,11 @@ module TrainerBattleProperty
   def self.set(settingname, oldsetting)
     return nil if !oldsetting
     properties = [
-      [_INTL("Tipo de Entrenador"),  TrainerTypeProperty,     _INTL("Nombre del tipo de Entrenador de este Entrenador.")],
-      [_INTL("Nombre de Entrenador"),StringProperty,          _INTL("Nombre del Entrenador.")],
-      [_INTL("Versión"),             LimitProperty.new(9999), _INTL("Número usado para distinguir Entrenadorescon el mismo nombre y tipo de Entrenador.")],
-      [_INTL("Texto al perder"),     StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador.")]
+      [_INTL("Tipo de Entrenador"),   TrainerTypeProperty,     _INTL("Nombre del tipo de Entrenador de este Entrenador.")],
+      [_INTL("Nombre de Entrenador"), StringProperty,          _INTL("Nombre del Entrenador.")],
+      [_INTL("Versión"),              LimitProperty.new(9999), _INTL("Número usado para distinguir Entrenadorescon el mismo nombre y tipo de Entrenador.")],
+      [_INTL("Texto al perder"),      StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador.")],
+      [_INTL("Texto al perder F"),    StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador y estás jugando con el personaje femenino.")]
     ]
     Settings::MAX_PARTY_SIZE.times do |i|
       properties.push([_INTL("Pokémon {1}", i + 1), TrainerPokemonProperty, _INTL("Un Pokémon que pertenece al Entrenador.")])
@@ -512,10 +513,12 @@ def pbTrainerBattleEditor
             party = []
             items = []
             Settings::MAX_PARTY_SIZE.times do |i|
-              party.push(data[4 + i]) if data[4 + i] && data[4 + i][:species]
+              # party.push(data[4 + i]) if data[4 + i] && data[4 + i][:species]
+              party.push(data[5 + i]) if data[5 + i] && data[5 + i][:species] # Ahora tiene que ser 5 + i por el LoseTextF
             end
             TrainerBattleProperty::NUM_ITEMS.times do |i|
-              items.push(data[4 + Settings::MAX_PARTY_SIZE + i]) if data[4 + Settings::MAX_PARTY_SIZE + i]
+              # items.push(data[4 + Settings::MAX_PARTY_SIZE + i]) if data[4 + Settings::MAX_PARTY_SIZE + i]
+              items.push(data[5 + Settings::MAX_PARTY_SIZE + i]) if data[5 + Settings::MAX_PARTY_SIZE + i] # Ahora tiene que ser 5 + i por el LoseTextF
             end
             if !data[0]
               pbMessage(_INTL("No se puede guardar. No se ha elegido tipo de Entrenador."))
@@ -525,13 +528,14 @@ def pbTrainerBattleEditor
               pbMessage(_INTL("No se puede guardar. La lista de Pokémon está vacía."))
             else
               trainer_hash = {
-                :trainer_type    => data[0],
-                :real_name       => data[1],
-                :version         => data[2],
-                :lose_text       => data[3],
-                :pokemon         => party,
-                :items           => items,
-                :pbs_file_suffix => tr_data.pbs_file_suffix
+                :trainer_type     => data[0],
+                :real_name        => data[1],
+                :version          => data[2],
+                :real_lose_text   => data[3],
+                :real_lose_text_f => data[4] && !data[4].empty? ? data[4] : data[3], 
+                :pokemon          => party,
+                :items            => items,
+                :pbs_file_suffix  => tr_data.pbs_file_suffix
               }
               # Add trainer type's data to records
               trainer_hash[:id] = [trainer_hash[:trainer_type], trainer_hash[:real_name], trainer_hash[:version]]
@@ -893,7 +897,7 @@ def pbItemEditorNew(default_name)
     end
   end
   if GameData::Item.exists?(id)
-    pbMessage(_INTL("Error al crear el objeto. Elije un nombre diferente."))
+    pbMessage(_INTL("Error al crear el objeto. Elige un nombre diferente."))
     return
   end
   # Choose a pocket

@@ -36,6 +36,7 @@ class Battle::Battler
   attr_accessor :movesUsed
   attr_accessor :currentMove   # ID of multi-turn move currently being used
   attr_accessor :droppedBelowHalfHP   # Used for Emergency Exit/Wimp Out
+  attr_accessor :droppedBelowThirdHP   # Used for Emergency Exit/Wimp Out
   attr_accessor :statsDropped   # Used for Eject Pack
   attr_accessor :tookMoveDamageThisRound   # Boolean for Focus Punch
   attr_accessor :tookDamageThisRound   # Boolean for whether self took damage this round
@@ -162,6 +163,11 @@ class Battle::Battler
   def shadowPokemon?; return false; end
 
   def inHyperMode?; return false; end
+
+  def affectedByAdditionalEffects?
+    return false if hasActiveItem?(:COVERTCLOAK)
+    return true
+  end
 
   #=============================================================================
   # Display-only properties
@@ -367,6 +373,7 @@ class Battle::Battler
     return self.ability == check_ability
   end
   alias hasWorkingAbility hasActiveAbility?
+  alias has_active_ability? hasActiveAbility?
 
   # Applies to both losing self's ability (i.e. being replaced by another) and
   # having self's ability be negated.
@@ -481,6 +488,7 @@ class Battle::Battler
     return false if hasActiveAbility?(:KLUTZ, ignoreFainted)
     return true
   end
+  alias item_active? itemActive?
 
   def hasActiveItem?(check_item, ignore_fainted = false)
     return false if !itemActive?(ignore_fainted)

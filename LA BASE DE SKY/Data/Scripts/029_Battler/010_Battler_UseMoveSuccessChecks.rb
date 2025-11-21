@@ -595,6 +595,9 @@ class Battle::Battler
                    user.effects[PBEffects::LockOnPos] == target.index
     # Toxic
     return true if move.pbOverrideSuccessCheckPerHit(user, target)
+    # No Guard
+    return true if user.hasActiveAbility?(:NOGUARD) ||
+                   target.hasActiveAbility?(:NOGUARD)
     miss = false
     hitsInvul = false
     # No Guard

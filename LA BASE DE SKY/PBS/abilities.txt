@@ -10,7 +10,7 @@ Description = Cuando entra en combate invoca una lluvia que dura 5 turnos. Si el
 #-------------------------------
 [SPEEDBOOST]
 Name = Impulso
-Description = Aumenta en un nivel la Velocidad  del usuario al final de cada turno.
+Description = Aumenta en un nivel la Velocidad del usuario al final de cada turno.
 #-------------------------------
 [BATTLEARMOR]
 Name = Armadura Batalla
@@ -261,18 +261,22 @@ Description = Hiere a los Pokémon que intentan drenarle los PS. Estos pierden t
 [OVERGROW]
 Name = Espesura
 Description = Potencia los movimientos de tipo Planta del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = GRASS
 #-------------------------------
 [BLAZE]
 Name = Mar Llamas
 Description = Potencia los movimientos de tipo Fuego del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = FIRE
 #-------------------------------
 [TORRENT]
 Name = Torrente
 Description = Potencia los movimientos de tipo Agua del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = WATER
 #-------------------------------
 [SWARM]
 Name = Enjambre
 Description = Potencia los movimientos de tipo Bicho del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = BUG
 #-------------------------------
 [ROCKHEAD]
 Name = Cabeza Roca
@@ -316,7 +320,7 @@ Description = Si le alcanza un movimiento tipo Eléctrico, aumenta un nivel la V
 #-------------------------------
 [RIVALRY]
 Name = Rivalidad
-Description = Aumenta la potencia de sus movimientos en un 25% si el objetivo es del mismo sexo. Ya no disminuye un 25% si es del sexo contrario.
+Description = Aumenta la potencia de sus movimientos en un 25% si el objetivo es del mismo sexo y los reduce en un 25% si es del sexo contrario.
 #-------------------------------
 [STEADFAST]
 Name = Impasible
@@ -1069,7 +1073,7 @@ Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y
 #-------------------------------
 [ASONEGRIMNEIGH]
 Name = Unidad Ecuestre
-Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y Relincho Blanco (al derrotar a un objetivo aumenta su At. Especial).
+Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y Relincho Negro (al derrotar a un objetivo aumenta su At. Especial).
 #-------------------------------
 
 

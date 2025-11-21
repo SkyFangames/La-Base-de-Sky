@@ -1,0 +1,5 @@
+Name         = Easy Mouse
+Version      = 2.1.0
+Essentials   = 21.1
+Website      = https://luka-sj.com/res/esms
+Credits      = Luka S.J.

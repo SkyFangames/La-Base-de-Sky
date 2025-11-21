@@ -59,10 +59,25 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     :black   => [Color.new(64, 64, 64), Color.new(176, 176, 176)],
     :header  => [Color.new(88, 88, 80), Color.new(168, 184, 184)]
   }
-  MOVE_LIST_X       = 0
-  MOVE_LIST_Y       = 84
-  MOVE_LIST_SPACING = 64    # Y distance between top of two adjacent move areas
-  VISIBLE_MOVES     = 4
+  MOVE_LIST_X        = 0
+  MOVE_LIST_Y        = 84
+  MOVE_LIST_SPACING  = 64    # Y distance between top of two adjacent move areas
+  VISIBLE_MOVES      = 4
+  TYPE_ICONS_X       = 396
+  TYPE_ICONS_Y       = 70
+  TYPE_ICONS_SPACING = 6
+  POKEMON_ICON_X     = 314
+  POKEMON_ICON_Y     = 84
+  HEADER_X           = 16
+  HEADER_Y           = 14
+  BUTTON_UP_HEIGHT   = 32
+  BUTTON_UP_WIDTH    = 76
+  BUTTON_UP_X        = 44
+  BUTTON_UP_Y        = 350
+  BUTTON_DOWN_HEIGHT = 32
+  BUTTON_DOWN_WIDTH  = 76
+  BUTTON_DOWN_X      = 132
+  BUTTON_DOWN_Y      = 350
 
   def initialize(pokemon, moves)
     @pokemon   = pokemon
@@ -82,8 +97,8 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     # Pokémon icon
     @sprites[:pokemon_icon] = PokemonIconSprite.new(@pokemon, @viewport)
     @sprites[:pokemon_icon].setOffset(PictureOrigin::CENTER)
-    @sprites[:pokemon_icon].x = 314
-    @sprites[:pokemon_icon].y = 84
+    @sprites[:pokemon_icon].x = POKEMON_ICON_X
+    @sprites[:pokemon_icon].y = POKEMON_ICON_Y
     @sprites[:pokemon_icon].z = 200
     # Cursor
     @sprites[:cursor] = UI::MoveReminderCursor.new(@viewport)
@@ -104,14 +119,14 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   def refresh_overlay
     super
     draw_header
-    draw_pokemon_type_icons(396, 70, 6)
+    draw_pokemon_type_icons(TYPE_ICONS_X, TYPE_ICONS_Y, TYPE_ICONS_SPACING)
     draw_moves_list
     draw_move_properties
     draw_buttons
   end
 
   def draw_header
-    draw_text(_INTL("¿Enseñar movimiento?"), 16, 14, theme: :header)
+    draw_text(_INTL("¿Enseñar movimiento?"), HEADER_X, HEADER_Y, theme: :header)
   end
 
   # x and y are the top left corner of the type icon if there is only one type.
@@ -147,8 +162,8 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     move_name = crop_text(move_name, 230)
     draw_text(move_name, x + 76, y + 6)
 
-    # Draw if move is a TM or HM
-    draw_text(move[1], x + 10, y + 36) if move[1]
+    # Draw move learn level or TM/HM
+    draw_text(move[1], x + 12, y + 36) if move[1]
 
     # Draw PP text
     if move_data.total_pp > 0
@@ -178,16 +193,16 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
 
     # Draw move category
     draw_text(_INTL("CATEGORÍA"), 278, 184)
-    draw_image(UI_FOLDER + "category", 455, 178,
+    draw_image(UI_FOLDER + "category", 436, 178,
                0, move_data.display_category(@pokemon) * GameData::Move::CATEGORY_ICON_SIZE[1], *GameData::Move::CATEGORY_ICON_SIZE)
 
     # Description
-    draw_paragraph_text(move_data.description, 275, 215, 246, 6, theme: :black)
+    draw_paragraph_text(move_data.description, 275, 215, 235, 5, theme: :black)
   end
 
   def draw_buttons
-    draw_image(@bitmaps[:buttons], 44, 350, 0, 0, 76, 32) if @top_index < @moves.length - VISIBLE_MOVES
-    draw_image(@bitmaps[:buttons], 132, 350, 76, 0, 76, 32) if @top_index > 0
+    draw_image(@bitmaps[:buttons], BUTTON_UP_X, BUTTON_UP_Y, 0, 0, BUTTON_UP_WIDTH, BUTTON_UP_HEIGHT) if @top_index < @moves.length - VISIBLE_MOVES
+    draw_image(@bitmaps[:buttons], BUTTON_DOWN_X, BUTTON_DOWN_Y, 20, 0, BUTTON_DOWN_WIDTH, BUTTON_DOWN_HEIGHT) if @top_index > 0
   end
 
   #-----------------------------------------------------------------------------
@@ -198,7 +213,7 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   end
 
   def refresh_on_index_changed(old_index)
-    pbPlayCursorSE
+    pbPlayCursorSE if old_index != @index && defined?(old_index)
     # Change @top_index to keep @index in the middle of the visible list (or as
     # close to it as possible)
     middle_range_top = (VISIBLE_MOVES / 2) - ((VISIBLE_MOVES + 1) % 2)
@@ -230,6 +245,7 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   end
 
   def update_cursor_movement
+    old_index = @index
     # Check for movement to a new move
     if Input.repeat?(Input::UP)
       @index -= 1
@@ -252,7 +268,11 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
       @index += VISIBLE_MOVES
       @index = @moves.length - 1 if @index >= @moves.length
     end
-    return false
+    if old_index != @index
+      refresh_on_index_changed(old_index)
+    end
+    
+    return old_index != @index
   end
 
   def update_interaction(input)
@@ -281,6 +301,7 @@ class UI::MoveReminder < UI::BaseScreen
     @pokemon = pokemon
     @mode = mode
     @moves = []
+    @result = nil
     generate_move_list
     super()
   end
@@ -296,31 +317,28 @@ class UI::MoveReminder < UI::BaseScreen
     return if !@pokemon || @pokemon.egg? || @pokemon.shadowPokemon?
     @pokemon.getMoveList.each do |move|
       next if move[0] > @pokemon.level || @pokemon.hasMove?(move[1])
-      @moves.push(move[1]) if !@moves.include?(move[1])
+      # @moves.push(move[1]) if !@moves.include?(move[1])
+      move_to_add = move.is_a?(GameData::Move) ? move.id : move[1]
+      @moves << [move_to_add, "Nv. #{move[0].to_i.abs}"] if !@moves.include?(move_to_add)
     end
     if Settings::MOVE_RELEARNER_CAN_TEACH_MORE_MOVES && @pokemon.first_moves
       first_moves = []
       @pokemon.first_moves.each do |move|
-        first_moves.push(move) if !@moves.include?(move) && !@pokemon.hasMove?(move)
+        first_moves.push([move, "Nv. 1"]) if !@moves.any? { |m| m[0] == move } && !@pokemon.hasMove?(move)
       end
       @moves = first_moves + @moves   # List first moves before level-up moves
     end
-    @moves = @moves | []   # remove duplicates
+    @moves = @moves.uniq { |move| move[0] }   # remove duplicates based on move ID
 
-    new_moves = []
-    for move in @moves
-      new_moves.push([move, nil])
-    end
-    @moves = new_moves
     if Settings::SHOW_MTS_MOS_IN_MOVE_RELEARNER
       tms = pbGetTMMoves(@pokemon)
       for tm in tms
-        if !@moves.include?(tm[0])
-            new_moves.push([tm[0], tm[1]])
+        if !@moves.any? { |m| m[0] == tm[0] }
+            @moves.push([tm[0], tm[1]])
         end
       end
     end
-    @moves = new_moves
+
   end
 
   def refresh_move_list
@@ -339,6 +357,8 @@ class UI::MoveReminder < UI::BaseScreen
   def main
     return if @disposed
     start_screen
+    @visuals.refresh if @visuals
+    Graphics.update
     loop do
       on_start_main_loop
       command = @visuals.navigate
@@ -366,13 +386,14 @@ UIActionHandlers.add(UI::MoveReminder::SCREEN_ID, :learn, {
   :effect => proc { |screen|
     # move Array len 2
     # Possible values
-    # [:MOVE_ID, nil]
+    # [:MOVE_ID, "Nv X."]
     # [:MOVE_ID, "TM"]
     # [:MOVE_ID, "HM"]
     move = screen.move
     if screen.show_confirm_message(_INTL("¿Enseñar {1}?", GameData::Move.get(move[0]).name))
-      is_machine = move[1] ? true : false
-      if pbLearnMove(screen.pokemon, move[0], false, is_machine)
+      is_machine = ["TM", "HM"].include?(move[1]) ? true : false
+      relearn = is_machine ? false : true
+      if pbLearnMove(screen.pokemon, move[0], false, is_machine, relearn)
         $stats.moves_taught_by_reminder += 1 if !is_machine
         $stats.moves_taught_by_item += 1 if is_machine
         if screen.mode == :normal
@@ -391,7 +412,8 @@ UIActionHandlers.add(UI::MoveReminder::SCREEN_ID, :learn, {
 def pbRelearnMoveScreen(pkmn)
   ret = true
   pbFadeOutIn do
-    ret = UI::MoveReminder.new(pkmn, mode: :single).main
+    mode = Settings::CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE ? :single : :normal
+    ret = UI::MoveReminder.new(pkmn, mode: mode).main
   end
   return ret
 end

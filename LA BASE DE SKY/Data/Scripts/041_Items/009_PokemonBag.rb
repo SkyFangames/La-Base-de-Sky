@@ -145,6 +145,18 @@ class PokemonBag
     return ret
   end
 
+  def get_item_with_flag(flag)
+    items = {}
+    @pockets.each do |pocket|
+      next if !pocket
+      pocket.each do |item|
+        item_data = GameData::Item.try_get(item)
+        next if !item_data
+        items[item] if item_data.has_flag?(flag)
+      end
+    end
+  end
+
   #-----------------------------------------------------------------------------
 
   # Returns whether item has been registered for quick access in the Ready Menu.
@@ -152,6 +164,16 @@ class PokemonBag
     item_data = GameData::Item.try_get(item)
     return false if !item_data
     return @registered_items.include?(item_data.id)
+  end
+
+  # Replaces a registered item with another item. Keeps the same index.
+  # Useful for items that are toggled on/off for example the infinite repel.
+  def replace_registered(old_item, new_item)
+    return unless GameData::Item.exists?(old_item) && GameData::Item.exists?(new_item)
+    if registered?(old_item)
+      index = @registered_items.index(old_item)
+      @registered_items[index] = new_item
+    end
   end
 
   # Registers the item in the Ready Menu.

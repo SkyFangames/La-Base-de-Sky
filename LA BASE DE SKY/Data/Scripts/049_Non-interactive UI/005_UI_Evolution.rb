@@ -2,6 +2,7 @@
 # Evolution screen
 #===============================================================================
 class PokemonEvolutionScene
+  EVOLUTION_BGM = "Evolution"
   def self.pbDuplicatePokemon(pkmn, new_species)
     new_pkmn = pkmn.clone
     new_pkmn.species   = new_species
@@ -95,7 +96,7 @@ class PokemonEvolutionScene
       break if System.uptime - timer_start >= 1
     end
     pbMEPlay("Evolution start")
-    pbBGMPlay("Evolution")
+    pbBGMPlay(EVOLUTION_BGM)
     canceled = false
     timer_start = System.uptime
     loop do
@@ -213,6 +214,7 @@ class PokemonEvolutionScene
     @sprites["msgwindow"].text = ""
     # Check for consumed item and check if Pokémon should be duplicated
     pbEvolutionMethodAfterEvolution
+    @pokemon.form # gets the form after evolution
     # Modify Pokémon to make it evolved
     was_fainted = @pokemon.fainted?
     @pokemon.species = @newspecies

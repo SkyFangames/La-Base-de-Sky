@@ -6,11 +6,21 @@ class PokemonBoxIcon < IconSprite
     super(0, 0, viewport)
     @pokemon = pokemon
     @release_timer_start = nil
+    @should_be_grey = @pokemon&.fainted? && Settings::GREY_OUT_FAINTED
     refresh
+  end
+
+  def getPokemon
+    return @pokemon
   end
 
   def releasing?
     return !@release_timer_start.nil?
+  end
+
+  def make_grey_if_fainted=(value)
+    return if !Settings::GREY_OUT_FAINTED
+    @should_be_grey = value
   end
 
   def release
@@ -30,6 +40,12 @@ class PokemonBoxIcon < IconSprite
   def update
     super
     self.color = Color.new(0, 0, 0, 0)
+    # Apply tone after any bitmap changes
+    if @should_be_grey
+      self.tone = Tone.new(0, 0, 0, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0)
+    end
     if releasing?
       self.zoom_x = lerp(1.0, 0.0, 1.5, @release_timer_start, System.uptime)
       self.zoom_y = self.zoom_x
@@ -110,6 +126,11 @@ end
 #===============================================================================
 class AutoMosaicPokemonSprite < MosaicPokemonSprite
   INITIAL_MOSAIC = 10   # Pixellation factor
+  
+  def initialize(*args)
+    super(*args)
+    @should_be_grey = false
+  end
 
   def mosaic=(value)
     @mosaic = value
@@ -123,6 +144,11 @@ class AutoMosaicPokemonSprite < MosaicPokemonSprite
     @mosaic_timer_start = System.uptime if @mosaic_duration > 0
   end
 
+  def make_grey_if_fainted=(value)
+    return if !Settings::GREY_OUT_FAINTED
+    @should_be_grey = value
+  end
+
   def update
     super
     if @mosaic_timer_start
@@ -134,6 +160,12 @@ class AutoMosaicPokemonSprite < MosaicPokemonSprite
         @mosaic_timer_start = nil
         @start_mosaic = nil
       end
+    end
+    # Apply tone after any bitmap changes
+    if @should_be_grey
+      self.tone = Tone.new(0, 0, 0, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0)
     end
   end
 end
@@ -1306,15 +1338,29 @@ class PokemonStorageScene
   def pbChooseBoxWithSpace(msg, min_space = 1)
     commands = []
     box_num = []
+    source_box = @grabber&.source_box
+    
+    # Add source box first if it has space
+    if source_box && source_box >= 0 && source_box < @storage.maxBoxes
+      box = @storage[source_box]
+      if box && box.length - box.nitems >= min_space
+        box_num << source_box
+        commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
+      end
+    end
+    
+    # Add other boxes with space
     @storage.maxBoxes.times do |i|
       box = @storage[i]
       if box
-        next if box.length - min_space <= box.nitems && i != @storage.currentBox
+        next if box.length - box.nitems < min_space
+        next if i == source_box  # Skip if already added as source box
         box_num << i
         commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
       end
     end
-    chosen_box = pbShowCommands(msg, commands, @storage.currentBox)
+    
+    chosen_box = pbShowCommands(msg, commands, 0)  # Default to first option (source box if available)
     return chosen_box if chosen_box == -1
     return box_num[chosen_box]
   end
@@ -1570,6 +1616,8 @@ class PokemonStorageScene
     end
     pbDrawTextPositions(overlay, textstrings)
     @sprites["pokemon"].setPokemonBitmap(pokemon)
+    # Set grey state for animated sprite if Pokemon is fainted
+    @sprites["pokemon"].make_grey_if_fainted = pokemon.fainted?
   end
 
   def update
@@ -1589,6 +1637,58 @@ class PokemonStorageScreen
     @scene = scene
     @storage = storage
     @pbHeldPokemon = nil
+  end
+
+  def organise_commands(selected, pokemon)
+    commands = []
+    cmdMove     = -1
+    cmdSummary  = -1
+    cmdWithdraw = -1
+    cmdItem     = -1
+    cmdMark     = -1
+    cmdPokedex  = -1
+    cmdRelease  = -1
+    cmdDebug    = -1
+    heldpoke = pbHeldPokemon
+    if heldpoke
+      helptext = _INTL("Has seleccionado a {1}.", heldpoke.name)
+      commands[cmdMove = commands.length] = (pokemon) ? _INTL("Cambiar") : _INTL("Dejar")
+    elsif pokemon
+      helptext = _INTL("Has seleccionado a {1}.", pokemon.name)
+      commands[cmdMove = commands.length] = _INTL("Mover")
+    end
+    commands[cmdSummary = commands.length]  = _INTL("Datos")
+    commands[cmdWithdraw = commands.length] = (selected[0] == -1) ? _INTL("Guardar") : _INTL("Sacar")
+    commands[cmdItem = commands.length]     = _INTL("Objeto")
+    commands[cmdMark = commands.length]     = _INTL("Marcas")
+    poke_for_dex = (pokemon) ? pokemon : @heldpkmn
+    commands[cmdPokedex = commands.length]  = _INTL("Pokédex") if $player.has_pokedex && poke_for_dex && !poke_for_dex.egg? && $player.pokedex.species_in_unlocked_dex?(poke_for_dex.species)
+    commands[cmdRelease = commands.length]  = _INTL("Liberar")
+    commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
+    commands[commands.length]               = _INTL("Cancelar")
+    command = pbShowCommands(helptext, commands)
+    if cmdMove >= 0 && command == cmdMove   # Move/Shift/Place
+      if @heldpkmn
+        (pokemon) ? pbSwap(selected) : pbPlace(selected)
+      else
+        pbHold(selected)
+      end
+    elsif cmdSummary >= 0 && command == cmdSummary   # Summary
+      pbSummary(selected, @heldpkmn)
+    elsif cmdWithdraw >= 0 && command == cmdWithdraw   # Store/Withdraw
+      (selected[0] == -1) ? pbStore(selected, @heldpkmn) : pbWithdraw(selected, @heldpkmn)
+    elsif cmdItem >= 0 && command == cmdItem   # Item
+      pbItem(selected, @heldpkmn)
+    elsif cmdMark >= 0 && command == cmdMark   # Mark
+      pbMark(selected, @heldpkmn)
+    elsif cmdPokedex >= 0 && command == cmdPokedex   # Pokédex
+      openPokedexOnPokemon(pokemon.species, pokemon.gender, pokemon.form) if pokemon
+      openPokedexOnPokemon(@heldpkmn.species, @heldpkmn.gender, @heldpkmn.form) if !pokemon && @heldpkmn
+    elsif cmdRelease >= 0 && command == cmdRelease   # Release
+      pbRelease(selected, @heldpkmn)
+    elsif cmdDebug >= 0 && command == cmdDebug   # Debug
+      pbPokemonDebug((@heldpkmn) ? @heldpkmn : pokemon, selected, heldpoke)
+    end
   end
 
   def pbStartScreen(command)
@@ -1629,51 +1729,11 @@ class PokemonStorageScreen
               pbHold(selected)
             end
           else
-            commands = []
-            cmdMove     = -1
-            cmdSummary  = -1
-            cmdWithdraw = -1
-            cmdItem     = -1
-            cmdMark     = -1
-            cmdRelease  = -1
-            cmdDebug    = -1
-            if heldpoke
-              helptext = _INTL("Has seleccionado a {1}.", heldpoke.name)
-              commands[cmdMove = commands.length] = (pokemon) ? _INTL("Cambiar") : _INTL("Dejar")
-            elsif pokemon
-              helptext = _INTL("Has seleccionado a {1}.", pokemon.name)
-              commands[cmdMove = commands.length] = _INTL("Move")
-            end
-            commands[cmdSummary = commands.length]  = _INTL("Datos")
-            commands[cmdWithdraw = commands.length] = (selected[0] == -1) ? _INTL("Guardar") : _INTL("Sacar")
-            commands[cmdItem = commands.length]     = _INTL("Objeto")
-            commands[cmdMark = commands.length]     = _INTL("Marcas")
-            commands[cmdRelease = commands.length]  = _INTL("Liberar")
-            commands[cmdDebug = commands.length]    = _INTL("Debug") if $DEBUG
-            commands[commands.length]               = _INTL("Cancelar")
-            command = pbShowCommands(helptext, commands)
-            if cmdMove >= 0 && command == cmdMove   # Move/Shift/Place
-              if @heldpkmn
-                (pokemon) ? pbSwap(selected) : pbPlace(selected)
-              else
-                pbHold(selected)
-              end
-            elsif cmdSummary >= 0 && command == cmdSummary   # Summary
-              pbSummary(selected, @heldpkmn)
-            elsif cmdWithdraw >= 0 && command == cmdWithdraw   # Store/Withdraw
-              (selected[0] == -1) ? pbStore(selected, @heldpkmn) : pbWithdraw(selected, @heldpkmn)
-            elsif cmdItem >= 0 && command == cmdItem   # Item
-              pbItem(selected, @heldpkmn)
-            elsif cmdMark >= 0 && command == cmdMark   # Mark
-              pbMark(selected, @heldpkmn)
-            elsif cmdRelease >= 0 && command == cmdRelease   # Release
-              pbRelease(selected, @heldpkmn)
-            elsif cmdDebug >= 0 && command == cmdDebug   # Debug
-              pbPokemonDebug((@heldpkmn) ? @heldpkmn : pokemon, selected, heldpoke)
-            end
+            organise_commands(selected, pokemon)
           end
         end
       end
+      
       @scene.pbCloseBox
     when 1   # Withdraw
       @scene.pbStartBox(self, command)
@@ -1851,6 +1911,7 @@ class PokemonStorageScreen
           if heldpoke
             @storage.pbMoveCaughtToBox(heldpoke, destbox)
             @heldpkmn = nil
+            @scene&.grabber&.carrying = false
           else
             @storage.pbMove(destbox, -1, -1, index)
           end
@@ -2035,7 +2096,7 @@ class PokemonStorageScreen
       _INTL("Fondo"),
       _INTL("Nombre"),
       _INTL("Liberar Caja"),
-      _INTL("Ordenar Caja"),
+      # _INTL("Ordenar Caja"),
       _INTL("Cancelar")
     ]
     command = pbShowCommands(_INTL("¿Qué hacer con?"), commands)
@@ -2058,8 +2119,8 @@ class PokemonStorageScreen
       @scene.pbBoxName(_INTL("¿Nombre de la caja?"), 0, 12)
     when 3
       pbReleaseBox(@storage.currentBox)
-    when 4
-      pbSortBox(@storage.currentBox)
+    # when 4
+    #   pbSortBox(@storage.currentBox)
     end
   end
 

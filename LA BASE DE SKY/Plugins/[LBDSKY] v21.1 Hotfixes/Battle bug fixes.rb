@@ -117,38 +117,38 @@ Battle::AI::Handlers::ShouldSwitch.add(:asleep,
 #===============================================================================
 # Fixed Cramorant's form not reverting after coughing up its Gulp Missile.
 #===============================================================================
-class Battle::Battler
-  alias __hotfixes__pbEffectsOnMakingHit pbEffectsOnMakingHit unless method_defined?(:__hotfixes__pbEffectsOnMakingHit)
+# class Battle::Battler
+#   alias __hotfixes__pbEffectsOnMakingHit pbEffectsOnMakingHit unless method_defined?(:__hotfixes__pbEffectsOnMakingHit)
 
-  def pbEffectsOnMakingHit(move, user, target)
-    if target.damageState.calcDamage > 0 && !target.damageState.substitute
-      # Cramorant - Gulp Missile
-      if target.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
-         target.form > 0 && !target.effects[PBEffects::Transform]
-        oldHP = user.hp
-        # NOTE: Strictly speaking, an attack animation should be shown (the
-        #       target Cramorant attacking the user) and the ability splash
-        #       shouldn't be shown.
-        @battle.pbShowAbilitySplash(target)
-        target_form = target.form
-        target.pbChangeForm(0, nil)
-        if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
-          @battle.scene.pbDamageAnimation(user)
-          user.pbReduceHP(user.totalhp / 4, false)
-        end
-        case target_form
-        when 1   # Gulping Form
-          user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
-        when 2   # Gorging Form
-          user.pbParalyze(target) if user.pbCanParalyze?(target, false)
-        end
-        @battle.pbHideAbilitySplash(target)
-        user.pbItemHPHealCheck if user.hp < oldHP
-      end
-    end
-    __hotfixes__pbEffectsOnMakingHit(move, user, target)
-  end
-end
+#   def pbEffectsOnMakingHit(move, user, target)
+#     if target.damageState.calcDamage > 0 && !target.damageState.substitute
+#       # Cramorant - Gulp Missile
+#       if target.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
+#          target.form > 0 && !target.effects[PBEffects::Transform]
+#         oldHP = user.hp
+#         # NOTE: Strictly speaking, an attack animation should be shown (the
+#         #       target Cramorant attacking the user) and the ability splash
+#         #       shouldn't be shown.
+#         @battle.pbShowAbilitySplash(target)
+#         target_form = target.form
+#         target.pbChangeForm(0, nil)
+#         if user.takesIndirectDamage?(Battle::Scene::USE_ABILITY_SPLASH)
+#           @battle.scene.pbDamageAnimation(user)
+#           user.pbReduceHP(user.totalhp / 4, false)
+#         end
+#         case target_form
+#         when 1   # Gulping Form
+#           user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
+#         when 2   # Gorging Form
+#           user.pbParalyze(target) if user.pbCanParalyze?(target, false)
+#         end
+#         @battle.pbHideAbilitySplash(target)
+#         user.pbItemHPHealCheck if user.hp < oldHP
+#       end
+#     end
+#     __hotfixes__pbEffectsOnMakingHit(move, user, target)
+#   end
+# end
 
 #===============================================================================
 # Fixed Pokémon sent from the party to storage in battle not having certain

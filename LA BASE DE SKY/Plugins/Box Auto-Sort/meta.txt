@@ -1,0 +1,6 @@
+Name         = Box Auto-Sort
+Version      = 1.0.0
+Essentials   = 21.1
+Link         = https://eeveeexpo.com/resources/1733/
+Credits      = NoNonever, DPertierra
+Disabled     = 

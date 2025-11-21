@@ -52,12 +52,12 @@ if Settings::USE_NEW_EXP_SHARE
 
     def expshare_enabled?
         return false unless $PokemonGlobal
-        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED
-        $PokemonGlobal.expshare_enabled
+        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED || $player&.has_exp_all || $bag.has?(:EXPSHARE2)
+        $PokemonGlobal.expshare_enabled ? true : false
     end
 
     def toggle_expshare
-        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED
+        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED || $player&.has_exp_all || $bag.has?(:EXPSHARE2)
         $PokemonGlobal.expshare_enabled = !$PokemonGlobal.expshare_enabled
         $player.party.each { |pokemon| pokemon.expshare = $PokemonGlobal.expshare_enabled }
     end
@@ -65,11 +65,10 @@ if Settings::USE_NEW_EXP_SHARE
     class Pokemon
         attr_accessor(:expshare)    # Repartir experiencia
         alias initialize_old initialize
-        def initialize(species,level,player=$player,withMoves=true, recheck_form = true)
+        def initialize(species, level, player = $player, withMoves = true, recheck_form = true)
             initialize_old(species, level, player, withMoves)
             $PokemonSystem.expshareon ||= 0
-            @expshare = ($PokemonGlobal&.expshare_enabled && $PokemonSystem.expshareon == 0) || 
-                       $player&.has_exp_all
+            @expshare = expshare_enabled? && $PokemonSystem.expshareon == 0
         end 
     end
     
@@ -158,7 +157,7 @@ if Settings::USE_NEW_EXP_SHARE
             return if !@internalBattle || !@expGain
             # Go through each battler in turn to find the Pokémon that participated in
             # battle against it, and award those Pokémon Exp/EVs
-            expAll = $player.has_exp_all || $bag.has?(:EXPALL)
+            expAll = $player.has_exp_all || $bag.has?(:EXPALL) 
             p1 = pbParty(0)
             @battlers.each do |b|
             next unless b&.opposes?   # Can only gain Exp from fainted foes

@@ -108,6 +108,14 @@ class PokemonSummary_Scene
     commands = {}
     options = UIHandlers.get_info(:summary, @page_id, :options)
     options_labels = UIHandlers.get_info(:summary, @page_id, :options_labels)
+    
+    # No permitir acciones con movimientos si la UI se abrió desde el menú de borrar movimientos
+    if @page_id == :page_moves && !@allow_learn_moves
+      options = []
+      options_labels = {}
+    end
+
+    
     options.each do |cmd|
       case cmd
       when :item
@@ -159,7 +167,7 @@ class PokemonSummary_Scene
     #---------------------------------------------------------------------------
     # [:nickname] Nicknames the Pokemon. (Gen 9+)
     when :nickname
-      nickname = pbEnterPokemonName(_INTL("¿Qué mote quieres para {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, "", @pokemon, true)
+      nickname = pbEnterPokemonName(_INTL("¿Qué mote quieres para {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, (@pokemon.name != @pokemon.species_data.name ? @pokemon.name : "" ), @pokemon, true)
       @pokemon.name = nickname
       dorefresh = true
     #---------------------------------------------------------------------------
@@ -215,13 +223,14 @@ class PokemonSummary_Scene
       pbFadeOutIn {
         scene  = PokemonBag_Scene.new
         screen = PokemonBagScreen.new(scene, $bag)
-        item = screen.pbChooseItemScreen(Proc.new{ |itm|
+        item = screen.pbChooseItemScreen( Proc.new{ |itm|
           move = GameData::Item.get(itm).move  
-          next false if !move || @pokemon.hasMove?(move) || !@pokemon.compatible_with_move?(move)
+          next false if !move || @pokemon.hasMove?(move) #|| !@pokemon.compatible_with_move?(move)
           next true
         })
       }
-      if item
+      move = GameData::Item.try_get(item)&.move
+      if item && move && @pokemon.compatible_with_move?(move) && !@pokemon.hasMove?(move)
         pbUseItemOnPokemon(item, @pokemon, self)
         dorefresh = true
       end
@@ -265,7 +274,7 @@ class PokemonSummary_Scene
         @show_back = !@show_back
         if PluginManager.installed?("[DBK] Animated Pokémon System")
           @sprites["pokemon"].setSummaryBitmap(@pokemon, @show_back)
-          @sprites["pokemon"].constrict([208, 164])
+          # @sprites["pokemon"].constrict([208, 164])
         else
           @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
         end

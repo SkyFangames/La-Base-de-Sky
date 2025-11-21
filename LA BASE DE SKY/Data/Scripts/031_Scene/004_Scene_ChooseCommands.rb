@@ -1,5 +1,77 @@
 class Battle::Scene
   #=============================================================================
+  # Helper method to initialize mouse state safely
+  #=============================================================================
+  def pbInitializeMouseState
+    return { pressed: false, pressedIndex: -1, waitForRelease: false } if !Settings::ENABLE_MOUSE_INPUT_IN_BATTLE
+    mousePressed = false
+    begin
+      mousePressed = Mouse.press? if defined?(Mouse) && Mouse
+    rescue
+      mousePressed = false
+    end
+    return {
+      pressed: false,
+      pressedIndex: -1,
+      waitForRelease: mousePressed
+    }
+  end
+
+  #=============================================================================
+  # Helper method for mouse button input with click tracking
+  # Returns the index of the clicked button, or nil if no valid click
+  #=============================================================================
+  def pbCheckMouseButtons(buttons, mouseState, validationProc = nil)
+    return nil if !Settings::ENABLE_MOUSE_INPUT_IN_BATTLE
+    return nil if !defined?(Mouse) || !Mouse
+    return nil if mouseState[:waitForRelease]
+    
+    clickedIndex = nil
+    
+    begin
+      # Clear the wait flag once mouse is released
+      if mouseState[:waitForRelease] && !Mouse.press?
+        mouseState[:waitForRelease] = false
+      end
+      
+      # Only process mouse input if we're not waiting for initial release
+      if !mouseState[:waitForRelease]
+        buttons.each_with_index do |button, i|
+          # Skip invalid buttons (e.g., moves that don't exist)
+          next if validationProc && !validationProc.call(i)
+          
+          # Mouse pressed on this button
+          if Mouse.over?(button) && Mouse.press? && !mouseState[:pressed]
+            mouseState[:pressed] = true
+            mouseState[:pressedIndex] = i
+          end
+          
+          # Mouse released on same button it was pressed on
+          if Mouse.over?(button) && mouseState[:pressed] && mouseState[:pressedIndex] == i
+            if Mouse.release? || !Mouse.press?  # Released or no longer pressing
+              clickedIndex = i
+              mouseState[:pressed] = false
+              mouseState[:pressedIndex] = -1
+              break
+            end
+          end
+        end
+        
+        # Reset mouse state if released anywhere or no longer pressing
+        if Mouse.release? || (mouseState[:pressed] && !Mouse.press?)
+          mouseState[:pressed] = false
+          mouseState[:pressedIndex] = -1
+        end
+      end
+    rescue
+      # Silently ignore any mouse-related errors
+      return nil
+    end
+    
+    return clickedIndex
+  end
+
+  #=============================================================================
   # The player chooses a main command for a Pokémon
   # Return values: -1=Cancel, 0=Fight, 1=Bag, 2=Pokémon, 3=Run, 4=Call
   #=============================================================================
@@ -30,6 +102,7 @@ class Battle::Scene
     cw.setIndexAndMode(@lastCmd[idxBattler], mode)
     pbSelectBattler(idxBattler)
     ret = -1
+    mouseState = pbInitializeMouseState
     loop do
       oldIndex = cw.index
       pbUpdate(cw)
@@ -44,6 +117,17 @@ class Battle::Scene
         cw.index += 2 if (cw.index & 2) == 0
       end
       pbPlayCursorSE if cw.index != oldIndex
+
+      # Mouse input
+      clickedIndex = pbCheckMouseButtons(cw.buttons, mouseState)
+      if clickedIndex
+        cw.index = clickedIndex
+        pbPlayDecisionSE
+        ret = cw.index
+        @lastCmd[idxBattler] = ret
+        break
+      end
+
       # Actions
       if Input.trigger?(Input::USE)                 # Confirm choice
         pbPlayDecisionSE
@@ -62,6 +146,39 @@ class Battle::Scene
     return ret
   end
 
+  def update_zygarde_move(battler, idxBattler, cw)
+    # After toggling, change Zygarde's move based on the NEW registration state
+    if battler.isSpecies?(:ZYGARDE) && [2, 3].include?(battler.form)
+      newMode = (@battle.pbRegisteredMegaEvolution?(idxBattler)) ? 2 : 1
+      battler.moves.each_with_index do |move, i|
+        new_move_id = nil
+        if newMode == 2 && move.id == :COREENFORCER
+          new_move_id = :NIHILLIGHT
+        elsif newMode == 1 && move.id == :NIHILLIGHT
+          new_move_id = :COREENFORCER
+        end
+        
+        if new_move_id
+          # Store current PP values
+          current_pp = move.pp
+          
+          # Create a new Pokemon::Move with the new ID
+          pokemon_move = Pokemon::Move.new(new_move_id)
+          pokemon_move.pp = current_pp
+          # pokemon_move.total_pp = total_pp
+          
+          # Create a new Battle::Move from the Pokemon::Move
+          new_battle_move = Battle::Move.from_pokemon_move(@battle, pokemon_move)
+          
+          # Replace the move in the battler's moves array
+          battler.moves[i] = new_battle_move
+        end
+      end
+      # Immediately refresh the UI to show the new move name
+      cw.refresh
+    end
+  end
+
   #=============================================================================
   # The player chooses a move for a Pokémon to use
   #=============================================================================
@@ -77,6 +194,7 @@ class Battle::Scene
     cw.setIndexAndMode(moveIndex, (megaEvoPossible) ? 1 : 0)
     needFullRefresh = true
     needRefresh = false
+    mouseState = pbInitializeMouseState
     loop do
       # Refresh view if necessary
       if needFullRefresh
@@ -88,6 +206,7 @@ class Battle::Scene
         if megaEvoPossible
           newMode = (@battle.pbRegisteredMegaEvolution?(idxBattler)) ? 2 : 1
           cw.mode = newMode if newMode != cw.mode
+          cw.refresh  # Add this to ensure move names are updated
         end
         needRefresh = false
       end
@@ -105,6 +224,21 @@ class Battle::Scene
         cw.index += 2 if battler.moves[cw.index + 2]&.id && (cw.index & 2) == 0
       end
       pbPlayCursorSE if cw.index != oldIndex
+      
+      # Mouse input
+      clickedIndex = pbCheckMouseButtons(cw.buttons, mouseState, proc { |i| battler.moves[i]&.id })
+      if clickedIndex
+        cw.index = clickedIndex
+        pbPlayDecisionSE
+        moveExecuted = yield cw.index
+        if moveExecuted
+          break
+        else
+          needFullRefresh = true
+          needRefresh = true
+        end
+      end
+      
       # Actions
       if Input.trigger?(Input::USE)      # Confirm choice
         pbPlayDecisionSE
@@ -113,18 +247,19 @@ class Battle::Scene
         needRefresh = true
       elsif Input.trigger?(Input::BACK)   # Cancel fight menu
         pbPlayCancelSE
-        break if yield -1
+        break if yield (-1)
         needRefresh = true
       elsif Input.trigger?(Input::ACTION)   # Toggle Mega Evolution
         if megaEvoPossible
           pbPlayDecisionSE
-          break if yield -2
+          break if yield (-2)
+          update_zygarde_move(battler, idxBattler, cw)
           needRefresh = true
         end
       elsif Input.trigger?(Input::SPECIAL)   # Shift
         if cw.shiftMode > 0
           pbPlayDecisionSE
-          break if yield -3
+          break if yield (-3)
           needRefresh = true
         end
       end
@@ -396,9 +531,23 @@ class Battle::Scene
     pbSelectBattler((mode == 0) ? cw.index : texts, 2)   # Select initial battler/data box
     pbFadeInAndShow(@sprites, visibleSprites) if visibleSprites
     ret = -1
+    mouseState = pbInitializeMouseState
     loop do
       oldIndex = cw.index
       pbUpdate(cw)
+      
+      # Mouse input
+      clickedIndex = pbCheckMouseButtons(cw.buttons, mouseState, proc { |i| 
+        cw.buttons[i] && !texts[i].nil? 
+      })
+      if clickedIndex
+        cw.index = clickedIndex
+        pbSelectBattler((mode == 0) ? cw.index : texts, 2) if mode == 0
+        ret = cw.index
+        pbPlayDecisionSE
+        break
+      end
+      
       # Update selected command
       if mode == 0   # Choosing just one target, can change index
         if Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)

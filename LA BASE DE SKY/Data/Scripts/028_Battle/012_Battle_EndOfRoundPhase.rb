@@ -228,6 +228,7 @@ class Battle
         end
       elsif battler.takesIndirectDamage?
         battler.droppedBelowHalfHP = false
+        battler.droppedBelowThirdHP = false
         dmg = battler.totalhp / 8
         dmg = battler.totalhp * battler.effects[PBEffects::Toxic] / 16 if battler.statusCount > 0
         battler.pbContinueStatus { battler.pbReduceHP(dmg, false) }
@@ -235,12 +236,14 @@ class Battle
         battler.pbAbilitiesOnDamageTaken
         battler.pbFaint if battler.fainted?
         battler.droppedBelowHalfHP = false
+        battler.droppedBelowThirdHP = false
       end
     end
     # Damage from burn
     priority.each do |battler|
       next if battler.status != :BURN || !battler.takesIndirectDamage?
       battler.droppedBelowHalfHP = false
+      battler.droppedBelowThirdHP = false
       dmg = (Settings::MECHANICS_GENERATION >= 7) ? battler.totalhp / 16 : battler.totalhp / 8
       dmg = (dmg / 2.0).round if battler.hasActiveAbility?(:HEATPROOF)
       battler.pbContinueStatus { battler.pbReduceHP(dmg, false) }
@@ -248,18 +251,21 @@ class Battle
       battler.pbAbilitiesOnDamageTaken
       battler.pbFaint if battler.fainted?
       battler.droppedBelowHalfHP = false
+      battler.droppedBelowThirdHP = false
     end
     
     # Damage from frostbite
     priority.each do |battler|
       next if battler.status != :FROSTBITE || !battler.takesIndirectDamage?
       battler.droppedBelowHalfHP = false
+      battler.droppedBelowThirdHP = false
       dmg = battler.totalhp / 16
       battler.pbContinueStatus { battler.pbReduceHP(dmg, false) }
       battler.pbItemHPHealCheck
       battler.pbAbilitiesOnDamageTaken
       battler.pbFaint if battler.fainted?
       battler.droppedBelowHalfHP = false
+      battler.droppedBelowThirdHP = false
     end
   end
 
@@ -477,6 +483,7 @@ class Battle
     return if @field.effects[effect] <= 0
     @field.effects[effect] -= 1
     return if @field.effects[effect] > 0
+    @scene.pbDeleteTrickRoomBackground() if effect == PBEffects::TrickRoom
     pbDisplay(msg)
     if effect == PBEffects::MagicRoom
       pbPriority(true).each { |battler| battler.pbItemTerrainStatBoostCheck }
@@ -797,6 +804,7 @@ class Battle
       battler.lastHPLost                           = 0
       battler.lastHPLostFromFoe                    = 0
       battler.droppedBelowHalfHP                   = false
+      battler.droppedBelowThirdHP                  = false
       battler.statsDropped                         = false
       battler.tookMoveDamageThisRound              = false
       battler.tookDamageThisRound                  = false
@@ -811,6 +819,7 @@ class Battle
         battler.effects[PBEffects::Charge]   += 1 if battler.effects[PBEffects::Charge]     > 0
       end
       battler.effects[PBEffects::GlaiveRush] -= 1 if battler.effects[PBEffects::GlaiveRush] > 0
+      @scene.pbRefreshOne(battler.index)
     end
     # Reset/count down side-specific effects (no messages)
     2.times do |side|

@@ -23,3 +23,13 @@ LA BASE DE SKY/Data/Tilesets.rxdata
 LA BASE DE SKY/Data/System.rxdata
 LA BASE DE SKY/Data/States.rxdata
 LA BASE DE SKY/Data/Skills.rxdata
+Gemfile
+Gemfile.lock
+rakefile
+# Pre-commit configuration (personal use only)
+.pre-commit-config.yaml
+check-ruby-syntax-local.ps1
+ruby-style-suggestions.ps1
+PRE-COMMIT-SETUP-GUIDE.md
+.rubocop.yml
+.ruby-version

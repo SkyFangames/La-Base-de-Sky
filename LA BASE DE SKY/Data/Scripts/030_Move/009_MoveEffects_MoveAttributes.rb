@@ -1284,6 +1284,17 @@ class Battle::Move::IgnoreTargetDefSpDefEvaStatStages < Battle::Move
 end
 
 #===============================================================================
+# Nihil Light / Luz Devastadora
+#===============================================================================
+class Battle::Move::HitsFairysIgnoreTargetDefSpDefEvaStatStages < Battle::Move::IgnoreTargetDefSpDefEvaStatStages
+  def pbCalcTypeModSingle(moveType, defType, user, target)
+    return Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER if moveType == :DRAGON && defType == :FAIRY
+    return super
+  end
+end
+
+
+#===============================================================================
 # This move's type is the same as the user's first type. (Revelation Dance)
 #===============================================================================
 class Battle::Move::TypeIsUserFirstType < Battle::Move

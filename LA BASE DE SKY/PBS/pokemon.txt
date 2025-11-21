@@ -12753,7 +12753,7 @@ Flags = Legendary
 [CRESSELIA]
 Name = Cresselia
 Types = PSYCHIC
-BaseStats = 120,70,120,85,75,130
+BaseStats = 120,70,110,85,75,120
 GenderRatio = AlwaysFemale
 GrowthRate = Slow
 BaseExp = 300
@@ -14342,7 +14342,6 @@ Shape = Finned
 Category = Manso
 Pokedex = A pesar de diferenciarse de otros Basculin, como por su plácida naturaleza, se considera una forma regional por todas las características compartidas.
 Generation = 8
-Flags = InheritFormWithEverStone
 Evolutions = BASCULEGION,LevelRecoilDamageForm0,294
 #-------------------------------
 [SANDILE]
@@ -16631,7 +16630,7 @@ Shape = HeadArms
 Category = Torbellino
 Pokedex = La energía que desprende de su cola genera violentas tempestades capaces de echar abajo casas.
 Generation = 5
-Flags = Legendary
+Flags = Legendary,ForcesOfNature
 #-------------------------------
 [THUNDURUS]
 Name = Thundurus
@@ -16657,7 +16656,7 @@ Shape = HeadArms
 Category = Centella
 Pokedex = Lanza descargas eléctricas por las púas de su cola. Sobrevuela Teselia dejando caer rayos.
 Generation = 5
-Flags = Legendary
+Flags = Legendary,ForcesOfNature
 #-------------------------------
 [RESHIRAM]
 Name = Reshiram
@@ -16731,7 +16730,7 @@ Shape = HeadArms
 Category = Fertilidad
 Pokedex = La energía que desprende de su cola enriquece de nutrientes la tierra, y la calidad de las cosechas mejora.
 Generation = 5
-Flags = Legendary
+Flags = Legendary,ForcesOfNature
 #-------------------------------
 [KYUREM]
 Name = Kyurem
@@ -22916,7 +22915,7 @@ Category = Kung-fu
 Pokedex = Al tirar de los mechones blancos de la cabeza, acrecienta su espíritu luchador y empieza a acumular fuerza en el órgano de su bajo vientre.
 Generation = 8
 Flags = Legendary
-Evolutions = URSHIFU,Event,1
+Evolutions = URSHIFU,Item,SCROLLOFDARKNESS,URSHIFU,Item,SCROLLOFWATERS
 #-------------------------------
 [URSHIFU]
 Name = Urshifu
@@ -23187,8 +23186,8 @@ Habitat = Sea
 Category = Gran Pez
 Pokedex = Durante las remontadas de los ríos, se envuelve de las almas de sus congéneres caídos en la ardua travesía. No tiene rival en ninguna de las corrientes que fluyen.
 Generation = 8
-Flags = DefaultForm_2,InheritFormWithEverStone
 WildItemUncommon = DEEPSEATOOTH
+Flags = DefaultForm_0,InheritFormWithEverStone
 #-------------------------------
 [SNEASLER]
 Name = Sneasler

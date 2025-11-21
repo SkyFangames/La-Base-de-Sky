@@ -76,6 +76,8 @@ class Battle
   attr_reader   :recycleItems
   attr_reader   :belch
   attr_reader   :battleBond
+  attr_reader   :abilitiesUsedPerSwitchIn   # Records use of abilities that can only be used once per switch in
+  attr_reader   :abilitiesUsedOnce          # Records use of abilities that can only be used once per battle
   attr_reader   :corrosiveGas
   attr_reader   :usedInBattle     # Whether each Pokémon was used in battle (for Burmy)
   attr_reader   :successStates    # Success states
@@ -89,6 +91,8 @@ class Battle
   attr_reader   :endOfRound       # True during the end of round
   attr_accessor :moldBreaker      # True if Mold Breaker applies
   attr_reader   :struggle         # The Struggle move
+  attr_accessor :adjust_levels
+  attr_accessor :adjust_levels_reset_moves
   
   attr_accessor :abils_triggered # Used to track any once-per-battle ability triggers for each Pokemon.
   attr_accessor :rage_hit_count  # Used to track the number of hits that have been taken for Rage Fist.
@@ -159,6 +163,8 @@ class Battle
     @recycleItems      = [Array.new(@party1.length, nil),   Array.new(@party2.length, nil)]
     @belch             = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
     @battleBond        = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
+    @abilitiesUsedPerSwitchIn = [Array.new(@party1.length) { |i| [] },   Array.new(@party2.length) { |i| [] }]
+    @abilitiesUsedOnce        = [Array.new(@party1.length) { |i| [] },   Array.new(@party2.length) { |i| [] }]
     @corrosiveGas      = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
     @usedInBattle      = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
     @successStates     = []
@@ -181,6 +187,8 @@ class Battle
     @rage_hit_count  = [Array.new(@party1.length, 0), Array.new(@party2.length, 0)]
     @fainted_count   = [0, 0]
     @sideStatUps     = [{}, {}]
+    @adjust_levels   = false
+    @adjust_levels_reset_moves   = false
   end
   
   #-----------------------------------------------------------------------------

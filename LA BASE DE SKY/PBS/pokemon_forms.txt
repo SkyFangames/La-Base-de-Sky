@@ -98,63 +98,77 @@ WildItemUncommon = PECHABERRY
 FormName = Forma Coqueta
 GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,3]
 FormName = Forma Aristócrata
 GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,4]
 FormName = Forma Enmascarada
 GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,5]
 FormName = Forma Erudita
 GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,6]
 FormName = Forma Superstar
 GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,7]
 FormName = Forma Roquera
 GenderRatio = AlwaysFemale
 Abilities = LIGHTNINGROD
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,8]
 FormName = Forma Gorra Original
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,9]
 FormName = Forma Gorra Hoenn
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,10]
 FormName = Forma Gorra Sinnoh
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,11]
 FormName = Forma Gorra Teselia
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,12]
 FormName = Forma Gorra Kalos
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,13]
 FormName = Forma Gorra Alola
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,14]
 FormName = Forma Gorra Compañero
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [PIKACHU,15]
 FormName = Forma Gorra Trotamundos
 GenderRatio = AlwaysMale
+Evolutions = RAICHU,None,
 #-------------------------------
 [RAICHU,1]
 FormName = Forma Alola
@@ -224,7 +238,7 @@ BaseStats = 73,67,75,109,81,100
 EVs = SPEED,2
 Abilities = SNOWCLOAK
 HiddenAbilities = SNOWWARNING
-Moves = 0,DAZZLINGGLEAM,1,IMPRISON,1,NASTYPLOT,1,ICEBEAM,1,ICESHARD,1,CONFUSERAY,1,SAFEGUARD
+Moves = -1,NASTYPLOT,-1,SPITE,-1,CONFUSERAY,-1,AURORABEAM,-1,EXTRASENSORY,-1,ICEBEAM,-1,MIST,-1,AURORAVEIL,-1,POWDERSNOW,-1,DISABLE,-1,ICESHARD,-1,FREEZEDRY,0,DAZZLINGGLEAM,1,BLIZZARD,1,ICYWIND,1,TAILWHIP,1,IMPRISON
 TutorMoves = AGILITY,AQUATAIL,ATTRACT,AURORAVEIL,AVALANCHE,BLIZZARD,BODYSLAM,CALMMIND,CAPTIVATE,CHARM,CONFIDE,COVET,DARKPULSE,DAZZLINGGLEAM,DIG,DOUBLEEDGE,DOUBLETEAM,DRAININGKISS,DREAMEATER,ENCORE,ENDURE,FACADE,FAKETEARS,FOULPLAY,FROSTBREATH,FRUSTRATION,GIGAIMPACT,HAIL,HEADBUTT,HEALBELL,HEX,HIDDENPOWER,HYPERBEAM,ICEBEAM,ICYWIND,IMPRISON,IRONTAIL,LASERFOCUS,MIMIC,MISTYTERRAIN,NASTYPLOT,NATURALGIFT,PAINSPLIT,PAYBACK,POWERSWAP,PROTECT,PSYCHUP,PSYSHOCK,RAINDANCE,REST,RETURN,ROAR,ROLEPLAY,ROUND,SAFEGUARD,SECRETPOWER,SLEEPTALK,SNORE,SOLARBEAM,SPITE,STOREDPOWER,SUBSTITUTE,SWAGGER,SWIFT,TAILSLAP,TRIPLEAXEL,WEATHERBALL,WONDERROOM,ZENHEADBUTT,BATONPASS,CHILLINGWATER,CONFUSERAY,DISARMINGVOICE,HELPINGHAND,ICICLESPEAR,PLAYROUGH,SNOWSCAPE,TAKEDOWN
 Color = Blue
 Pokedex = En su pelaje se crean cristales de hielo con los que cubre al enemigo. Quien lo enfada acaba congelado al instante.
@@ -1739,7 +1753,7 @@ FormName = Tamaño Grande
 BaseStats = 75,95,122,69,58,75
 Height = 1.1
 Weight = 14.0
-Pokedex =  Los Gourgeist Tamaño Grande se hacen pasar por adultos para tomar a los niños de la mano y llevárselos al otro mundo.
+Pokedex = Los Gourgeist Tamaño Grande se hacen pasar por adultos para tomar a los niños de la mano y llevárselos al otro mundo.
 #-------------------------------
 [GOURGEIST,3]
 FormName = Tamaño Extragrande
@@ -1832,7 +1846,7 @@ Pokedex = Convoca a los muertos con su danza de ensueño. De su malicia extrae p
 Abilities = OWNTEMPO
 HiddenAbilities = OWNTEMPO
 Flags = InheritFormFromMother
-Evolutions = LYCANROC,LevelEvening,25
+Evolutions = LYCANROC,Level,25
 #-------------------------------
 [LYCANROC,1]
 FormName = Forma Nocturna
@@ -2077,7 +2091,7 @@ Pokedex = Puede liberar descargas eléctricas de hasta 15.000 V. Se enfrenta a c
 #-------------------------------
 [SINISTEA,1]
 FormName = Forma Genuina
-Pokedex =  Espera a que algún incauto intente bebérselo para absorber su energía vital, pero suelen escupirlo enseguida debido a su mal sabor.
+Pokedex = Espera a que algún incauto intente bebérselo para absorber su energía vital, pero suelen escupirlo enseguida debido a su mal sabor.
 Evolutions = POLTEAGEIST,Item,CHIPPEDPOT
 #-------------------------------
 [POLTEAGEIST,1]
@@ -2411,7 +2425,7 @@ Moves = 1,TAILWHIP,1,TACKLE,5,WORKUP,10,DOUBLEKICK,15,FLAMECHARGE,20,HEADBUTT,25
 TutorMoves = BODYPRESS,BODYSLAM,BULKUP,BULLDOZE,CLOSECOMBAT,CURSE,DIG,DOUBLEEDGE,DRILLRUN,EARTHQUAKE,ENDEAVOR,ENDURE,FACADE,FIREBLAST,FIRESPIN,FLAMECHARGE,FLAMETHROWER,FLAREBLITZ,GIGAIMPACT,HIGHHORSEPOWER,HYPERBEAM,IRONHEAD,LASHOUT,OUTRAGE,OVERHEAT,PROTECT,RAINDANCE,REST,REVERSAL,ROCKSLIDE,ROCKTOMB,SANDSTORM,SCARYFACE,SLEEPTALK,SMARTSTRIKE,STOMPINGTANTRUM,STONEEDGE,SUBSTITUTE,SUNNYDAY,TAKEDOWN,TEMPERFLARE,THIEF,TRAILBLAZE,WILDCHARGE,WILLOWISP,ZENHEADBUTT
 Weight = 85.0
 Color = Black
-Pokedex =  La Variedad Ardiente debe su nombre a la capacidad de exhalar aire a altas temperaturas por el hocico. Lleva las tres colas trenzadas.
+Pokedex = La Variedad Ardiente debe su nombre a la capacidad de exhalar aire a altas temperaturas por el hocico. Lleva las tres colas trenzadas.
 Generation = 9
 Flags = InheritFormWithEverStone
 #-------------------------------
@@ -2472,7 +2486,7 @@ EggMoves = ACIDSPRAY,AQUAJET,AQUATAIL,ASTONISH,BUBBLEBEAM,FLAIL,HAZE,SELFDESTRUC
 Pokedex = Segrega veneno a través de las agujas, razón por la que los pescadores lo odian. Los ejemplares de otras regiones presentan una forma diferente.
 Generation = 8
 Flags = InheritFormWithEverStone
-Evolutions = OVERQWIL,LevelUseMoveCount,BARBBARRAGE
+Evolutions = OVERQWIL,HasMove,BARBBARRAGE
 #-------------------------------
 [SNEASEL,1]
 FormName = Forma Hisui
@@ -2678,7 +2692,6 @@ Generation = 9
 #-------------------------------
 [BASCULEGION,1]
 FormName = Forma Hembra
-GenderRatio = AlwaysFemale
 BaseStats = 120,92,65,78,100,75
 #-------------------------------
 [ENAMORUS,1]

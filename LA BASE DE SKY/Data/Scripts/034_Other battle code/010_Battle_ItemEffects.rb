@@ -1367,7 +1367,7 @@ Battle::ItemEffects::OnBeingHit.add(:JABOCABERRY,
     battle.pbHideAbilitySplash(target) if ripening
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(amt, false)
-    battle.pbDisplay(_INTL("¡{1} ha cunsumido su {2} y ha dañado a {3}!", target.pbThis,
+    battle.pbDisplay(_INTL("¡{1} ha consumido su {2} y ha dañado a {3}!", target.pbThis,
        target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggered(item)
   }
@@ -1437,7 +1437,7 @@ Battle::ItemEffects::OnBeingHit.add(:ROWAPBERRY,
     battle.pbHideAbilitySplash(target) if ripening
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(amt, false)
-    battle.pbDisplay(_INTL("¡{1} ha cunsumido su {2} y ha dañado a {3}!", target.pbThis,
+    battle.pbDisplay(_INTL("¡{1} ha consumido su {2} y ha dañado a {3}!", target.pbThis,
        target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggered(item)
   }

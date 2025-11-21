@@ -95,6 +95,7 @@ end
 # Command menu (Fight/Pokémon/Bag/Run)
 #===============================================================================
 class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
+  attr_accessor :buttons
   # If true, displays graphics from Graphics/UI/Battle/overlay_command.png
   #     and Graphics/UI/Battle/cursor_command.png.
   # If false, just displays text and the command window over the graphic
@@ -198,6 +199,7 @@ end
 class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   attr_reader :battler
   attr_reader :shiftMode
+  attr_accessor :buttons
 
   GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON = false
 
@@ -443,6 +445,7 @@ end
 #===============================================================================
 class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
   attr_accessor :mode
+  attr_accessor :buttons
 
   # Lists of which button graphics to use in different situations/types of battle.
   MODES = [

@@ -1,0 +1,9 @@
+Name       = Switch and Variable Usage Report
+Version    = 1.0
+Essentials = 20.1,21.1
+Credits    = wrigty12
+#============
+# Change log
+#============
+# v1.0
+# Initial Release

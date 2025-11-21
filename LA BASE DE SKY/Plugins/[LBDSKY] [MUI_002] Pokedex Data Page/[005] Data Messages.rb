@@ -148,6 +148,7 @@ class PokemonPokedexInfo_Scene
       nt = (s2 && s2.base_stat_total == species.base_stat_total) ? t[2] : t[1]
       text << " - " + nt + _ISPRINTF("Total: {1:3d}", species.base_stat_total)
       s1 = species.base_stats
+      @api_data = PokeAPI.get_data(species) if !s2 && !@api_data && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
       s2 = s2.base_stats if s2
       stats_order = [[:HP, :SPECIAL_ATTACK], [:ATTACK, :SPECIAL_DEFENSE], [:DEFENSE, :SPEED]]
       stats_order.each_with_index do |st, i|
@@ -156,7 +157,19 @@ class PokemonPokedexInfo_Scene
           stat = (s == :SPECIAL_ATTACK) ? "At. Esp." : (s == :SPECIAL_DEFENSE) ? "Def. Esp." : GameData::Stat.get(s).name
           nt = (s2 && s2[s] == s1[s]) ? t[2] : t[0]
           names  += nt + _INTL("{1}", stat)
-          values += nt + _ISPRINTF("{1:3d}", s1[s])
+          if !s2 && @api_data
+            case
+            when s1[s] > @api_data["stats"][s]
+              color = t[3]
+            when s1[s] < @api_data["stats"][s]
+              color = t[1]
+            else
+              color = t[0]
+            end
+            values += color + _ISPRINTF("{1:3d}", s1[s])
+          else
+            values += nt + _ISPRINTF("{1:3d}", s1[s])
+          end
           names  += "\n" if j == 0
           values += "\n" if j == 0
         end
@@ -166,8 +179,11 @@ class PokemonPokedexInfo_Scene
         drawFormattedTextEx(overlay, valueX, 324, 52, _INTL("{1}", values))
       end
       pbDrawTextPositions(overlay, [
-        [_INTL("Ver similares"), Graphics.width - 34, 292, :right, Color.new(0, 112, 248), Color.new(120, 184, 232)]
-      ]) if !s2 && !@data_hash[:stats].empty?
+        [_INTL("[D]: Cambios"), Graphics.width/2-13, 292, :center, Color.new(0, 112, 248), Color.new(120, 184, 232)]
+      ]) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+      pbDrawTextPositions(overlay, [
+        [_INTL("[C]: Similares"), Graphics.width - 34, 292, :right, Color.new(0, 112, 248), Color.new(120, 184, 232)]
+      ]) if !s2 && !@data_hash[:stats].empty
     else
       text << "\nDesconocido."
     end
@@ -372,7 +388,27 @@ class PokemonPokedexInfo_Scene
         else
           text = ""
           index = 0
-          prevo_data.get_evolutions(true).each do |evo|
+          
+          evolutions = prevo_data.get_evolutions(true)
+          # First, check if there are any form-specific evolution methods for this species
+          has_form_evos = evolutions.any? do |evo|
+            evo[0] == species.species && evo[1].to_s.include?("Form") && evo[1].to_s =~ /Form(\d+)$/
+          end
+          
+          evolutions = evolutions.select do |evo|
+            next false if evo[0] != species.species || evo[1] == :None
+            # Check if evolution method has a Form number
+            if evo[1].to_s.include?("Form") && evo[1].to_s =~ /Form(\d+)$/
+              form_number = $1.to_i
+              next form_number == species.form
+            end
+            # If there are form-specific evolutions and this is not form 0, exclude non-form evolutions
+            next false if has_form_evos && species.form > 0
+            true
+          end
+
+          count = evolutions.length
+          evolutions.each do |evo|
             next if evo[0] != species.species
             next if evo[1] == :None
             if species.species == :URSHIFU && evo[1] == :Item
@@ -380,7 +416,18 @@ class PokemonPokedexInfo_Scene
             end
             spec = prevo_data.id #($player.seen?(prevo_data.id)) ? prevo_data.id : nil
             data = GameData::Evolution.get(evo[1])
-            text << " " if index > 0
+            # Add appropriate separator based on number of evolution methods
+            if !nil_or_empty?(text)
+              if count == 2
+                text << " o "
+              elsif count > 2
+                if index == count - 1
+                  text << " o "
+                else
+                  text << ", "
+                end
+              end
+            end
             text << data.description(spec, evo[0], evo[2], nil_or_empty?(text), true, t)
             break if index > 0
             index += 1

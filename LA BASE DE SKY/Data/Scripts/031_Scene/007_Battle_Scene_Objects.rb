@@ -34,6 +34,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @spriteBaseX     = 0
     @selected        = 0
     @show_hp_numbers = false
+    @show_hp_percent = false
     @show_exp_bar    = false
     initializeDataBoxGraphic(sideSize)
     initializeOtherGraphics(viewport)
@@ -44,15 +45,21 @@ class Battle::Scene::PokemonDataBox < Sprite
     onPlayerSide = @battler.index.even?
     # Get the data box graphic and set whether the HP numbers/Exp bar are shown
     if sideSize == 1   # One Pokémon on side, use the regular dara box BG
-      bgFilename = [_INTL("Graphics/UI/Battle/databox_normal"),
-                    _INTL("Graphics/UI/Battle/databox_normal_foe")][@battler.index % 2]
       if onPlayerSide
         @show_hp_numbers = true
         @show_exp_bar    = true
+      else
+        @show_hp_percent = Settings::SHOW_ENEMY_HP_PERCENTAGE
+        foe_bitmap = @show_hp_percent ? _INTL("Graphics/UI/Battle/databox_normal_foe_percent") : _INTL("Graphics/UI/Battle/databox_normal_foe")
       end
+
+      bgFilename = [_INTL("Graphics/UI/Battle/databox_normal"),
+                    foe_bitmap][@battler.index % 2]
+
     else   # Multiple Pokémon on side, use the thin dara box BG
+      foe_bitmap = Settings::SHOW_ENEMY_HP_PERCENTAGE && sideSize < 3 ? _INTL("Graphics/UI/Battle/databox_thin_foe_percent") : _INTL("Graphics/UI/Battle/databox_thin_foe")
       bgFilename = [_INTL("Graphics/UI/Battle/databox_thin"),
-                    _INTL("Graphics/UI/Battle/databox_thin_foe")][@battler.index % 2]
+                    foe_bitmap][@battler.index % 2]
     end
     @databoxBitmap&.dispose
     @databoxBitmap = AnimatedBitmap.new(bgFilename)
@@ -65,11 +72,16 @@ class Battle::Scene::PokemonDataBox < Sprite
       @spriteX = -16
       @spriteY = 36
       @spriteBaseX = 16
+      @show_hp_percent = Settings::SHOW_ENEMY_HP_PERCENTAGE && sideSize < 3
     end
     case sideSize
     when 2
       @spriteX += [-12,  12,  0,  0][@battler.index]
-      @spriteY += [-20, -34, 34, 20][@battler.index]
+      if @show_hp_percent
+        @spriteY += [-20, -34, 34, 45][@battler.index]
+      else
+        @spriteY += [-20, -34, 34, 20][@battler.index]  
+      end
     when 3
       @spriteX += [-12,  12, -6,  6,  0,  0][@battler.index]
       @spriteY += [-42, -46,  4,  0, 50, 46][@battler.index]
@@ -85,6 +97,10 @@ class Battle::Scene::PokemonDataBox < Sprite
     @hpNumbers = BitmapSprite.new(124, 16, viewport)
 #    pbSetSmallFont(@hpNumbers.bitmap)
     @sprites["hpNumbers"] = @hpNumbers
+
+    @hpPercent = BitmapSprite.new(124, 16, viewport)
+    pbSetSmallFont(@hpPercent.bitmap)
+    @sprites["hpPercent"] = @hpPercent
     # Create sprite wrapper that displays HP bar
     @hpBar = Sprite.new(viewport)
     @hpBar.bitmap = @hpBarBitmap.bitmap
@@ -107,6 +123,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @databoxBitmap.dispose
     @numbersBitmap.dispose
     @hpBarBitmap.dispose
+    @hpPercent&.dispose
     @expBarBitmap.dispose
     @contents.dispose
     super
@@ -117,6 +134,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @hpBar.x     = value + @spriteBaseX + 102
     @expBar.x    = value + @spriteBaseX + 6
     @hpNumbers.x = value + @spriteBaseX + 80
+    @hpPercent&.x = value + @spriteBaseX + 131
   end
 
   def y=(value)
@@ -124,6 +142,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @hpBar.y     = value + 40
     @expBar.y    = value + 74
     @hpNumbers.y = value + 52
+    @hpPercent&.y = value + 61  
   end
 
   def z=(value)
@@ -131,6 +150,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @hpBar.z     = value + 1
     @expBar.z    = value + 1
     @hpNumbers.z = value + 2
+    @hpPercent&.z = value + 2
   end
 
   def opacity=(value)
@@ -205,8 +225,17 @@ class Battle::Scene::PokemonDataBox < Sprite
 
   def pbDrawNumber(number, btmp, startX, startY, align = :left)
     # -1 means draw the / character
-    n = (number == -1) ? [10] : number.to_i.digits.reverse
-    charWidth  = @numbersBitmap.width / 11
+    # -2 means draw the % character
+    n = case number
+    when -1
+      [10]
+    when -2
+      [11]
+    else
+      number.to_i.digits.reverse
+    end
+    # n = (number == -1) ? [10] : number.to_i.digits.reverse
+    charWidth  = @numbersBitmap.width / 12
     charHeight = @numbersBitmap.height
     startX -= charWidth * n.length if align == :right
     n.each do |i|
@@ -300,12 +329,18 @@ class Battle::Scene::PokemonDataBox < Sprite
 
   def refresh_hp
     @hpNumbers.bitmap.clear
+    @hpPercent.bitmap.clear
     return if !@battler.pokemon
     # Show HP numbers
     if @show_hp_numbers
       pbDrawNumber(self.hp, @hpNumbers.bitmap, 54, 2, :right)
       pbDrawNumber(-1, @hpNumbers.bitmap, 54, 2)   # / char
       pbDrawNumber(@battler.totalhp, @hpNumbers.bitmap, 70, 2)
+    end
+    if @show_hp_percent
+      hp_percent_value = ((self.hp / @battler.totalhp.to_f) * 100).ceil.to_i
+      pbDrawNumber(hp_percent_value, @hpPercent.bitmap, 54, 2, :right)
+      pbDrawNumber(-2, @hpPercent.bitmap, 54, 2)   # % char
     end
     # Resize HP bar
     w = 0

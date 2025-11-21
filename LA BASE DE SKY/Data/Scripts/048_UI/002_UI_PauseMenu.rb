@@ -306,7 +306,7 @@ MenuHandlers.add(:pause_menu, :quit_game, {
   "order"     => 90,
   "effect"    => proc { |menu|
     menu.pbHideMenu
-    if pbConfirmMessage(_INTL("¿Estás seguro de que quieres cerrar el juego?"))
+    if pbConfirmMessage(_INTL("¿Estás segur{1} de que quieres cerrar el juego?", $player.female? ? 'a' : 'o'))
       scene = PokemonSave_Scene.new
       screen = PokemonSaveScreen.new(scene)
       screen.pbSaveScreen

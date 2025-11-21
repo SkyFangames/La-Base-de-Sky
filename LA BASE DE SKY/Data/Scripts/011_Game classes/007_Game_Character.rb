@@ -427,7 +427,6 @@ class Game_Character
   def move_type_custom
     return if jumping? || moving?
     return if @move_route.list.size <= 1   # Empty move route
-    start_index = @move_route_index
     (@move_route.list.size - 1).times do
       command = @move_route.list[@move_route_index]
       if command.code == 0
@@ -445,7 +444,6 @@ class Game_Character
           return
         end
       end
-      done_one_command = true
       # The below move route commands wait for a frame (i.e. return) after
       # executing them
       if command.code <= 14

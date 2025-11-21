@@ -52,7 +52,7 @@ class PokemonPokedexMenu_Scene
     @sprites["background"].setBitmap(_INTL("Graphics/UI/Pokedex/bg_menu"))
     text_tag = shadowc3tag(SEEN_OBTAINED_TEXT_BASE, SEEN_OBTAINED_TEXT_SHADOW)
     @sprites["headings"] = Window_AdvancedTextPokemon.newWithSize(
-      text_tag + _INTL("VISTOS") + " " + _INTL("OBTENIDOS") + "</c3>", 270, 136, 208, 64, @viewport
+      text_tag + _INTL("VISTOS") + "     " + _INTL("OBTENIDOS") + "</c3>", 247, 136, 250, 64, @viewport
     )
     @sprites["headings"].windowskin = nil
     @sprites["commands"] = Window_DexesList.new(commands, commands2, Graphics.width - 84)
@@ -112,7 +112,7 @@ class PokemonPokedexMenuScreen
                       $player.pokedex.owned_count(dex),
                       pbGetRegionalDexLength(dex)])
     end
-    commands.push(_INTL("Salida"))
+    commands.push(_INTL("Salir"))
     @scene.pbStartScene(commands, commands2)
     loop do
       cmd = @scene.pbScene
