@@ -2911,7 +2911,7 @@ Generation = 9
 #-------------------------------
 [DRAGONITE,1]
 FormName = Mega Dragonite
-MegaStone = DRAGONITITE
+MegaStone = DRAGONINITE
 BaseStats = 91,124,115,100,145,125
 BaseExp = 300
 Abilities = MULTISCALE
@@ -3013,7 +3013,7 @@ Pokedex = La megaevolución le dio a su piel un aspecto blancuzco y un tacto dur
 Generation = 9
 #-------------------------------
 [EELEKTROSS,1]
-FormName = Mega Elektross
+FormName = Mega Eelektross
 MegaStone = EELEKTROSSITE
 BaseStats = 85,145,80,80,135,90
 Abilities = SPEEDBOOST
@@ -3071,7 +3071,7 @@ Pokedex = Hace girar un enorme shuriken a tal velocidad que queda suspendido en 
 Generation = 9
 #-------------------------------
 [PYROAR,1]
-FormName = Mega Pyorar
+FormName = Mega Pyroar
 MegaStone = PYROARITE
 BaseStats = 86,88,92,126,129,86
 Abilities = ADAPTABILITY
@@ -3118,7 +3118,7 @@ Generation = 9
 #-------------------------------
 [HAWLUCHA,1]
 FormName = Mega Hawlucha
-MegaStone = HAWLUCHITE
+MegaStone = HAWLUCHANITE
 BaseStats = 78,137,100,118,74,93
 BaseExp = 300
 Abilities = RECKLESS
@@ -3171,7 +3171,7 @@ Abilities = POWERCONSTRUCT
 HiddenAbilities = POWERCONSTRUCT
 Height = 7.7
 Weight = 610.0
-UnmegaForm = -2
+#UnmegaForm = -2
 Pokedex = En crisis sin precedentes, megaevoluciona en respuesta a las emociones de la gente. Domina cualquier situación con su fuerza sin igual.
 Generation = 9
 Flags = Legendary
