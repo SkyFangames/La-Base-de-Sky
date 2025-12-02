@@ -918,7 +918,10 @@ Battle::AbilityEffects::PriorityBracketChange.add(:MYCELIUMMIGHT,
 
 Battle::AbilityEffects::PriorityBracketChange.add(:QUICKDRAW,
   proc { |ability, battler, battle|
-    next 1 if battle.pbRandom(100) < 30
+    choices = battle.choices[battler.index]
+    if choices[0] == :UseMove
+      next 1 if battle.pbRandom(100) < 30 && choices[2].damagingMove?
+    end
   }
 )
 
