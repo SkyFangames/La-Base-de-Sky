@@ -826,7 +826,7 @@ MenuHandlers.add(:options_menu, :movement_style, {
   "description" => _INTL("Elige tu velocidad de movimiento. Mantén Presionar hacia atrás mientras te mueves para moverte a la otra velocidad."),
   "condition"   => proc { next $player&.has_running_shoes },
   "get_proc"    => proc { next $PokemonSystem.runstyle },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.runstyle = value }
+  "set_proc"    => proc { |value, _sceme| $PokemonSystem.runstyle = value }
 })
 
 MenuHandlers.add(:options_menu, :send_to_boxes, {
@@ -879,7 +879,7 @@ MenuHandlers.add(:options_menu, :language, {
 
 MenuHandlers.add(:options_menu, :main_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Volumen Principal"),
+  "name"        => _INTL("Main Volume"),
   "order"       => 10,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -916,11 +916,11 @@ MenuHandlers.add(:options_menu, :se_volume, {
 
 # MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
 #   "page"        => :audio,
-#   "name"        => _INTL("Pok�mon Cries"),
+#   "name"        => _INTL("Pokémon Cries"),
 #   "order"       => 40,
 #   "type"        => :number_slider,
 #   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
-#   "description" => _INTL("Adjust the volume of Pok�mon cries."),
+#   "description" => _INTL("Adjust the volume of Pokémon cries."),
 #   "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
 #   "set_proc"    => proc { |value, _screen|
 #     next if $PokemonSystem.pokemon_cry_volume == value
@@ -933,11 +933,11 @@ MenuHandlers.add(:options_menu, :se_volume, {
 
 MenuHandlers.add(:options_menu, :text_speed, {
   "page"        => :graphics,
-  "name"        => _INTL("Velocidad de Texto"),
+  "name"        => _INTL("Vel. Texto"),
   "order"       => 10,
   "type"        => :array,
-  "parameters"  => [_INTL("Lenta"), _INTL("Media"), _INTL("Rápida"), _INTL("Instantánea")],
-  "description" => _INTL("Elige la velocidad a la que se muestra el texto en el juego."),
+  "parameters"  => [_INTL("Len."), _INTL("Med."), _INTL("Ráp."), _INTL("Inst.")],
+  "description" => _INTL("Elige la velocidad a la que aparece el texto."),
   "on_select"   => proc { |screen| screen.sprites[:speech_box].letterbyletter = true },
   "get_proc"    => proc { next $PokemonSystem.textspeed },
   "set_proc"    => proc { |value, screen|
@@ -1048,7 +1048,7 @@ MenuHandlers.add(:options_menu, :control_right, {
   "order"       => 40,
   "type"        => :control,
   "parameters"  => Input::RIGHT,
-  "description" => _INTL("Movimiento hacia la derecha del personaje o en menús. [Also: Derecha]"),
+  "description" => _INTL("Movimiento hacia la derecha del personaje o en menús. [También: Derecha]"),
   "get_proc"    => proc { next $PokemonSystem.controls[Input::RIGHT] },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::RIGHT] = value },
   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
@@ -1060,7 +1060,7 @@ MenuHandlers.add(:options_menu, :control_use, {
   "order"       => 50,
   "type"        => :control,
   "parameters"  => Input::USE,
-  "description" => _INTL("Interactúa con un objeto o persona. Realiza una elección. [También: Enter, Espacio]"),
+  "description" => _INTL("Interactuar o Confirmar. [También: Enter, Espacio]"),
   "get_proc"    => proc { next $PokemonSystem.controls[Input::USE] },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::USE] = value },
   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
@@ -1072,7 +1072,7 @@ MenuHandlers.add(:options_menu, :control_back, {
   "order"       => 60,
   "type"        => :control,
   "parameters"  => Input::BACK,
-  "description" => _INTL("Sale del menú y cancela interacciones. [X/Esc]"),
+  "description" => _INTL("Sale del menú y cancela interacciones. [También: X/Esc]"),
   "get_proc"    => proc { next $PokemonSystem.controls[Input::BACK] },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::BACK] = value },
   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
