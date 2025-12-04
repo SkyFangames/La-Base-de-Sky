@@ -1003,16 +1003,17 @@ class Battle::Move::UserMakeSubstituteSwitchOut < Battle::Move
       @battle.pbDisplay(_INTL("¡{1} ya está detrás de un sustituto!", user.pbThis))
       return true
     end
+    if !@battle.pbCanChooseNonActive?(user.index)
+      @battle.pbDisplay(_INTL("¡Pero no puede cambiar de Pokémon!"))
+      return true
+    end
     @lifeCost = [(user.totalhp / 2).ceil, 1].max
     @subLife = [(@lifeCost / 4).ceil, 1].max
     if user.hp <= @lifeCost
       @battle.pbDisplay(_INTL("¡Pero no tiene suficientes PS para hacer un sustituto!"))
       return true
     end
-    if !@battle.pbCanChooseNonActive?(user.index)
-      @battle.pbDisplay(_INTL("¡Pero no puede cambiar de Pokémon!"))
-      return true
-    end
+
     return false
   end
   
