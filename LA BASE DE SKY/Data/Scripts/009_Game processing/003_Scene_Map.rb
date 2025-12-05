@@ -196,7 +196,7 @@ class Scene_Map
           $game_temp.menu_calling = true
           $game_temp.menu_beep = true
         end
-      elsif Input.trigger?(Input::F5)
+      elsif Input.trigger?(Input::SPECIAL)
         $game_temp.ready_menu_calling = true if !$game_player.moving?
       elsif Input.press?(Input::F9)
         $game_temp.debug_calling = true if $DEBUG

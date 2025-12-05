@@ -898,14 +898,14 @@ class PokemonStorageScene
         pbSetMosaic(selection)
       end
       self.update
-      if Input.trigger?(Input::QUICK_UP)
+      if Input.trigger?(Input::JUMPUP)
         pbPlayCursorSE
         nextbox = (@storage.currentBox + @storage.maxBoxes - 1) % @storage.maxBoxes
         pbSwitchBoxToLeft(nextbox)
         @storage.currentBox = nextbox
         pbUpdateOverlay(selection)
         pbSetMosaic(selection)
-      elsif Input.trigger?(Input::QUICK_DOWN)
+      elsif Input.trigger?(Input::JUMPDOWN)
         pbPlayCursorSE
         nextbox = (@storage.currentBox + 1) % @storage.maxBoxes
         pbSwitchBoxToRight(nextbox)

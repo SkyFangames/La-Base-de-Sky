@@ -712,3 +712,4 @@ MenuHandlers.add(:options_menu, :autotile_animations, {
   }
 })
 
+
