@@ -5,15 +5,22 @@ module UI
   module SpriteContainerMixin
     UI_FOLDER         = "Graphics/UI/"
     GRAPHICS_FOLDER   = ""   # Subfolder in UI_FOLDER
-    TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
-      :default => [Color.new(72, 72, 72), Color.new(160, 160, 160)]   # Base and shadow colour
+    DEFAULT_TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
+      :default => [Color.new(88, 88, 80), Color.new(168, 184, 184)],   # Base and shadow colour
+      :black   => [Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      :white   => [Color.new(248, 248, 248), Color.new(40, 40, 40)],
+      :gray    => [Color.new(88, 88, 80), Color.new(168, 184, 184)],
+      :male    => [Color.new(24, 112, 216), Color.new(136, 168, 208)],
+      :female  => [Color.new(248, 56, 32), Color.new(224, 152, 144)]
     }
+    TEXT_COLOR_THEMES = {}   # Extra color themes to be defined in child classes
 
     def add_overlay(overlay, overlay_width = -1, overlay_height = -1)
       overlay_width = Graphics.width if overlay_width < 0
       overlay_height = Graphics.height if overlay_height < 0
       @sprites[overlay] = BitmapSprite.new(overlay_width, overlay_height, @viewport)
       @sprites[overlay].z = 1000
+      DEFAULT_TEXT_COLOR_THEMES.each_pair { |key, values| @sprites[overlay].add_text_theme(key, *values) }
       self.class::TEXT_COLOR_THEMES.each_pair { |key, values| @sprites[overlay].add_text_theme(key, *values) }
       pbSetSystemFont(@sprites[overlay].bitmap)
     end
@@ -77,6 +84,10 @@ module UI
       return base_filename
     end
 
+    def get_text_color_theme(theme)
+      return self.class::TEXT_COLOR_THEMES[theme] || DEFAULT_TEXT_COLOR_THEMES[theme] || DEFAULT_TEXT_COLOR_THEMES[:default]
+    end
+
     #---------------------------------------------------------------------------
 
     # NOTE: max_width should include the width of the text shadow at the end of
@@ -103,14 +114,14 @@ module UI
 
     def draw_paragraph_text(string, text_x, text_y, text_width, num_lines, theme: :default, overlay: :overlay)
       drawTextEx(@sprites[overlay].bitmap, text_x, text_y, text_width, num_lines,
-                string, *self.class::TEXT_COLOR_THEMES[theme])
+                string, *get_text_color_theme(theme))
     end
 
     # NOTE: This also draws string in a paragraph, but with no limit on the
     #       number of lines.
     def draw_formatted_text(string, text_x, text_y, text_width, theme: :default, overlay: :overlay)
       drawFormattedTextEx(@sprites[overlay].bitmap, text_x, text_y, text_width,
-                          string, *self.class::TEXT_COLOR_THEMES[theme])
+                          string, *get_text_color_theme(theme))
     end
 
     def draw_image(filename, image_x, image_y, src_x = 0, src_y = 0, src_width = -1, src_height = -1, overlay: :overlay)
@@ -204,6 +215,10 @@ module UI
 
     def refresh_overlay
       @sprites[:overlay].bitmap.clear if @sprites[:overlay]
+    end
+
+    def full_refresh
+      refresh
     end
 
     #---------------------------------------------------------------------------
@@ -307,13 +322,19 @@ module UI
   #=============================================================================
   class BaseVisuals
     attr_reader :sprites
-    attr_reader :mode
+    attr_reader :mode, :sub_mode
 
     BACKGROUND_FILENAME = "bg"
+    # Input icons in order as they appear in Graphics/UI/input_icons.png.
+    INPUT_ICONS_ORDER = [Input::UP, Input::LEFT, Input::DOWN, Input::RIGHT,
+                         Input::USE, Input::BACK, Input::ACTION,
+                         Input::QUICK_UP, Input::QUICK_DOWN]
 
     include SpriteContainerMixin
 
     def initialize
+      @sub_mode = :none
+      @viewports = []
       @bitmaps = {}
       @sprites = {}
       initialize_viewport
@@ -326,11 +347,18 @@ module UI
     end
 
     def initialize_viewport
-      @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @viewport.z = 99999
+      @viewport = new_viewport(0, 0, Graphics.width, Graphics.height)
+    end
+
+    def new_viewport(view_x, view_y, view_width, view_height)
+      ret = Viewport.new(view_x, view_y, view_width, view_height)
+      ret.z = 99999
+      @viewports.push(ret)
+      return ret
     end
 
     def initialize_bitmaps
+      @bitmaps[:input_icons] = AnimatedBitmap.new(self.class::UI_FOLDER + "input_icons")
     end
 
     def initialize_background
@@ -343,13 +371,6 @@ module UI
     end
 
     def initialize_message_box
-      # TODO: It looks like :message_box isn't used anywhere.
-      @sprites[:message_box] = Window_AdvancedTextPokemon.new("")
-      @sprites[:message_box].viewport       = @viewport
-      @sprites[:message_box].z              = 2000
-      @sprites[:message_box].visible        = false
-      @sprites[:message_box].letterbyletter = true
-      pbBottomLeftLines(@sprites[:message_box], 2)
       @sprites[:speech_box] = Window_AdvancedTextPokemon.new("")
       @sprites[:speech_box].viewport       = @viewport
       @sprites[:speech_box].z              = 2001
@@ -364,47 +385,65 @@ module UI
 
     #---------------------------------------------------------------------------
 
-    def set_viewport_color(new_color)
-      @viewport.color = new_color
+    def highest_viewport_z
+      ret = 0
+      @viewports.each { |viewport| ret = viewport.z if viewport.z > ret }
+      return ret
     end
 
     def fade_in
+      @viewports.each { |viewport| viewport.visible = true }
+      temp_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      temp_viewport.z = highest_viewport_z + 1
+      # Animation
       duration = 0.4   # In seconds
       col = Color.new(0, 0, 0, 0)
       timer_start = System.uptime
       loop do
         col.set(0, 0, 0, lerp(255, 0, duration, timer_start, System.uptime))
-        set_viewport_color(col)
+        temp_viewport.color = col
         Graphics.update
         Input.update
         update_visuals
         break if col.alpha == 0
       end
+      # Clean up
+      temp_viewport.dispose
     end
 
     def fade_out
+      temp_viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      temp_viewport.z = highest_viewport_z + 1
+      # Animation
       duration = 0.4   # In seconds
       col = Color.new(0, 0, 0, 0)
       timer_start = System.uptime
       loop do
         col.set(0, 0, 0, lerp(0, 255, duration, timer_start, System.uptime))
-        set_viewport_color(col)
+        temp_viewport.color = col
         Graphics.update
         Input.update
         update_visuals
         break if col.alpha == 255
       end
+      # Clean up
+      @viewports.each { |viewport| viewport.visible = false }
+      temp_viewport.dispose
     end
 
     def dispose
       super
-      @viewport.dispose
+      @viewports.each { |viewport| viewport.dispose }
     end
 
     #---------------------------------------------------------------------------
 
     def index
       return 0
+    end
+
+    def set_sub_mode(sub_mode = :none)
+      @sub_mode = sub_mode
     end
 
     #---------------------------------------------------------------------------
@@ -443,7 +482,7 @@ module UI
       @sprites[:speech_box].visible = true
       @sprites[:speech_box].text    = text
       position_speech_box(text)
-      using(cmd_window = Window_CommandPokemon.new([_INTL("Sí"), _INTL("No")])) do
+      using(cmd_window = Window_CommandPokemon.new([_INTL("Yes"), _INTL("No")])) do
         cmd_window.z       = @viewport.z + 1
         cmd_window.visible = false
         pbBottomRight(cmd_window)
@@ -477,7 +516,7 @@ module UI
       @sprites[:speech_box].visible = true
       @sprites[:speech_box].text    = text
       position_speech_box(text)
-      using(cmd_window = Window_CommandPokemon.new([_INTL("No"), _INTL("Sí")])) do
+      using(cmd_window = Window_CommandPokemon.new([_INTL("No"), _INTL("Yes")])) do
         cmd_window.z       = @viewport.z + 1
         cmd_window.visible = false
         pbBottomRight(cmd_window)
@@ -677,7 +716,29 @@ module UI
     def refresh_on_index_changed(old_index)
     end
 
+    def draw_input_icon(input_x, input_y, input, text = nil, text_spacing = 6, theme: :default, overlay: :overlay)
+      input_index = UI::BaseVisuals::INPUT_ICONS_ORDER.index(input) || 0
+      draw_image(@bitmaps[:input_icons], input_x, input_y,
+                input_index * @bitmaps[:input_icons].height, 0,
+                @bitmaps[:input_icons].height, @bitmaps[:input_icons].height,
+                overlay: overlay)
+      if text
+        draw_text(text, input_x + @bitmaps[:input_icons].height + text_spacing, input_y + 8,
+                  theme: theme, overlay: overlay)
+      end
+    end
+
     #---------------------------------------------------------------------------
+
+    def wait(duration)
+      timer_start = System.uptime
+      loop do
+        Graphics.update
+        Input.update
+        update_visuals
+        break if System.uptime - timer_start >= duration
+      end
+    end
 
     def update_input
       if Input.trigger?(Input::BACK)
@@ -715,6 +776,7 @@ module UI
 
     def initialize
       @disposed = false
+      return if @skip_ui
       initialize_visuals
     end
 
@@ -748,6 +810,10 @@ module UI
 
     def index
       return @visuals.index
+    end
+
+    def set_sub_mode(sub_mode = :none)
+      @visuals.set_sub_mode(sub_mode)
     end
 
     #-----------------------------------------------------------------------------
@@ -784,8 +850,8 @@ module UI
 
     def show_choice_from_menu_handler(menu_handler_id, message = nil)
       commands = {}
-      MenuHandlers.each_available(menu_handler_id, self) do |option, _hash, name|
-        commands[option] = name
+      MenuHandlers.each_available(menu_handler_id, self) do |option, hash, name|
+        commands[hash["action"] || option] = name
       end
       return show_menu(message, commands) if message
       return show_choice(commands)
@@ -804,16 +870,24 @@ module UI
     #-----------------------------------------------------------------------------
 
     def refresh
-      @visuals.refresh
+      @visuals.refresh if !@disposed
     end
 
     alias pbRefresh refresh
 
+    def full_refresh
+      @visuals.full_refresh if !@disposed
+    end
+
     def update
-      @visuals.update
+      @visuals.update if !@disposed
     end
 
     alias pbUpdate update
+
+    def wait(duration)
+      @visuals.wait(duration)
+    end
 
     #-----------------------------------------------------------------------------
 
@@ -824,6 +898,10 @@ module UI
     end
 
     def main
+      if @skip_ui
+        main_skipped
+        @disposed = true
+      end
       return if @disposed
       start_screen
       loop do
@@ -837,12 +915,15 @@ module UI
       end_screen
     end
 
+    def main_skipped
+    end
+
     def on_start_main_loop
     end
 
     def perform_action(command)
-      return nil if !self.class::SCREEN_ID
-      action_hash = UIActionHandlers.get(self.class::SCREEN_ID, command)
+      return nil if !self.class::ACTIONS
+      action_hash = self.class::ACTIONS[command]
       return nil if !action_hash
       return nil if action_hash[:condition] && !action_hash[:condition].call(self)
       if action_hash[:menu]

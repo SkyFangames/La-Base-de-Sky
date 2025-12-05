@@ -33,10 +33,14 @@ end
 # Handle incrementing speed stages if $CanToggle allows it
 #===============================================================================#
 module Input
+  unless defined?(update_Turbo)
+    class << Input
+      alias update_Turbo update
+    end
+  end
   def self.update
-    update_KGC_ScreenCapture
-    pbScreenCapture if trigger?(Input::F8)
-    if $CanToggle && (trigger?(Input::ALT) || trigger?(Input::AUX1))
+    update_Turbo
+    if $CanToggle && trigger?(Input::ALT)
       $GameSpeed += 1
       if $GameSpeed >= SPEEDUP_STAGES.size
         $GameSpeed = 0 

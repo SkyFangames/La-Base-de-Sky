@@ -35,7 +35,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::QUICK_UP)
         if @index > 0
           oldindex = @index
           @index = [self.index - self.page_item_max, 0].max
@@ -45,7 +45,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::QUICK_DOWN)
         if @index < @item_max - 1
           oldindex = @index
           @index = [self.index + self.page_item_max, @item_max - 1].min
@@ -95,7 +95,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::QUICK_UP)
         if @index > 0
           oldindex = @index
           @index = [self.index - self.page_item_max, 0].max
@@ -105,7 +105,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::QUICK_DOWN)
         if @index < @item_max - 1
           oldindex = @index
           @index = [self.index + self.page_item_max, @item_max - 1].min

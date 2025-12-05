@@ -127,14 +127,14 @@ class TilesetRearranger
       update_cursor_position(Input.press?(Input::CTRL) ? -2 : -1, 0)
     elsif Input.repeat?(Input::RIGHT) && [:swap, :cut_insert, :erase].include?(@mode)
       update_cursor_position(Input.press?(Input::CTRL) ? 2 : 1, 0)
-    elsif Input.repeat?(Input::JUMPUP)
+    elsif Input.repeat?(Input::QUICK_UP)
       update_cursor_position(0, -NUM_ROWS_VISIBLE / 2, true)
-    elsif Input.repeat?(Input::JUMPDOWN)
+    elsif Input.repeat?(Input::QUICK_DOWN)
       update_cursor_position(0, NUM_ROWS_VISIBLE / 2, true)
-    elsif Input.trigger?(Input::AUX1)   # Undo
-      pop_from_history
-    elsif Input.trigger?(Input::AUX2)   # Redo
-      pop_from_future_history
+    # elsif Input.trigger?(Input::AUX1)   # Undo
+    #   pop_from_history
+    # elsif Input.trigger?(Input::AUX2)   # Redo
+    #   pop_from_future_history
     elsif Input.trigger?(Input::BACK)   # X: Cancel
       if [:swap, :cut_insert].include?(@mode) && @selected_width > 0
         clear_selection

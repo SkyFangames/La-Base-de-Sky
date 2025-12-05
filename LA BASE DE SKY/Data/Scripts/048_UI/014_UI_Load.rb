@@ -322,9 +322,9 @@ class PokemonLoadScreen
         pbFadeOutIn { pbDownloadMysteryGift(@save_data[:player]) }
       when cmd_options
         pbFadeOutIn do
-          scene = PokemonOption_Scene.new
-          screen = PokemonOptionScreen.new(scene)
-          screen.pbStartScreen(true)
+          UI::Options.new.main
+          # pbUpdateSceneMap
+          # menu.refresh
         end
       when cmd_language
         @scene.pbEndScene

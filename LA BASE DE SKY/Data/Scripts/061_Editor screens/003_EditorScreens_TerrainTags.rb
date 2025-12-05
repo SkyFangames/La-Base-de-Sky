@@ -200,9 +200,9 @@ class PokemonTilesetScene
         update_cursor_position(-1, 0)
       elsif Input.repeat?(Input::RIGHT)
         update_cursor_position(1, 0)
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::QUICK_UP)
         update_cursor_position(0, -@visible_height / 2)
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::QUICK_DOWN)
         update_cursor_position(0, @visible_height / 2)
       elsif Input.trigger?(Input::ACTION)
         commands = [
