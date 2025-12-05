@@ -2859,6 +2859,247 @@ SellPrice = 0
 BPPrice = 50
 Description = Piedra añil que, según dicen, guarda una estrecha relación con las leyendas de Hoenn.
 #-------------------------------
+
+
+
+
+
+
+#-------------------------------
+[CLEFABLITE]
+Name = Clefablita
+NamePlural = Clefablitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Clefable en combate.
+#-------------------------------
+[STARMINITE]
+Name = Starmita
+NamePlural = Starmitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Starmie en combate.
+#-------------------------------
+[VICTREEBELITE]
+Name = Victreebelita
+NamePlural = Victreebelitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Victreebel en combate.
+#-------------------------------
+[DRAGONINITE]
+Name = Dragonitita
+NamePlural = Dragonititas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Dragonite en combate.
+#-------------------------------
+[MEGANIUMITE]
+Name = Meganiumita
+NamePlural = Meganiumitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Meganium en combate.
+#-------------------------------
+[FERALIGITE]
+Name = Feraligatrita
+NamePlural = Feraligatritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Feraligatr en combate.
+#-------------------------------
+[SKARMORITE]
+Name = Skarmorita
+NamePlural = Skarmoritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Skarmory en combate.
+#-------------------------------
+[FROSLASSITE]
+Name = Froslassita
+NamePlural = Froslassita
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Froslass en combate.
+#-------------------------------
+[EMBOARITE]
+Name = Emboarita
+NamePlural = Emboaritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Emboar en combate.
+#-------------------------------
+[EXCADRITE]
+Name = Excadrilita
+NamePlural = Excadrilitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Excadril en combate.
+#-------------------------------
+[SCOLIPITE]
+Name = Scolipeditas
+amePlural = Scolipeditas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Scolipede en combate.
+#-------------------------------
+[EELEKTROSSITE]
+Name = Elektrossita
+NamePlural = Elektrositas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Eelektross en combate.
+#-------------------------------
+[SCRAFTINITE]
+Name = Scraftita
+NamePlural = Scraftitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Scrafty en combate.
+#-------------------------------
+[CHANDELURITE]
+Name = Chandelurita
+NamePlural = Chandeluritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Chandelure en combate.
+#-------------------------------
+[CHESNAUGHTITE]
+Name = Chesnaughtita
+NamePlural = Chesnaughtitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Chesnaught en combate.
+#-------------------------------
+[DELPHOXITE]
+Name = Delphoxita
+NamePlural = Delphoxitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Delphox en combate.
+#-------------------------------
+[GRENINJITE]
+Name = Greninjanita
+NamePlural = Greninjanitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Greninja en combate.
+#-------------------------------
+[PYROARITE]
+Name = Pyroarita
+NamePlural = Pyroaritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Pyroar en combate.
+#-------------------------------
+[MALAMARITE]
+Name = Malamarita
+NamePlural = Malamaritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Malamar en combate.
+#-------------------------------
+[HAWLUCHANITE]
+Name = Hawluchanita
+NamePlural = Hawluchanitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Hawlucha en combate.
+#-------------------------------
+[BARBARACITE]
+Name = Barbaraclita
+NamePlural = Barbaraclitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Barbaracle en combate.
+#-------------------------------
+[DRAGALGITE]
+Name = Dragalgita
+NamePlural = Dragalgitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Dragalge en combate.
+#-------------------------------
+[DRAMPANITE]
+Name = Drampanita
+NamePlural = Drampanitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Drampa en combate.
+#-------------------------------
+[FALINKSITE]
+Name = Falinksita
+NamePlural = Falinksitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Falinks en combate.
+#-------------------------------
+[ZYGARDITE]
+Name = Zygardita
+NamePlural = Zygarditas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Zygarde en combate.
+#-------------------------------
+[FLOETTITE]
+Name = Floettita
+NamePlural = Floettitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Floette Flor Eterna en combate.
+#-------------------------------
 [POTION]
 Name = Poción
 NamePlural = Pociones
@@ -6772,7 +7013,8 @@ Price = 0
 FieldUse = OnPokemon
 Flags = KeyItem
 Description = Extraño meteorito proveniente del espacio. Permite cambiar de forma a Deoxys.
-#-------------------------------#-------------------------------
+#-------------------------------
+#-------------------------------
 # OBJETOS CUSTOM
 #-------------------------------
 [INFREPEL]
