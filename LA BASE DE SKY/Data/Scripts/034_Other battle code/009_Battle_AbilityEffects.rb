@@ -918,7 +918,10 @@ Battle::AbilityEffects::PriorityBracketChange.add(:MYCELIUMMIGHT,
 
 Battle::AbilityEffects::PriorityBracketChange.add(:QUICKDRAW,
   proc { |ability, battler, battle|
-    next 1 if battle.pbRandom(100) < 30
+    choices = battle.choices[battler.index]
+    if choices[0] == :UseMove
+      next 1 if battle.pbRandom(100) < 30 && choices[2].damagingMove?
+    end
   }
 )
 
@@ -3925,7 +3928,7 @@ Battle::AbilityEffects::OnOpposingStatGain.add(:OPPORTUNIST,
         showAnim = false
       end
     end
-    battle.pbDisplay(_INTL("¡Las características de {1} no pueden subir más!", user.pbThis(true))) if showAnim
+    battle.pbDisplay(_INTL("¡Las características de {1} no pueden subir más!", battler.pbThis(true))) if showAnim
     battle.pbHideAbilitySplash(battler)
     battler.pbItemOpposingStatGainCheck(statUps)
     # Mirror Herb can trigger off this ability.

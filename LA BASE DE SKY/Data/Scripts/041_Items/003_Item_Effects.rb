@@ -706,7 +706,7 @@ ItemHandlers::UseOnPokemon.add(:PPUP, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UseOnPokemon.add(:PPMAX, proc { |item, qty, pkmn, scene|
-  move = scene.pbChooseMove(pkmn, _INTL("Boost PP of which move?"))
+  move = scene.pbChooseMove(pkmn, _INTL("¿Aumentar los PP de qué movimiento?"))
   next false if move < 0
   if pkmn.moves[move].total_pp <= 1 || pkmn.moves[move].ppup >= 3
     scene.pbDisplay(_INTL("No tendría ningún efecto."))
