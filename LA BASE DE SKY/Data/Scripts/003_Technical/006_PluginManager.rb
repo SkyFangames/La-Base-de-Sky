@@ -183,10 +183,6 @@ module PluginManager
                   if dep_link
                     msg += "\r\nVerifica #{dep_link} para obtener una actualización del plugin '#{dep_name}'."
                   end
-                  
-                  
-                  
-                  
                   self.error(msg)
                 else   # No tiene el plugin
                   self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} " +
@@ -356,17 +352,14 @@ module PluginManager
       version_chunks1[i] = (i == 0) ? "0" : nil
     end
     version_chunks1.compact!
-    
     version_chunks2 = v2.split(".")
     version_chunks2.each_with_index do |val, i|
       next if val != ""
       version_chunks2[i] = (i == 0) ? "0" : nil
     end
     version_chunks2.compact!
-    
     # Compare each chunk in turn
     decision = :equal   # Could be :higher or :lower
-    
     [version_chunks1.length, version_chunks2.length].max.times do |i|
       chunk1 = version_chunks1[i]
       chunk2 = version_chunks2[i]
@@ -377,7 +370,6 @@ module PluginManager
         decision = :higher if decision == :equal
         break
       end
-    
       # Make both chunks the same left by pre-padding with "0"
       chars_count = [chunk1.length, chunk2.length].max
       chunk1 = chunk1.rjust(chars_count, "0").chars
@@ -391,7 +383,6 @@ module PluginManager
       end
       break if decision != :equal
     end
-    
     case decision
     when :equal  then return 0
     when :higher then return 1
@@ -437,8 +428,7 @@ module PluginManager
       end
     end
   end
-  
-  
+
   # Utilizado para leer el archivo de metadatos
   def self.readMeta(dir, file)
     filename = "#{dir}/#{file}"
@@ -593,21 +583,19 @@ module PluginManager
   def self.needCompiling?(order, plugins)
     # acciones fijas
     return false if !$DEBUG || FileTest.exist?("Game.rgssad")
+    return true if $full_compile
     return true if !FileTest.exist?("Data/PluginScripts.rxdata")
     Input.update
-
+    # Force compiling if holding Shift or Ctrl
     return true if Input.press?(Input::SHIFT) || Input.press?(Input::CTRL)
-
     # Should compile if the number of plugins has changed
     scripts = load_data("Data/PluginScripts.rxdata")
     return true if scripts.length != plugins.length
-
     # Should compile if any plugins have changed version or been replaced
     found_plugins = []
     plugins.each_pair { |name, meta| found_plugins.push([meta[:name], meta[:version]]) }
     existing_plugins = []
     scripts.each { |plugin| existing_plugins.push([plugin[1][:name], plugin[1][:version]]) }
-
     return true if found_plugins != existing_plugins
 
     # # Verificar si se agregaron o borraron carpetas y recompilar si es necesario
@@ -728,4 +716,3 @@ module PluginManager
     return nil
   end
 end
-

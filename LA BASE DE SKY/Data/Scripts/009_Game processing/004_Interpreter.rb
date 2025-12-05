@@ -113,6 +113,8 @@ class Interpreter
         end
         @move_route_waiting = false
       end
+      # Do nothing if the player is jumping out of surfing
+      return if $game_temp.ending_surf
       # Do nothing while waiting
       if @wait_count > 0
         return if System.uptime - @wait_start < @wait_count
@@ -163,7 +165,7 @@ class Interpreter
       # Assemble error message
       err = "Error de Script en el Intérprete\r\n"
       if $game_map
-        map_name = ($game_map.name rescue nil) || "???"
+        map_name = (pbGetBasicMapNameFromId($game_map.map_id) rescue nil) || "???"
         if event
           err = "Error de script en el evento #{event.id} (coordenadas #{event.x},#{event.y}), en el mapa #{$game_map.map_id} (#{map_name})\r\n"
         else
@@ -321,9 +323,20 @@ class Interpreter
   # Sets another event's self switch (eg. pbSetSelfSwitch(20, "A", true) ).
   def pbSetSelfSwitch(eventid, switch_name, value, mapid = -1)
     mapid = @map_id if mapid < 0
-    old_value = $game_self_switches[[mapid, eventid, switch_name]]
-    $game_self_switches[[mapid, eventid, switch_name]] = value
-    if value != old_value && $map_factory.hasMap?(mapid)
+    changed = false
+    case eventid
+    when Array, Range
+      eventid.each do |ev_id|
+        old_value = $game_self_switches[[mapid, ev_id, switch_name]]
+        $game_self_switches[[mapid, ev_id, switch_name]] = value
+        changed = true if value != old_value
+      end
+    when Numeric
+      old_value = $game_self_switches[[mapid, eventid, switch_name]]
+      $game_self_switches[[mapid, eventid, switch_name]] = value
+      changed = (value != old_value)
+    end
+    if changed && $map_factory.hasMap?(mapid)
       $map_factory.getMap(mapid, false).need_refresh = true
     end
   end
@@ -458,4 +471,3 @@ class Interpreter
     setPrice(item, -1, sell_price)
   end
 end
-

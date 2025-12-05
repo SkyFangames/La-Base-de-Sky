@@ -842,7 +842,7 @@ module UI
 
     def perform_action(command)
       return nil if !self.class::SCREEN_ID
-      action_hash = UIActionHandlers.get(self.class::SCREEN_ID, command)
+      action_hash = self.class::ACTIONS[command]
       return nil if !action_hash
       return nil if action_hash[:condition] && !action_hash[:condition].call(self)
       if action_hash[:menu]
