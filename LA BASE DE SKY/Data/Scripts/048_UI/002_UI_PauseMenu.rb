@@ -277,9 +277,11 @@ MenuHandlers.add(:pause_menu, :options, {
   "effect"    => proc { |menu|
     pbPlayDecisionSE
     pbFadeOutIn do
-      UI::Options.new.main
+      scene = PokemonOption_Scene.new
+      screen = PokemonOptionScreen.new(scene)
+      screen.pbStartScreen
       pbUpdateSceneMap
-      menu.refresh
+      menu.pbRefresh
     end
     next false
   }
