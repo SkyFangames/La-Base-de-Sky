@@ -1,3 +1,6 @@
+#===============================================================================
+#
+#===============================================================================
 class Game_Event < Game_Character
   attr_reader   :map_id
   attr_reader   :trigger
@@ -76,13 +79,19 @@ class Game_Event < Game_Character
   end
 
   def switchIsOn?(id)
-    switchname = $data_system.switches[id]
-    return false if !switchname
-    if switchname[/^s\:/]
+    switch_name = $data_system.switches[id]
+    if switch_name && switch_name[/^s\:/]
       return eval($~.post_match)
-    else
-      return $game_switches[id]
     end
+    return $game_switches[id]
+  end
+
+  def variableIsLessThan?(id, value)
+    variable_name = $data_system.variables[id]
+    if variable_name && variable_name[/^s\:/]
+      return eval($~.post_match) < value
+    end
+    return $game_variables[id] < value
   end
 
   def variable
@@ -127,31 +136,23 @@ class Game_Event < Game_Character
   end
 
   def onEvent?
-    return @map_id == $game_map.map_id && at_coordinate?($game_player.x, $game_player.y)
+    return @map_id == $game_player.map_id && at_coordinate?($game_player.x, $game_player.y)
   end
 
   def over_trigger?
+    return false if @map_id != $game_player.map_id
     return false if @character_name != "" && !@through
-    return false if @event.name[/objetooculto/i]
+    return false if @event.name[/objetooculto/i] || @event.name[/hiddenitem/i]
     each_occupied_tile do |i, j|
       return true if self.map.passable?(i, j, 0, $game_player)
     end
     return false
   end
 
-  def pbCheckEventTriggerAfterTurning
-    return if $game_system.map_interpreter.running? || @starting
-    return if @trigger != 2   # Event touch
-    return if !@event.name[/(?:sight|trainer)\((\d+)\)/i]
-    distance = $~[1].to_i
-    return if !pbEventCanReachPlayer?(self, $game_player, distance)
-    return if jumping? || over_trigger?
-    start
-  end
-
   def check_event_trigger_touch(dir)
-    return if $game_system.map_interpreter.running?
+    return if @map_id != $game_player.map_id
     return if @trigger != 2   # Event touch
+    return if $game_system.map_interpreter.running?
     case dir
     when 2
       return if $game_player.y != @y + 1
@@ -163,6 +164,34 @@ class Game_Event < Game_Character
       return if $game_player.y != @y - @height
     end
     return if !in_line_with_coordinate?($game_player.x, $game_player.y)
+    return if jumping? || over_trigger?
+    start
+  end
+
+  def check_event_trigger_after_turning
+    return if @map_id != $game_player.map_id
+    return if @trigger != 2   # Not Event Touch
+    return if $game_system.map_interpreter.running? || @starting
+    return if !self.name[/(?:sight|trainer)\((\d+)\)/i]
+    distance = $~[1].to_i
+    return if !pbEventCanReachPlayer?(self, $game_player, distance)
+    return if jumping? || over_trigger?
+    start
+  end
+
+  def check_event_trigger_after_moving
+    return if @map_id != $game_player.map_id
+    return if @trigger != 2   # Not Event Touch
+    return if $game_system.map_interpreter.running? || @starting
+    if self.name[/(?:sight|trainer)\((\d+)\)/i]
+      distance = $~[1].to_i
+      return if !pbEventCanReachPlayer?(self, $game_player, distance)
+    elsif self.name[/counter\((\d+)\)/i]
+      distance = $~[1].to_i
+      return if !pbEventFacesPlayer?(self, $game_player, distance)
+    else
+      return
+    end
     return if jumping? || over_trigger?
     start
   end
@@ -185,7 +214,7 @@ class Game_Event < Game_Character
         c = page.condition
         next if c.switch1_valid && !switchIsOn?(c.switch1_id)
         next if c.switch2_valid && !switchIsOn?(c.switch2_id)
-        next if c.variable_valid && $game_variables[c.variable_id] < c.variable_value
+        next if c.variable_valid && variableIsLessThan?(c.variable_id, c.variable_value)
         if c.self_switch_valid
           key = [@map_id, @event.id, c.self_switch_ch]
           next if $game_self_switches[key] != true
@@ -198,14 +227,17 @@ class Game_Event < Game_Character
     @page = new_page
     clear_starting
     if @page.nil?
-      @tile_id        = 0
-      @character_name = ""
-      @character_hue  = 0
-      @move_type      = 0
-      @through        = true
-      @trigger        = nil
-      @list           = nil
-      @interpreter    = nil
+      @tile_id            = 0
+      @character_name     = ""
+      @character_hue      = 0
+      @move_type          = 0
+      @through            = true
+      @trigger            = nil
+      @list               = nil
+      @interpreter        = nil
+      @move_route         = nil
+      @move_route_index   = 0
+      @move_route_forcing = false
       return
     end
     @tile_id              = @page.graphic.tile_id
@@ -263,7 +295,7 @@ class Game_Event < Game_Character
     @moveto_happened = false
     last_moving = moving?
     super
-    $game_player.pbCheckEventTriggerFromDistance([2]) if !moving? && last_moving
+    check_event_trigger_after_moving if !moving? && last_moving
     if @need_refresh
       @need_refresh = false
       refresh
@@ -284,4 +316,3 @@ class Game_Event < Game_Character
     end
   end
 end
-
