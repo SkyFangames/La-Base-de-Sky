@@ -1,3 +1,4 @@
+=begin
 def pbEmergencySave
   oldscene = $scene
   $scene = nil
@@ -136,3 +137,4 @@ def pbSaveScreen
   ret = screen.pbSaveScreen
   return ret
 end
+=end

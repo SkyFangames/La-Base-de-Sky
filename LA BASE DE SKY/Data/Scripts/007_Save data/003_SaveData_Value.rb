@@ -254,9 +254,9 @@ module SaveData
   # establecido para ser cargado durante el arranque. Se realiza cuando existe un archivo de guardado.
   # @param save_data [Hash] datos de guardado para cargar
   # @raise [InvalidValueError] si se está cargando un valor no válido
-  def self.load_bootup_values(save_data)
+  def self.load_bootup_values(save_data, reload = false)
     validate save_data => Hash
-    load_values(save_data) { |value| !value.loaded? && value.load_in_bootup? }
+    load_values(save_data) { |value| (reload || !value.loaded?) && value.load_in_bootup? }
   end
 
   # Recorre cada valor con {Value#load_in_bootup} habilitado y carga su

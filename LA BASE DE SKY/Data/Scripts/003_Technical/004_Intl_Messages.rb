@@ -489,6 +489,26 @@ class Translation
     return str
   end
 
+  def self.imperial_measurements?
+    return System.user_language[3..4] == "US"   # If the user is in the United States
+  end
+
+  def self.month_day_date_format?
+    return System.user_language[3..4] == "US"   # If the user is in the United States
+  end
+
+  def self.thousands_separator
+    return " " if ["fr", "es"].include?(System.user_language[0..1])
+    return "." if ["it", "de"].include?(System.user_language[0..1])
+    return ","
+  end
+
+  def self.decimal_separator
+    return "," if ["fr", "it", "de", "es"].include?(System.user_language[0..1])
+    return "."
+  end
+
+
   def initialize(filename = nil, delay_load = false)
     @default_core_messages = nil
     @default_game_messages = nil

@@ -196,7 +196,8 @@ module SaveData
     validate save_data => Hash
     conversions_to_run = self.get_conversions(save_data)
     return false if conversions_to_run.none?
-    File.open(SaveData::FILE_PATH + ".bak", "wb") { |f| Marshal.dump(save_data, f) }
+    filepath = SaveData::DIRECTORY + SaveData.filename_from_index(save_data[:stats].save_filename_number || 0)
+    File.open(filepath + ".bak", "wb") { |f| Marshal.dump(save_data, f) }
     Console.echo_h1(_INTL("Converting save file"))
     conversions_to_run.each do |conversion|
       Console.echo_li("#{conversion.title}...")

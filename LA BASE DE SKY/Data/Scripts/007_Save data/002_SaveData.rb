@@ -4,24 +4,32 @@
 # @see SaveData.register
 # @see SaveData.register_conversion
 module SaveData
-  # Contiene la ruta del archivo de guardado.
-  FILE_PATH = if File.directory?(System.data_directory)
-                File.join(System.data_directory, "Game.rxdata")
-              else
-                "./Game.rxdata"
-              end
+  DIRECTORY      = (File.directory?(System.data_directory)) ? System.data_directory : "./"
+  FILENAME_REGEX = /Game(\d*)\.rxdata$/
 
   # @return [Boolean] si el archivo de guardado existe
   def self.exists?
-    return File.file?(FILE_PATH)
+    return !all_save_files.empty?
   end
 
-  # Obtiene los datos de guardado del archivo proporcionado.
-  # Devuelve un Array en el caso de un archivo de guardado anterior a la 
-  # versión 19.
-  # @param file_path [String] ruta del archivo desde el que cargar
-  # @return [Hash, Array] datos de guardado cargados
-  # @raise [IOError, SystemCallError] si falla la apertura del archivo
+  # @return[Array] array of filenames in the save folder that are save files
+  def self.all_save_files
+    files = Dir.get(DIRECTORY, "*", false)
+    ret = []
+    files.each do |file|
+      next if !file[FILENAME_REGEX]
+      ret.push([$~[1].to_i, file])
+    end
+    ret.sort! { |a, b| a[0] <=> b[0] }
+    ret.map! { |val| val[1] }
+    return ret
+  end
+
+  # Fetches the save data from the given file.
+  # Returns an Array in the case of a pre-v19 save file.
+  # @param file_path [String] path of the file to load from
+  # @return [Hash, Array] loaded save data
+  # @raise [IOError, SystemCallError] if file opening fails
   def self.get_data_from_file(file_path)
     validate file_path => String
     save_data = nil
@@ -45,7 +53,7 @@ module SaveData
   def self.read_from_file(file_path)
     validate file_path => String
     save_data = get_data_from_file(file_path)
-    save_data = to_hash_format(save_data) if save_data.is_a?(Array)
+    save_data = to_hash_format(save_data) if save_data.is_a?(Array)   # Pre-v19 save file support
     if !save_data.empty? && run_conversions(save_data)
       File.open(file_path, "wb") { |file| Marshal.dump(save_data, file) }
     end
@@ -65,15 +73,19 @@ module SaveData
   # Elimina el archivo de guardado (y un posible archivo de respaldo .bak 
   # si existe)
   # @raise [Error::ENOENT]
-  def self.delete_file
-    File.delete(FILE_PATH)
-    File.delete(FILE_PATH + ".bak") if File.file?(FILE_PATH + ".bak")
+  def self.delete_file(filename)
+    File.delete(DIRECTORY + filename)
+    File.delete(DIRECTORY + filename + ".bak") if File.file?(DIRECTORY + filename + ".bak")
   end
 
-  # Convierte los datos de formato anterior a la versión 19 al nuevo formato.
-  # @param old_format [Array] datos de guardado en formato anterior a la 
-  # versión 19
-  # @return [Hash] datos de guardado en el nuevo formato
+  def self.filename_from_index(index = 0)
+    return "Game.rxdata" if index <= 0
+    return "Game#{index}.rxdata"
+  end
+
+  # Converts the pre-v19 format data to the new format.
+  # @param old_format [Array] pre-v19 format save data
+  # @return [Hash] save data in new format
   def self.to_hash_format(old_format)
     validate old_format => Array
     hash = {}
