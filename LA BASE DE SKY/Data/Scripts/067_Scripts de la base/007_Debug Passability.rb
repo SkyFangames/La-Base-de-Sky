@@ -20,7 +20,7 @@ SHOW_PASSIBILITY = true
 SHOW_TERRAIN_TAGS = true
 
 # NUEVA CONFIGURACIÓN: Distancia de renderizado (en casillas)
-RENDER_DISTANCE = 10
+RENDER_DISTANCE = 20
 
 # Size of the field square. (choose a number between 1 and 15.)
 $passa_field_size = 4
@@ -40,7 +40,7 @@ $passa_event_color2 = Color.new(255,255,255)# (white by default.)
 $passa_terrain_color = Color.new(255,255,255) # (white by default.)
 $passa_terrain_color2 = Color.new(0,0,0) # (black by default.)
 #===============================================================================
-
+ 
 class Debug_Passability
   def initialize
     # The next four lines were made for idiots.
@@ -60,23 +60,32 @@ class Debug_Passability
     max_y = [$game_map.height - 1, player_y + RENDER_DISTANCE].min
     
     # Creating bitmap and sprite con tamaño completo del mapa
-    if $passa_bitmap
+    # Verificar si están disposed y recrearlos si es necesario
+    if $passa_bitmap && !$passa_bitmap.disposed?
       $passa_bitmap.clear
-      $passa_sprite.dispose
-      $passa_terrain_bitmap.dispose if $passa_terrain_bitmap
+    else
+      $passa_bitmap = Bitmap.new($game_map.width*32, $game_map.height*32)
     end
-    $passa_bitmap=Bitmap.new($game_map.width*32,$game_map.height*32)
-    $passa_sprite=Sprite.new
-    $passa_sprite.bitmap=$passa_bitmap
-    $passa_sprite.z=100
-    $passa_sprite.opacity=$passa_opacity
-    $passa_bitmap.clear
     
-    $passa_terrain_bitmap=BitmapSprite.new($game_map.width*32,$game_map.height*32)
-    $passa_terrain_bitmap.z=$passa_sprite.z
-    $passa_terrain_bitmap.bitmap.font.name="Sword"
-    $passa_terrain_bitmap.bitmap.font.size=20
-    $passa_terrain=[]
+    if $passa_sprite && !$passa_sprite.disposed?
+      $passa_sprite.bitmap = $passa_bitmap
+    else
+      $passa_sprite = Sprite.new
+      $passa_sprite.bitmap = $passa_bitmap
+      $passa_sprite.z = 100
+      $passa_sprite.opacity = $passa_opacity
+    end
+    
+    if $passa_terrain_bitmap && !$passa_terrain_bitmap.disposed?
+      $passa_terrain_bitmap.bitmap.clear if $passa_terrain_bitmap.bitmap && !$passa_terrain_bitmap.bitmap.disposed?
+    else
+      $passa_terrain_bitmap = BitmapSprite.new($game_map.width*32, $game_map.height*32)
+      $passa_terrain_bitmap.z = $passa_sprite.z
+      $passa_terrain_bitmap.bitmap.font.name = "Sword"
+      $passa_terrain_bitmap.bitmap.font.size = 20
+    end
+    
+    $passa_terrain = []
     $passa_data = nil
     $map_id = nil
     
@@ -132,12 +141,15 @@ class Debug_Passability
 
   # Method which returns the passability of a field.
   def playerPassable?(x, y, d, self_event = nil)
+    # Verificar que el mapa esté cargado
+    return true if !$game_map || !$game_map.terrain_tags
+    
     bit = (1 << ((d / 2) - 1)) & 0x0f
     [2, 1, 0].each do |i|
       tile_id = $game_map.data[x, y, i]
-      next if tile_id == 0 || tile_id == nil || !$passa_terrain_tags
-      terrain = GameData::TerrainTag.try_get($passa_terrain_tags[tile_id])
-      passage = $passa_passages[tile_id]
+      next if tile_id == 0
+      terrain = GameData::TerrainTag.try_get($game_map.terrain_tags[tile_id])
+      passage = $game_map.passages[tile_id]
       if terrain
         # Ignore bridge tiles if not on a bridge
         next if terrain.bridge && $PokemonGlobal.bridge == 0
@@ -153,7 +165,7 @@ class Debug_Passability
       next if terrain&.ignore_passability
       # Regular passability checks
       return false if passage & bit != 0 || passage & 0x0f == 0x0f
-      return true if !$passa_priorities[tile_id] || $passa_priorities[tile_id] == 0
+      return true if $game_map.priorities[tile_id] == 0
     end
     return true
   end
@@ -197,8 +209,12 @@ class Game_Map
     $passa_priorities=@priorities
     $passa_terrain_tags=@terrain_tags
     $passa_data = @data
-  end
 
+    # Debug temporal
+    echoln "Passages: #{$passa_passages.nil? ? 'NIL' : 'OK'}"
+    echoln "Priorities: #{$passa_priorities.nil? ? 'NIL' : 'OK'}"
+    echoln "Terrain tags: #{$passa_terrain_tags.nil? ? 'NIL' : 'OK'}"
+  end
 end
 
 # Disposes the Passability stuff.
