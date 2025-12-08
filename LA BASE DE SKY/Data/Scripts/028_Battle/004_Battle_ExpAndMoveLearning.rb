@@ -5,7 +5,7 @@ class Battle
   def pbGainExp
     # Play wild victory music if it's the end of the battle (has to be here)
     @scene.pbWildBattleSuccess if wildBattle? && pbAllFainted?(1) && !pbAllFainted?(0)
-    return if !@internalBattle || !@expGain
+    return if !@internalBattle || @rules[:no_exp_gain]
     # Go through each battler in turn to find the Pokémon that participated in
     # battle against it, and award those Pokémon Exp/EVs
     expAll = $player.has_exp_all || $bag.has?(:EXPALL)

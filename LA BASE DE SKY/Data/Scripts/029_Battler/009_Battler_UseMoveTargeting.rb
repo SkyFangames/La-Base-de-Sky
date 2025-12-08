@@ -87,19 +87,13 @@ class Battle::Battler
       # Used by Counter/Mirror Coat/Metal Burst/Bide
       move.pbAddTarget(targets, user)   # Move-specific pbAddTarget, not the def below
     end
-    
-    # Paldea - Gen 9
-    if !targets.empty?
-      @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT)) if !@battle.moldBreaker
-      @battle.moldBreaker = false if targets[0].hasActiveItem?(:ABILITYSHIELD)
-    end
-    
     return targets
   end
 
-  #=============================================================================
-  # Redirect attack to another target
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Redirect attack to another target.
+  #-----------------------------------------------------------------------------
+
   def pbChangeTargets(move, user, targets)
     target_data = move.pbTarget(user)
     return targets if @battle.switching   # For Pursuit interrupting a switch
@@ -150,13 +144,6 @@ class Battle::Battler
     targets = pbChangeTargetByAbility(:LIGHTNINGROD, :ELECTRIC, move, user, targets, priority, nearOnly)
     # Storm Drain
     targets = pbChangeTargetByAbility(:STORMDRAIN, :WATER, move, user, targets, priority, nearOnly)
-    
-    # Paldea Gen 9
-    if !targets.empty?
-      @battle.moldBreaker = user.hasMoldBreaker? || (move.statusMove? && user.hasActiveAbility?(:MYCELIUMMIGHT)) if !@battle.moldBreaker
-      @battle.moldBreaker = false if targets[0].hasActiveItem?(:ABILITYSHIELD)
-    end
-    
     return targets
   end
 
@@ -181,13 +168,15 @@ class Battle::Battler
     return targets
   end
 
-  #=============================================================================
-  # Register target
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Register target.
+  #-----------------------------------------------------------------------------
+
   def pbAddTarget(targets, user, target, move, nearOnly = true, allowUser = false)
     return false if !target || (target.fainted? && !move.targetsPosition?)
     return false if !allowUser && target == user
     return false if nearOnly && !user.near?(target) && target != user
+    return false if target.effects[PBEffects::Commanding] >= 0
     targets.each { |b| return true if b.index == target.index }   # Already added
     targets.push(target)
     return true
@@ -215,4 +204,3 @@ class Battle::Battler
     end
   end
 end
-

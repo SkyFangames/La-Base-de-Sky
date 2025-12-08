@@ -21,10 +21,12 @@ class BitmapSprite < Sprite
     super(value) if !@initialized
   end
 
+  #-----------------------------------------------------------------------------
+
   def add_text_theme(id, base_color, shadow_color = nil)
     @text_themes[id] = [base_color, shadow_color]
   end
-  
+
   # TODO: Replaces def pbDrawTextPositions.
   def draw_themed_text(string, text_x, text_y, align = :left, theme = :default, outline = :shadow)
     string_size = self.bitmap.text_size(string)
@@ -46,7 +48,7 @@ class BitmapSprite < Sprite
       draw_plain_text(string, text_x, text_y, theme)
     end
   end
-  
+
   # TODO: Replaces def pbDrawShadowText.
   def draw_shadowed_text(string, text_x, text_y, theme)
     return if !@text_themes[theme]
@@ -65,7 +67,7 @@ class BitmapSprite < Sprite
       self.bitmap.draw_text(text_x, text_y, string_width, string_height, string, 0)
     end
   end
-  
+
   # TODO: Replaces def pbDrawOutlineText.
   def draw_outlined_text(string, text_x, text_y, theme)
     return if !@text_themes[theme]
@@ -89,7 +91,7 @@ class BitmapSprite < Sprite
       self.bitmap.draw_text(text_x, text_y, string_width, string_height, string, 0)
     end
   end
- 
+
   # TODO: Replaces def pbDrawPlainText.
   def draw_plain_text(string, text_x, text_y, theme)
     return if !@text_themes[theme]
@@ -101,8 +103,9 @@ class BitmapSprite < Sprite
     self.bitmap.font.color = base_color
     self.bitmap.draw_text(text_x, text_y, string_width, string_height, string, 0)
   end
-  
+
   #-----------------------------------------------------------------------------
+
   # TODO: Replaces def pbDrawImagePositions.
   def draw_image(filename, image_x, image_y, src_x = 0, src_y = 0, src_width = -1, src_height = -1)
     src_bitmap = (filename.is_a?(AnimatedBitmap)) ? filename : AnimatedBitmap.new(pbBitmapName(filename))
@@ -112,7 +115,6 @@ class BitmapSprite < Sprite
     self.bitmap.blt(image_x, image_y, src_bitmap.bitmap, src_rect)
     src_bitmap.dispose if !filename.is_a?(AnimatedBitmap)
   end
-
 end
 
 #===============================================================================
@@ -155,7 +157,7 @@ class AnimatedSprite < Sprite
     self.frame = 0
   end
 
-  # Shorter version of AnimationSprite. All frames are placed on a single row
+  # Shorter version of AnimatedSprite. All frames are placed on a single row
   # of the bitmap, so that the width and height need not be defined beforehand.
   # frameskip is in 1/20ths of a second, and is the time between frame changes.
   def initializeShort(animname, framecount, frameskip)
@@ -263,7 +265,7 @@ class IconSprite < Sprite
     super
   end
 
-  # Sets the icon's filename.  Alias for setBitmap.
+  # Sets the icon's filename. Alias for setBitmap.
   def name=(value)
     setBitmap(value)
   end
@@ -306,7 +308,6 @@ end
 # Sprite class that stores multiple bitmaps, and displays only one at once.
 #===============================================================================
 class ChangelingSprite < Sprite
-
   # Key is the mode (a symbol).
   # Value is one of:
   #   filepath
@@ -327,15 +328,20 @@ class ChangelingSprite < Sprite
     self.class::BITMAPS.each_pair { |mode, data| add_bitmap(mode, data) }
   end
 
+  def dispose
+    return if disposed?
+    @bitmaps.each_value { |bm| bm.dispose }
+    @bitmaps.clear
+    super
+  end
+
+  #-----------------------------------------------------------------------------
+
   def add_bitmap(mode, *data)
-    raise ArgumentError.new(_INTL("wrong number of arguments (given {1}, expected 2 or 6)", data.length + 1)) if ![1, 5].include?(data.length)
+    raise ArgumentError.new(_INTL("Número incorrecto de parámetros (dado {1}, esperado 2 o 6)", data.length + 1)) if ![1, 5].include?(data.length)
     filepath = (data[0].is_a?(Array)) ? data[0][0] : data[0]
     @bitmaps[filepath] = AnimatedBitmap.new(filepath) if !@bitmaps[filepath]
     @changeling_data[mode] = (data[0].is_a?(Array) ? data[0].clone : [data[0]])
-  end
-
-  def addBitmap(key, path)
-    add_bitmap(key.to_sym, path)
   end
 
   def change_bitmap(mode)
@@ -355,16 +361,7 @@ class ChangelingSprite < Sprite
     end
   end
 
-  def changeBitmap(key)
-    change_bitmap(key.to_sym)
-  end
-
-  def dispose
-    return if disposed?
-    @bitmaps.each_value { |bm| bm.dispose }
-    @bitmaps.clear
-    super
-  end
+  #-----------------------------------------------------------------------------
 
   def update
     return if disposed?
@@ -372,4 +369,3 @@ class ChangelingSprite < Sprite
     self.bitmap = @current_bitmap.bitmap if @current_bitmap
   end
 end
-

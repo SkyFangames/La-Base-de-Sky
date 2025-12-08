@@ -42,6 +42,11 @@ module Settings
     # Dragón en un 20% (true) o aumenta el Ataque Especial y la Defensa Especial
     # del portador en un 50% (false).
     SOUL_DEW_POWERS_UP_TYPES            = (MECHANICS_GENERATION >= 7)
+
+    # Determina si la habilidad Fuerte Afecto de Greninja hace que cambie a Ash-Greninja
+    # (false) o aumenta su Atk/SpAtk/Spd (true) cuando derrota a un objetivo.
+    # De cualquier manera, solo sucede una vez por batalla.
+    GRENINJA_BATTLE_BOND_RAISES_STATS     = (MECHANICS_GENERATION >= 9)
   
     #=============================================================================
   

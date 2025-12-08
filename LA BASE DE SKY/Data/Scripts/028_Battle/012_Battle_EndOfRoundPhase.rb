@@ -8,19 +8,10 @@ class Battle
     # Count down weather duration
     @field.weatherDuration -= 1 if @field.weatherDuration > 0
     # Weather wears off
-    if @field.weatherDuration == 0
-      case @field.weather
-      when :Sun       then pbDisplay(_INTL("El sol vuelve a brillar como siempre."))
-      when :Rain      then pbDisplay(_INTL("Ha dejado de llover."))
-      when :Sandstorm then pbDisplay(_INTL("La tormenta de arena ha amainado."))
-      when :Hail      then pbDisplay(_INTL("Ha dejado de granizar."))
-      when :ShadowSky then pbDisplay(_INTL("El cielo recuperó su luz."))
-      end
-      @field.weather = :None
-      # Check for form changes caused by the weather changing
-      allBattlers.each { |battler| battler.pbCheckFormOnWeatherChange }
+    if @field.weather != :None && @field.weatherDuration == 0
+      pbEndWeather
       # Start up the default weather
-      pbStartWeather(nil, @field.defaultWeather) if @field.defaultWeather != :None
+      pbStartWeather(nil, @field.defaultWeather, false) if @field.defaultWeather != :None
       return if @field.weather == :None
     end
     # Weather continues
@@ -79,9 +70,10 @@ class Battle
     return if !position || position.effects[PBEffects::FutureSightCounter] == 0
     position.effects[PBEffects::FutureSightCounter] -= 1
     return if position.effects[PBEffects::FutureSightCounter] > 0
-    return if !@battlers[position_index] || @battlers[position_index].fainted?   # No target
+    return if !@battlers[position_index] || @battlers[position_index].fainted? ||
+              @battlers[position_index].effects[PBEffects::Commanding] >= 0   # No target
     moveUser = nil
-    allBattlers.each do |battler|
+    allBattlers(true).each do |battler|
       next if battler.opposes?(position.effects[PBEffects::FutureSightUserIndex])
       next if battler.pokemonIndex != position.effects[PBEffects::FutureSightUserPartyIndex]
       moveUser = battler
@@ -136,7 +128,6 @@ class Battle
     2.times do |side|
       next if sides[side].effects[PBEffects::SeaOfFire] == 0
       sides[side].effects[PBEffects::SeaOfFire] -= 1
-      next if sides[side].effects[PBEffects::SeaOfFire] == 0
       pbCommonAnimation("SeaOfFire") if side == 0
       pbCommonAnimation("SeaOfFireOpp") if side == 1
       priority.each do |battler|
@@ -171,6 +162,7 @@ class Battle
     priority.each do |battler|
       next if !battler.effects[PBEffects::AquaRing]
       next if !battler.canHeal?
+      pbCommonAnimation("AquaRing", battler)
       hpGain = battler.totalhp / 16
       hpGain = (hpGain * 1.3).floor if battler.hasActiveItem?(:BIGROOT)
       battler.pbRecoverHP(hpGain)
@@ -180,6 +172,7 @@ class Battle
     priority.each do |battler|
       next if !battler.effects[PBEffects::Ingrain]
       next if !battler.canHeal?
+      pbCommonAnimation("Ingrain", battler)
       hpGain = battler.totalhp / 16
       hpGain = (hpGain * 1.3).floor if battler.hasActiveItem?(:BIGROOT)
       battler.pbRecoverHP(hpGain)
@@ -277,6 +270,8 @@ class Battle
     priority.each do |battler|
       battler.effects[PBEffects::Nightmare] = false if !battler.asleep?
       next if !battler.effects[PBEffects::Nightmare] || !battler.takesIndirectDamage?
+
+      pbCommonAnimation("Nightmare", battler)
       battler.pbTakeEffectDamage(battler.totalhp / 4) do |hp_lost|
         pbDisplay(_INTL("¡{1} está inmerso en una pesadilla!", battler.pbThis))
       end
@@ -284,6 +279,7 @@ class Battle
     # Curse
     priority.each do |battler|
       next if !battler.effects[PBEffects::Curse] || !battler.takesIndirectDamage?
+      pbCommonAnimation("Curse", battler)
       battler.pbTakeEffectDamage(battler.totalhp / 4) do |hp_lost|
         pbDisplay(_INTL("¡{1} es víctima de una maldición!", battler.pbThis))
       end
@@ -345,9 +341,27 @@ class Battle
     end
   end
 
-  #=============================================================================
-  # End Of Round end effects that apply to a battler
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # End Of Round end effects that apply to a battler.
+  #-----------------------------------------------------------------------------
+
+  def pbEORStatChanges(battler)
+    # Octolock
+    if !battler.fainted? && battler.effects[PBEffects::Octolock] >= 0
+      pbCommonAnimation("Octolock", battler)
+      battler.pbLowerStatStage(:DEFENSE, 1, nil) if battler.pbCanLowerStatStage?(:DEFENSE)
+      battler.pbLowerStatStage(:SPECIAL_DEFENSE, 1, nil) if battler.pbCanLowerStatStage?(:SPECIAL_DEFENSE)
+      battler.pbItemOnStatDropped
+    end
+    # Syrup Bomb
+    if !battler.fainted? && battler.effects[PBEffects::SyrupBomb] > 0
+      pbCommonAnimation("SyrupBomb", battler)
+      battler.pbLowerStatStage(:SPEED, 1, nil) if battler.pbCanLowerStatStage?(:SPEED)
+      battler.pbItemOnStatDropped
+      battler.effects[PBEffects::SyrupBomb] -= 1
+    end
+  end
+
   def pbEORCountDownBattlerEffect(priority, effect)
     priority.each do |battler|
       next if battler.fainted? || battler.effects[effect] == 0
@@ -357,6 +371,19 @@ class Battle
   end
 
   def pbEOREndBattlerEffects(priority)
+    # Cud Chew
+    pbEORCountDownBattlerEffect(priority, PBEffects::CudChewCounter) do |battler|
+      if battler.effects[PBEffects::CudChewBerry] &&
+         GameData::Item.get(battler.effects[PBEffects::CudChewBerry]).is_berry?
+        item = battler.effects[PBEffects::CudChewBerry]
+        item_name = GameData::Item.get(battler.effects[PBEffects::CudChewBerry]).name
+        battler.setBelched
+        pbDisplay(_INTL("{1} robó y comió la {2} de su objetivo!", battler.pbThis, item_name))
+        battler.pbHeldItemTriggerCheck(item)
+        battler.pbSymbiosis
+      end
+      battler.effects[PBEffects::CudChewBerry] = nil
+    end
     # Taunt
     pbEORCountDownBattlerEffect(priority, PBEffects::Taunt) do |battler|
       pbDisplay(_INTL("¡{1} ya se ha olvidado de la mofa!", battler.pbThis))
@@ -397,7 +424,8 @@ class Battle
     # Embargo
     pbEORCountDownBattlerEffect(priority, PBEffects::Embargo) do |battler|
       pbDisplay(_INTL("¡{1} ya puede usar objetos de nuevo!", battler.pbThis))
-      battler.pbItemTerrainStatBoostCheck
+      battler.pbItemOnWeatherChange(@field.weather)
+      battler.pbItemOnTerrainChange(@field.terrain)
     end
     # Yawn
     pbEORCountDownBattlerEffect(priority, PBEffects::Yawn) do |battler|
@@ -425,18 +453,12 @@ class Battle
        (perishSongUsers.find_all { |idxBattler| !opposes?(idxBattler) }.length == perishSongUsers.length))
       pbJudgeCheckpoint(@battlers[perishSongUsers[0]])
     end
-    
-    pbEORCountDownBattlerEffect(priority, PBEffects::Splinters) { |battler|
-      pbDisplay(_INTL("¡{1} se liberó de las astillas dentadas!", battler.pbThis))
-      battler.effects[PBEffects::SplintersType] = nil
-    }
-    
-    return if @decision > 0
   end
 
-  #=============================================================================
-  # End Of Round end effects that apply to one side of the field
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # End Of Round end effects that apply to one side of the field.
+  #-----------------------------------------------------------------------------
+
   def pbEORCountDownSideEffect(side, effect, msg)
     return if @sides[side].effects[effect] <= 0
     @sides[side].effects[effect] -= 1
@@ -483,10 +505,12 @@ class Battle
     return if @field.effects[effect] <= 0
     @field.effects[effect] -= 1
     return if @field.effects[effect] > 0
-    @scene.pbDeleteTrickRoomBackground() if effect == PBEffects::TrickRoom
     pbDisplay(msg)
     if effect == PBEffects::MagicRoom
-      pbPriority(true).each { |battler| battler.pbItemTerrainStatBoostCheck }
+      pbPriority(true, true).each do |battler|
+        battler.pbItemOnWeatherChange(@field.weather)
+        battler.pbItemOnTerrainChange(@field.terrain)
+      end
     end
   end
 
@@ -519,24 +543,9 @@ class Battle
     @field.terrainDuration -= 1 if @field.terrainDuration > 0
     # Terrain wears off
     if @field.terrain != :None && @field.terrainDuration == 0
-      case @field.terrain
-      when :Electric
-        @battle.pbDisplay(_INTL("El campo de corriente eléctrica ha desaparecido."))
-      when :Grassy
-        @battle.pbDisplay(_INTL("La hierba ha desaparecido."))
-      when :Misty
-        @battle.pbDisplay(_INTL("La niebla se ha disipado."))
-      when :Psychic
-        @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
-      end
-      @field.terrain = :None
-      allBattlers.each { |battler| battler.pbAbilityOnTerrainChange }
+      pbEndTerrain
       # Start up the default terrain
-      if @field.defaultTerrain != :None
-        pbStartTerrain(nil, @field.defaultTerrain, false)
-        allBattlers.each { |battler| battler.pbAbilityOnTerrainChange }
-        allBattlers.each { |battler| battler.pbItemTerrainStatBoostCheck }
-      end
+      pbStartTerrain(nil, @field.defaultTerrain, false) if @field.defaultTerrain != :None
       return if @field.terrain == :None
     end
     # Terrain continues
@@ -580,18 +589,12 @@ class Battle
         pbDisplay(_INTL("¡{1} finalmente actuó con su potencial!", battler.pbThis))
       end
     end
-    
-    if battler.effects[PBEffects::Syrupy] > 0
-      pbCommonAnimation("Syrupy", battler)
-      battler.effects[PBEffects::Syrupy] -= 1
-      battler.pbLowerStatStage(:SPEED, 1, battler) if battler.pbCanLowerStatStage?(:SPEED)
-      pbDisplay(_INTL("¡{1} se liberó del caramelo pegajoso!", battler.pbThis)) if battler.effects[PBEffects::Syrupy] == 0
-    end
   end
 
-  #=============================================================================
-  # End Of Round shift distant battlers to middle positions
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # End Of Round shift distant battlers to middle positions.
+  #-----------------------------------------------------------------------------
+
   def pbEORShiftDistantBattlers
     # Move battlers around if none are near to each other
     # NOTE: This code assumes each side has a maximum of 3 battlers on it, and
@@ -652,8 +655,9 @@ class Battle
     PBDebug.log("[End of round #{@turnCount + 1}]")
     @endOfRound = true
     @scene.pbBeginEndOfRoundPhase
-    pbCalculatePriority           # recalculate speeds
-    priority = pbPriority(true)   # in order of fastest -> slowest speeds only
+    clearStagesChangeRecords
+    pbCalculatePriority                 # recalculate speeds
+    priority = pbPriority(true, true)   # in order of fastest -> slowest speeds only
     # Weather
     pbEOREndWeather(priority)
     # Future Sight/Doom Desire
@@ -713,18 +717,12 @@ class Battle
     pbEOREffectDamage(priority)
     # Trapping attacks (Bind/Clamp/Fire Spin/Magma Storm/Sand Tomb/Whirlpool/Wrap)
     priority.each { |battler| pbEORTrappingDamage(battler) }
-    # Octolock
-    priority.each do |battler|
-      next if battler.fainted? || battler.effects[PBEffects::Octolock] < 0
-      pbCommonAnimation("Octolock", battler)
-      battler.pbLowerStatStage(:DEFENSE, 1, nil) if battler.pbCanLowerStatStage?(:DEFENSE)
-      battler.pbLowerStatStage(:SPECIAL_DEFENSE, 1, nil) if battler.pbCanLowerStatStage?(:SPECIAL_DEFENSE)
-      battler.pbItemOnStatDropped
-    end
+    # Stat changes (Octolock, Syrup Bomb)
+    priority.each { |battler| pbEORStatChanges(battler) }
     # Effects that apply to a battler that wear off after a number of rounds
     pbEOREndBattlerEffects(priority)
     # Check for end of battle (i.e. because of Perish Song)
-    if @decision > 0
+    if decided?
       pbGainExp
       return
     end
@@ -750,22 +748,23 @@ class Battle
         Battle::AbilityEffects.triggerEndOfRoundGainItem(battler.ability, battler, self)
       end
     end
+    checkStatChangeResponses
     pbGainExp
-    return if @decision > 0
+    return if decided?
     # Form checks
     priority.each { |battler| battler.pbCheckForm(true) }
     # Switch Pokémon in if possible
     pbEORSwitch
-    return if @decision > 0
+    return if decided?
     # In battles with at least one side of size 3+, move battlers around if none
     # are near to any foes
     pbEORShiftDistantBattlers
     # Try to make Trace work, check for end of primordial weather
     priority.each { |battler| battler.pbContinualAbilityChecks }
+    checkStatChangeResponses
     # Reset/count down battler-specific effects (no messages)
-    allBattlers.each do |battler|
+    allBattlers(true).each do |battler|
       battler.effects[PBEffects::BanefulBunker]    = false
-      battler.effects[PBEffects::SilkTrap]         = false
       battler.effects[PBEffects::BurningBulwark]   = false
       battler.effects[PBEffects::Charge]           -= 1 if battler.effects[PBEffects::Charge] > 0
       battler.effects[PBEffects::Counter]          = -1
@@ -796,11 +795,11 @@ class Battle
       battler.effects[PBEffects::Protect]          = false
       battler.effects[PBEffects::RagePowder]       = false
       battler.effects[PBEffects::Roost]            = false
+      battler.effects[PBEffects::SilkTrap]         = false
       battler.effects[PBEffects::Snatch]           = 0
       battler.effects[PBEffects::SpikyShield]      = false
       battler.effects[PBEffects::Spotlight]        = 0
       battler.effects[PBEffects::ThroatChop]       -= 1 if battler.effects[PBEffects::ThroatChop] > 0
-      battler.effects[PBEffects::AllySwitch]       = false
       battler.lastHPLost                           = 0
       battler.lastHPLostFromFoe                    = 0
       battler.droppedBelowHalfHP                   = false

@@ -40,12 +40,13 @@ class Battle
       # Use Pursuit
       @choices[b.index][3] = idxSwitcher   # Change Pursuit's target
       b.pbProcessTurn(@choices[b.index], false)
-      break if @decision > 0 || @battlers[idxSwitcher].fainted?
+      break if decided? || @battlers[idxSwitcher].fainted?
     end
     @switching = false
   end
 
   def pbAttackPhaseSwitch
+    clearStagesChangeRecords
     pbPriority.each do |b|
       next unless @choices[b.index][0] == :SwitchOut && !b.fainted?
       idxNewPkmn = @choices[b.index][1]   # Party index of Pokémon to switch to
@@ -55,9 +56,9 @@ class Battle
       pbMessageOnRecall(b)
       # Pursuit interrupts switching
       pbPursuit(b.index)
-      return if @decision > 0
+      return if decided?
       # Switch Pokémon
-      allBattlers.each do |b2|
+      allBattlers(true).each do |b2|
         b2.droppedBelowHalfHP = false
         b2.droppedBelowThirdHP = false
         b2.statsDropped = false
@@ -68,6 +69,7 @@ class Battle
   end
 
   def pbAttackPhaseItems
+    clearStagesChangeRecords
     pbPriority.each do |b|
       next unless @choices[b.index][0] == :UseItem && !b.fainted?
       b.lastMoveFailed = false   # Counts as a successful move for Stomping Tantrum
@@ -85,12 +87,14 @@ class Battle
       else
         next
       end
-      return if @decision > 0
+      return if decided?
     end
+    checkStatChangeResponses
     pbCalculatePriority if Settings::RECALCULATE_TURN_ORDER_AFTER_SPEED_CHANGES
   end
 
   def pbAttackPhaseMegaEvolution
+    clearStagesChangeRecords
     pbPriority.each do |b|
       next if b.wild?
       next unless @choices[b.index][0] == :UseMove && !b.fainted?
@@ -98,6 +102,7 @@ class Battle
       next if @megaEvolution[b.idxOwnSide][owner] != b.index
       pbMegaEvolve(b.index)
     end
+    checkStatChangeResponses
   end
 
   def pbAttackPhaseMoves
@@ -119,7 +124,7 @@ class Battle
         advance = b.pbProcessTurn(@choices[b.index])
         break if advance
       end
-      return if @decision > 0
+      return if decided?
       next if advance
       # Regular priority order
       priority.each do |b|
@@ -129,7 +134,7 @@ class Battle
         advance = b.pbProcessTurn(@choices[b.index])
         break if advance
       end
-      return if @decision > 0
+      return if decided?
       next if advance
       # Quashed
       if Settings::MECHANICS_GENERATION >= 8
@@ -156,7 +161,7 @@ class Battle
           break if advance || !moreQuash
         end
       end
-      return if @decision > 0
+      return if decided?
       next if advance
       # Check for all done
       priority.each do |b|
@@ -179,9 +184,9 @@ class Battle
     # Reset certain effects
     @battlers.each_with_index do |b, i|
       next if !b
-      b.turnCount += 1 if !b.fainted?
+      b.turnCount += 1 if !b.fainted? && b.effects[PBEffects::Commanding] < 0
       @successStates[i].clear
-      if @choices[i][0] != :UseMove && @choices[i][0] != :Shift && @choices[i][0] != :SwitchOut
+      if ![:UseMove, :Shift, :SwitchOut].include?(@choices[i][0])
         b.effects[PBEffects::DestinyBond] = false
         b.effects[PBEffects::Grudge]      = false
       end
@@ -194,11 +199,10 @@ class Battle
     pbAttackPhasePriorityChangeMessages
     pbAttackPhaseCall
     pbAttackPhaseSwitch
-    return if @decision > 0
+    return if decided?
     pbAttackPhaseItems
-    return if @decision > 0
+    return if decided?
     pbAttackPhaseMegaEvolution
     pbAttackPhaseMoves
   end
 end
-

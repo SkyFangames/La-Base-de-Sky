@@ -1,7 +1,8 @@
+#===============================================================================
+#
+#===============================================================================
 class Battle::Battler
-  #=============================================================================
-  # Effect per hit
-  #=============================================================================
+  # Effect per hit.
   def pbEffectsOnMakingHit(move, user, target)
     if target.damageState.calcDamage > 0 && !target.damageState.substitute
       # Target's ability
@@ -12,7 +13,7 @@ class Battle::Battler
       end
       # Cramorant - Gulp Missile
       if target.isSpecies?(:CRAMORANT) && target.ability == :GULPMISSILE &&
-        target.form > 0 && !target.effects[PBEffects::Transform]
+         target.form > 0 && !target.effects[PBEffects::Transform]
         oldHP = user.hp
         # NOTE: Strictly speaking, an attack animation should be shown (the
         #       target Cramorant attacking the user) and the ability splash
@@ -25,10 +26,10 @@ class Battle::Battler
           user.pbReduceHP(user.totalhp / 4, false)
         end
         case target_form
-          when 1   # Gulping Form
-            user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
-          when 2   # Gorging Form
-            user.pbParalyze(target) if user.pbCanParalyze?(target, false)
+        when 1   # Gulping Form
+          user.pbLowerStatStageByAbility(:DEFENSE, 1, target, false)
+        when 2   # Gorging Form
+          user.pbParalyze(target) if user.pbCanParalyze?(target, false)
         end
         @battle.pbHideAbilitySplash(target)
         user.pbItemHPHealCheck if user.hp < oldHP
@@ -80,41 +81,10 @@ class Battle::Battler
         user.effects[PBEffects::DestinyBondTarget] = target.index
       end
     end
-    
-    # Paldea Gen 9
-    if target.damageState.calcDamage > 0 && !target.damageState.substitute
-      @battle.pbAddRageHit(target)
-    end
-    if user.pbOwnedByPlayer? && !user.fainted? && move.recoilMove?
-      recoil = (defined?(move.pbRecoilDamage(user, target))) ? move.pbRecoilDamage(user, target) : 0
-      user.pokemon.recoil_evolution(recoil)
-    end
   end
 
-  #=============================================================================
-  # Effects after all hits (i.e. at end of move usage)
-  #=============================================================================
+  # Effects after all hits (i.e. at end of move usage).
   def pbEffectsAfterMove(user, targets, move, numHits)
-    # Paldea Gen 9
-    if Settings::MECHANICS_GENERATION >= 9
-      user.effects[PBEffects::Charge] = 0 if move.calcType == :ELECTRIC
-    end
-    if move.damagingMove?
-      if user.status == :DROWSY && move.electrocuteUser?
-        user.pbCureStatus(false)
-        @battle.pbDisplay(_INTL("¡{1} se despertó por el choque electrico!", user.pbThis))
-      end
-      if user.status == :FROSTBITE && move.thawsUser?
-        user.pbCureStatus(false)
-        @battle.pbDisplay(_INTL("¡{1} se calentó!", user.pbThis))
-      end
-      targets.each do |b|
-        next if b.damageState.unaffected || b.damageState.substitute
-        b.pbCureStatus if b.status == :DROWSY && move.electrocuteUser?
-        b.pbCureStatus if b.status == :FROSTBITE && move.thawsUser?  
-      end
-    end
-    
     # Defrost
     if move.damagingMove?
       targets.each do |b|
@@ -146,17 +116,15 @@ class Battle::Battler
     if !user.fainted? && !user.effects[PBEffects::Transform] &&
        !@battle.pbAllFainted?(user.idxOpposingSide)
       # Greninja - Battle Bond
-      if user.isSpecies?(:GRENINJA) && user.ability == :BATTLEBOND &&
-         !@battle.battleBond[user.index & 1][user.pokemonIndex]
-        numFainted = 0
-        targets.each { |b| numFainted += 1 if b.damageState.fainted }
-        if numFainted > 0 && user.form == 1
-          @battle.battleBond[user.index & 1][user.pokemonIndex] = true
+      if user.isSpecies?(:GRENINJA) && user.form == 1 &&
+         !Settings::GRENINJA_BATTLE_BOND_RAISES_STATS &&
+         user.ability == :BATTLEBOND && !user.abilityUsedOnce? &&
+         targets.any? { |target| target.damageState.fainted }
+          user.markAbilityUsedOnce
           @battle.pbDisplay(_INTL("¡{1} siente la fuerza de vuestro afecto!", user.pbThis))
           @battle.pbShowAbilitySplash(user, true)
           @battle.pbHideAbilitySplash(user)
           user.pbChangeForm(2, _INTL("¡{1} se convirtió en Greninja Ash!", user.pbThis))
-        end
       end
       # Cramorant = Gulp Missile
       if user.isSpecies?(:CRAMORANT) && user.ability == :GULPMISSILE && user.form == 0 &&
@@ -194,6 +162,7 @@ class Battle::Battler
     if !switched_battlers.include?(user.index)
       move.pbEndOfMoveUsageEffect(user, targets, numHits, switched_battlers)
     end
+    @battle.checkStatChangeResponses
     # User's ability/item that switches the user out (all negated by Sheer Force)
     if !(user.hasActiveAbility?(:SHEERFORCE) && move.addlEffect > 0)
       pbEffectsAfterMove3(user, targets, move, numHits, switched_battlers)
@@ -246,4 +215,3 @@ class Battle::Battler
     end
   end
 end
-

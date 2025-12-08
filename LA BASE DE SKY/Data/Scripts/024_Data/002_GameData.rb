@@ -190,7 +190,7 @@ module GameData
       return self::DATA.keys
     end
 
-    # Yields all data in numberical order.
+    # Yields all data in numerical order.
     def each
       keys = self::DATA.keys.sort
       keys.each { |key| yield self::DATA[key] }
@@ -255,7 +255,7 @@ module GameData
   def self.get_all_data_filenames
     ret = []
     self.constants.each do |c|
-      next if !self.const_get(c).is_a?(Class)
+      next if !self.const_get(c).is_a?(Class) || self.const_get(c) == Animation
       next if !self.const_get(c).const_defined?(:DATA_FILENAME)
       if self.const_get(c).const_defined?(:OPTIONAL) && self.const_get(c)::OPTIONAL
         ret.push([self.const_get(c)::DATA_FILENAME, false])
@@ -281,4 +281,3 @@ module GameData
     return ret
   end
 end
-

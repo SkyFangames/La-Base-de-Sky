@@ -34,7 +34,7 @@ class SpriteWindow < Window
     @_windowskin
   end
 
-  # Flags used to preserve compatibility with RGSS/RGSS2's version of Window
+  # Flags used to preserve compatibility with RGSS/RGSS2's version of Window.
   module CompatBits
     CORRECT_Z          = 1
     EXPAND_BACK        = 2
@@ -858,6 +858,7 @@ class SpriteWindow_Base < SpriteWindow
     @customskin = nil
     resolvedName = pbResolveBitmap(skin)
     return if nil_or_empty?(resolvedName)
+    @windowskin_name = skin
     @customskin = AnimatedBitmap.new(resolvedName)
     RPG::Cache.retain(resolvedName)
     __setWindowskin(@customskin.bitmap)
@@ -923,4 +924,3 @@ class SpriteWindow_Base < SpriteWindow
     super
   end
 end
-

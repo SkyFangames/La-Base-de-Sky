@@ -1,3 +1,6 @@
+#===============================================================================
+#
+#===============================================================================
 class Battle::Battler
   # Fundamental to this object
   attr_reader   :battle
@@ -14,6 +17,7 @@ class Battle::Battler
   attr_accessor :spatk
   attr_accessor :speed
   attr_accessor :stages
+  attr_reader   :stagesChangeRecord
   attr_reader   :totalhp
   attr_reader   :fainted    # Boolean to mark whether self has fainted properly
   attr_accessor :captured   # Boolean to mark whether self was captured
@@ -52,13 +56,11 @@ class Battle::Battler
   ACC_EVA_STAGE_MULTIPLIERS = [3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 9]
   ACC_EVA_STAGE_DIVISORS    = [9, 8, 7, 6, 5, 4, 3, 3, 3, 3, 3, 3, 3]
   STAT_STAGE_MAXIMUM        = 6   # Is also the minimum (-6)
-  
-  attr_accessor :proteanTrigger  # Used to flag when it's okay for Protean/Libero to trigger.
-  attr_accessor :mirrorHerbUsed  # Used to stop Opportunist/Mirror Herb from triggering off other Mirror Herbs.
-  attr_accessor :legendPlateType # Stores the default type to display for Judgment when used with a Legend Plate.
-  #=============================================================================
-  # Complex accessors
-  #=============================================================================
+
+  #-----------------------------------------------------------------------------
+  # Complex accessors.
+  #-----------------------------------------------------------------------------
+
   attr_reader :level
 
   def level=(value)
@@ -70,7 +72,7 @@ class Battle::Battler
 
   def form=(value)
     @form = value
-    @pokemon.form = value if @pokemon
+    @pokemon.form = value if @pokemon && !@effects[PBEffects::Transform]
   end
 
   def ability
@@ -134,18 +136,20 @@ class Battle::Battler
     @battle.scene.pbRefreshOne(@index)
   end
 
-  #=============================================================================
-  # Properties from Pokémon
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Properties from Pokémon.
+  #-----------------------------------------------------------------------------
+
   def happiness;       return @pokemon ? @pokemon.happiness : 0;       end
   def affection_level; return @pokemon ? @pokemon.affection_level : 2; end
   def gender;          return @pokemon ? @pokemon.gender : 0;          end
   def nature;          return @pokemon ? @pokemon.nature : nil;        end
   def pokerusStage;    return @pokemon ? @pokemon.pokerusStage : 0;    end
 
-  #=============================================================================
-  # Mega Evolution, Primal Reversion, Shadow Pokémon
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Mega Evolution, Primal Reversion, Shadow Pokémon.
+  #-----------------------------------------------------------------------------
+
   def hasMega?
     return false if @effects[PBEffects::Transform]
     return @pokemon&.hasMegaForm?
@@ -164,14 +168,10 @@ class Battle::Battler
 
   def inHyperMode?; return false; end
 
-  def affectedByAdditionalEffects?
-    return false if hasActiveItem?(:COVERTCLOAK)
-    return true
-  end
+  #-----------------------------------------------------------------------------
+  # Display-only properties.
+  #-----------------------------------------------------------------------------
 
-  #=============================================================================
-  # Display-only properties
-  #=============================================================================
   def name
     return @effects[PBEffects::Illusion].name if @effects[PBEffects::Illusion]
     return @name
@@ -251,13 +251,28 @@ class Battle::Battler
     return lowerCase ? _INTL("el equipo rival") : _INTL("El equipo rival")
   end
 
-  #=============================================================================
-  # Calculated properties
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Calculated properties.
+  #-----------------------------------------------------------------------------
+
+  def stat_with_stages(stat)
+    stat_value = 0
+    case stat
+    when :ATTACK          then stat_value = self.attack
+    when :DEFENSE         then stat_value = self.defense
+    when :SPECIAL_ATTACK  then stat_value = self.spatk
+    when :SPECIAL_DEFENSE then stat_value = self.spdef
+    when :SPEED           then stat_value = self.speed
+    else
+      raise _INTL("No se puede obtener la estadística con etapas para {1}.", stat)
+    end
+    stage = @stages[stat] + STAT_STAGE_MAXIMUM
+    return (stat_value.to_f * STAT_STAGE_MULTIPLIERS[stage] / STAT_STAGE_DIVISORS[stage]).floor
+  end
+
   def pbSpeed
     return 1 if fainted?
-    stage = @stages[:SPEED] + STAT_STAGE_MAXIMUM
-    speed = @speed * STAT_STAGE_MULTIPLIERS[stage] / STAT_STAGE_DIVISORS[stage]
+    speed = stat_with_stages(:SPEED)
     speedMult = 1.0
     # Ability effects that alter calculated Speed
     if abilityActive?
@@ -287,7 +302,7 @@ class Battle::Battler
     ret = (@pokemon) ? @pokemon.weight : 500
     ret += @effects[PBEffects::WeightChange]
     ret = 1 if ret < 1
-    if abilityActive? && !@battle.moldBreaker
+    if abilityActive? && !beingMoldBroken?
       ret = Battle::AbilityEffects.triggerWeightCalc(self.ability, self, ret)
     end
     if itemActive?
@@ -296,9 +311,10 @@ class Battle::Battler
     return [ret, 1].max
   end
 
-  #=============================================================================
-  # Queries about what the battler has
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Queries about what the battler has.
+  #-----------------------------------------------------------------------------
+
   def plainStats
     ret = {}
     ret[:ATTACK]          = self.attack
@@ -309,28 +325,28 @@ class Battle::Battler
     return ret
   end
 
-  def isSpecies?(species)
-    return @pokemon&.isSpecies?(species)
+  def isSpecies?(*check_species)
+    return @pokemon&.isSpecies?(*check_species)
   end
 
   # Returns the active types of this Pokémon. The array should not include the
   # same type more than once, and should not include any invalid types.
   def pbTypes(withExtraType = false)
     ret = @types.uniq
-    # Burn Up erases the Fire-type.
+    # Burn Up erases the Fire-type
     ret.delete(:FIRE) if @effects[PBEffects::BurnUp]
-    # Roost erases the Flying-type. If there are no types left, adds the Normal-
-    # type.
+    # Double Shock erases the Electric-type
+    ret.delete(:ELECTRIC) if @effects[PBEffects::DoubleShock]
+    # Roost erases the Flying-type (if there are no types left, adds the Normal-
+    # type)
     if @effects[PBEffects::Roost]
       ret.delete(:FLYING)
       ret.push(:NORMAL) if ret.length == 0
     end
-    # Add the third type specially.
+    # Add the third type specially
     if withExtraType && @effects[PBEffects::ExtraType] && !ret.include?(@effects[PBEffects::ExtraType])
       ret.push(@effects[PBEffects::ExtraType])
     end
-    # DoubleShock erases the Electric-type
-    ret.delete(:ELECTRIC) if @effects[PBEffects::DoubleShock]
     return ret
   end
 
@@ -377,6 +393,7 @@ class Battle::Battler
 
   # Applies to both losing self's ability (i.e. being replaced by another) and
   # having self's ability be negated.
+  # TODO: Any changes needed here?
   def unstoppableAbility?(abil = nil)
     abil = @ability_id if !abil
     abil = GameData::Ability.try_get(abil)
@@ -385,28 +402,50 @@ class Battle::Battler
       # Form-changing abilities
       :BATTLEBOND,
       :DISGUISE,
+      :EMBODYASPECTATTACK,
+      :EMBODYASPECTDEFENSE,
+      :EMBODYASPECTSPDEF,
+      :EMBODYASPECTSPEED,
 #      :FLOWERGIFT,                                        # This can be stopped
 #      :FORECAST,                                          # This can be stopped
       :GULPMISSILE,
+#      :HUNGERSWITCH,                                      # This can be stopped
       :ICEFACE,
       :MULTITYPE,
       :POWERCONSTRUCT,
       :SCHOOLING,
       :SHIELDSDOWN,
       :STANCECHANGE,
+      :TERASHIFT,
       :ZENMODE,
       :ZEROTOHERO,
-      :TERASHIFT,
+      # Appearance-changing abilities
+#      :ILLUSION,                                          # This can be stopped
+#      :IMPOSTER,                                          # This can be stopped
       # Abilities intended to be inherent properties of a certain species
       :ASONECHILLINGNEIGH,
       :ASONEGRIMNEIGH,
       :COMATOSE,
+      :COMMANDER,
+      # TODO: Poison Puppeteer can't be lost but can be negated by Gastro Acid.
+      :POISONPUPPETEER,
+#      :POWEROFALCHEMY,                                    # This can be stopped
+#      :PROTOSYNTHESIS,                                    # This can be stopped
+#      :QUARKDRIVE,                                        # This can be stopped
+#      :RECEIVER,                                          # This can be stopped
       :RKSSYSTEM
+#      :TERAFORMZERO,                                      # This can be stopped
+#      :TERASHELL,                                         # This can be stopped
+#      :TRACE,                                             # This can be stopped
+#      :WONDERGUARD                                        # This can be stopped
     ]
-    return ability_blacklist.include?(abil.id)
+    return true if ability_blacklist.include?(abil.id)
+    return true if hasActiveItem?(:ABILITYSHIELD)
+    return false
   end
 
   # Applies to gaining the ability.
+  # TODO: Any changes needed here?
   def ungainableAbility?(abil = nil)
     abil = @ability_id if !abil
     abil = GameData::Ability.try_get(abil)
@@ -415,16 +454,23 @@ class Battle::Battler
       # Form-changing abilities
       :BATTLEBOND,
       :DISGUISE,
+      :EMBODYASPECTATTACK,
+      :EMBODYASPECTDEFENSE,
+      :EMBODYASPECTSPDEF,
+      :EMBODYASPECTSPEED,
       :FLOWERGIFT,
       :FORECAST,
       :GULPMISSILE,
+      :HUNGERSWITCH,
       :ICEFACE,
       :MULTITYPE,
       :POWERCONSTRUCT,
       :SCHOOLING,
       :SHIELDSDOWN,
       :STANCECHANGE,
+      :TERASHIFT,
       :ZENMODE,
+      :ZEROTOHERO,
       # Appearance-changing abilities
       :ILLUSION,
       :IMPOSTER,
@@ -432,52 +478,22 @@ class Battle::Battler
       :ASONECHILLINGNEIGH,
       :ASONEGRIMNEIGH,
       :COMATOSE,
-      :RKSSYSTEM,
-      # Abilities that can't be negated
-      :NEUTRALIZINGGAS,
-      :WONDERGUARD,
-      :HUNGERSWITCH,
       :COMMANDER,
-      :PROTOSYNTHESIS,
-      :QUARKDRIVE,	  
-      :ZEROTOHERO,
-      :EMBODYASPECT,
-      :EMBODYASPECT_1,
-      :EMBODYASPECT_2,
-      :EMBODYASPECT_3,
-      :TERASHIFT,
-      :TERAFORMZERO,
-      :POISONPUPPETEER
-    ]
-    return ability_blacklist.include?(abil.id)
-  end
-  
-  #-----------------------------------------------------------------------------
-  # Returns true if ability cannot be copied.
-  #-----------------------------------------------------------------------------
-  def uncopyableAbility?(abil = nil)
-    abil = @ability_id if !abil
-    abil = GameData::Ability.try_get(abil)
-    return false if !abil
-    return true if ungainableAbility?(abil)
-    return [
+      :POISONPUPPETEER,
       :POWEROFALCHEMY,
+      :PROTOSYNTHESIS,
+      :QUARKDRIVE,
       :RECEIVER,
-      :TRACE
-    ].include?(abil.id)
-  end
-  
-  #-----------------------------------------------------------------------------
-  # Specifically used to check for an Ability Shield for Neutralizing Gas.
-  #-----------------------------------------------------------------------------
-  def activeAbilityShield?(check_ability)
-    return false if fainted?
-    return false if self.item != :ABILITYSHIELD
-    return false if @effects[PBEffects::Embargo] > 0
-    return false if @battle.field.effects[PBEffects::MagicRoom] > 0
-    return false if @battle.corrosiveGas[@index % 2][@pokemonIndex]
-    return false if check_ability == :KLUTZ || self.ability == :KLUTZ
-    return true
+      :RKSSYSTEM,
+      :TERAFORMZERO,
+      :TERASHELL,
+      :TRACE,
+      :WONDERGUARD,
+      # Abilities that can't be negated
+      :NEUTRALIZINGGAS
+    ]
+    ability_blacklist.delete(:GULPMISSILE) if Settings::MECHANICS_GENERATION >= 9
+    return ability_blacklist.include?(abil.id)
   end
 
   def itemActive?(ignoreFainted = false)
@@ -555,6 +571,11 @@ class Battle::Battler
     return hasActiveAbility?([:MOLDBREAKER, :TERAVOLT, :TURBOBLAZE])
   end
 
+  def beingMoldBroken?
+    return false if hasActiveItem?(:ABILITYSHIELD)
+    return @battle.moldBreaker
+  end
+
   def canChangeType?
     return ![:MULTITYPE, :RKSSYSTEM].include?(@ability_id)
   end
@@ -565,11 +586,16 @@ class Battle::Battler
     return false if @effects[PBEffects::SmackDown]
     return false if @battle.field.effects[PBEffects::Gravity] > 0
     return true if pbHasType?(:FLYING)
-    return true if hasActiveAbility?(:LEVITATE) && !@battle.moldBreaker
+    return true if hasActiveAbility?(:LEVITATE) && !beingMoldBroken?
     return true if hasActiveItem?(:AIRBALLOON)
     return true if @effects[PBEffects::MagnetRise] > 0
     return true if @effects[PBEffects::Telekinesis] > 0
     return false
+  end
+
+  def affectedByAdditionalEffects?
+    return false if hasActiveItem?(:COVERTCLOAK)
+    return true
   end
 
   def affectedByTerrain?
@@ -606,7 +632,6 @@ class Battle::Battler
   end
 
   def takesHailDamage?
-    return false if Settings::HAIL_WEATHER_TYPE == 1
     return false if !takesIndirectDamage?
     return false if pbHasType?(:ICE)
     return false if inTwoTurnAttack?("TwoTurnAttackInvulnerableUnderground",
@@ -635,7 +660,7 @@ class Battle::Battler
       return false
     end
     if Settings::MECHANICS_GENERATION >= 6
-      if hasActiveAbility?(:OVERCOAT) && !@battle.moldBreaker
+      if hasActiveAbility?(:OVERCOAT) && !beingMoldBroken?
         if showMsg
           @battle.pbShowAbilitySplash(self)
           if Battle::Scene::USE_ABILITY_SPLASH
@@ -673,16 +698,42 @@ class Battle::Battler
   end
 
   def trappedInBattle?
-    return true if @effects[PBEffects::Commander]
     return true if @effects[PBEffects::Trapping] > 0
     return true if @effects[PBEffects::MeanLook] >= 0
     return true if @effects[PBEffects::JawLock] >= 0
-    return true if @battle.allBattlers.any? { |b| b.effects[PBEffects::JawLock] == @index }
+    return true if @battle.allBattlers(true).any? { |b| b.effects[PBEffects::JawLock] == @index }
     return true if @effects[PBEffects::Octolock] >= 0
     return true if @effects[PBEffects::Ingrain]
     return true if @effects[PBEffects::NoRetreat]
     return true if @battle.field.effects[PBEffects::FairyLock] > 0
     return false
+  end
+
+  # Returns whether this battler can be made to switch out because of another
+  # battler's move.
+  def canBeForcedOutOfBattle?(show_message = true)
+    if @effects[PBEffects::Commanding] >= 0 || @effects[PBEffects::CommandedBy] >= 0
+      @battle.pbDisplay(_INTL("¡Pero falló!"))
+      return false
+    end
+    if hasActiveAbility?(:SUCTIONCUPS) && !beingMoldBroken?
+      if show_message
+        @battle.pbShowAbilitySplash(self)
+        if Battle::Scene::USE_ABILITY_SPLASH
+          @battle.pbDisplay(_INTL("{1} se ancla!", pbThis))
+        else
+          @battle.pbDisplay(_INTL("{1} se ancla con {2}!", pbThis, abilityName))
+        end
+        @battle.pbHideAbilitySplash(self)
+      end
+      return false
+    end
+    return false if hasActiveAbility?(:GUARDDOG) && !beingMoldBroken?
+    if @effects[PBEffects::Ingrain]
+      @battle.pbDisplay(_INTL("{1} se ancla con sus raíces!", pbThis)) if show_message
+      return false
+    end
+    return true
   end
 
   def movedThisRound?
@@ -753,24 +804,11 @@ class Battle::Battler
   def setBelched
     @battle.belch[@index & 1][@pokemonIndex] = true
   end
-    
-  
+
   #-----------------------------------------------------------------------------
-  # Commander utilities.
+  # Methods relating to this battler's position on the battlefield.
   #-----------------------------------------------------------------------------
-  def isCommander?
-    commander = @effects[PBEffects::Commander]
-    return commander && commander.length == 1
-  end
-  
-  def isCommanderHost?
-    commander = @effects[PBEffects::Commander]
-    return commander && commander.length == 2
-  end
-  
-  #=============================================================================
-  # Methods relating to this battler's position on the battlefield
-  #=============================================================================
+
   # Returns whether the given position belongs to the opposing Pokémon's side.
   def opposes?(i = 0)
     i = i.index if i.respond_to?("index")
@@ -814,28 +852,26 @@ class Battle::Battler
     return @battle.sides[idxOpposingSide]
   end
 
-  # Yields each unfainted ally Pokémon.
-  # Unused
-  def eachAlly
-    @battle.battlers.each do |b|
-      yield b if b && !b.fainted? && !b.opposes?(@index) && b.index != @index
-    end
+  # Returns an array containing all unfainted ally Pokémon.
+  def allAllies(with_commanders = false)
+    return @battle.allSameSideBattlers(@index, with_commanders).reject { |b| b.index == @index }
   end
 
-  # Returns an array containing all unfainted ally Pokémon.
-  def allAllies
-    return @battle.allSameSideBattlers(@index).reject { |b| b.index == @index }
+  # Yields each unfainted ally Pokémon.
+  # Unused
+  def eachAlly(with_commanders = false)
+    allAllies(with_commanders).each { |b| yield b }
+  end
+
+  # Returns an array containing all unfainted opposing Pokémon.
+  def allOpposing(with_commanders = false)
+    return @battle.allOtherSideBattlers(@index, with_commanders)
   end
 
   # Yields each unfainted opposing Pokémon.
   # Unused
-  def eachOpposing
-    @battle.battlers.each { |b| yield b if b && !b.fainted? && b.opposes?(@index) }
-  end
-
-  # Returns an array containing all unfainted opposing Pokémon.
-  def allOpposing
-    return @battle.allOtherSideBattlers(@index)
+  def eachOpposing(with_commanders = false)
+    allOpposing(with_commanders).each { |b| yield b }
   end
 
   # Returns the battler that is most directly opposite to self. unfaintedOnly is

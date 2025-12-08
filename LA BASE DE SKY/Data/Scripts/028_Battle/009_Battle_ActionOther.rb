@@ -36,9 +36,7 @@ class Battle
   end
 
   def pbCall(idxBattler)
-    # Debug ending the battle
-    return if pbDebugRun != 0
-    # Call the battler
+    clearStagesChangeRecords
     battler = @battlers[idxBattler]
     trainerName = pbGetOwnerName(idxBattler)
     pbDisplay(_INTL("¡{1} llamó a {2}!", trainerName, battler.pbThis(true)))
@@ -59,6 +57,7 @@ class Battle
     else
       pbDisplay(_INTL("¡Pero no sucedió nada!"))
     end
+    checkStatChangeResponses
   end
 
   #=============================================================================
@@ -81,7 +80,9 @@ class Battle
         @mega_rings.each { |item| return GameData::Item.get(item).name if $bag.has?(item) }
       else
         trainer_items = pbGetOwnerItems(idxBattler)
-        @mega_rings.each { |item| return GameData::Item.get(item).name if trainer_items&.include?(item) }
+        if trainer_items
+          @mega_rings.each { |item| return GameData::Item.get(item).name if trainer_items.include?(item) }
+        end
       end
     end
     return _INTL("Mega-aro")
@@ -179,6 +180,7 @@ class Battle
     battler = @battlers[idxBattler]
     return if !battler || !battler.pokemon || battler.fainted?
     return if !battler.hasPrimal? || battler.primal?
+    $stats.primal_reversion_count += 1 if battler.pbOwnedByPlayer?
     if battler.isSpecies?(:KYOGRE)
       pbCommonAnimation("PrimalKyogre", battler)
     elsif battler.isSpecies?(:GROUDON)
