@@ -70,6 +70,41 @@ class Battle::Move::DoubleMoneyGainedFromBattle < Battle::Move
 end
 
 #===============================================================================
+# The move cannot be chosen if it is also the last move the user used (unless it
+# failed). (Blood Moon, Gigaton Hammer)
+#===============================================================================
+class Battle::Move::CannotUseConsecutively < Battle::Move
+  def pbCanChooseMove?(user, commandPhase, showMessages)
+    if user.effects[PBEffects::GigatonHammer] && commandPhase
+      if showMessages
+        msg = _INTL("¡No puedes usar {1} dos veces seguidas!", @name)
+        (commandPhase) ? @battle.pbDisplayPaused(msg) : @battle.pbDisplay(msg)
+      end
+      return false
+    end
+    return true
+  end
+
+  def pbMoveFailed?(user, targets)
+    if user.effects[PBEffects::GigatonHammer]
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
+  end
+
+  def pbChangeUsageCounters(user, specialUsage)
+    oldVal = user.effects[PBEffects::GigatonHammer]
+    super
+    user.effects[PBEffects::GigatonHammer] = oldVal
+  end
+
+  def pbEffectGeneral(user)
+    user.effects[PBEffects::GigatonHammer] = true
+  end
+end
+
+#===============================================================================
 # Fails if this isn't the user's first turn. (First Impression)
 #===============================================================================
 class Battle::Move::FailsIfNotUserFirstTurn < Battle::Move
@@ -208,12 +243,10 @@ class Battle::Move::FailsIfTargetActed < Battle::Move
 end
 
 #===============================================================================
-# If attack misses, user takes crash damage of 1/2 of max HP.
-# (High Jump Kick, Jump Kick)
+# If attack misses, user takes crash damage of 1/2 of max HP. (Supercell Slam)
 #===============================================================================
-class Battle::Move::CrashDamageIfFailsUnusableInGravity < Battle::Move
-  def recoilMove?;        return true; end
-  def unusableInGravity?; return true; end
+class Battle::Move::CrashDamageIfFails < Battle::Move
+  def recoilMove?; return true; end
 
   def pbCrashDamage(user)
     return if !user.takesIndirectDamage?
@@ -223,6 +256,14 @@ class Battle::Move::CrashDamageIfFailsUnusableInGravity < Battle::Move
     user.pbItemHPHealCheck
     user.pbFaint if user.fainted?
   end
+end
+
+#===============================================================================
+# If attack misses, user takes crash damage of 1/2 of max HP. Can't be used in
+# gravity. (High Jump Kick, Jump Kick)
+#===============================================================================
+class Battle::Move::CrashDamageIfFailsUnusableInGravity < Battle::Move::CrashDamageIfFails
+  def unusableInGravity?; return true; end
 end
 
 #===============================================================================
@@ -262,6 +303,16 @@ class Battle::Move::StartHailWeather < Battle::Move::WeatherMove
   def initialize(battle, move)
     super
     @weatherType = :Hail
+  end
+end
+
+#===============================================================================
+# Starts snowstorm weather. (Snowstorm)
+#===============================================================================
+class Battle::Move::StartSnowstormWeather < Battle::Move::WeatherMove
+  def initialize(battle, move)
+    super
+    @weatherType = :Snowstorm
   end
 end
 
@@ -314,19 +365,16 @@ class Battle::Move::StartPsychicTerrain < Battle::Move::TerrainMove
 end
 
 #===============================================================================
-# Removes the current terrain. Fails if there is no terrain in effect.
-# (Steel Roller)
+# Removes the current terrain. (Ice Spinner)
 #===============================================================================
 class Battle::Move::RemoveTerrain < Battle::Move
-  def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == :None
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
-  end
-
+  # NOTE: Bulbapedia claims that Ice Spinner shouldn't remove terrain if the
+  #       user faints because of its Life Orb or is switched out by Red Card.
+  #       I can't find any evidence of this. Also, those items trigger at the
+  #       very end of a move's use, way after move effects usually happen. I'm
+  #       treating Bulbapedia's claim as a mistake and ignoring it.
   def pbEffectGeneral(user)
+    return if user.fainted?
     case @battle.field.terrain
     when :Electric
       @battle.pbDisplay(_INTL("El campo de corriente eléctrica ha desaparecido."))
@@ -338,7 +386,20 @@ class Battle::Move::RemoveTerrain < Battle::Move
       @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
     end
     @battle.field.terrain = :None
-    @battle.scene.pbDeleteField
+  end
+end
+
+#===============================================================================
+# Removes the current terrain. Fails if there is no terrain in effect.
+# (Steel Roller)
+#===============================================================================
+class Battle::Move::RemoveTerrainFailsIfNoTerrain < Battle::Move::RemoveTerrain
+  def pbMoveFailed?(user, targets)
+    if @battle.field.terrain == :None
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
   end
 end
 
@@ -349,6 +410,7 @@ class Battle::Move::AddSpikesToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::Spikes] >= 3
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -357,10 +419,20 @@ class Battle::Move::AddSpikesToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return if damagingMove?
     user.pbOpposingSide.effects[PBEffects::Spikes] += 1
     @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas!",
-                            user.pbOpposingTeam(true)))
+                            user.pbOpposingTeam))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::Spikes] >= 3
+    user.pbOpposingSide.effects[PBEffects::Spikes] += 1
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
+    @battle.pbDisplay(_INTL("¡Se han esparcido púas alrededor de los pies de {1}!",
+                            user.pbOpposingTeam))
   end
 end
 
@@ -372,6 +444,7 @@ class Battle::Move::AddToxicSpikesToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::ToxicSpikes] >= 2
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -380,10 +453,20 @@ class Battle::Move::AddToxicSpikesToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return if damagingMove?
     user.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
     @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} está rodeado de púas tóxicas!",
-                            user.pbOpposingTeam()))
+                            user.pbOpposingTeam))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::ToxicSpikes] >= 2
+    user.pbOpposingSide.effects[PBEffects::ToxicSpikes] += 1
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
+    @battle.pbDisplay(_INTL("¡Se han esparcido púas tóxicas alrededor de los pies de {1}!",
+                            user.pbOpposingTeam))
   end
 end
 
@@ -394,6 +477,7 @@ class Battle::Move::AddStealthRocksToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::StealthRock]
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -402,10 +486,19 @@ class Battle::Move::AddStealthRocksToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return if damagingMove?
     user.pbOpposingSide.effects[PBEffects::StealthRock] = true
     @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡{1} está rodeado de piedras puntiagudas!",
-                            user.pbOpposingTeam()))
+                            user.pbOpposingTeam))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::StealthRock]
+    user.pbOpposingSide.effects[PBEffects::StealthRock] = true
+    @battle.pbDisplay(_INTL("¡Se han esparcido piedras puntiagudas alrededor de los pies de {1}!",
+                            user.pbOpposingTeam))
   end
 end
 
@@ -424,10 +517,20 @@ class Battle::Move::AddStickyWebToFoeSide < Battle::Move
   end
 
   def pbEffectGeneral(user)
+    return false if damagingMove?
     user.pbOpposingSide.effects[PBEffects::StickyWeb] = true
     @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
     @battle.pbDisplay(_INTL("¡Una red viscosa se extiende a los pies de {1}!",
                             user.pbOpposingTeam()))
+  end
+
+  def pbAdditionalEffect(user, target)
+    return if user.fainted?
+    return if user.pbOpposingSide.effects[PBEffects::StickyWeb]
+    user.pbOpposingSide.effects[PBEffects::StickyWeb] = true
+    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
+    @battle.pbDisplay(_INTL("¡Se ha esparcido una red pegajosa alrededor de los pies de {1}!",
+                            user.pbOpposingTeam))
   end
 end
 
@@ -631,39 +734,37 @@ class Battle::Move::AttackTwoTurnsLater < Battle::Move
 end
 
 #===============================================================================
-# User switches places with its ally. (Ally Switch)
+# User switches places with its ally. In Gen 9+, more likely to fail if used in
+# succession. (Ally Switch)
 #===============================================================================
 class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
   def pbChangeUsageCounters(user, specialUsage)
-    oldVal = user.effects[PBEffects::ProtectRate]
+    oldVal = user.effects[PBEffects::AllySwitchRate]
     super
-    user.effects[PBEffects::ProtectRate] = oldVal
+    user.effects[PBEffects::AllySwitchRate] = oldVal
   end
-  
+
   def pbMoveFailed?(user, targets)
-    if Settings::MECHANICS_GENERATION >= 9
-      if user.effects[PBEffects::AllySwitch]
-        user.effects[PBEffects::ProtectRate] = 1
-        @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-        return true
-      end
-      if user.effects[PBEffects::ProtectRate] > 1 &&
-         @battle.pbRandom(user.effects[PBEffects::ProtectRate]) != 0
-        user.effects[PBEffects::ProtectRate] = 1
-        @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-        return true
-      end
-    end
+    # Fails if there isn't exactly 1 near ally to switch with
     numTargets = 0
     @idxAlly = -1
     idxUserOwner = @battle.pbGetOwnerIndexFromBattlerIndex(user.index)
-    user.allAllies.each do |b|
+    user.allAllies(true).each do |b|
       next if @battle.pbGetOwnerIndexFromBattlerIndex(b.index) != idxUserOwner
       next if !b.near?(user)
       numTargets += 1
       @idxAlly = b.index
     end
     if numTargets != 1
+      user.effects[PBEffects::AllySwitchRate] = 1
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    # May fail if used in succession
+    if Settings::MECHANICS_GENERATION >= 9 &&
+       user.effects[PBEffects::AllySwitchRate] > 1 &&
+       @battle.pbRandom(user.effects[PBEffects::AllySwitchRate]) != 0
+      user.effects[PBEffects::AllySwitchRate] = 1
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
@@ -671,15 +772,16 @@ class Battle::Move::UserSwapsPositionsWithAlly < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    if Settings::MECHANICS_GENERATION >= 9
-      user.effects[PBEffects::AllySwitch] = true
-      user.effects[PBEffects::ProtectRate] *= 3
-    end
+    user.effects[PBEffects::AllySwitchRate] *= (Settings::MECHANICS_GENERATION >= 6) ? 3 : 2
     idxA = user.index
     idxB = @idxAlly
     if @battle.pbSwapBattlers(idxA, idxB)
-      @battle.pbDisplay(_INTL("¡{1} y {2} han intercambiado sus posiciones!",
-                              @battle.battlers[idxB].pbThis, @battle.battlers[idxA].pbThis(true)))
+      if @battler.battlers[idxB].effects[PBEffects::Commanding] >= 0
+        @battle.pbDisplay(_INTL("¡{1} se ha movido!", @battle.battlers[idxA].pbThis))
+      else
+        @battle.pbDisplay(_INTL("¡{1} y {2} han intercambiado sus posiciones!",
+                                @battle.battlers[idxB].pbThis, @battle.battlers[idxA].pbThis(true)))
+      end
       [idxA, idxB].each { |idx| @battle.pbEffectsOnBattlerEnteringPosition(@battle.battlers[idx]) }
     end
   end
@@ -694,191 +796,5 @@ class Battle::Move::BurnAttackerBeforeUserActs < Battle::Move
     user.effects[PBEffects::BeakBlast] = true
     @battle.pbCommonAnimation("BeakBlast", user)
     @battle.pbDisplay(_INTL("¡{1} empieza a calentar su pico!", user.pbThis))
-  end
-end
-
-#===============================================================================
-# Salt Cure
-#===============================================================================
-# Target will lose 1/4 of max HP at end of each round, or 1/8th if Water or Steel.
-#-------------------------------------------------------------------------------
-class Battle::Move::StartSaltCureTarget < Battle::Move
-  def canMagicCoat?; return true; end
-
-  def pbFailsAgainstTarget?(user, target, show_message)
-    return false if damagingMove?
-    if target.effects[PBEffects::SaltCure]
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
-      return true
-    end
-    return false
-  end
-
-  def pbEffectAgainstTarget(user, target)
-    return if damagingMove?
-    target.effects[PBEffects::SaltCure] = true
-    @battle.pbDisplay(_INTL("¡{1} sufre de salazón!", target.pbThis))
-  end
-
-  def pbAdditionalEffect(user, target)
-    return if target.damageState.substitute
-    target.effects[PBEffects::SaltCure] = true
-    @battle.pbDisplay(_INTL("¡{1} sufre de salazón!", target.pbThis))
-  end
-end
-
-
-#===============================================================================
-# Ice Spinner
-#===============================================================================
-# Removes the current terrain.
-#-------------------------------------------------------------------------------
-class Battle::Move::RemoveTerrainIceSpinner < Battle::Move
-  def pbEffectGeneral(user)
-    return if @battle.field.terrain == :None
-    case @battle.field.terrain
-    when :Electric
-      @battle.pbDisplay(_INTL("El campo de corriente eléctrica ha desaparecido."))
-    when :Grassy
-      @battle.pbDisplay(_INTL("La hierba ha desaparecido."))
-    when :Misty
-      @battle.pbDisplay(_INTL("La niebla se ha disipado."))
-    when :Psychic
-      @battle.pbDisplay(_INTL("Ha desaparecido la extraña sensación que se percibía en el terreno de combate."))
-    end
-    @battle.field.terrain = :None
-    @battle.scene.pbDeleteField
-    @battle.allBattlers.each { |battler| battler.pbAbilityOnTerrainChange }
-  end
-end
-
-
-#===============================================================================
-# Doodle
-#===============================================================================
-# User and all allies copy the target's ability.
-#-------------------------------------------------------------------------------
-class Battle::Move::SetUserAlliesAbilityToTargetAbility < Battle::Move
-  def ignoresSubstitute?(user); return true; end
-  
-  def pbMoveFailed?(user, targets)
-    @battle.allSameSideBattlers(user.index).each do |b|
-      next if !b.unstoppableAbility?
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    if user.hasActiveItem?(:ABILITYSHIELD)
-      @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por los efectos de su Escudo Habilidad!",user.pbThis(true)))
-      return true
-    end
-    return false
-  end
-
-  def pbFailsAgainstTarget?(user, target, show_message)
-    if !target.ability || user.ability == target.ability
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
-      return true
-    end
-    if target.uncopyableAbility?
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
-      return true
-    end
-    return false
-  end
-  
-  def pbEffectAgainstTarget(user, target)
-    @battle.allSameSideBattlers(user).each do |b|
-	  next if b.ability == target.ability
-      if b.hasActiveItem?(:ABILITYSHIELD)
-        @battle.pbDisplay(_INTL("¡La habilidad de {1} está protegida por el efecto de su Escudo Habilidad!", b.pbThis(true)))
-      else
-        @battle.pbShowAbilitySplash(b, true, false)
-        oldAbil = b.ability
-        b.ability = target.ability
-        @battle.pbReplaceAbilitySplash(b)
-        @battle.pbDisplay(_INTL("¡{1} copió {3} de {2}!",
-                            user.pbThis, target.pbThis(true), target.abilityName))
-        @battle.pbHideAbilitySplash(b)
-        b.pbOnLosingAbility(oldAbil)
-        b.pbTriggerAbilityOnGainingIt
-      end
-    end
-  end
-end
-
-#===============================================================================
-# Revival Blessing
-#===============================================================================
-# Revive one fainted Pokemon from party with up to 1/2 its total HP.
-#-------------------------------------------------------------------------------
-class Battle::Move::RevivePokemonHalfHP < Battle::Move
-  def healingMove?; return true; end
-  
-  def pbMoveFailed?(user, targets)
-    @numFainted = 0
-    user.battle.pbParty(user.idxOwnSide).each { |b| @numFainted += 1 if b.fainted? }
-    if @numFainted == 0
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
-  end
-  
-  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
-    return if user.fainted? || @numFainted == 0
-    @battle.pbReviveInParty(user.index)
-  end
-end
-
-#===============================================================================
-# Fickle Beam
-#===============================================================================
-# Has a 30% chance to deal double damage.
-#-------------------------------------------------------------------------------
-class Battle::Move::RandomlyDealsDoubleDamage < Battle::Move
-  def pbOnStartUse(user, targets)
-    @allOutAttack = (@battle.pbRandom(100) < 30)
-    if @allOutAttack
-      @battle.pbDisplay(_INTL("¡{1} va con todo por este ataque!", user.pbThis))
-    end
-  end
-
-  def pbBaseDamage(baseDmg, user, target)
-    return (@allOutAttack) ? baseDmg * 2 : baseDmg
-  end
-  
-  def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
-    hitNum = 1 if @allOutAttack
-    super
-  end
-end
-
-#===============================================================================
-# Ceaseless Edge (Gen 9+)
-#===============================================================================
-# Lays spikes on the opposing side if damage was dealt (max. 3 layers).
-#-------------------------------------------------------------------------------
-class Battle::Move::DamageTargetAddSpikesToFoeSide < Battle::Move
-  def pbEffectWhenDealingDamage(user, target)
-    return if target.pbOwnSide.effects[PBEffects::Spikes] == 3
-    target.pbOwnSide.effects[PBEffects::Spikes] += 1
-    @battle.pbAnimation(:SPIKES, user, target)
-    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
-    @battle.pbDisplay(_INTL("¡Hay púas esparcidas alrededor de los pies de {1}!", user.pbOpposingTeam(true)))
-  end
-end
-
-#===============================================================================
-# Stone Axe (Gen 9+)
-#===============================================================================
-# Lays stealth rocks on the opposing side if damage was dealt.
-#-------------------------------------------------------------------------------
-class Battle::Move::DamageTargetAddStealthRocksToFoeSide < Battle::Move
-  def pbEffectWhenDealingDamage(user, target)
-    return if target.pbOwnSide.effects[PBEffects::StealthRock]
-    target.pbOwnSide.effects[PBEffects::StealthRock] = true
-    @battle.pbAnimation(:STEALTHROCK, user, target)
-    @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
-    @battle.pbDisplay(_INTL("¡Piedras puntiagudas flotan en el aire alrededor de {1}!", user.pbOpposingTeam(true)))
   end
 end

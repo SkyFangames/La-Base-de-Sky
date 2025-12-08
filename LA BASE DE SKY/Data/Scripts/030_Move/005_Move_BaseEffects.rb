@@ -85,7 +85,8 @@ end
 class Battle::Move::StatUpMove < Battle::Move
   attr_reader :statUp
 
-  def canSnatch?; return true; end
+  def canSnatch?;                   return true; end
+  def additionalEffectAffectsUser?; return true; end
 
   def pbMoveFailed?(user, targets)
     return false if damagingMove?
@@ -110,7 +111,8 @@ end
 class Battle::Move::MultiStatUpMove < Battle::Move
   attr_reader :statUp
 
-  def canSnatch?; return true; end
+  def canSnatch?;                   return true; end
+  def additionalEffectAffectsUser?; return true; end
 
   def pbMoveFailed?(user, targets)
     return false if damagingMove?
@@ -155,8 +157,14 @@ end
 class Battle::Move::StatDownMove < Battle::Move
   attr_reader :statDown
 
+  def pbOnStartUse(user, targets)
+    @stats_lowered = false
+  end
+
   def pbEffectWhenDealingDamage(user, target)
+    return if @stats_lowered
     return if @battle.pbAllFainted?(target.idxOwnSide)
+    @stats_lowered = true
     showAnim = true
     (@statDown.length / 2).times do |i|
       next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
@@ -186,6 +194,7 @@ class Battle::Move::TargetStatDownMove < Battle::Move
   end
 
   def pbAdditionalEffect(user, target)
+    return if !target.affectedByAdditionalEffects?
     return if target.damageState.substitute
     return if !target.pbCanLowerStatStage?(@statDown[0], user, self)
     target.pbLowerStatStage(@statDown[0], @statDown[1], user)
@@ -212,7 +221,7 @@ class Battle::Move::TargetMultiStatDownMove < Battle::Move
       # NOTE: It's a bit of a faff to make sure the appropriate failure message
       #       is shown here, I know.
       canLower = false
-      if target.hasActiveAbility?(:CONTRARY) && !@battle.moldBreaker
+      if target.hasActiveAbility?(:CONTRARY) && !target.beingMoldBroken?
         (@statDown.length / 2).times do |i|
           next if target.statStageAtMax?(@statDown[i * 2])
           canLower = true
@@ -277,93 +286,9 @@ class Battle::Move::TargetMultiStatDownMove < Battle::Move
   end
 
   def pbAdditionalEffect(user, target)
-    pbLowerTargetMultipleStats(user, target) if !target.damageState.substitute
-  end
-end
-
-#===================================================================================
-# Raise multiple of user's stats, only once.
-# If it is a multitarget move, the stat raises only occur once, and not per target.
-#===================================================================================
-class Battle::Move::MultiStatUpMoveOnce < Battle::Move
-  attr_reader :statUp
-
-  def canSnatch?; return true; end
-
-  def pbMoveFailed?(user, targets)
-    return false if damagingMove?
-    failed = true
-    (@statUp.length / 2).times do |i|
-      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      failed = false
-      break
-    end
-    if failed
-      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden aumentar más!", user.pbThis(true)))
-      return true
-    end
-    return false
-  end
-
-  def pbEffectGeneral(user)
-    return if damagingMove?
-    showAnim = true
-    (@statUp.length / 2).times do |i|
-      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
-    end
-  end
-
-  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
-    return if !damagingMove?
-    return if @battle.pbAllFainted?(user.idxOpposingSide)
-    hit_target = false
-    targets.each do |t|
-      next if t.damageState.unaffected
-      next if t.damageState.protected
-      next if t.damageState.missed
-      hit_target = true
-      break
-    end
-    return if !hit_target
-    showAnim = true
-    (@statUp.length / 2).times do |i|
-      next if !user.pbCanRaiseStatStage?(@statUp[i * 2], user, self)
-      if user.pbRaiseStatStage(@statUp[i * 2], @statUp[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
-    end
-  end
-end
-
-#===============================================================================
-# Lower multiple of user's stats, only once.
-# If it is a multitarget move, the stat lower only occur once, and not per target.
-#===============================================================================
-class Battle::Move::StatDownMoveOnce < Battle::Move
-  attr_reader :statDown
-
-  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
-    return if !damagingMove?
-    return if @battle.pbAllFainted?(user.idxOpposingSide)
-    hit_target = false
-    targets.each do |t|
-      next if t.damageState.unaffected
-      next if t.damageState.protected
-      next if t.damageState.missed
-      hit_target = true
-      break
-    end
-    return if !hit_target
-    showAnim = true
-    (@statDown.length / 2).times do |i|
-      next if !user.pbCanLowerStatStage?(@statDown[i * 2], user, self)
-      if user.pbLowerStatStage(@statDown[i * 2], @statDown[(i * 2) + 1], user, showAnim)
-        showAnim = false
-      end
-    end
+    return if !target.affectedByAdditionalEffects?
+    return if target.damageState.substitute
+    pbLowerTargetMultipleStats(user, target)
   end
 end
 
@@ -510,6 +435,9 @@ class Battle::Move::RecoilMove < Battle::Move
     return if user.hasActiveAbility?(:ROCKHEAD)
     amt = pbRecoilDamage(user, target)
     amt = 1 if amt < 1
+    if user.pokemon.isSpecies?(:BASCULIN) && [2, 3].include?(user.pokemon.form)
+      user.pokemon.evolution_counter += amt
+    end
     user.pbReduceHP(amt, false)
     @battle.pbDisplay(_INTL("¡{1} también se ha hecho daño!", user.pbThis))
     user.pbItemHPHealCheck
@@ -610,7 +538,6 @@ class Battle::Move::WeatherMove < Battle::Move
   end
 end
 
-
 #===============================================================================
 # Terrain-inducing move.
 #===============================================================================
@@ -686,9 +613,9 @@ class Battle::Move::PledgeMove < Battle::Move
     return super
   end
 
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if @pledgeCombo
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if @pledgeCombo
+    return base_power
   end
 
   def pbEffectGeneral(user)
@@ -735,4 +662,3 @@ class Battle::Move::PledgeMove < Battle::Move
     return super
   end
 end
-
