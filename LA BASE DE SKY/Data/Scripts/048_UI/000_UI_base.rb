@@ -328,7 +328,7 @@ module UI
     # Input icons in order as they appear in Graphics/UI/input_icons.png.
     INPUT_ICONS_ORDER = [Input::UP, Input::LEFT, Input::DOWN, Input::RIGHT,
                          Input::USE, Input::BACK, Input::ACTION,
-                         Input::QUICK_UP, Input::QUICK_DOWN]
+                         Input::JUMPUP, Input::JUMPDOWN]
 
     include SpriteContainerMixin
 

@@ -339,7 +339,7 @@ end
 #===============================================================================
 # Determine which text colours to use based on the darkness of the background.
 #===============================================================================
-def get_text_colors_for_windowskin(windowskin, color, isDarkSkin, no_ctag = false)
+def get_text_colors_for_windowskin(windowskin, color, isDarkSkin, no_ctag = true)
   if windowskin && !windowskin.disposed? && windowskin.width == 128 && windowskin.height == 128
     color = 0 if color >= 32
     x = 64 + ((color % 8) * 8)

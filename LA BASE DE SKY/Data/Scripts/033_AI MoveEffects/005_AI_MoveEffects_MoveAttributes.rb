@@ -63,7 +63,7 @@ Battle::AI::Handlers::MoveBasePower.add("LowerTargetHPToUserHP",
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("OHKO",
   proc { |move, user, target, ai, battle|
     next true if target.level > user.level
-    next true if !battle.moldBreaker && target.has_active_ability?(:STURDY)
+    next true if target.has_active_ability?(:STURDY) && !target.being_mold_broken?
     next false
   }
 )
@@ -130,7 +130,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DamageTargetAlly",
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("PowerHigherWithUserHP",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -144,7 +144,8 @@ Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
 #
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
-                                         "PowerHigherWithTargetHP")
+                                         "PowerHigherWithTargetHP100",
+                                         "PowerHigherWithTargetHP120")
 
 #===============================================================================
 #
@@ -199,7 +200,7 @@ Battle::AI::Handlers::MoveBasePower.add("PowerHigherWithLessPP",
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("PowerHigherWithTargetWeight",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -235,7 +236,7 @@ Battle::AI::Handlers::MoveBasePower.add("PowerHigherWithConsecutiveUseOnUserSide
     next power * (user.pbOwnSide.effects[PBEffects::EchoedVoiceCounter] + 1)
   }
 )
-Battle::AI::Handlers::MoveEffectScore.add("PowerHigherWithConsecutiveUse",
+Battle::AI::Handlers::MoveEffectScore.add("PowerHigherWithConsecutiveUseOnUserSide",
   proc { |score, move, user, ai, battle|
     # Prefer continuing to use this move
     score += 10 if user.pbOwnSide.effects[PBEffects::EchoedVoiceCounter] > 0
@@ -244,6 +245,18 @@ Battle::AI::Handlers::MoveEffectScore.add("PowerHigherWithConsecutiveUse",
     next score
   }
 )
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
+                                         "PowerHigherWithTimesHit")
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
+                                         "PowerHigherWithFaintedAllies")
 
 #===============================================================================
 #
@@ -258,9 +271,48 @@ Battle::AI::Handlers::MoveBasePower.add("RandomPowerDoublePowerIfTargetUndergrou
 #===============================================================================
 #
 #===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("IncreasePowerInSun",
+  proc { |power, move, user, target, ai, battle|
+    next move.move.pbBasePower(power, user.battler, target.battler)
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("IncreasePowerInElectricTerrain",
+  proc { |power, move, user, target, ai, battle|
+    next move.move.pbBasePower(power, user.battler, target.battler)
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("IncreasePowerIfSuperEffective",
+  proc { |power, move, user, target, ai, battle|
+    calc_type = move.rough_type
+    type_mod = target.effectiveness_of_type_against_battler(calc_type, user, move)
+    next power * 4 / 3 if Effectiveness.super_effective?(type_mod)
+    next power
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveBasePower.add("DoublePower30PercentChance",
+  proc { |power, move, user, target, ai, battle|
+    next (power * 1.3).floor
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("DoublePowerIfTargetHPLessThanHalf",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -293,9 +345,17 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DoublePowerIfTargetAslee
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("DoublePowerIfTargetPoisoned",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("PoisonTarget",
+                                                        "DoublePowerIfTargetPoisonedPoisonTarget")
+Battle::AI::Handlers::MoveBasePower.copy("DoublePowerIfTargetPoisoned",
+                                         "DoublePowerIfTargetPoisonedPoisonTarget")
 
 #===============================================================================
 #
@@ -320,9 +380,17 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DoublePowerIfTargetParal
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("DoublePowerIfTargetStatusProblem",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.copy("BurnTarget",
+                                                        "DoublePowerIfTargetStatusProblemBurnTarget")
+Battle::AI::Handlers::MoveBasePower.copy("DoublePowerIfTargetStatusProblem",
+                                         "DoublePowerIfTargetStatusProblemBurnTarget")
 
 #===============================================================================
 #
@@ -354,7 +422,7 @@ Battle::AI::Handlers::MoveBasePower.copy("DoublePowerIfTargetUnderwater",
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("DoublePowerIfTargetInSky",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -447,14 +515,14 @@ Battle::AI::Handlers::MoveEffectScore.add("EnsureNextCriticalHit",
     crit_stage = -1 if user.battler.pbOwnSide.effects[PBEffects::LuckyChant] > 0
     if crit_stage >= 0 && user.ability_active? && ![:MERCILESS].include?(user.ability_id)
       crit_stage = Battle::AbilityEffects.triggerCriticalCalcFromUser(user.battler.ability,
-         user.battler, user.battler, crit_stage)
+         user.battler, user.battler, move.move, crit_stage)
     end
     if crit_stage >= 0 && user.item_active?
       crit_stage = Battle::ItemEffects.triggerCriticalCalcFromUser(user.battler.item,
-         user.battler, user.battler, crit_stage)
+         user.battler, user.battler, move.move, crit_stage)
     end
     if crit_stage >= 0 && crit_stage < 50
-      crit_stage += user.effects[PBEffects::FocusEnergy]
+      crit_stage += user.criticalHitRate
       crit_stage = [crit_stage, Battle::Move::CRITICAL_HIT_RATIOS.length - 1].min
     end
     if crit_stage < 0 ||
@@ -486,12 +554,12 @@ Battle::AI::Handlers::MoveEffectScore.add("StartPreventCriticalHitsAgainstUserSi
       crit_stage = 0
       if b.ability_active?
         crit_stage = Battle::AbilityEffects.triggerCriticalCalcFromTarget(b.battler.ability,
-           b.battler, b.battler, crit_stage)
+           b.battler, b.battler, move.move, crit_stage)
         next if crit_stage < 0
       end
       if b.item_active?
         crit_stage = Battle::ItemEffects.triggerCriticalCalcFromTarget(b.battler.item,
-           b.battler, b.battler, crit_stage)
+           b.battler, b.battler, move.move, crit_stage)
         next if crit_stage < 0
       end
       user_side_immune = false
@@ -504,16 +572,16 @@ Battle::AI::Handlers::MoveEffectScore.add("StartPreventCriticalHitsAgainstUserSi
       crit_stage = 0
       if crit_stage >= 0 && b.ability_active?
         crit_stage = Battle::AbilityEffects.triggerCriticalCalcFromUser(b.battler.ability,
-           b.battler, user.battler, crit_stage)
+           b.battler, user.battler, move.move, crit_stage)
         next if crit_stage < 0
       end
       if crit_stage >= 0 && b.item_active?
         crit_stage = Battle::ItemEffects.triggerCriticalCalcFromUser(b.battler.item,
-           b.battler, user.battler, crit_stage)
+           b.battler, user.battler, move.move, crit_stage)
         next if crit_stage < 0
       end
       if crit_stage >= 0 && crit_stage < 50
-        crit_stage += b.effects[PBEffects::FocusEnergy]
+        crit_stage += b.criticalHitRate
         crit_stage += 1 if b.check_for_move { |m| m.highCriticalRate? }
         crit_stage = 99 if b.check_for_move { |m| m.pbCritialOverride(b.battler, user.battler) > 0 }
         crit_stage = [crit_stage, Battle::Move::CRITICAL_HIT_RATIOS.length - 1].min
@@ -647,6 +715,8 @@ Battle::AI::Handlers::MoveEffectScore.add("StartWeakenPhysicalDamageAgainstUserS
   proc { |score, move, user, ai, battle|
     # Doesn't stack with Aurora Veil
     next Battle::AI::MOVE_USELESS_SCORE if user.pbOwnSide.effects[PBEffects::AuroraVeil] > 0
+    # Prefer if the user is newly in battle
+    score += 15 if user.turnCount < 2
     # Don't prefer the lower the user's HP is
     if ai.trainer.has_skill_flag?("HPAware") && battle.pbAbleNonActiveCount(user.idxOwnSide) == 0
       if user.hp <= user.totalhp / 2
@@ -677,6 +747,8 @@ Battle::AI::Handlers::MoveEffectScore.add("StartWeakenSpecialDamageAgainstUserSi
   proc { |score, move, user, ai, battle|
     # Doesn't stack with Aurora Veil
     next Battle::AI::MOVE_USELESS_SCORE if user.pbOwnSide.effects[PBEffects::AuroraVeil] > 0
+    # Prefer if the user is newly in battle
+    score += 15 if user.turnCount < 2
     # Don't prefer the lower the user's HP is
     if ai.trainer.has_skill_flag?("HPAware") && battle.pbAbleNonActiveCount(user.idxOwnSide) == 0
       if user.hp <= user.totalhp / 2
@@ -701,7 +773,7 @@ Battle::AI::Handlers::MoveEffectScore.add("StartWeakenSpecialDamageAgainstUserSi
 Battle::AI::Handlers::MoveFailureCheck.add("StartWeakenDamageAgainstUserSideIfHail",
   proc { |move, user, ai, battle|
     next true if user.pbOwnSide.effects[PBEffects::AuroraVeil] > 0
-    next true if user.battler.effectiveWeather != :Hail
+    next true if ![:Hail, :Snowstorm].include?(user.battler.effectiveWeather)
     next false
   }
 )
@@ -710,6 +782,8 @@ Battle::AI::Handlers::MoveEffectScore.add("StartWeakenDamageAgainstUserSideIfHai
     # Doesn't stack with Reflect/Light Screen
     next Battle::AI::MOVE_USELESS_SCORE if user.pbOwnSide.effects[PBEffects::Reflect] > 0 &&
                                            user.pbOwnSide.effects[PBEffects::LightScreen] > 0
+    # Prefer if the user is newly in battle
+    score += 15 if user.turnCount < 2
     # Don't prefer the lower the user's HP is
     if ai.trainer.has_skill_flag?("HPAware") && battle.pbAbleNonActiveCount(user.idxOwnSide) == 0
       if user.hp <= user.totalhp / 2
@@ -757,7 +831,7 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUser",
     ai.each_foe_battler(user.side) do |b, i|
       next if !b.can_attack?
       next if !b.check_for_move { |m| m.canProtectAgainst? }
-      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.contactMove? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
       useless = false
       # General preference
       score += 7
@@ -801,16 +875,73 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserBanefulBunker",
     ai.each_foe_battler(user.side) do |b, i|
       next if !b.can_attack?
       next if !b.check_for_move { |m| m.canProtectAgainst? }
-      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.contactMove? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
       useless = false
       # General preference
       score += 7
       # Prefer if the foe is likely to be poisoned by this move
-      if b.check_for_move { |m| m.contactMove? }
+      if b.check_for_move { |m| m.pbContactMove?(b.battler) }
         poison_score = Battle::AI::Handlers.apply_move_effect_against_target_score("PoisonTarget",
            0, move, user, b, ai, battle)
         if poison_score != Battle::AI::MOVE_USELESS_SCORE
           score += poison_score / 2   # Halved because we don't know what move b will use
+          if user.has_active_ability?(:POISONPUPPETEER)
+            confuse_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ConfuseTarget",
+               0, move, user, target, ai, battle)
+            score += confuse_score / 3
+          end
+        end
+      end
+      # Prefer if the foe is in the middle of using a two turn attack
+      score += 15 if b.effects[PBEffects::TwoTurnAttack] &&
+                     GameData::Move.get(b.effects[PBEffects::TwoTurnAttack]).flags.any? { |f| f[/^CanProtect$/i] }
+      # Prefer if foe takes EOR damage, don't prefer if they have EOR healing
+      b_eor_damage = b.rough_end_of_round_damage
+      if b_eor_damage > 0
+        score += 8
+      elsif b_eor_damage < 0
+        score -= 8
+      end
+    end
+    next Battle::AI::MOVE_USELESS_SCORE if useless
+    # Prefer if the user has EOR healing, don't prefer if they take EOR damage
+    user_eor_damage = user.rough_end_of_round_damage
+    if user_eor_damage >= user.hp
+      next Battle::AI::MOVE_USELESS_SCORE
+    elsif user_eor_damage > 0
+      score -= 8
+    elsif user_eor_damage < 0
+      score += 8
+    end
+    # Don't prefer if the user used a protection move last turn, making this one
+    # less likely to work
+    score -= (user.effects[PBEffects::ProtectRate] - 1) * ((Settings::MECHANICS_GENERATION >= 6) ? 15 : 10)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesBurningBulwark",
+  proc { |score, move, user, ai, battle|
+    # Useless if the success chance is 25% or lower
+    next Battle::AI::MOVE_USELESS_SCORE if user.effects[PBEffects::ProtectRate] >= 4
+    # Score changes for each foe
+    useless = true
+    ai.each_foe_battler(user.side) do |b, i|
+      next if !b.can_attack?
+      next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
+      useless = false
+      # General preference
+      score += 7
+      # Prefer if the foe is likely to be burned by this move
+      if b.check_for_move { |m| m.pbContactMove?(b.battler) }
+        burn_score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
+           0, move, user, b, ai, battle)
+        if burn_score != Battle::AI::MOVE_USELESS_SCORE
+          score += burn_score / 2   # Halved because we don't know what move b will use
         end
       end
       # Prefer if the foe is in the middle of using a two turn attack
@@ -853,12 +984,12 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesKingsShie
     ai.each_foe_battler(user.side) do |b, i|
       next if !b.can_attack?
       next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
-      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.contactMove? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
       useless = false
       # General preference
       score += 7
       # Prefer if the foe's Attack can be lowered by this move
-      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.contactMove? }
+      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.pbContactMove?(b.battler) }
         drop_score = ai.get_score_for_target_stat_drop(
           0, b, [:ATTACK, (Settings::MECHANICS_GENERATION >= 8) ? 1 : 2], false)
         score += drop_score / 2   # Halved because we don't know what move b will use
@@ -906,13 +1037,62 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesObstruct"
     ai.each_foe_battler(user.side) do |b, i|
       next if !b.can_attack?
       next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
-      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.contactMove? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
       useless = false
       # General preference
       score += 7
-      # Prefer if the foe's Attack can be lowered by this move
-      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.contactMove? }
+      # Prefer if the foe's Defense can be lowered by this move
+      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.pbContactMove?(b.battler) }
         drop_score = ai.get_score_for_target_stat_drop(0, b, [:DEFENSE, 2], false)
+        score += drop_score / 2   # Halved because we don't know what move b will use
+      end
+      # Prefer if the foe is in the middle of using a two turn attack
+      score += 15 if b.effects[PBEffects::TwoTurnAttack] &&
+                     GameData::Move.get(b.effects[PBEffects::TwoTurnAttack]).flags.any? { |f| f[/^CanProtect$/i] }
+      # Prefer if foe takes EOR damage, don't prefer if they have EOR healing
+      b_eor_damage = b.rough_end_of_round_damage
+      if b_eor_damage > 0
+        score += 8
+      elsif b_eor_damage < 0
+        score -= 8
+      end
+    end
+    next Battle::AI::MOVE_USELESS_SCORE if useless
+    # Prefer if the user has EOR healing, don't prefer if they take EOR damage
+    user_eor_damage = user.rough_end_of_round_damage
+    if user_eor_damage >= user.hp
+      next Battle::AI::MOVE_USELESS_SCORE
+    elsif user_eor_damage > 0
+      score -= 8
+    elsif user_eor_damage < 0
+      score += 8
+    end
+    # Don't prefer if the user used a protection move last turn, making this one
+    # less likely to work
+    score -= (user.effects[PBEffects::ProtectRate] - 1) * ((Settings::MECHANICS_GENERATION >= 6) ? 15 : 10)
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromDamagingMovesSilkTrap",
+  proc { |score, move, user, ai, battle|
+    # Useless if the success chance is 25% or lower
+    next Battle::AI::MOVE_USELESS_SCORE if user.effects[PBEffects::ProtectRate] >= 4
+    # Score changes for each foe
+    useless = true
+    ai.each_foe_battler(user.side) do |b, i|
+      next if !b.can_attack?
+      next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
+      useless = false
+      # General preference
+      score += 7
+      # Prefer if the foe's Speed can be lowered by this move
+      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.pbContactMove?(b.battler) }
+        drop_score = ai.get_score_for_target_stat_drop(0, b, [:SPEED, 1], false)
         score += drop_score / 2   # Halved because we don't know what move b will use
       end
       # Prefer if the foe is in the middle of using a two turn attack
@@ -955,12 +1135,12 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserFromTargetingMovesSpikyShi
     ai.each_foe_battler(user.side) do |b, i|
       next if !b.can_attack?
       next if !b.check_for_move { |m| m.canProtectAgainst? }
-      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.contactMove? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
       useless = false
       # General preference
       score += 7
       # Prefer if this move will deal damage
-      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.contactMove? }
+      if b.battler.affectedByContactEffect? && b.check_for_move { |m| m.pbContactMove?(b.battler) }
         score += 5
       end
       # Prefer if the foe is in the middle of using a two turn attack
@@ -1006,7 +1186,7 @@ Battle::AI::Handlers::MoveEffectScore.add("ProtectUserSideFromDamagingMovesIfUse
     ai.each_foe_battler(user.side) do |b, i|
       next if !b.can_attack?
       next if !b.check_for_move { |m| m.damagingMove? && m.canProtectAgainst? }
-      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.contactMove? }
+      next if b.has_active_ability?(:UNSEENFIST) && b.check_for_move { |m| m.pbContactMove?(b.battler) }
       useless = false
       # General preference
       score += 7
@@ -1218,7 +1398,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilQuarterOfDamageDea
       foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
       next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
     end
-    score -= 25 * [dmg, user.hp].min / user.hp
+    score -= 20 * [dmg, user.hp].min / user.hp
     next score
   }
 )
@@ -1236,9 +1416,10 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
         foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
         next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
       end
-      score -= 25 * [dmg, user.hp].min / user.hp
+      score -= 20 * [dmg, user.hp].min / user.hp
     end
     # Score for paralysing
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     paralyze_score = Battle::AI::Handlers.apply_move_effect_against_target_score("ParalyzeTarget",
        0, move, user, target, ai, battle)
     score += paralyze_score if paralyze_score != Battle::AI::MOVE_USELESS_SCORE
@@ -1259,9 +1440,10 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
         foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
         next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
       end
-      score -= 25 * [dmg, user.hp].min / user.hp
+      score -= 20 * [dmg, user.hp].min / user.hp
     end
     # Score for burning
+    next score if move.move.addlEffect > 0 && !target.battler.affectedByAdditionalEffects?
     burn_score = Battle::AI::Handlers.apply_move_effect_against_target_score("BurnTarget",
        0, move, user, target, ai, battle)
     score += burn_score if burn_score != Battle::AI::MOVE_USELESS_SCORE
@@ -1275,13 +1457,30 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilThirdOfDamageDealt
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilHalfOfDamageDealt",
   proc { |score, move, user, target, ai, battle|
     next score if !user.battler.takesIndirectDamage? || user.has_active_ability?(:ROCKHEAD)
-    dmg = move.rough_damage / 2
+    dmg = (move.rough_damage / 2.0).round
     if dmg >= user.hp
       reserves = battle.pbAbleNonActiveCount(user.idxOwnSide)
       foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
       next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
     end
-    score -= 25 * [dmg, user.hp].min / user.hp
+    score -= 20 * [dmg, user.hp].min / user.hp
+    next score
+  }
+)
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("RecoilHalfOfTotalHP",
+  proc { |score, move, user, target, ai, battle|
+    next score if !user.battler.takesIndirectDamage? || user.has_active_ability?(:ROCKHEAD)
+    dmg = (user.totalhp / 2.0).round
+    if dmg >= user.hp
+      reserves = battle.pbAbleNonActiveCount(user.idxOwnSide)
+      foes     = battle.pbAbleNonActiveCount(user.idxOpposingSide)
+      next Battle::AI::MOVE_USELESS_SCORE if reserves <= foes
+    end
+    score -= 20 * [dmg, user.hp].min / user.hp
     next score
   }
 )
@@ -1363,7 +1562,9 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("EnsureNextMoveAlwaysHits
 #===============================================================================
 Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartNegateTargetEvasionStatStageAndGhostImmunity",
   proc { |score, move, user, target, ai, battle|
-    next Battle::AI::MOVE_USELESS_SCORE if target.effects[PBEffects::Foresight] || user.has_active_ability?(:SCRAPPY)
+    next Battle::AI::MOVE_USELESS_SCORE if target.effects[PBEffects::Foresight] ||
+                                           user.has_active_ability?(:SCRAPPY) ||
+                                           user.has_active_ability?(:MINDSEYE)
     # Check if the user knows any moves that would benefit from negating the
     # target's Ghost type immunity
     if target.has_type?(:GHOST)
@@ -1411,9 +1612,20 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("StartNegateTargetEvasion
 #===============================================================================
 #
 #===============================================================================
+# TypeDependsOnUserOgerponForm
+
+#===============================================================================
+#
+#===============================================================================
+Battle::AI::Handlers::MoveEffectScore.copy("RemoveScreens",
+                                           "TypeDependsOnUserTaurosFormRemoveScreens")
+
+#===============================================================================
+#
+#===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("TypeDependsOnUserIVs",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -1430,7 +1642,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("TypeAndPowerDependOnUserBerry",
 )
 Battle::AI::Handlers::MoveBasePower.add("TypeAndPowerDependOnUserBerry",
   proc { |power, move, user, target, ai, battle|
-    ret = move.move.pbBaseDamage(1, user.battler, target.battler)
+    ret = move.move.pbBasePower(1, user.battler, target.battler)
     next (ret == 1) ? 0 : ret
   }
 )
@@ -1466,7 +1678,7 @@ Battle::AI::Handlers::MoveEffectScore.copy("RaiseUserSpeed1",
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("TypeAndPowerDependOnWeather",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -1502,11 +1714,13 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("TargetMovesBecomeElectri
       eff *= 1.5 if target.has_type?(m_type)   # STAB
       case m_type
       when :FIRE
-        eff = 0 if user.has_active_ability?(:FLASHFIRE)
+        eff = 0 if user.has_active_ability?([:FLASHFIRE, :WELLBAKEDBODY])
       when :GRASS
         eff = 0 if user.has_active_ability?(:SAPSIPPER)
+      when :GROUND
+        eff = 0 if user.has_active_ability?(:EARTHEATER)
       when :WATER
-        eff = 0 if user.has_active_ability?([:STORMDRAIN, :WATERABSORB])
+        eff = 0 if user.has_active_ability?([:STORMDRAIN, :WATERABSORB, :DRYSKIN])
       end
       if eff > electric_eff
         electric_type_better += 1
@@ -1557,37 +1771,3 @@ Battle::AI::Handlers::MoveEffectScore.add("NormalMovesBecomeElectric",
     next score
   }
 )
-
-#===============================================================================
-# Last Respects
-#===============================================================================
-Battle::AI::Handlers::MoveBasePower.add("IncreasePowerEachFaintedAlly",
-  proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
-  }
-)
-
-#===============================================================================
-# Rage Fist
-#===============================================================================
-Battle::AI::Handlers::MoveBasePower.add("IncreasePowerEachTimeHit",
-  proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
-  }
-)
-
-#===============================================================================
-# Collision Course, Electro Drift
-#===============================================================================
-Battle::AI::Handlers::MoveBasePower.add("IncreasePowerSuperEffective",
-  proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
-  }
-)
-
-#===============================================================================
-# Hard Press
-#===============================================================================
-Battle::AI::Handlers::MoveBasePower.copy("PowerHigherWithUserHP",
-                                         "PowerHigherWithTargetHP100PowerRange")
-
