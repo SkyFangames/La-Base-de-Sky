@@ -167,9 +167,6 @@ module RecordedBattlePlaybackModule
     @internalBattle        = @properties["internalBattle"]
     @field.weather         = @properties["weather"]
     @field.weatherDuration = @properties["weatherDuration"]
-    @canRun                = @properties["canRun"]
-    @switchStyle           = @properties["switchStyle"]
-    @showAnims             = @properties["showAnims"]
     @backdrop              = @properties["backdrop"]
     @backdropBase          = @properties["backdropBase"]
     @time                  = @properties["time"]
@@ -285,4 +282,3 @@ module RecordedBattle::PlaybackHelper
     return ret
   end
 end
-

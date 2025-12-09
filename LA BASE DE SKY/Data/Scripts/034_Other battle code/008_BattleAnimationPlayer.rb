@@ -442,7 +442,7 @@ class PBAnimation < Array
   end
 
   def [](i)
-    @array[i]
+    return @array[i]
   end
 
   def []=(i, value)
@@ -450,11 +450,11 @@ class PBAnimation < Array
   end
 
   def insert(*arg)
-    @array.insert(*arg)
+    return @array.insert(*arg)
   end
 
   def delete_at(*arg)
-    @array.delete_at(*arg)
+    return @array.delete_at(*arg)
   end
 
   def resize(len)
@@ -478,7 +478,7 @@ class PBAnimation < Array
     @array[pos][1] = pbCreateCel(Battle::Scene::FOCUSTARGET_X, Battle::Scene::FOCUSTARGET_Y, -2)
     @array[pos][1][AnimFrame::FOCUS]  = 1
     @array[pos][1][AnimFrame::LOCKED] = 1
-    @array[pos]
+    return @array[pos]
   end
 
   def playTiming(frame, bgGraphic, bgColor, foGraphic, foColor, oldbg = [], oldfo = [], user = nil)

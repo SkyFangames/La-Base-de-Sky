@@ -98,6 +98,19 @@ module Settings
     # ser capturadas para proporcionar la mayor probabilidad de captura crítica de 
     # 2.5x), y puede haber menos especies en tu juego.
     ENABLE_CRITICAL_CAPTURES             = (MECHANICS_GENERATION >= 5)
+    # Si es true, se aplica un bono a la tasa de captura para Pokémon debajo de nivel 13.
+    CATCH_RATE_BONUS_FOR_LOW_LEVEL       = (MECHANICS_GENERATION >= 8)
+    # Si el jugador no tiene al menos este número de Medallas de Gimnasio, la
+    # probabilidad de capturar cualquier Pokémon salvaje cuyo nivel sea mayor que
+    # el del Pokémon del jugador se dividirá por 10. 0 significa que esta penalización
+    # nunca se aplica. Ten en cuenta que esto no debe usarse con la configuración
+    # que aparece a continuación.
+    NUM_BADGES_TO_NOT_MAKE_HIGHER_LEVEL_CAPTURES_HARDER = (MECHANICS_GENERATION == 8) ? 8 : 0
+    # Si es true, los Pokémon salvajes que desobedecerían al jugador por su nivel
+    # (excepto si están dentro de 5 niveles del nivel máximo de obediencia) serán
+    # más difíciles de capturar. Ten en cuenta que esto no debe usarse con la
+    # configuración directamente anterior.
+    CATCH_RATE_PENALTY_IF_POKEMON_WILL_NOT_OBEY         = (MECHANICS_GENERATION >= 9)
     # Si es true, los Pokémon ganan Exp por capturar a un Pokémon.
     GAIN_EXP_FOR_CAPTURE                 = (MECHANICS_GENERATION >= 6)
     # Si es true, se le pregunta al jugador qué hacer con un Pokémon recién capturado 

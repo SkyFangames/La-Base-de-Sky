@@ -50,13 +50,9 @@ module Battle::CatchAndStoreMixin
             if idx < party_size - 1
               @initialItems[0][idx] = @initialItems[0][idx + 1]
               $game_temp.party_levels_before_battle[idx] = $game_temp.party_levels_before_battle[idx + 1]
-              $game_temp.party_critical_hits_dealt[idx] = $game_temp.party_critical_hits_dealt[idx + 1]
-              $game_temp.party_direct_damage_taken[idx] = $game_temp.party_direct_damage_taken[idx + 1]
             else
               @initialItems[0][idx] = nil
               $game_temp.party_levels_before_battle[idx] = nil
-              $game_temp.party_critical_hits_dealt[idx] = nil
-              $game_temp.party_direct_damage_taken[idx] = nil
             end
           end
           break
@@ -175,7 +171,7 @@ module Battle::CatchAndStoreMixin
       end
       battler.pbReset
       if pbAllFainted?(battler.index)
-        @decision = (trainerBattle?) ? 1 : 4   # Battle ended by win/capture
+        @decision = (trainerBattle?) ? Battle::Outcome::WIN : Battle::Outcome::CATCH
       end
       # Modify the Pokémon's properties because of the capture
       if GameData::Item.get(ball).is_snag_ball?
@@ -201,66 +197,89 @@ module Battle::CatchAndStoreMixin
     end
   end
 
-  #=============================================================================
-  # Calculate how many shakes a thrown Poké Ball will make (4 = capture)
-  #=============================================================================
-  def pbCaptureCalc(pkmn, battler, catch_rate, ball)
+  #-----------------------------------------------------------------------------
+  # Calculate how many shakes a thrown Poké Ball will make (4 = capture).
+  #-----------------------------------------------------------------------------
+
+  def pbCaptureCalc(pkmn, battler, base_catch_rate, ball)
+    # Certain capture checks
     return 4 if $DEBUG && Input.press?(Input::CTRL)
+    return 4 if Battle::PokeBallEffects.isUnconditional?(ball, self, battler)
+    return 4 if @rules[:certain_capture]
     # Get a catch rate if one wasn't provided
-    catch_rate = pkmn.species_data.catch_rate if !catch_rate
+    base_catch_rate = pkmn.species_data.catch_rate if !base_catch_rate
     # Modify catch_rate depending on the Poké Ball's effect
     if !pkmn.species_data.has_flag?("UltraBeast") || ball == :BEASTBALL
-      catch_rate = Battle::PokeBallEffects.modifyCatchRate(ball, catch_rate, self, battler)
+      base_catch_rate = Battle::PokeBallEffects.modifyCatchRate(ball, base_catch_rate, self, battler)
     else
-      catch_rate /= 10
+      base_catch_rate = [base_catch_rate / 10.0, 1].max
     end
-    # First half of the shakes calculation
-    a = battler.totalhp
-    b = battler.hp
-    x = (((3 * a) - (2 * b)) * catch_rate.to_f) / (3 * a)
-    # Calculation modifiers
+    # Modify catch_rate depending on HP
+    mod_catch_rate = base_catch_rate * 4096
+    mod_catch_rate *= ((3 * battler.totalhp) - (2 * battler.hp)) / (3 * battler.totalhp).to_f
+    # Higher wild level penalty if the player can't make the Pokémon obey
+    if Settings::CATCH_RATE_PENALTY_IF_POKEMON_WILL_NOT_OBEY &&
+       pkmn.level > battler.pbMaxLevelBadgeObedience + 5
+      badges_needed = battler.pbBadgesNeededToObey
+      mod_catch_rate *= 0.8**badges_needed if badges_needed > 0
+    end
+    # Floor the mod_catch_rate
+    mod_catch_rate = mod_catch_rate.floor
+    mod_catch_rate = 1 if mod_catch_rate < 1
+    # Status bonus
     if battler.status == :SLEEP || battler.status == :FROZEN
-      x *= 2.5
+      mod_catch_rate *= 2.5
     elsif battler.status != :NONE
-      x *= 1.5
+      mod_catch_rate *= 1.5
     end
-    x = x.floor
-    x = 1 if x < 1
+    # Low wild level bonus (Gen 9's version)
+    if Settings::CATCH_RATE_BONUS_FOR_LOW_LEVEL
+      mod_catch_rate *= [(36 - (2 * pkmn.level)) / 10.0, 1].max
+    end
+    # Higher wild level penalty if the player doesn't have enough Gym Badges (Gen 8 only)
+    if Settings::NUM_BADGES_TO_NOT_MAKE_HIGHER_LEVEL_CAPTURES_HARDER > $player.badge_count
+      max_player_level = 0
+      allSameSideBattlers(0, true).each { |b| max_player_level = b.level if b.level > max_player_level }
+      mod_catch_rate /= 10.0 if pkmn.level > max_player_level
+    end
+    # Floor the mod_catch_rate
+    mod_catch_rate = mod_catch_rate.floor
+    mod_catch_rate = 1 if mod_catch_rate < 1
     # Definite capture, no need to perform randomness checks
-    return 4 if x >= 255 || Battle::PokeBallEffects.isUnconditional?(ball, self, battler)
-    # Second half of the shakes calculation
-    y = (65_536 / ((255.0 / x)**0.1875)).floor
+    return 4 if mod_catch_rate >= 255 * 4096
+    # Second half of the shakes calculation (from Gen 6)
+    shake_chance = (65_536 * ((mod_catch_rate.to_f / (255 * 4096))**0.1875)).floor
     # Critical capture check
     if Settings::ENABLE_CRITICAL_CAPTURES
       dex_modifier = 0
-      numOwned = $player.pokedex.owned_count
-      if numOwned > 600
+      num_owned = $player.pokedex.owned_count
+      if num_owned > 600
         dex_modifier = 5
-      elsif numOwned > 450
+      elsif num_owned > 450
         dex_modifier = 4
-      elsif numOwned > 300
+      elsif num_owned > 300
         dex_modifier = 3
-      elsif numOwned > 150
+      elsif num_owned > 150
         dex_modifier = 2
-      elsif numOwned > 30
+      elsif num_owned > 30
         dex_modifier = 1
       end
       dex_modifier *= 2 if $bag.has?(:CATCHINGCHARM)
-      c = x * dex_modifier / 12
+      critical_chance = mod_catch_rate * dex_modifier / 12
       # Calculate the number of shakes
-      if c > 0 && pbRandom(256) < c
+      if critical_chance > 0 && pbRandom(256) < critical_chance
         @criticalCapture = true
-        return 4 if pbRandom(65_536) < y
+        return 4 if pbRandom(65_536) < shake_chance
         return 0
       end
     end
     # Calculate the number of shakes
-    numShakes = 0
+    num_shakes = 0
     4.times do |i|
-      break if numShakes < i
-      numShakes += 1 if pbRandom(65_536) < y
+      break if num_shakes < i
+      num_shakes += 1 if pbRandom(65_536) < shake_chance
     end
-    return numShakes
+    return num_shakes
   end
 end
 
@@ -270,4 +289,3 @@ end
 class Battle
   include Battle::CatchAndStoreMixin
 end
-

@@ -259,6 +259,9 @@ module RandomDungeon
       :upper_wall_in_7        => Console.markup_style("~", bg: :gray),
       :upper_wall_in_9        => Console.markup_style("~", bg: :gray)
     }
+    FLOOR_LAYER      = 0
+    FLOOR_DECO_LAYER = 1
+    WALL_LAYER       = 2
 
     def initialize(width, height)
       @width  = width
@@ -277,11 +280,10 @@ module RandomDungeon
 
     def value(x, y)
       return :void if x < 0 || x >= @width || y < 0 || y >= @height
-      ret = :void
       [2, 1, 0].each do |layer|
         return @array[layer][(y * @width) + x] if @array[layer][(y * @width) + x] != :none
       end
-      return ret
+      return :void
     end
 
     def clear
@@ -291,13 +293,13 @@ module RandomDungeon
     end
 
     def set_wall(x, y, value)
-      @array[0][(y * @width) + x] = :room
-      @array[1][(y * @width) + x] = value
+      @array[FLOOR_LAYER][(y * @width) + x] = :room
+      @array[WALL_LAYER][(y * @width) + x] = value
     end
 
     def set_ground(x, y, value)
-      @array[0][(y * @width) + x] = value
-      @array[1][(y * @width) + x] = :none
+      @array[FLOOR_LAYER][(y * @width) + x] = value
+      @array[WALL_LAYER][(y * @width) + x] = :none
     end
 
     def write
@@ -343,6 +345,9 @@ module RandomDungeon
       6, 13, 13, 13, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0,
       19, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0
     ]
+    FLOOR_LAYER      = 0
+    FLOOR_DECO_LAYER = 1
+    WALL_LAYER       = 2
 
     def initialize(width, height, tileset, parameters = nil)
       @tileset     = tileset
@@ -394,7 +399,7 @@ module RandomDungeon
       return @map_data.write
     end
 
-    #===========================================================================
+    #---------------------------------------------------------------------------
 
     # Returns whether the given coordinates are a room floor that isn't too
     # close to a corridor. For positioning events/the player upon entering.
@@ -420,10 +425,10 @@ module RandomDungeon
     end
 
     def coord_is_ground?(x, y)
-      return tile_is_ground?(@map_data[x, y, 0]) && !tile_is_wall?(@map_data[x, y, 1])
+      return tile_is_ground?(@map_data[x, y, FLOOR_LAYER]) && !tile_is_wall?(@map_data[x, y, WALL_LAYER])
     end
 
-    #===========================================================================
+    #---------------------------------------------------------------------------
 
     def generate
       @rng_seed = @parameters.rng_seed || $PokemonGlobal.dungeon_rng_seed || Random.new_seed
@@ -494,7 +499,7 @@ module RandomDungeon
       errors = []
       (maxHeight + 2).times do |y|
         (maxWidth + 2).times do |x|
-          next if !tile_is_wall?(@map_data[@buffer_x + x - 1, @buffer_y + y - 1, 1])
+          next if !tile_is_wall?(@map_data[@buffer_x + x - 1, @buffer_y + y - 1, WALL_LAYER])
           paint_walls_around_ground(@buffer_x + x - 1, @buffer_y + y - 1, 1, errors)
         end
       end
@@ -505,7 +510,7 @@ module RandomDungeon
       end
     end
 
-    #===========================================================================
+    #---------------------------------------------------------------------------
 
     # Determines whether all floor tiles are contiguous. Sets @need_redraw if
     # there are 2+ floor regions that are isolated from each other.
@@ -516,7 +521,7 @@ module RandomDungeon
       maxHeight = @usable_height - (@buffer_y * 2)
       maxHeight.times do |y|
         maxWidth.times do |x|
-          next if !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, 0])
+          next if !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, FLOOR_LAYER])
           start = [x, y]
           break
         end
@@ -537,9 +542,9 @@ module RandomDungeon
         checking = to_check.shift
         x1, x2, y, dy = checking
         x = x1
-        if !visited[(y * maxWidth) + x] && tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, 0])
+        if !visited[(y * maxWidth) + x] && tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, FLOOR_LAYER])
           loop do
-            break if visited[(y * maxWidth) + x - 1] || !tile_is_ground?(@map_data[x - 1 + @buffer_x, y + @buffer_y, 0])
+            break if visited[(y * maxWidth) + x - 1] || !tile_is_ground?(@map_data[x - 1 + @buffer_x, y + @buffer_y, FLOOR_LAYER])
             visited[(y * maxWidth) + x - 1] = true
             x -= 1
           end
@@ -548,7 +553,7 @@ module RandomDungeon
         loop do
           break if x1 > x2
           loop do
-            break if visited[(y * maxWidth) + x1] || !tile_is_ground?(@map_data[x1 + @buffer_x, y + @buffer_y, 0])
+            break if visited[(y * maxWidth) + x1] || !tile_is_ground?(@map_data[x1 + @buffer_x, y + @buffer_y, FLOOR_LAYER])
             visited[(y * maxWidth) + x1] = true
             to_check.push([x, x1, y + dy, dy])
             to_check.push([x2 + 1, x1, y - dy, -dy]) if x1 > x2
@@ -557,7 +562,7 @@ module RandomDungeon
           x1 += 1
           loop do
             break if x1 >= x2
-            break if !visited[(y * maxWidth) + x1] && tile_is_ground?(@map_data[x1 + @buffer_x, y + @buffer_y, 0])
+            break if !visited[(y * maxWidth) + x1] && tile_is_ground?(@map_data[x1 + @buffer_x, y + @buffer_y, FLOOR_LAYER])
             x1 += 1
           end
           x = x1
@@ -566,7 +571,7 @@ module RandomDungeon
       # Check for unflooded floor tiles
       maxHeight.times do |y|
         maxWidth.times do |x|
-          next if visited[(y * maxWidth) + x] || !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, 0])
+          next if visited[(y * maxWidth) + x] || !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, FLOOR_LAYER])
           @need_redraw = true
           break
         end
@@ -612,50 +617,50 @@ module RandomDungeon
         # -o-   this tile
         # f--   floor tile
         if @map_data.value(x - 1, y - 1) == :void
-          @map_data[x, y, 1] = tile[:wall_in_3]
-          @map_data[x - 1, y, 1] = tile[:wall_in_7]
-          @map_data[x, y - 1, 1] = tile[:wall_in_7]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_3]
+          @map_data[x - 1, y, WALL_LAYER] = tile[:wall_in_7]
+          @map_data[x, y - 1, WALL_LAYER] = tile[:wall_in_7]
           @map_data.set_wall(x - 1, y - 1, tile[:wall_7])
         elsif @map_data.value(x + 1, y + 1) == :void
-          @map_data[x, y, 1] = tile[:wall_in_7]
-          @map_data[x + 1, y, 1] = tile[:wall_in_3]
-          @map_data[x, y + 1, 1] = tile[:wall_in_3]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_7]
+          @map_data[x + 1, y, WALL_LAYER] = tile[:wall_in_3]
+          @map_data[x, y + 1, WALL_LAYER] = tile[:wall_in_3]
           @map_data.set_wall(x + 1, y + 1, tile[:wall_3])
-        elsif @map_data[x, y - 1, 1] == tile[:wall_4] && @map_data[x - 1, y, 1] == tile[:wall_in_9]
-          @map_data[x, y, 1] = tile[:wall_in_3]
-          @map_data[x, y - 1, 1] = tile[:wall_in_7]
+        elsif @map_data[x, y - 1, WALL_LAYER] == tile[:wall_4] && @map_data[x - 1, y, WALL_LAYER] == tile[:wall_in_9]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_3]
+          @map_data[x, y - 1, WALL_LAYER] = tile[:wall_in_7]
           @map_data.set_ground(x - 1, y, tile[:corridor])
-          @map_data[x - 1, y - 1, 1] = (@map_data[x - 1, y - 1, 1] == tile[:wall_6]) ? tile[:wall_in_9] : tile[:wall_8]
-        elsif @map_data[x, y - 1, 1] == tile[:wall_in_1] && @map_data[x - 1, y, 1] == tile[:wall_8]
-          @map_data[x, y, 1] = tile[:wall_in_3]
+          @map_data[x - 1, y - 1, WALL_LAYER] = (@map_data[x - 1, y - 1, WALL_LAYER] == tile[:wall_6]) ? tile[:wall_in_9] : tile[:wall_8]
+        elsif @map_data[x, y - 1, WALL_LAYER] == tile[:wall_in_1] && @map_data[x - 1, y, WALL_LAYER] == tile[:wall_8]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_3]
           @map_data.set_ground(x, y - 1, tile[:corridor])
-          @map_data[x - 1, y, 1] = tile[:wall_in_7]
-          @map_data[x - 1, y - 1, 1] = (@map_data[x - 1, y - 1, 1] == tile[:wall_2]) ? tile[:wall_in_1] : tile[:wall_4]
-        elsif @map_data[x, y - 1, 1] == tile[:wall_in_1] && @map_data[x - 1, y, 1] == tile[:wall_in_9]
-          @map_data[x, y, 1] = tile[:wall_in_3]
+          @map_data[x - 1, y, WALL_LAYER] = tile[:wall_in_7]
+          @map_data[x - 1, y - 1, WALL_LAYER] = (@map_data[x - 1, y - 1, WALL_LAYER] == tile[:wall_2]) ? tile[:wall_in_1] : tile[:wall_4]
+        elsif @map_data[x, y - 1, WALL_LAYER] == tile[:wall_in_1] && @map_data[x - 1, y, WALL_LAYER] == tile[:wall_in_9]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_3]
           @map_data.set_ground(x, y - 1, tile[:corridor])
           @map_data.set_ground(x - 1, y, tile[:corridor])
-          if @map_data[x - 1, y - 1, 1] == :error
-            @map_data[x - 1, y - 1, 1] = tile[:wall_in_7]
+          if @map_data[x - 1, y - 1, WALL_LAYER] == :error
+            @map_data[x - 1, y - 1, WALL_LAYER] = tile[:wall_in_7]
           else
             @map_data.set_ground(x - 1, y - 1, tile[:corridor])
           end
-        elsif @map_data[x, y + 1, 1] == tile[:wall_6] && @map_data[x + 1, y, 1] == tile[:wall_in_1]
-          @map_data[x, y, 1] = tile[:wall_in_7]
-          @map_data[x, y + 1, 1] = tile[:wall_in_3]
+        elsif @map_data[x, y + 1, WALL_LAYER] == tile[:wall_6] && @map_data[x + 1, y, WALL_LAYER] == tile[:wall_in_1]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_7]
+          @map_data[x, y + 1, WALL_LAYER] = tile[:wall_in_3]
           @map_data.set_ground(x + 1, y, tile[:corridor])
-          @map_data[x + 1, y + 1, 1] = (@map_data[x + 1, y + 1, 1] == tile[:wall_4]) ? tile[:wall_in_1] : tile[:wall_2]
-        elsif @map_data[x, y + 1, 1] == tile[:wall_in_9] && @map_data[x + 1, y, 1] == tile[:wall_2]
-          @map_data[x, y, 1] = tile[:wall_in_7]
+          @map_data[x + 1, y + 1, WALL_LAYER] = (@map_data[x + 1, y + 1, WALL_LAYER] == tile[:wall_4]) ? tile[:wall_in_1] : tile[:wall_2]
+        elsif @map_data[x, y + 1, WALL_LAYER] == tile[:wall_in_9] && @map_data[x + 1, y, WALL_LAYER] == tile[:wall_2]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_7]
           @map_data.set_ground(x, y + 1, tile[:corridor])
-          @map_data[x + 1, y, 1] = tile[:wall_in_3]
-          @map_data[x + 1, y + 1, 1] = (@map_data[x + 1, y + 1, 1] == tile[:wall_8]) ? tile[:wall_in_9] : tile[:wall_6]
-        elsif @map_data[x, y + 1, 1] == tile[:wall_in_9] && @map_data[x + 1, y, 1] == tile[:wall_in_1]
-          @map_data[x, y, 1] = tile[:wall_in_7]
+          @map_data[x + 1, y, WALL_LAYER] = tile[:wall_in_3]
+          @map_data[x + 1, y + 1, WALL_LAYER] = (@map_data[x + 1, y + 1, WALL_LAYER] == tile[:wall_8]) ? tile[:wall_in_9] : tile[:wall_6]
+        elsif @map_data[x, y + 1, WALL_LAYER] == tile[:wall_in_9] && @map_data[x + 1, y, WALL_LAYER] == tile[:wall_in_1]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_7]
           @map_data.set_ground(x, y + 1, tile[:corridor])
           @map_data.set_ground(x + 1, y, tile[:corridor])
-          if @map_data[x + 1, y + 1, 1] == :error
-            @map_data[x + 1, y + 1, 1] = tile[:wall_in_3]
+          if @map_data[x + 1, y + 1, WALL_LAYER] == :error
+            @map_data[x + 1, y + 1, WALL_LAYER] = tile[:wall_in_3]
           else
             @map_data.set_ground(x + 1, y + 1, tile[:corridor])
           end
@@ -668,50 +673,50 @@ module RandomDungeon
         # -o-   this tile
         # --f   floor tile
         if @map_data.value(x - 1, y + 1) == :void
-          @map_data[x, y, 1] = tile[:wall_in_9]
-          @map_data[x - 1, y, 1] = tile[:wall_in_1]
-          @map_data[x, y + 1, 1] = tile[:wall_in_1]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_9]
+          @map_data[x - 1, y, WALL_LAYER] = tile[:wall_in_1]
+          @map_data[x, y + 1, WALL_LAYER] = tile[:wall_in_1]
           @map_data.set_wall(x - 1, y + 1, tile[:wall_1])
         elsif @map_data.value(x + 1, y - 1) == :void
-          @map_data[x, y, 1] = tile[:wall_in_1]
-          @map_data[x + 1, y, 1] = tile[:wall_in_9]
-          @map_data[x, y - 1, 1] = tile[:wall_in_9]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_1]
+          @map_data[x + 1, y, WALL_LAYER] = tile[:wall_in_9]
+          @map_data[x, y - 1, WALL_LAYER] = tile[:wall_in_9]
           @map_data.set_wall(x + 1, y - 1, tile[:wall_9])
-        elsif @map_data[x, y - 1, 1] == tile[:wall_6] && @map_data[x + 1, y, 1] == tile[:wall_in_7]
-          @map_data[x, y, 1] = tile[:wall_in_1]
-          @map_data[x, y - 1, 1] = tile[:wall_in_9]
+        elsif @map_data[x, y - 1, WALL_LAYER] == tile[:wall_6] && @map_data[x + 1, y, WALL_LAYER] == tile[:wall_in_7]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_1]
+          @map_data[x, y - 1, WALL_LAYER] = tile[:wall_in_9]
           @map_data.set_ground(x + 1, y, tile[:corridor])
-          @map_data[x + 1, y - 1, 1] = (@map_data[x + 1, y - 1, 1] == tile[:wall_4]) ? tile[:wall_in_7] : tile[:wall_8]
-        elsif @map_data[x, y - 1, 1] == tile[:wall_in_3] && @map_data[x + 1, y, 1] == tile[:wall_8]
-          @map_data[x, y, 1] = tile[:wall_in_1]
+          @map_data[x + 1, y - 1, WALL_LAYER] = (@map_data[x + 1, y - 1, WALL_LAYER] == tile[:wall_4]) ? tile[:wall_in_7] : tile[:wall_8]
+        elsif @map_data[x, y - 1, WALL_LAYER] == tile[:wall_in_3] && @map_data[x + 1, y, WALL_LAYER] == tile[:wall_8]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_1]
           @map_data.set_ground(x, y - 1, tile[:corridor])
-          @map_data[x + 1, y, 1] = tile[:wall_in_9]
-          @map_data[x + 1, y - 1, 1] = (@map_data[x + 1, y - 1, 1] == tile[:wall_2]) ? tile[:wall_in_3] : tile[:wall_6]
-        elsif @map_data[x, y - 1, 1] == tile[:wall_in_3] && @map_data[x + 1, y, 1] == tile[:wall_in_7]
-          @map_data[x, y, 1] = tile[:wall_in_1]
+          @map_data[x + 1, y, WALL_LAYER] = tile[:wall_in_9]
+          @map_data[x + 1, y - 1, WALL_LAYER] = (@map_data[x + 1, y - 1, WALL_LAYER] == tile[:wall_2]) ? tile[:wall_in_3] : tile[:wall_6]
+        elsif @map_data[x, y - 1, WALL_LAYER] == tile[:wall_in_3] && @map_data[x + 1, y, WALL_LAYER] == tile[:wall_in_7]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_1]
           @map_data.set_ground(x, y - 1, tile[:corridor])
           @map_data.set_ground(x + 1, y, tile[:corridor])
-          if @map_data[x + 1, y - 1, 1] == :error
-            @map_data[x + 1, y - 1, 1] = tile[:wall_in_9]
+          if @map_data[x + 1, y - 1, WALL_LAYER] == :error
+            @map_data[x + 1, y - 1, WALL_LAYER] = tile[:wall_in_9]
           else
             @map_data.set_ground(x + 1, y - 1, tile[:corridor])
           end
-        elsif @map_data[x, y + 1, 1] == tile[:wall_4] && @map_data[x - 1, y, 1] == tile[:wall_in_3]
-          @map_data[x, y, 1] = tile[:wall_in_9]
-          @map_data[x, y + 1, 1] = tile[:wall_in_1]
+        elsif @map_data[x, y + 1, WALL_LAYER] == tile[:wall_4] && @map_data[x - 1, y, WALL_LAYER] == tile[:wall_in_3]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_9]
+          @map_data[x, y + 1, WALL_LAYER] = tile[:wall_in_1]
           @map_data.set_ground(x - 1, y, tile[:corridor])
-          @map_data[x - 1, y + 1, 1] = (@map_data[x - 1, y + 1, 1] == tile[:wall_6]) ? tile[:wall_in_3] : tile[:wall_2]
-        elsif @map_data[x, y + 1, 1] == tile[:wall_in_7] && @map_data[x - 1, y, 1] == tile[:wall_2]
-          @map_data[x, y, 1] = tile[:wall_in_9]
+          @map_data[x - 1, y + 1, WALL_LAYER] = (@map_data[x - 1, y + 1, WALL_LAYER] == tile[:wall_6]) ? tile[:wall_in_3] : tile[:wall_2]
+        elsif @map_data[x, y + 1, WALL_LAYER] == tile[:wall_in_7] && @map_data[x - 1, y, WALL_LAYER] == tile[:wall_2]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_9]
           @map_data.set_ground(x, y + 1, tile[:corridor])
-          @map_data[x - 1, y, 1] = tile[:wall_in_1]
-          @map_data[x - 1, y + 1, 1] = (@map_data[x - 1, y + 1, 1] == tile[:wall_8]) ? tile[:wall_in_7] : tile[:wall_4]
-        elsif @map_data[x, y + 1, 1] == tile[:wall_in_7] && @map_data[x - 1, y, 1] == tile[:wall_in_3]
-          @map_data[x, y, 1] = tile[:wall_in_9]
+          @map_data[x - 1, y, WALL_LAYER] = tile[:wall_in_1]
+          @map_data[x - 1, y + 1, WALL_LAYER] = (@map_data[x - 1, y + 1, WALL_LAYER] == tile[:wall_8]) ? tile[:wall_in_7] : tile[:wall_4]
+        elsif @map_data[x, y + 1, WALL_LAYER] == tile[:wall_in_7] && @map_data[x - 1, y, WALL_LAYER] == tile[:wall_in_3]
+          @map_data[x, y, WALL_LAYER] = tile[:wall_in_9]
           @map_data.set_ground(x, y + 1, tile[:corridor])
           @map_data.set_ground(x - 1, y, tile[:corridor])
-          if @map_data[x - 1, y + 1, 1] == :error
-            @map_data[x - 1, y + 1, 1] = tile[:wall_in_1]
+          if @map_data[x - 1, y + 1, WALL_LAYER] == :error
+            @map_data[x - 1, y + 1, WALL_LAYER] = tile[:wall_in_1]
           else
             @map_data.set_ground(x - 1, y + 1, tile[:corridor])
           end
@@ -725,7 +730,7 @@ module RandomDungeon
       end
     end
 
-    #===========================================================================
+    #---------------------------------------------------------------------------
 
     # Draws a cell's contents, which is an underlying pattern based on
     # tile_layout (the corridors), and possibly a room on top of that.
@@ -739,7 +744,7 @@ module RandomDungeon
     def paint_ground_rect(x, y, width, height, tile)
       height.times do |j|
         width.times do |i|
-          @map_data[x + i, y + j, 0] = tile
+          @map_data[x + i, y + j, FLOOR_LAYER] = tile
         end
       end
     end
@@ -809,14 +814,15 @@ module RandomDungeon
       paint_ground_rect(x, y, width, height, :room)
     end
 
+    # layer here is the cliff level above the ground, not a map data layer.
     def paint_walls_around_ground(x, y, layer, errors)
       (-1..1).each do |j|
         (-1..1).each do |i|
           next if i == 0 && j == 0
-          next if @map_data[x + i, y + j, 0] != :void
+          next if @map_data[x + i, y + j, FLOOR_LAYER] != :void
           tile = get_wall_tile_for_coord(x + i, y + j, layer)
           if [:void, :corridor].include?(tile)
-            @map_data[x + i, y + j, 0] = tile
+            @map_data[x + i, y + j, FLOOR_LAYER] = tile
           else
             @map_data.set_wall(x + i, y + j, tile)
           end
@@ -829,7 +835,7 @@ module RandomDungeon
       if layer == 0
         is_neighbour = lambda { |x2, y2| return tile_is_ground?(@map_data.value(x2, y2)) }
       else
-        is_neighbour = lambda { |x2, y2| return tile_is_wall?(@map_data[x2, y2, 1]) }
+        is_neighbour = lambda { |x2, y2| return tile_is_wall?(@map_data[x2, y2, WALL_LAYER]) }
       end
       neighbours = 0
       neighbours |= 0x01 if is_neighbour.call(x,     y - 1)   # N
@@ -865,47 +871,49 @@ module RandomDungeon
         (maxHeight / @parameters.cell_height).times do |j|
           (maxWidth / @parameters.cell_width).times do |i|
             next if rand(100) >= @parameters.floor_patch_chance
+            tiles_count = @tileset.tiles_of_type_count(:floor_patch)
+            this_tile = (tiles_count > 1) ? rand(tiles_count) : 0
             # Random placing of floor patch tiles
             mid_x = (i * @parameters.cell_width) + rand(@parameters.cell_width)
             mid_y = (j * @parameters.cell_height) + rand(@parameters.cell_height)
             ((mid_y - @parameters.floor_patch_radius)..(mid_y + @parameters.floor_patch_radius)).each do |y|
               ((mid_x - @parameters.floor_patch_radius)..(mid_x + @parameters.floor_patch_radius)).each do |x|
                 if @tileset.floor_patch_under_walls
-                  next if !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, 0])
+                  next if !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, FLOOR_LAYER])
                 else
                   next if !tile_is_ground?(@map_data.value(x + @buffer_x, y + @buffer_y))
                 end
                 if (((mid_x - 1)..(mid_x + 1)).include?(x) && ((mid_y - 1)..(mid_y + 1)).include?(y)) ||
                    rand(100) < @parameters.floor_patch_chance
-                  @map_data[x + @buffer_x, y + @buffer_y, 0] = :floor_patch
+                  @map_data[x + @buffer_x, y + @buffer_y, FLOOR_DECO_LAYER] = [:floor_patch, this_tile]
                 end
               end
             end
             # Smoothing of placed floor patch tiles
             ((mid_y - @parameters.floor_patch_radius)..(mid_y + @parameters.floor_patch_radius)).each do |y|
               ((mid_x - @parameters.floor_patch_radius)..(mid_x + @parameters.floor_patch_radius)).each do |x|
-                if @map_data[x + @buffer_x, y + @buffer_y, 0] == :floor_patch
+                if @map_data[x + @buffer_x, y + @buffer_y, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
                   adj_count = 0
-                  adj_count += 1 if @map_data[x + @buffer_x - 1, y + @buffer_y, 0] == :floor_patch
-                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y - 1, 0] == :floor_patch
-                  adj_count += 1 if @map_data[x + @buffer_x + 1, y + @buffer_y, 0] == :floor_patch
-                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y + 1, 0] == :floor_patch
+                  adj_count += 1 if @map_data[x + @buffer_x - 1, y + @buffer_y, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
+                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y - 1, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
+                  adj_count += 1 if @map_data[x + @buffer_x + 1, y + @buffer_y, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
+                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y + 1, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
                   if adj_count == 0 || (adj_count == 1 && rand(100) < @parameters.floor_patch_smooth_rate * 2)
-                    @map_data[x + @buffer_x, y + @buffer_y, 0] = :corridor
+                    @map_data[x + @buffer_x, y + @buffer_y, FLOOR_DECO_LAYER] = :none
                   end
                 else
                   if @tileset.floor_patch_under_walls
-                    next if !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, 0])
+                    next if !tile_is_ground?(@map_data[x + @buffer_x, y + @buffer_y, FLOOR_LAYER])
                   else
                     next if !tile_is_ground?(@map_data.value(x + @buffer_x, y + @buffer_y))
                   end
                   adj_count = 0
-                  adj_count += 1 if @map_data[x + @buffer_x - 1, y + @buffer_y, 0] == :floor_patch
-                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y - 1, 0] == :floor_patch
-                  adj_count += 1 if @map_data[x + @buffer_x + 1, y + @buffer_y, 0] == :floor_patch
-                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y + 1, 0] == :floor_patch
+                  adj_count += 1 if @map_data[x + @buffer_x - 1, y + @buffer_y, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
+                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y - 1, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
+                  adj_count += 1 if @map_data[x + @buffer_x + 1, y + @buffer_y, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
+                  adj_count += 1 if @map_data[x + @buffer_x, y + @buffer_y + 1, FLOOR_DECO_LAYER] == [:floor_patch, this_tile]
                   if adj_count >= 2 && rand(100) < adj_count * @parameters.floor_patch_smooth_rate
-                    @map_data[x + @buffer_x, y + @buffer_y, 0] = :floor_patch
+                    @map_data[x + @buffer_x, y + @buffer_y, FLOOR_DECO_LAYER] = [:floor_patch, this_tile]
                   end
                 end
               end
@@ -925,7 +933,7 @@ module RandomDungeon
           4.times do |c|
             cx = x + @buffer_x + (c % 2)
             cy = y + @buffer_y + (c / 2)
-            @map_data[cx, cy, 0] = (c == 0) ? :floor_decoration_large : :ignore
+            @map_data[cx, cy, FLOOR_DECO_LAYER] = (c == 0) ? :floor_decoration_large : :ignore
           end
         end
       end
@@ -935,7 +943,7 @@ module RandomDungeon
           x = rand(@usable_width)
           y = rand(@usable_height)
           next if !coord_is_ground?(@buffer_x + x, @buffer_y + y)
-          @map_data[x + @buffer_x, y + @buffer_y, 0] = :floor_decoration
+          @map_data[x + @buffer_x, y + @buffer_y, FLOOR_DECO_LAYER] = :floor_decoration
         end
       end
       # 2x2 void decoration (crevice)
@@ -950,7 +958,7 @@ module RandomDungeon
           4.times do |c|
             cx = x + (c % 2)
             cy = y + (c / 2)
-            @map_data[cx, cy, 0] = (c == 0) ? :void_decoration_large : :ignore
+            @map_data[cx, cy, FLOOR_DECO_LAYER] = (c == 0) ? :void_decoration_large : :ignore
           end
         end
       end
@@ -960,7 +968,7 @@ module RandomDungeon
           x = rand(@width)
           y = rand(@height)
           next if @map_data.value(x, y) != :void
-          @map_data[x, y, 0] = :void_decoration
+          @map_data[x, y, FLOOR_DECO_LAYER] = :void_decoration
         end
       end
     end
@@ -969,35 +977,54 @@ module RandomDungeon
       return if !@tileset.has_decoration?(:wall_top)
       maxWidth.times do |x|
         maxHeight.times do |y|
-          next if ![:wall_2, :wall_in_1, :wall_in_3].include?(@map_data[x + @buffer_x, y + 1 + @buffer_y, 1])
-          @map_data[x + @buffer_x, y + @buffer_y, 2] = :wall_top
+          next if ![:wall_2, :wall_in_1, :wall_in_3].include?(@map_data[x + @buffer_x, y + 1 + @buffer_y, WALL_LAYER])
+          @map_data[x + @buffer_x, y + @buffer_y, WALL_LAYER] = :wall_top
         end
       end
     end
 
-    #===========================================================================
+    #---------------------------------------------------------------------------
 
     # Convert dungeon layout into proper map tiles from a tileset, and modifies
     # the given map's data accordingly.
     def generateMapInPlace(map)
+      # Change :room/:corridor tiles to :floor/:wall_floor tiles
+      map.width.times do |i|
+        map.height.times do |j|
+          next if ![:room, :corridor].include?(@map_data[i, j, FLOOR_LAYER])
+          if tile_is_wall?(@map_data[i, j, WALL_LAYER])
+            @map_data[i, j, FLOOR_LAYER] = @tileset.has_decoration?(:wall_floor) ? :wall_floor : :floor
+          else
+            @map_data[i, j, FLOOR_LAYER] = :floor
+          end
+        end
+      end
+      # Draw tiles in map based on tile types
       map.width.times do |i|
         map.height.times do |j|
           3.times do |layer|
             tile_type = @map_data[i, j, layer]
-            tile_type = :floor if [:room, :corridor].include?(tile_type)
-            case tile_type
+            real_tile_type = (tile_type.is_a?(Array)) ? tile_type[0] : tile_type
+            tile_version = (tile_type.is_a?(Array)) ? tile_type[1] : -1
+            case real_tile_type
             when :ignore
             when :none
               map.data[i, j, layer] = 0
             when :void_decoration_large, :floor_decoration_large
+              tile_id = @tileset.get_random_tile_of_type(real_tile_type, self, i, j, layer, tile_version)
+              tile_id = 48 * (tile_id / 48) if tile_id < 384   # Autotile
               4.times do |c|
-                tile = @tileset.get_random_tile_of_type(tile_type, self, i, j, layer)
-                tile += (c % 2) + (8 * (c / 2)) if tile >= 384   # Regular tile
-                map.data[i + (c % 2), j + (c / 2), layer] = tile
+                this_tile = tile_id
+                if tile_id < 384   # Autotile
+                  this_tile += [34, 36, 40, 38][c]
+                else
+                  this_tile += (c % 2) + (8 * (c / 2))
+                end
+                map.data[i + (c % 2), j + (c / 2), layer] = this_tile
               end
             else
-              tile = @tileset.get_random_tile_of_type(tile_type, self, i, j, layer)
-              map.data[i, j, layer] = tile
+              tile_id = @tileset.get_random_tile_of_type(real_tile_type, self, i, j, layer, tile_version)
+              map.data[i, j, layer] = tile_id
             end
           end
         end
@@ -1008,7 +1035,7 @@ module RandomDungeon
     # can be placed. Events cannot be placed adjacent to or overlapping each
     # other, and can't be placed right next to the wall of a room (to prevent
     # them blocking a corridor).
-    def get_random_room_tile(occupied_tiles, event_width = 1, event_height = 1)
+    def get_random_room_tile(map, occupied_tiles, event_width = 1, event_height = 1, passable_only = true)
       valid_rooms = @room_rects.clone
       valid_rooms.delete_if { |rect| rect[2] <= event_width + 1 || rect[3] <= event_height + 1 }
       return nil if valid_rooms.empty?
@@ -1017,6 +1044,26 @@ module RandomDungeon
         x = 1 + rand(room[2] - event_width - 1)
         y = 1 + rand(room[3] - event_height - 1)
         valid_placement = true
+        # Check that the event will be on a passable tile(s)
+        if passable_only
+          tileset = $data_tilesets[map.tileset_id]
+          event_width.times do |i|
+            event_height.times do |j|
+              [2, 1, 0].each do |layer|
+                tile_id = map.data[room[0] + x + i, room[1] + y + j, layer]
+                next if tile_id == 0
+                next if GameData::TerrainTag.try_get(tileset.terrain_tags[tile_id]).ignore_passability
+                valid_placement = false if tileset.passages[tile_id] & 0x0f != 0
+                break if !valid_placement
+                break if tileset.priorities[tile_id] == 0
+              end
+              break if !valid_placement
+            end
+            break if !valid_placement
+          end
+        end
+        next if !valid_placement
+        # Check event's proximity to other placed events
         event_width.times do |i|
           event_height.times do |j|
             if occupied_tiles.any? { |item| (item[0] - (room[0] + x + i)).abs < 2 && (item[1] - (room[1] + y + j)).abs < 2 }
@@ -1086,7 +1133,7 @@ EventHandlers.add(:on_game_map_setup, :random_dungeon,
           event_width = $~[1].to_i
           event_height = $~[2].to_i
         end
-        tile = dungeon.get_random_room_tile(occupied_tiles, event_width, event_height)
+        tile = dungeon.get_random_room_tile(map, occupied_tiles, event_width, event_height)
         failed = true if !tile
         break if failed
         event.x = tile[0]
@@ -1094,7 +1141,7 @@ EventHandlers.add(:on_game_map_setup, :random_dungeon,
       end
       next if failed
       # Reposition the player
-      tile = dungeon.get_random_room_tile(occupied_tiles)
+      tile = dungeon.get_random_room_tile(map, occupied_tiles)
       next if !tile
       $game_temp.player_new_x = tile[0]
       $game_temp.player_new_y = tile[1]
@@ -1105,4 +1152,3 @@ EventHandlers.add(:on_game_map_setup, :random_dungeon,
     end
   }
 )
-
