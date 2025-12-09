@@ -101,6 +101,7 @@ module Battle::Scene::Animation::BallAnimationMixin
   end
 
   def ballTracksHand(ball, traSprite, safariThrow = false)
+    raise _INTL("No existe el sprite de espaldas del Entrenador") if !traSprite || !traSprite.bitmap
     # Back sprite isn't animated, no hand-tracking needed
     if traSprite.bitmap.width < traSprite.bitmap.height * 2
       ball.setVisible(7, true)
@@ -366,7 +367,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     glare1 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[11]}", PictureOrigin::CENTER)
     glare2 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[8]}", PictureOrigin::CENTER)
     [glare1, glare2].each_with_index do |particle, num|
-      particle.setZ(0, 105 + num)
+      particle.setZ(0, 5105 + num)
       particle.setZoom(0, 0)
       particle.setTone(0, variances[12 - (3 * num)])
       particle.setVisible(0, false)
@@ -404,7 +405,7 @@ module Battle::Scene::Animation::BallAnimationMixin
       ray = addNewSprite(ballX + (ray_min_radius * Math.cos(radian)),
                          ballY - (ray_min_radius * Math.sin(radian)),
                          "Graphics/Battle animations/ballBurst_ray", PictureOrigin::BOTTOM)
-      ray.setZ(0, 100)
+      ray.setZ(0, 5100)
       ray.setZoomXY(0, 200, start_zoom)
       ray.setTone(0, variances[0]) if poke_ball != :CHERISHBALL
       ray.setOpacity(0, 0)
@@ -431,7 +432,7 @@ module Battle::Scene::Animation::BallAnimationMixin
       particle1 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[5]}", PictureOrigin::CENTER)
       particle2 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[2]}", PictureOrigin::CENTER)
       [particle1, particle2].each_with_index do |particle, num|
-        particle.setZ(0, 110 + num)
+        particle.setZ(0, 5110 + num)
         particle.setZoom(0, (80 - (num * 20)) / (["ring2"].include?(variances[5 - (3 * num)]) ? 2 : 1))
         particle.setTone(0, variances[6 - (3 * num)])
         particle.setVisible(0, false)
@@ -579,7 +580,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     glare2 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[3]}", PictureOrigin::CENTER)
     glare3 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[0]}", PictureOrigin::CENTER)
     [glare1, glare2, glare3].each_with_index do |particle, num|
-      particle.setZ(0, 100 + num)
+      particle.setZ(0, 5100 + num)
       particle.setZoom(0, 0)
       particle.setTone(0, variances[7 - (3 * num)])
       particle.setVisible(0, false)
@@ -617,7 +618,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     num_particles.times do |i|
       # Set up particle that keeps moving out
       particle1 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_particle", PictureOrigin::CENTER)
-      particle1.setZ(0, 105)
+      particle1.setZ(0, 5105)
       particle1.setZoom(0, 150)
       particle1.setOpacity(0, 160)
       particle1.setVisible(0, false)
@@ -625,7 +626,7 @@ module Battle::Scene::Animation::BallAnimationMixin
       particle2 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[12]}", PictureOrigin::CENTER)
       particle3 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_#{variances[9]}", PictureOrigin::CENTER)
       [particle2, particle3].each_with_index do |particle, num|
-        particle.setZ(0, 110 + num)
+        particle.setZ(0, 5110 + num)
         particle.setZoom(0, (poke_ball == :NESTBALL) ? 50 : 0)
         particle.setTone(0, variances[13 - (3 * num)])
         particle.setVisible(0, false)
@@ -689,7 +690,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     # Web sprite (for Net Ball)
     if poke_ball == :NETBALL
       web = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_web", PictureOrigin::CENTER)
-      web.setZ(0, 123)
+      web.setZ(0, 5123)
       web.setZoom(0, 120)
       web.setOpacity(0, 0)
       web.setTone(0, Tone.new(-32, -32, -128))
@@ -709,7 +710,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     end
     # Ring particle
     ring = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_ring1", PictureOrigin::CENTER)
-    ring.setZ(0, 110)
+    ring.setZ(0, 5110)
     ring.setZoom(0, 0)
     ring.setTone(0, variances[15])
     ring.setVisible(0, false)
@@ -734,7 +735,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     3.times do |i|   # Left, middle, right
       # Set up particle
       star = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_star", PictureOrigin::CENTER)
-      star.setZ(0, 110)
+      star.setZ(0, 5110)
       star.setZoom(0, [50, 50, 33][i])
       start_angle = [0, 345, 15][i]
       star.setAngle(0, start_angle)
@@ -774,7 +775,7 @@ module Battle::Scene::Animation::BallAnimationMixin
     num_particles.times do |i|
       # Set up particle
       particle = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_particle", PictureOrigin::CENTER)
-      particle.setZ(0, 110)
+      particle.setZ(0, 5110)
       particle.setZoom(0, 150)
       particle.setOpacity(0, 0)
       particle.setVisible(0, false)
@@ -806,11 +807,11 @@ module Battle::Scene::Animation::BallAnimationMixin
     end
     # Ring particles
     ring1 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_ring1", PictureOrigin::CENTER)
-    ring1.setZ(0, 110)
+    ring1.setZ(0, 5110)
     ring1.setZoom(0, 0)
     ring1.setVisible(0, false)
     ring2 = addNewSprite(ballX, ballY, "Graphics/Battle animations/ballBurst_ring2", PictureOrigin::CENTER)
-    ring2.setZ(0, 110)
+    ring2.setZ(0, 5110)
     ring2.setVisible(0, false)
     # Ring particle animations
     ring1.setVisible(delay + burst_duration - 2, true)
@@ -821,4 +822,3 @@ module Battle::Scene::Animation::BallAnimationMixin
     ring2.moveOpacity(delay + burst_duration + 2, 4, 0)
   end
 end
-

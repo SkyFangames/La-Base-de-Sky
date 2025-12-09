@@ -232,16 +232,19 @@ class Battle
           next
         end
         case cmd
-        when 0    # Fight
+        when :fight, :fight2    # Fight
           break if pbFightMenu(idxBattler)
-        when 1    # Bag
+        when :shift   # Shift
+          pbUnregisterMegaEvolution(idxBattler)
+          break if pbRegisterShift(idxBattler)
+        when :bag, :throw_ball_contest
           if pbItemMenu(idxBattler, actioned.length == 1)
             commandsEnd = true if pbItemUsesAllActions?(@choices[idxBattler][1])
             break
           end
-        when 2    # Pokémon
+        when :pokemon    # Pokémon
           break if pbPartyMenu(idxBattler)
-        when 3    # Run
+        when :run    # Run
           # NOTE: "Run" is only an available option for the first battler the
           #       player chooses an action for in a round. Attempting to run
           #       from battle prevents you from choosing any other actions in
@@ -250,12 +253,12 @@ class Battle
             commandsEnd = true
             break
           end
-        when 4    # Call
+        when :call    # Call
           break if pbCallMenu(idxBattler)
-        when -2   # Debug
+        when :debug   # Debug
           pbDebugMenu
           next
-        when -1   # Go back to previous battler's action choice
+        when :cancel  # Go back to previous battler's action choice
           next if actioned.length <= 1
           actioned.pop   # Forget this battler was done
           idxBattler = actioned.last - 1

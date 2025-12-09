@@ -26,36 +26,40 @@ class Battle::Scene
     # The background image and each side's base graphic
     pbCreateBackdropSprites
     # Create message box graphic
-    messageBox = pbAddSprite("messageBox", 0, Graphics.height - 96,
-                             "Graphics/UI/Battle/overlay_message", @viewport)
-    messageBox.z = 195
+    messageBox = pbCreateMessageWindow(@viewport)
+    messageBox.height = 92
+    messageBox.y = Graphics.height - messageBox.height
+    messageBox.z = 10195
+    @sprites["messageBox"] = messageBox
+    $game_temp.message_window_showing = false if $game_temp
     # Create message window (displays the message)
     msgWindow = Window_AdvancedTextPokemon.newWithSize(
-      "", 16, Graphics.height - 96 + 2, Graphics.width - 32, 96, @viewport
+      "", 0, Graphics.height - 96 + 2, Graphics.width, 96, @viewport
     )
-    msgWindow.z              = 200
-    msgWindow.opacity        = 0
+    msgWindow.setSkin(MessageConfig.pbGetSpeechFrame)
+    msgWindow.z              = 10200
     msgWindow.baseColor      = MESSAGE_BASE_COLOR
     msgWindow.shadowColor    = MESSAGE_SHADOW_COLOR
     msgWindow.letterbyletter = true
+    msgWindow.opacity        = 0
     @sprites["messageWindow"] = msgWindow
     # Create command window
-    @sprites["commandWindow"] = CommandMenu.new(@viewport, 200)
+    @sprites["commandWindow"] = CommandMenu.new(@viewport, 10200, @battle)
     # Create fight window
-    @sprites["fightWindow"] = FightMenu.new(@viewport, 200)
+    @sprites["fightWindow"] = FightMenu.new(@viewport, 10200)
     # Create targeting window
-    @sprites["targetWindow"] = TargetMenu.new(@viewport, 200, @battle.sideSizes)
+    @sprites["targetWindow"] = TargetMenu.new(@viewport, 10200, @battle.sideSizes)
     pbShowWindow(MESSAGE_BOX)
     # The party lineup graphics (bar and balls) for both sides
     2.times do |side|
       partyBar = pbAddSprite("partyBar_#{side}", 0, 0,
                              "Graphics/UI/Battle/overlay_lineup", @viewport)
-      partyBar.z       = 120
+      partyBar.z       = 10120
       partyBar.mirror  = true if side == 0   # Player's lineup bar only
       partyBar.visible = false
       NUM_BALLS.times do |i|
         ball = pbAddSprite("partyBall_#{side}_#{i}", 0, 0, nil, @viewport)
-        ball.z       = 121
+        ball.z       = 10121
         ball.visible = false
       end
       # Ability splash bars
@@ -132,22 +136,22 @@ class Battle::Scene
     messageBG  = "Graphics/Battlebacks/" + messageFilename + "_message"
     # Apply graphics
     bg = pbAddSprite("battle_bg", 0, 0, battleBG, @viewport)
-    bg.z = 0
+    bg.z = -200
     bg = pbAddSprite("battle_bg2", -Graphics.width, 0, battleBG, @viewport)
-    bg.z      = 0
+    bg.z      = -200
     bg.mirror = true
     2.times do |side|
       baseX, baseY = Battle::Scene.pbBattlerPosition(side)
       base = pbAddSprite("base_#{side}", baseX, baseY,
                          (side == 0) ? playerBase : enemyBase, @viewport)
-      base.z = 3
+      base.z = -199
       if base.bitmap
         base.ox = base.bitmap.width / 2
         base.oy = (side == 0) ? base.bitmap.height : base.bitmap.height / 2
       end
     end
     cmdBarBG = pbAddSprite("cmdBar_bg", 0, Graphics.height - 96, messageBG, @viewport)
-    cmdBarBG.z = 180
+    cmdBarBG.z = 10180
   end
 
   def pbCreateTrainerBackSprite(idxTrainer, trainerType, numTrainers = 1)
@@ -160,7 +164,7 @@ class Battle::Scene
     trainer = pbAddSprite("player_#{idxTrainer + 1}", spriteX, spriteY, trainerFile, @viewport)
     return if !trainer.bitmap
     # Alter position of sprite
-    trainer.z = 80 + idxTrainer
+    trainer.z = 1500 + (idxTrainer * 100)
     if trainer.bitmap.width > trainer.bitmap.height * 2
       trainer.src_rect.x     = 0
       trainer.src_rect.width = trainer.bitmap.width / 5
@@ -175,7 +179,7 @@ class Battle::Scene
     trainer = pbAddSprite("trainer_#{idxTrainer + 1}", spriteX, spriteY, trainerFile, @viewport)
     return if !trainer.bitmap
     # Alter position of sprite
-    trainer.z  = 7 + idxTrainer
+    trainer.z  = 500 - (idxTrainer * 100)
     trainer.ox = trainer.src_rect.width / 2
     trainer.oy = trainer.bitmap.height
   end
@@ -189,4 +193,3 @@ class Battle::Scene
     @sprites["shadow_#{idxBattler}"] = shaSprite
   end
 end
-

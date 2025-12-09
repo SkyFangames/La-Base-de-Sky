@@ -189,7 +189,7 @@ class Battle::Scene
     cw.setText(msg)
     PBDebug.log_message(msg)
     yielded = false
-    timer_start = System.uptime
+    timer_start = nil
     loop do
       pbUpdate(cw)
       if !cw.busy?
@@ -203,6 +203,7 @@ class Battle::Scene
           @briefMessage = true
           break
         end
+        timer_start = System.uptime if !timer_start
         if System.uptime - timer_start >= MESSAGE_PAUSE_TIME   # Autoclose after 1 second
           cw.text = ""
           cw.visible = false
@@ -234,7 +235,7 @@ class Battle::Scene
     cw.text = msg + "\1"
     PBDebug.log_message(msg)
     yielded = false
-    timer_start = System.uptime
+    timer_start = nil
     loop do
       pbUpdate(cw)
       if !cw.busy?
@@ -243,6 +244,7 @@ class Battle::Scene
           yielded = true
         end
         if !@battleEnd
+          timer_start = System.uptime if !timer_start
           if System.uptime - timer_start >= MESSAGE_PAUSE_TIME * 3   # Autoclose after 3 seconds
             cw.text = ""
             cw.visible = false
@@ -423,4 +425,3 @@ class Battle::Scene
     end
   end
 end
-

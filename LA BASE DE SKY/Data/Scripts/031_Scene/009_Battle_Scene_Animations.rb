@@ -1,5 +1,5 @@
 #===============================================================================
-# Shows the battle scene fading in while elements slide around into place
+# Shows the battle scene fading in while elements slide around into place.
 #===============================================================================
 class Battle::Scene::Animation::Intro < Battle::Scene::Animation
   def initialize(sprites, viewport, battle)
@@ -38,12 +38,12 @@ class Battle::Scene::Animation::Intro < Battle::Scene::Animation
     end
     # Fading blackness over whole screen
     blackScreen = addNewSprite(0, 0, "Graphics/Battle animations/black_screen")
-    blackScreen.setZ(0, 999)
+    blackScreen.setZ(0, 99999)
     blackScreen.moveOpacity(0, 8, 0)
     # Fading blackness over command bar
     blackBar = addNewSprite(@sprites["cmdBar_bg"].x, @sprites["cmdBar_bg"].y,
                             "Graphics/Battle animations/black_bar")
-    blackBar.setZ(0, 998)
+    blackBar.setZ(0, 99998)
     blackBar.moveOpacity(appearTime * 3 / 4, appearTime / 4, 0)
   end
 
@@ -59,7 +59,7 @@ end
 
 #===============================================================================
 # Shows wild Pokémon fading back to their normal color, and triggers their intro
-# animations
+# animations.
 #===============================================================================
 class Battle::Scene::Animation::Intro2 < Battle::Scene::Animation
   def initialize(sprites, viewport, sideSize)
@@ -79,7 +79,7 @@ class Battle::Scene::Animation::Intro2 < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Makes a side's party bar and balls appear
+# Makes a side's party bar and balls appear.
 #===============================================================================
 class Battle::Scene::Animation::LineupAppear < Battle::Scene::Animation
   BAR_DISPLAY_WIDTH = 248
@@ -178,7 +178,7 @@ class Battle::Scene::Animation::LineupAppear < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Makes a Pokémon's data box appear
+# Makes a Pokémon's data box appear.
 #===============================================================================
 class Battle::Scene::Animation::DataBoxAppear < Battle::Scene::Animation
   def initialize(sprites, viewport, idxBox)
@@ -197,7 +197,7 @@ class Battle::Scene::Animation::DataBoxAppear < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Makes a Pokémon's data box disappear
+# Makes a Pokémon's data box disappear.
 #===============================================================================
 class Battle::Scene::Animation::DataBoxDisappear < Battle::Scene::Animation
   def initialize(sprites, viewport, idxBox)
@@ -215,7 +215,7 @@ class Battle::Scene::Animation::DataBoxDisappear < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Makes a Pokémon's ability bar appear
+# Makes a Pokémon's ability bar appear.
 #===============================================================================
 class Battle::Scene::Animation::AbilitySplashAppear < Battle::Scene::Animation
   def initialize(sprites, viewport, side)
@@ -234,7 +234,7 @@ class Battle::Scene::Animation::AbilitySplashAppear < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Makes a Pokémon's ability bar disappear
+# Makes a Pokémon's ability bar disappear.
 #===============================================================================
 class Battle::Scene::Animation::AbilitySplashDisappear < Battle::Scene::Animation
   def initialize(sprites, viewport, side)
@@ -419,7 +419,7 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     ballMidY = battlerStartY - 144
     # Set up Poké Ball sprite
     ball = addBallSprite(ballStartX, ballStartY, poke_ball)
-    ball.setZ(0, 25)
+    ball.setZ(0, 1025)
     ball.setVisible(0, false)
     # Poké Ball tracking the player's hand animation (if trainer is visible)
     if @showingTrainer && traSprite && traSprite.x > 0
@@ -524,7 +524,7 @@ class Battle::Scene::Animation::PokeballTrainerSendOut < Battle::Scene::Animatio
 end
 
 #===============================================================================
-# Shows a Pokémon being recalled into its Poké Ball
+# Shows a Pokémon being recalled into its Poké Ball.
 #===============================================================================
 class Battle::Scene::Animation::BattlerRecall < Battle::Scene::Animation
   include Battle::Scene::Animation::BallAnimationMixin
@@ -572,7 +572,7 @@ class Battle::Scene::Animation::BattlerRecall < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Shows a Pokémon flashing after taking damage
+# Shows a Pokémon flashing after taking damage.
 #===============================================================================
 class Battle::Scene::Animation::BattlerDamage < Battle::Scene::Animation
   def initialize(sprites, viewport, idxBattler, effectiveness)
@@ -608,7 +608,7 @@ class Battle::Scene::Animation::BattlerDamage < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Shows a Pokémon fainting
+# Shows a Pokémon fainting.
 #===============================================================================
 class Battle::Scene::Animation::BattlerFaint < Battle::Scene::Animation
   def initialize(sprites, viewport, idxBattler, battle)
@@ -656,7 +656,7 @@ class Battle::Scene::Animation::BattlerFaint < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Shows the player's Poké Ball being thrown to capture a Pokémon
+# Shows the player's Poké Ball being thrown to capture a Pokémon.
 #===============================================================================
 class Battle::Scene::Animation::PokeballThrowCapture < Battle::Scene::Animation
   include Battle::Scene::Animation::BallAnimationMixin
@@ -812,7 +812,7 @@ class Battle::Scene::Animation::PokeballThrowCapture < Battle::Scene::Animation
 end
 
 #===============================================================================
-# Shows the player throwing a Poké Ball and it being deflected
+# Shows the player throwing a Poké Ball and it being deflected.
 #===============================================================================
 class Battle::Scene::Animation::PokeballThrowDeflect < Battle::Scene::Animation
   include Battle::Scene::Animation::BallAnimationMixin
@@ -835,7 +835,7 @@ class Battle::Scene::Animation::PokeballThrowDeflect < Battle::Scene::Animation
     ballEndY   = 112
     # Set up Poké Ball sprite
     ball = addBallSprite(ballStartX, ballStartY, @poke_ball)
-    ball.setZ(0, 90)
+    ball.setZ(0, 5090)
     # Poké Ball arc animation
     ball.setSE(0, "Battle throw")
     createBallTrajectory(ball, 0, 16,
@@ -847,4 +847,3 @@ class Battle::Scene::Animation::PokeballThrowDeflect < Battle::Scene::Animation
     createBallTumbling(ball, delay, 8)
   end
 end
-

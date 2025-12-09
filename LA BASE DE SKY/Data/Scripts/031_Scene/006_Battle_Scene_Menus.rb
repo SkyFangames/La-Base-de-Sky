@@ -1,555 +1,596 @@
 #===============================================================================
 # Base class for all three menu classes below
 #===============================================================================
-class Battle::Scene::MenuBase
-  attr_accessor :x
-  attr_accessor :y
-  attr_reader   :z
-  attr_reader   :visible
-  attr_reader   :color
+class Battle::Scene::MenuBase < UI::SpriteContainer
   attr_reader   :index
-  attr_reader   :mode
+  attr_accessor :active
 
-  # NOTE: Button width is half the width of the graphic containing them all.
+  TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
+    :default => [Battle::Scene::MESSAGE_BASE_COLOR, Battle::Scene::MESSAGE_SHADOW_COLOR]   # Base and shadow colour
+  }
   BUTTON_HEIGHT = 46
-  TEXT_BASE_COLOR   = Battle::Scene::MESSAGE_BASE_COLOR
-  TEXT_SHADOW_COLOR = Battle::Scene::MESSAGE_SHADOW_COLOR
 
   def initialize(viewport = nil)
-    @x          = 0
-    @y          = 0
-    @z          = 0
-    @visible    = false
-    @color      = Color.new(0, 0, 0, 0)
-    @index      = 0
-    @mode       = 0
-    @disposed   = false
-    @sprites    = {}
-    @visibility = {}
+    @index   = 0
+    @visible = false
+    @active  = false
+    super
   end
 
-  def dispose
-    return if disposed?
-    pbDisposeSpriteHash(@sprites)
-    @disposed = true
-  end
-
-  def disposed?; return @disposed; end
-
-  def z=(value)
-    @z = value
-    @sprites.each do |i|
-      i[1].z = value if !i[1].disposed?
-    end
-  end
-
-  def visible=(value)
-    @visible = value
-    @sprites.each do |i|
-      i[1].visible = (value && @visibility[i[0]]) if !i[1].disposed?
-    end
-  end
-
-  def color=(value)
-    @color = value
-    @sprites.each do |i|
-      i[1].color = value if !i[1].disposed?
-    end
-  end
+  #-----------------------------------------------------------------------------
 
   def index=(value)
-    oldValue = @index
+    old_value = @index
     @index = value
-    @cmdWindow.index = @index if @cmdWindow
-    refresh if @index != oldValue
-  end
-
-  def mode=(value)
-    oldValue = @mode
-    @mode = value
-    refresh if @mode != oldValue
-  end
-
-  def addSprite(key, sprite)
-    @sprites[key]    = sprite
-    @visibility[key] = true
-  end
-
-  def setIndexAndMode(index, mode)
-    oldIndex = @index
-    oldMode  = @mode
-    @index = index
-    @mode  = mode
-    @cmdWindow.index = @index if @cmdWindow
-    refresh if @index != oldIndex || @mode != oldMode
-  end
-
-  def refresh; end
-
-  def update
-    pbUpdateSpriteHash(@sprites)
+    refresh if @index != old_value
   end
 end
 
 #===============================================================================
-# Command menu (Fight/Pokémon/Bag/Run)
+# Command menu (Fight/Pokémon/Bag/Run).
 #===============================================================================
 class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
-  attr_accessor :buttons
-  # If true, displays graphics from Graphics/UI/Battle/overlay_command.png
-  #     and Graphics/UI/Battle/cursor_command.png.
-  # If false, just displays text and the command window over the graphic
-  #     Graphics/UI/Battle/overlay_message.png. You will need to edit def
-  #     pbShowWindow to make the graphic appear while the command menu is being
-  #     displayed.
-  USE_GRAPHICS = true
-  # Lists of which button graphics to use in different situations/types of battle.
-  MODES = [
-    [0, 2, 1, 3],   # 0 = Regular battle
-    [0, 2, 1, 9],   # 1 = Regular battle with "Cancel" instead of "Run"
-    [0, 2, 1, 4],   # 2 = Regular battle with "Call" instead of "Run"
-    [5, 7, 6, 3],   # 3 = Safari Zone
-    [0, 8, 1, 3]    # 4 = Bug-Catching Contest
-  ]
+  attr_accessor :commands
 
-  def initialize(viewport, z)
+  GRAPHICS_FOLDER = "Battle/"
+  # The order of command buttons as drawn in cursor_command.png. If one is in an
+  # array with "true", it is a wide button (typically for the button in the top
+  # row).
+  BUTTON_CONTENTS = [
+    [:fight, true],
+    :fight2,
+    :shift,
+    :pokemon,
+    :bag,
+    :run,
+    :call,
+    [:throw_ball, true],
+    :throw_rock,
+    :throw_bait,
+    :throw_ball_contest,
+    :cancel
+  ]
+  # The two widths of buttons depicted in cursor_command.png.
+  BUTTON_WIDTHS = [128, 256]   # Regular size, wide size
+  # Number of pixels that adjacent buttons overlap each other.
+  BUTTON_OVERLAP = [4, 4]
+
+  def initialize(viewport, z, battle)
+    @battle = battle
+    @commands = []
     super(viewport)
     self.x = 0
-    self.y = Graphics.height - 96
-    # Create message box (shows "What will X do?")
-    @msgBox = Window_UnformattedTextPokemon.newWithSize(
-      "", self.x + 12, self.y + 2, 240, Graphics.height - self.y, viewport
-    )
-    @msgBox.baseColor   = TEXT_BASE_COLOR
-    @msgBox.shadowColor = TEXT_SHADOW_COLOR
-    @msgBox.windowskin  = nil
-    addSprite("msgBox", @msgBox)
-    if USE_GRAPHICS
-      # Create background graphic
-      background = IconSprite.new(self.x, self.y, viewport)
-      background.setBitmap("Graphics/UI/Battle/overlay_command")
-      addSprite("background", background)
-      # Create bitmaps
-      @buttonBitmap = AnimatedBitmap.new(_INTL("Graphics/UI/Battle/cursor_command"))
-      # Create action buttons
-      @buttons = Array.new(4) do |i|   # 4 command options, therefore 4 buttons
-        button = Sprite.new(viewport)
-        button.bitmap = @buttonBitmap.bitmap
-        button.x = self.x + Graphics.width - 260
-        button.x += (i.even? ? 0 : (@buttonBitmap.width / 2) - 4)
-        button.y = self.y + 6
-        button.y += (((i / 2) == 0) ? 0 : BUTTON_HEIGHT - 4)
-        button.src_rect.width  = @buttonBitmap.width / 2
-        button.src_rect.height = BUTTON_HEIGHT
-        addSprite("button_#{i}", button)
-        next button
-      end
-    else
-      # Create command window (shows Fight/Bag/Pokémon/Run)
-      @cmdWindow = Window_CommandPokemon.newWithSize(
-        [], self.x + Graphics.width - 240, self.y, 240, Graphics.height - self.y, viewport
-      )
-      @cmdWindow.columns       = 2
-      @cmdWindow.columnSpacing = 4
-      @cmdWindow.ignore_input  = true
-      addSprite("cmdWindow", @cmdWindow)
-    end
+    self.y = Graphics.height - @sprites[:overlay].height
     self.z = z
-    refresh
   end
 
-  def dispose
-    super
-    @buttonBitmap&.dispose
+  def initialize_bitmaps
+    @bitmaps[:buttons]     = AnimatedBitmap.new(graphics_folder + _INTL("cursor_command"))
+    @bitmaps[:party_balls] = AnimatedBitmap.new(graphics_folder + "icon_command_party")
   end
 
-  def z=(value)
-    super
-    @msgBox.z    += 1
-    @cmdWindow.z += 1 if @cmdWindow
+  def initialize_sprites
+    initialize_overlay
   end
 
-  def setTexts(value)
-    @msgBox.text = value[0]
-    return if USE_GRAPHICS
-    commands = []
-    (1..4).each { |i| commands.push(value[i]) if value[i] }
-    @cmdWindow.commands = commands
+  def initialize_overlay
+    add_overlay(:party_overlay, Graphics.width, 96)
+    @sprites[:party_overlay].z = 1
+    record_values(:party_overlay)
+    add_overlay(:overlay, Graphics.width, 96)
+    @sprites[:overlay].z = 2
+    record_values(:overlay)
   end
 
-  def refreshButtons
-    return if !USE_GRAPHICS
-    @buttons.each_with_index do |button, i|
-      button.src_rect.x = (i == @index) ? @buttonBitmap.width / 2 : 0
-      button.src_rect.y = MODES[@mode][i] * BUTTON_HEIGHT
-      button.z          = self.z + ((i == @index) ? 3 : 2)
+  #-----------------------------------------------------------------------------
+
+  def index=(new_index)
+    old_value = @index
+    @index = (new_index.is_a?(Symbol)) ? @commands.index { |command| command[0] == new_index } : new_index
+    refresh if @index != old_value
+  end
+
+  def set_index_and_commands(new_index, new_commands)
+    self.commands = new_commands
+    @index = (new_index.is_a?(Symbol)) ? @commands.index { |command| command[0] == new_index } : new_index
+    full_refresh
+  end
+
+  def command
+    return @commands[@index][0]
+  end
+
+  # cmds = [:fight, nil, :bag, :run, :pokemon], where nil means new row.
+  def commands=(cmds)
+    @commands = []
+    row = 0
+    row_widths = [0]
+    cmds.each_with_index do |cmd|
+      if cmd.nil?
+        row += 1
+        row_widths[row] = 0
+        next
+      end
+      src_index = BUTTON_CONTENTS.index { |btn| (!btn.is_a?(Array) && btn == cmd) || (btn.is_a?(Array) && btn[0] == cmd) }
+      content = BUTTON_CONTENTS[src_index]
+      src_width = (content.is_a?(Array) && content[1]) ? BUTTON_WIDTHS[1] : BUTTON_WIDTHS[0]
+      button_x = (@sprites[:overlay].width / 2) + row_widths[row]
+      button_y = 6 + (row * (BUTTON_HEIGHT - BUTTON_OVERLAP[1]))
+      @commands.push([cmd, row, src_index, button_x, button_y, src_width])
+      row_widths[row] += src_width - BUTTON_OVERLAP[0]
+    end
+    # Adjust the button_x for each command based on the total width of its row
+    @commands.each do |command|
+      command[3] -= (row_widths[command[1]] + BUTTON_OVERLAP[0]) / 2
     end
   end
 
-  def refresh
-    @msgBox.refresh
-    @cmdWindow&.refresh
-    refreshButtons
+  #-----------------------------------------------------------------------------
+
+  def refresh_overlay
+    super
+    draw_command_buttons
+  end
+
+  def full_refresh
+    super
+    @sprites[:party_overlay].bitmap.clear if @sprites[:party_overlay]
+    draw_player_party_icons
+    draw_opponent_party_icons
+  end
+
+  def draw_player_party_icons
+    return if @battle.is_a?(SafariBattle)
+    party = @battle.pbParty(0)
+    Battle::Scene::NUM_BALLS.times do |i|
+      pkmn = party[i]
+      status = 0
+      if pkmn.nil?
+        status = 3
+      elsif !pkmn.able?
+        status = 2
+      elsif pkmn.status != :NONE
+        status = 1
+      end
+      draw_image(@bitmaps[:party_balls], 2 + (i * (@bitmaps[:party_balls].height - 2)), 6,
+                 status * @bitmaps[:party_balls].height, 0,
+                 @bitmaps[:party_balls].height, @bitmaps[:party_balls].height,
+                 overlay: :party_overlay)
+    end
+  end
+
+  def draw_opponent_party_icons
+    return if @battle.wildBattle? || @battle.is_a?(SafariBattle)
+    party = @battle.pbParty(1)
+    Battle::Scene::NUM_BALLS.times do |i|
+      pkmn = party[i]
+      status = 0
+      if pkmn.nil?
+        status = 3
+      elsif !pkmn.able?
+        status = 2
+      elsif pkmn.status != :NONE
+        status = 1
+      end
+      draw_image(@bitmaps[:party_balls],
+                 Graphics.width - @bitmaps[:party_balls].height - 2 - (i * (@bitmaps[:party_balls].height - 2)), 6,
+                 status * @bitmaps[:party_balls].height, 0,
+                 @bitmaps[:party_balls].height, @bitmaps[:party_balls].height,
+                 overlay: :party_overlay)
+    end
+  end
+
+  def draw_command_buttons
+    sel_command = @commands[@index]
+    # Draw all unselected command buttons
+    @commands.each do |command|
+      next if command[0] == sel_command[0]
+      draw_image(@bitmaps[:buttons], command[3], command[4],
+                 0, command[2] * BUTTON_HEIGHT, command[5], BUTTON_HEIGHT)
+    end
+    # Draw selected command button
+    draw_image(@bitmaps[:buttons], sel_command[3], sel_command[4],
+               @bitmaps[:buttons].width / 2, sel_command[2] * BUTTON_HEIGHT, sel_command[5], BUTTON_HEIGHT)
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def update_input
+    return if !active
+    old_index = @index
+    old_row = @commands[@index][1]
+    if Input.repeat?(Input::LEFT)
+      if @index > 0 && @commands[@index - 1][1] == old_row   # In same row
+        @index -= 1
+      elsif @index == 0
+        @index = @commands.index { |command| command[1] == old_row + 1 }   # First button in next row
+      end
+    elsif Input.repeat?(Input::RIGHT)
+      if @commands[@index + 1] && @commands[@index + 1][1] == old_row   # In same row
+        @index += 1
+      elsif old_row == 0 && @commands[@index + 1][1] != old_row
+        new_index = @index
+        @commands.each_with_index { |command, i| new_index = i if command[1] == old_row + 1 }
+        @index = new_index   # Last button in next row
+      end
+    elsif Input.repeat?(Input::UP)
+      old_x = @commands[@index][3] + (@commands[@index][5] / 2)   # Middle of button
+      difference = 999   # Very high to begin with
+      @commands.each_with_index do |command, i|
+        next if command[1] != old_row - 1
+        this_x = command[3] + (command[5] / 2)   # Middle of button
+        if (this_x - old_x).abs < difference
+          difference = (this_x - old_x).abs
+          @index = i
+        end
+      end
+    elsif Input.repeat?(Input::DOWN)
+      old_x = @commands[@index][3] + (@commands[@index][5] / 2)   # Middle of button
+      difference = 999   # Very high to begin with
+      @commands.each_with_index do |command, i|
+        next if command[1] != old_row + 1
+        this_x = command[3] + (command[5] / 2)   # Middle of button
+        if (this_x - old_x).abs <= difference
+          difference = (this_x - old_x).abs
+          @index = i
+        end
+      end
+    end
+    @index ||= old_index
+    if @index != old_index
+      pbPlayCursorSE
+      refresh
+    end
+  end
+
+  def update
+    super
+    update_input
   end
 end
 
 #===============================================================================
-# Fight menu (choose a move)
+# Fight menu (choose a move).
 #===============================================================================
 class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   attr_reader :battler
-  attr_reader :shiftMode
-  attr_accessor :buttons
+  attr_reader :mega_evolution_state
 
-  GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON = false
-
-  # If true, displays graphics from Graphics/UI/Battle/overlay_fight.png
-  #     and Graphics/UI/Battle/cursor_fight.png.
-  # If false, just displays text and the command window over the graphic
-  #     Graphics/UI/Battle/overlay_message.png. You will need to edit def
-  #     pbShowWindow to make the graphic appear while the command menu is being
-  #     displayed.
-  USE_GRAPHICS     = true
-  TYPE_ICON_HEIGHT = 28
-  # Text colours of PP of selected move
-  PP_COLORS = [
-    Color.new(248, 72, 72), Color.new(136, 48, 48),    # Red, zero PP
-    Color.new(248, 136, 32), Color.new(144, 72, 24),   # Orange, 1/4 of total PP or less
-    Color.new(248, 192, 0), Color.new(144, 104, 0),    # Yellow, 1/2 of total PP or less
-    TEXT_BASE_COLOR, TEXT_SHADOW_COLOR                 # Black, more than 1/2 of total PP
-  ]
+  GRAPHICS_FOLDER = "Battle/"
+  TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
+    :default   => [Battle::Scene::MESSAGE_BASE_COLOR, Battle::Scene::MESSAGE_SHADOW_COLOR],   # Base and shadow colour
+    :pp_yellow => [Color.new(248, 192, 0), Color.new(144, 104, 0)],   # Base and shadow colour
+    :pp_orange => [Color.new(248, 136, 32), Color.new(144, 72, 24)],   # Base and shadow colour
+    :pp_red    => [Color.new(248, 72, 72), Color.new(136, 48, 48)]   # Base and shadow colour
+  }
+  BUTTON_WIDTH = 200
+  # Number of pixels that adjacent buttons overlap each other.
+  BUTTON_OVERLAP = [4, 4]
+  TYPE_ICON_HEIGHT = GameData::Type::ICON_SIZE[1]
 
   def initialize(viewport, z)
+    @battler              = nil
+    @mega_evolution_state = 0   # 0=don't show, 1=show unpressed, 2=show pressed
     super(viewport)
     self.x = 0
     self.y = Graphics.height - 96
-    @battler   = nil
-    @shiftMode = 0
-    # NOTE: @mode is for the display of the Mega Evolution button.
-    #       0=don't show, 1=show unpressed, 2=show pressed
-    if USE_GRAPHICS
-      # Create bitmaps
-      @buttonBitmap  = AnimatedBitmap.new(_INTL("Graphics/UI/Battle/cursor_fight"))
-      @typeBitmap    = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
-      @megaEvoBitmap = AnimatedBitmap.new(_INTL("Graphics/UI/Battle/cursor_mega"))
-      @shiftBitmap   = AnimatedBitmap.new(_INTL("Graphics/UI/Battle/cursor_shift"))
-      # Create background graphic
-      background = IconSprite.new(0, Graphics.height - 96, viewport)
-      background.setBitmap("Graphics/UI/Battle/overlay_fight")
-      addSprite("background", background)
-      # Create move buttons
-      @buttons = Array.new(Pokemon::MAX_MOVES) do |i|
-        button = Sprite.new(viewport)
-        button.bitmap = @buttonBitmap.bitmap
-        button.x = self.x + 4
-        button.x += (i.even? ? 0 : (@buttonBitmap.width / 2) - 4)
-        button.y = self.y + 6
-        button.y += (((i / 2) == 0) ? 0 : BUTTON_HEIGHT - 4)
-        button.src_rect.width  = @buttonBitmap.width / 2
-        button.src_rect.height = BUTTON_HEIGHT
-        addSprite("button_#{i}", button)
-        next button
-      end
-      # Create overlay for buttons (shows move names)
-      @overlay = BitmapSprite.new(Graphics.width, Graphics.height - self.y, viewport)
-      @overlay.x = self.x
-      @overlay.y = self.y
-      pbSetNarrowFont(@overlay.bitmap)
-      addSprite("overlay", @overlay)
-      # Create overlay for selected move's info (shows move's PP)
-      @infoOverlay = BitmapSprite.new(Graphics.width, Graphics.height - self.y, viewport)
-      @infoOverlay.x = self.x
-      @infoOverlay.y = self.y
-      pbSetNarrowFont(@infoOverlay.bitmap)
-      addSprite("infoOverlay", @infoOverlay)
-      # Create type icon
-      @typeIcon = Sprite.new(viewport)
-      @typeIcon.bitmap = @typeBitmap.bitmap
-      @typeIcon.x      = self.x + 416
-      @typeIcon.y      = self.y + 20
-      @typeIcon.src_rect.height = TYPE_ICON_HEIGHT
-      addSprite("typeIcon", @typeIcon)
-      # Create Mega Evolution button
-      @megaButton = Sprite.new(viewport)
-      @megaButton.bitmap = @megaEvoBitmap.bitmap
-      @megaButton.x      = self.x + 120
-      @megaButton.y      = self.y - (@megaEvoBitmap.height / 2)
-      @megaButton.src_rect.height = @megaEvoBitmap.height / 2
-      addSprite("megaButton", @megaButton)
-      # Create Shift button
-      @shiftButton = Sprite.new(viewport)
-      @shiftButton.bitmap = @shiftBitmap.bitmap
-      @shiftButton.x      = self.x + 4
-      @shiftButton.y      = self.y - @shiftBitmap.height
-      addSprite("shiftButton", @shiftButton)
-    else
-      # Create message box (shows type and PP of selected move)
-      @msgBox = Window_AdvancedTextPokemon.newWithSize(
-        "", self.x + 320, self.y, Graphics.width - 320, Graphics.height - self.y, viewport
-      )
-      @msgBox.baseColor   = TEXT_BASE_COLOR
-      @msgBox.shadowColor = TEXT_SHADOW_COLOR
-      pbSetNarrowFont(@msgBox.contents)
-      addSprite("msgBox", @msgBox)
-      # Create command window (shows moves)
-      @cmdWindow = Window_CommandPokemon.newWithSize(
-        [], self.x, self.y, 320, Graphics.height - self.y, viewport
-      )
-      @cmdWindow.columns       = 2
-      @cmdWindow.columnSpacing = 4
-      @cmdWindow.ignore_input  = true
-      pbSetNarrowFont(@cmdWindow.contents)
-      addSprite("cmdWindow", @cmdWindow)
-    end
     self.z = z
   end
 
-  def dispose
-    super
-    @buttonBitmap&.dispose
-    @typeBitmap&.dispose
-    @megaEvoBitmap&.dispose
-    @shiftBitmap&.dispose
+  def initialize_bitmaps
+    @bitmaps[:types] = AnimatedBitmap.new(UI_FOLDER + _INTL("types"))
   end
 
-  def z=(value)
-    super
-    @msgBox.z      += 1 if @msgBox
-    @cmdWindow.z   += 2 if @cmdWindow
-    @overlay.z     += 5 if @overlay
-    @infoOverlay.z += 6 if @infoOverlay
-    @typeIcon.z    += 1 if @typeIcon
+  def initialize_sprites
+    initialize_background
+    initialize_overlay
+    initialize_move_buttons
+    initialize_mega_evolution_button
   end
+
+  def initialize_background
+    add_icon_sprite(:bg, 0, 0, graphics_folder + "overlay_fight")
+    record_values(:bg)
+  end
+
+  def initialize_overlay
+    # Bitmap in which the selected move's type and PP are drawn
+    add_overlay(:overlay, Graphics.width, 96)
+    @sprites[:overlay].z = 6
+    pbSetNarrowFont(@sprites[:overlay].bitmap)
+    record_values(:overlay)
+    # Bitmap in which the move names are written
+    add_overlay(:move_name_overlay, Graphics.width, 96)
+    @sprites[:move_name_overlay].z = 5
+    pbSetNarrowFont(@sprites[:move_name_overlay].bitmap)
+    record_values(:move_name_overlay)
+  end
+
+  def initialize_move_buttons
+    Pokemon::MAX_MOVES.times do |i|
+      button_x = 4 + ((i % 2) * (BUTTON_WIDTH - BUTTON_OVERLAP[0]))
+      button_y = 6 + ((i / 2) * (BUTTON_HEIGHT - BUTTON_OVERLAP[1]))
+      add_icon_sprite("move_#{i}".to_sym, button_x, button_y, graphics_folder + _INTL("cursor_fight"))
+      @sprites["move_#{i}".to_sym].src_rect.width = BUTTON_WIDTH
+      @sprites["move_#{i}".to_sym].src_rect.height = BUTTON_HEIGHT
+      record_values("move_#{i}".to_sym)
+    end
+  end
+
+  def initialize_mega_evolution_button
+    add_icon_sprite(:mega_evolution, 2, -46, graphics_folder + "cursor_mega")
+    @sprites[:mega_evolution].z = -1
+    @sprites[:mega_evolution].src_rect.height = 46
+    @sprites[:mega_evolution].visible = false
+    record_values(:mega_evolution)
+  end
+
+  #-----------------------------------------------------------------------------
 
   def battler=(value)
     @battler = value
+    full_refresh
+  end
+
+  def mega_evolution_state=(value)
+    old_value = @mega_evolution_state
+    @mega_evolution_state = value
+    refresh_mega_evolution_button
+  end
+
+  def set_battler_and_index(new_battler, new_index)
+    @battler = new_battler
+    @index = new_index
+    full_refresh
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def refresh
+    super
+    return if !@battler
+    refresh_selected_button
+    refresh_mega_evolution_button
+  end
+
+  def full_refresh
     refresh
-    refreshButtonNames
+    draw_move_names_on_buttons
   end
 
-  def shiftMode=(value)
-    oldValue = @shiftMode
-    @shiftMode = value
-    refreshShiftButton if @shiftMode != oldValue
-  end
-
-  def refreshButtonNames
+  def refresh_selected_button
     moves = (@battler) ? @battler.moves : []
-    if !USE_GRAPHICS
-      # Fill in command window
-      commands = []
-      [4, moves.length].max.times do |i|
-        commands.push((moves[i]) ? moves[i].name : "-")
-      end
-      @cmdWindow.commands = commands
-      return
+    # Choose appropriate button graphics and z positions
+    Pokemon::MAX_MOVES.times do |i|
+      button = @sprites["move_#{i}".to_sym]
+      button.visible = !!moves[i]
+      next if !moves[i]
+      button.src_rect.x = (i == @index) ? BUTTON_WIDTH : 0
+      button.src_rect.y = GameData::Type.get(moves[i].display_type(@battler)).icon_position * BUTTON_HEIGHT
+      button.z          = self.z + ((i == @index) ? 4 : 3)
     end
-    # Draw move names onto overlay
-    @overlay.bitmap.clear
-    textPos = []
-    @buttons.each_with_index do |button, i|
-      next if !@visibility["button_#{i}"]
-      x = button.x - self.x + (button.src_rect.width / 2)
-      y = button.y - self.y + 14
-      moveNameBase = TEXT_BASE_COLOR
-      if GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON && moves[i].display_type(@battler)
+    draw_move_info(moves[@index])
+  end
+
+  def refresh_mega_evolution_button
+    @sprites[:mega_evolution].visible    = (@mega_evolution_state > 0)
+    @sprites[:mega_evolution].src_rect.y = (@mega_evolution_state - 1) * 46
+  end
+
+  def draw_move_names_on_buttons
+    @sprites[:move_name_overlay].bitmap.clear
+    moves = (@battler) ? @battler.moves : []
+    Pokemon::MAX_MOVES.times do |i|
+      next if !moves[i]
+      button = @sprites["move_#{i}".to_sym]
+      text_x = button.x - self.x + (button.src_rect.width / 2)
+      text_y = button.y - self.y + 14
+      name_theme = :default
+      move_type = moves[i].display_type(@battler)
+      if Settings::BATTLE_MOVE_NAME_COLOR_FROM_GRAPHIC && move_type
         # NOTE: This takes a color from a particular pixel in the button
         #       graphic and makes the move name's base color that same color.
         #       The pixel is at coordinates 10,34 in the button box. If you
         #       change the graphic, you may want to change the below line of
         #       code to ensure the font is an appropriate color.
-        moveNameBase = button.bitmap.get_pixel(10, button.src_rect.y + 34)
+        sampled_color = button.bitmap.get_pixel(10, button.src_rect.y + 34)
+        @sprites[:move_name_overlay].add_text_theme(move_type, sampled_color, TEXT_COLOR_THEMES[:default][1])
+        name_theme = move_type
       end
-      textPos.push([moves[i].name, x, y, :center, moveNameBase, TEXT_SHADOW_COLOR])
+      draw_text(moves[i].name, text_x, text_y, align: :center, theme: name_theme, overlay: :move_name_overlay)
     end
-    pbDrawTextPositions(@overlay.bitmap, textPos)
   end
 
-  def refreshSelection
-    moves = (@battler) ? @battler.moves : []
-    if USE_GRAPHICS
-      # Choose appropriate button graphics and z positions
-      @buttons.each_with_index do |button, i|
-        if !moves[i]
-          @visibility["button_#{i}"] = false
-          next
-        end
-        @visibility["button_#{i}"] = true
-        button.src_rect.x = (i == @index) ? @buttonBitmap.width / 2 : 0
-        button.src_rect.y = GameData::Type.get(moves[i].display_type(@battler)).icon_position * BUTTON_HEIGHT
-        button.z          = self.z + ((i == @index) ? 4 : 3)
-      end
-    end
-    refreshMoveData(moves[@index])
-  end
-
-  def refreshMoveData(move)
-    # Write PP and type of the selected move
-    if !USE_GRAPHICS
-      return if !move
-      moveType = GameData::Type.get(move.display_type(@battler)).name
-      if move.total_pp <= 0
-        @msgBox.text = _INTL("PP: ---<br>TIPO/{1}", moveType)
-      else
-        @msgBox.text = _ISPRINTF("PP: {1: 2d}/{2: 2d}<br>TIPO/{3:s}",
-                                 move.pp, move.total_pp, moveType)
-      end
-      return
-    end
-    @infoOverlay.bitmap.clear
-    if !move
-      @visibility["typeIcon"] = false
-      return
-    end
-    @visibility["typeIcon"] = true
-    # Type icon
+  def draw_move_info(move)
+    return if !move
+    area_middle = @sprites[:overlay].width - 56
+    # Draw type icon
     type_number = GameData::Type.get(move.display_type(@battler)).icon_position
-    @typeIcon.src_rect.y = type_number * TYPE_ICON_HEIGHT
-    # PP text
+    draw_image(@bitmaps[:types], area_middle - (GameData::Type::ICON_SIZE[0] / 2), 22,
+               0, type_number * GameData::Type::ICON_SIZE[1], *GameData::Type::ICON_SIZE)
+    # Draw PP text
     if move.total_pp > 0
-      ppFraction = [(4.0 * move.pp / move.total_pp).ceil, 3].min
-      textPos = []
-      textPos.push([_INTL("PP: {1}/{2}", move.pp, move.total_pp),
-                    448, 56, :center, PP_COLORS[ppFraction * 2], PP_COLORS[(ppFraction * 2) + 1]])
-      pbDrawTextPositions(@infoOverlay.bitmap, textPos)
+      pp_fraction = [(4.0 * move.pp / move.total_pp).ceil, 3].min
+      pp_theme = [:pp_red, :pp_orange, :pp_yellow, :default][pp_fraction]
+      draw_text(_INTL("PP: {1}/{2}", move.pp, move.total_pp), area_middle, 58,
+                align: :center, theme: pp_theme)
     end
   end
 
-  def refreshMegaEvolutionButton
-    return if !USE_GRAPHICS
-    @megaButton.src_rect.y    = (@mode - 1) * @megaEvoBitmap.height / 2
-    @megaButton.x             = self.x + ((@shiftMode > 0) ? 204 : 120)
-    @megaButton.z             = self.z - 1
-    @visibility["megaButton"] = (@mode > 0)
+  #-----------------------------------------------------------------------------
+
+  def update_input
+    return if !active
+    old_index = @index
+    if Input.repeat?(Input::LEFT)
+      @index -= 1 if (@index % 2) == 1
+    elsif Input.repeat?(Input::RIGHT)
+      @index += 1 if (@index % 2) == 0 && @battler.moves[@index + 1]&.id
+    elsif Input.repeat?(Input::UP)
+      @index -= 2 if @index >= 2
+    elsif Input.repeat?(Input::DOWN)
+      @index += 2 if @battler.moves[@index + 2]&.id && @index < 2
+    end
+    if @index != old_index
+      pbPlayCursorSE
+      refresh
+    end
   end
 
-  def refreshShiftButton
-    return if !USE_GRAPHICS
-    @shiftButton.src_rect.y    = (@shiftMode - 1) * @shiftBitmap.height
-    @shiftButton.z             = self.z - 1
-    @visibility["shiftButton"] = (@shiftMode > 0)
-  end
-
-  def refresh
-    return if !@battler
-    refreshSelection
-    refreshMegaEvolutionButton
-    refreshShiftButton
+  def update
+    super
+    update_input
   end
 end
 
 #===============================================================================
-# Target menu (choose a move's target)
-# NOTE: Unlike the command and fight menus, this one doesn't have a textbox-only
-#       version.
+# Target menu (choose a move's target).
 #===============================================================================
 class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
-  attr_accessor :mode
-  attr_accessor :buttons
+  attr_reader :mode
 
-  # Lists of which button graphics to use in different situations/types of battle.
-  MODES = [
-    [0, 2, 1, 3],   # 0 = Regular battle
-    [0, 2, 1, 9],   # 1 = Regular battle with "Cancel" instead of "Run"
-    [0, 2, 1, 4],   # 2 = Regular battle with "Call" instead of "Run"
-    [5, 7, 6, 3],   # 3 = Safari Zone
-    [0, 8, 1, 3]    # 4 = Bug-Catching Contest
-  ]
-  CMD_BUTTON_WIDTH_SMALL = 170
-  TEXT_BASE_COLOR   = Color.new(240, 248, 224)
-  TEXT_SHADOW_COLOR = Color.new(64, 64, 64)
+  GRAPHICS_FOLDER = "Battle/"
+  TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
+    :default   => [Color.new(240, 248, 224), Color.new(64, 64, 64)]   # Base and shadow colour
+  }
+  BUTTON_WIDTHS = [236, 170]   # 1-2 buttons in row, 3+ buttons in row
+  # Number of pixels that adjacent buttons overlap each other.
+  BUTTON_OVERLAP = [4, 4]
 
-  def initialize(viewport, z, sideSizes)
+  # NOTE: @mode is for which buttons are shown as selected.
+  #       0=select 1 button (@index), 1=select all buttons with text
+  def initialize(viewport, z, side_sizes)
+    @mode = 0
+    @side_sizes = side_sizes
+    @max_index = (@side_sizes[0] > @side_sizes[1]) ? (@side_sizes[0] - 1) * 2 : (@side_sizes[1] * 2) - 1
+    @use_small_buttons = (@side_sizes.max > 2)
+    @texts = []
     super(viewport)
-    @sideSizes = sideSizes
-    maxIndex = (@sideSizes[0] > @sideSizes[1]) ? (@sideSizes[0] - 1) * 2 : (@sideSizes[1] * 2) - 1
-    @smallButtons = (@sideSizes.max > 2)
     self.x = 0
     self.y = Graphics.height - 96
-    @texts = []
-    # NOTE: @mode is for which buttons are shown as selected.
-    #       0=select 1 button (@index), 1=select all buttons with text
-    # Create bitmaps
-    @buttonBitmap = AnimatedBitmap.new("Graphics/UI/Battle/cursor_target")
-    # Create target buttons
-    @buttons = Array.new(maxIndex + 1) do |i|
-      numButtons = @sideSizes[i % 2]
-      next if numButtons <= i / 2
-      # NOTE: Battler indices go from left to right from the perspective of
-      #       that side's trainer, so inc is different for each side for the
-      #       same value of i/2.
-      inc = (i.even?) ? i / 2 : numButtons - 1 - (i / 2)
-      button = Sprite.new(viewport)
-      button.bitmap = @buttonBitmap.bitmap
-      button.src_rect.width  = (@smallButtons) ? CMD_BUTTON_WIDTH_SMALL : @buttonBitmap.width / 2
-      button.src_rect.height = BUTTON_HEIGHT
-      if @smallButtons
-        button.x    = self.x + 170 - [0, 82, 166][numButtons - 1]
-      else
-        button.x    = self.x + 138 - [0, 116][numButtons - 1]
-      end
-      button.x += (button.src_rect.width - 4) * inc
-      button.y = self.y + 6
-      button.y += (BUTTON_HEIGHT - 4) * ((i + 1) % 2)
-      addSprite("button_#{i}", button)
-      next button
-    end
-    # Create overlay (shows target names)
-    @overlay = BitmapSprite.new(Graphics.width, Graphics.height - self.y, viewport)
-    @overlay.x = self.x
-    @overlay.y = self.y
-    pbSetNarrowFont(@overlay.bitmap)
-    addSprite("overlay", @overlay)
     self.z = z
-    refresh
   end
 
-  def dispose
-    super
-    @buttonBitmap&.dispose
+  def initialize_sprites
+    initialize_overlay
+    initialize_target_buttons
   end
 
-  def z=(value)
-    super
-    @overlay.z += 5 if @overlay
+  def initialize_overlay
+    add_overlay(:overlay, Graphics.width, 96)
+    @sprites[:overlay].z = 5
+    pbSetNarrowFont(@sprites[:overlay].bitmap)
+    record_values(:overlay)
   end
 
-  def setDetails(texts, mode)
+  def initialize_target_buttons
+    (@max_index + 1).times do |i|
+      num_buttons = @side_sizes[i % 2]
+      next if num_buttons <= i / 2
+      # NOTE: Battler indices go from left to right from the perspective of
+      #       that side's trainer, so index is different for each side for the
+      #       same value of i/2.
+      index = (i.even?) ? i / 2 : num_buttons - 1 - (i / 2)
+      add_icon_sprite("button_#{i}".to_sym, 0, 0, graphics_folder + _INTL("cursor_target"))
+      button = @sprites["button_#{i}".to_sym]
+      button.src_rect.width = (@use_small_buttons) ? BUTTON_WIDTHS[1] : BUTTON_WIDTHS[0]
+      button.src_rect.height = BUTTON_HEIGHT
+      total_width = (num_buttons * button.src_rect.width) - ((num_buttons - 1) * BUTTON_OVERLAP[0])
+      button.x = (@sprites[:overlay].width - total_width) / 2
+      button.x += index * (button.src_rect.width - BUTTON_OVERLAP[0])
+      button.y = 6 + (((i + 1) % 2) * (BUTTON_HEIGHT - BUTTON_OVERLAP[1]))
+      record_values("button_#{i}".to_sym)
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def set_texts_and_mode(texts, mode)
     @texts = texts
     @mode  = mode
     refresh
   end
 
-  def refreshButtons
-    # Choose appropriate button graphics and z positions
-    @buttons.each_with_index do |button, i|
-      next if !button
-      sel = false
-      buttonType = 0
-      if @texts[i]
-        sel ||= (@mode == 0 && i == @index)
-        sel ||= (@mode == 1)
-        buttonType = (i.even?) ? 1 : 2
-      end
-      buttonType = (2 * buttonType) + ((@smallButtons) ? 1 : 0)
-      button.src_rect.x = (sel) ? @buttonBitmap.width / 2 : 0
-      button.src_rect.y = buttonType * BUTTON_HEIGHT
-      button.z          = self.z + ((sel) ? 3 : 2)
-    end
-    # Draw target names onto overlay
-    @overlay.bitmap.clear
-    textpos = []
-    @buttons.each_with_index do |button, i|
-      next if !button || nil_or_empty?(@texts[i])
-      x = button.x - self.x + (button.src_rect.width / 2)
-      y = button.y - self.y + 14
-      textpos.push([@texts[i], x, y, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR])
-    end
-    pbDrawTextPositions(@overlay.bitmap, textpos)
-  end
+  #-----------------------------------------------------------------------------
 
   def refresh
-    refreshButtons
+    super
+    refresh_selected_button
+    draw_target_names_on_buttons
+  end
+
+  def refresh_selected_button
+    # Choose appropriate button graphics and z positions
+    (@max_index + 1).times do |i|
+      button = @sprites["button_#{i}".to_sym]
+      next if !button
+      selected = false
+      button_type = 0
+      if @texts[i]
+        selected ||= (@mode == 0 && i == @index)
+        selected ||= (@mode == 1)
+        button_type = (i.even?) ? 1 : 2
+      end
+      src_button_type = (2 * button_type) + ((@use_small_buttons) ? 1 : 0)
+      button.src_rect.x = (selected) ? BUTTON_WIDTHS[0] : 0
+      button.src_rect.y = src_button_type * BUTTON_HEIGHT
+      button.z          = self.z + ((selected) ? 3 : 2)
+    end
+  end
+
+  def draw_target_names_on_buttons
+    (@max_index + 1).times do |i|
+      next if nil_or_empty?(@texts[i])
+      button = @sprites["button_#{i}".to_sym]
+      next if !button
+      text_x = button.x - self.x + (button.src_rect.width / 2)
+      text_y = button.y - self.y + 14
+      draw_text(@texts[i], text_x, text_y, align: :center)
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def update_input
+    return if !active
+    return if @mode != 0
+    old_index = @index
+    if Input.repeat?(Input::LEFT) || Input.repeat?(Input::RIGHT)
+      inc = (@index.even?) ? -2 : 2
+      inc *= -1 if Input.press?(Input::RIGHT)
+      index_length = @side_sizes[@index % 2] * 2
+      new_index = @index
+      loop do
+        new_index += inc
+        break if new_index < 0 || new_index >= index_length
+        next if @texts[new_index].nil?
+        @index = new_index
+        break
+      end
+    elsif (Input.repeat?(Input::UP) && @index.even?) ||
+          (Input.repeat?(Input::DOWN) && @index.odd?)
+      sel_sprite = @sprites["button_#{@index}".to_sym]
+      old_x = sel_sprite.x + (sel_sprite.src_rect.width / 2)   # Middle of button
+      difference = 999   # Very high to begin with
+      (@max_index + 1).times do |i|
+        next if (i % 2) == (@index % 2) || @texts[i].nil?
+        this_sprite = @sprites["button_#{i}".to_sym]
+        next if !this_sprite
+        this_x = sel_sprite.x + (sel_sprite.src_rect.width / 2)   # Middle of button
+        if (this_x - old_x).abs < difference
+          difference = (this_x - old_x).abs
+          @index = i
+        end
+      end
+    end
+    if @index != old_index
+      pbPlayCursorSE
+      refresh
+    end
+  end
+
+  def update
+    super
+    update_input
   end
 end
-
