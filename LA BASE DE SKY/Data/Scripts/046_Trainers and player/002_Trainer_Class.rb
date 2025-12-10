@@ -48,6 +48,7 @@ class Trainer
   def male?;             return GameData::TrainerType.get(self.trainer_type).male?;           end
   def female?;           return GameData::TrainerType.get(self.trainer_type).female?;         end
   def skill_level;       return GameData::TrainerType.get(self.trainer_type).skill_level;     end
+  def default_poke_ball; return GameData::TrainerType.get(self.trainer_type).poke_ball;       end
   def flags;             return GameData::TrainerType.get(self.trainer_type).flags;           end
   def has_flag?(flag);   return GameData::TrainerType.get(self.trainer_type).has_flag?(flag); end
 
@@ -87,11 +88,11 @@ class Trainer
   end
 
   def first_party
-    return @party.first
+    return @party[0]
   end
 
   def first_pokemon
-    return pokemon_party.first
+    return pokemon_party[0]
   end
 
   def first_able_pokemon

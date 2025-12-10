@@ -111,14 +111,18 @@ class RelicStoneScreen
   def pbDisplay(x)
     @scene.pbDisplay(x)
   end
+  alias show_message pbDisplay
 
   def pbConfirm(x)
     @scene.pbConfirm(x)
   end
+  alias show_confirm_message pbConfirm
 
   def pbUpdate; end
+  alias update pbUpdate
 
   def pbRefresh; end
+  alias refresh pbRefresh
 
   def pbStartScreen(pokemon)
     @scene.pbStartScene(pokemon)
