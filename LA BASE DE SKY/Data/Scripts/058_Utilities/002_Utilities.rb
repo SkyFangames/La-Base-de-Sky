@@ -57,7 +57,12 @@ def pbGetLanguage
   when "es" then return 7   # Spanish
   when "ko" then return 8   # Korean
   end
-  return 2 # Use 'English' by default
+  return 2   # Use 'English' by default
+end
+
+def pbChooseLanguage
+  commands = Settings::LANGUAGES.map { |val| val[0] }
+  return pbShowCommands(nil, commands)
 end
 
 # Converts a Celsius temperature to Fahrenheit.
@@ -191,25 +196,21 @@ def pbTimeEventValid(variableNumber)
   return ret
 end
 
-def pbExclaim(event, id = Settings::EXCLAMATION_ANIMATION_ID, tinting = false)
-  if event.is_a?(Array)
-    sprite = nil
-    done = []
-    event.each do |i|
-      next if done.include?(i.id)
-      spriteset = $scene.spriteset(i.map_id)
-      sprite ||= spriteset&.addUserAnimation(id, i.x, i.y, tinting, 2)
-      done.push(i.id)
-    end
-  else
-    spriteset = $scene.spriteset(event.map_id)
-    sprite = spriteset&.addUserAnimation(id, event.x, event.y, tinting, 2)
+def pbExclaim(events, anim = Settings::EXCLAMATION_ANIMATION_ID, tinting = false)
+  events = [events] if !events.is_a?(Array)
+  events.each do |ev|
+    ev.animation_id = anim
+    ev.animation_height = 3
+    ev.animation_regular_tone = !tinting
   end
-  until sprite.disposed?
-    Graphics.update
-    Input.update
-    pbUpdateSceneMap
+  anim_data = $data_animations[anim]
+  frame_count = anim_data.frame_max
+  frame_rate = 20
+  if anim_data.name[/\[\s*(\d+?)\s*\]\s*$/]
+    frame_rate = $~[1].to_i
   end
+  pbWait(frame_count / frame_rate.to_f)
+  events.each { |i| i.animation_id = 0 }
 end
 
 def pbNoticePlayer(event, always_show_exclaim = false)
@@ -422,8 +423,10 @@ end
 # Other utilities
 #===============================================================================
 def pbTextEntry(helptext, minlength, maxlength, variableNumber)
-  $game_variables[variableNumber] = pbEnterText(helptext, minlength, maxlength)
-  $game_map.need_refresh = true if $game_map
+  pbFadeOutIn do
+    $game_variables[variableNumber] = pbEnterText(helptext, minlength, maxlength)
+    $game_map.need_refresh = true if $game_map
+  end
 end
 
 def pbMoveTutorAnnotations(move, movelist = nil)
@@ -600,19 +603,17 @@ def pbLoadRpgxpScene(scene)
   Graphics.transition
 end
 
-def pbChooseLanguage
-  commands = []
-  Settings::LANGUAGES.each do |lang|
-    commands.push(lang[0])
-  end
-  return pbShowCommands(nil, commands)
-end
-
 def pbScreenCapture
   t = Time.now
   filestart = t.strftime("[%Y-%m-%d] %H_%M_%S.%L")
-  capturefile = RTP.getSaveFileName(sprintf("%s.png", filestart))
-  Graphics.screenshot(capturefile)
-  pbSEPlay("Pkmn exp full") if FileTest.audio_exist?("Audio/SE/Pkmn exp full")
+  begin
+    folder_name = "Screenshots"
+    Dir.create(folder_name) if !Dir.safe?(folder_name)
+    capturefile = folder_name + "/" + sprintf("%s.png", filestart)
+    Graphics.screenshot(capturefile)
+  rescue
+    capturefile = RTP.getSaveFileName(sprintf("%s.png", filestart))
+    Graphics.screenshot(capturefile)
+  end
+  pbSEPlay("Screenshot") if FileTest.audio_exist?("Audio/SE/Screenshot")
 end
-

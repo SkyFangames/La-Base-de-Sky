@@ -41,7 +41,7 @@ class Battle::Scene
       pbUpdate
     end
     # Show shiny animation for wild Pokémon
-    if @battle.showAnims
+    if !@battle.rules[:no_battle_animations]
       @battle.sideSizes[1].times do |i|
         idxBattler = (2 * i) + 1
         next if !@battle.battlers[idxBattler] || !@battle.battlers[idxBattler].shiny?
@@ -146,7 +146,7 @@ class Battle::Scene
     end
     # Play shininess animations for shiny Pokémon
     sendOuts.each do |b|
-      next if !@battle.showAnims || !@battle.battlers[b[0]].shiny?
+      next if @battle.rules[:no_battle_animations] || !@battle.battlers[b[0]].shiny?
       if Settings::SUPER_SHINY && @battle.battlers[b[0]].super_shiny?
         pbCommonAnimation("SuperShiny", @battle.battlers[b[0]])
       else
@@ -221,9 +221,9 @@ class Battle::Scene
   def pbHPChanged(battler, oldHP, showAnim = false)
     @briefMessage = false
     if battler.hp > oldHP
-      pbCommonAnimation("HealthUp", battler) if showAnim && @battle.showAnims
+      pbCommonAnimation("HealthUp", battler) if showAnim && !@battle.rules[:no_battle_animations]
     elsif battler.hp < oldHP
-      pbCommonAnimation("HealthDown", battler) if showAnim && @battle.showAnims
+      pbCommonAnimation("HealthDown", battler) if showAnim && !@battle.rules[:no_battle_animations]
     end
     @sprites["dataBox_#{battler.index}"].animate_hp(oldHP, battler.hp)
     while @sprites["dataBox_#{battler.index}"].animating_hp?

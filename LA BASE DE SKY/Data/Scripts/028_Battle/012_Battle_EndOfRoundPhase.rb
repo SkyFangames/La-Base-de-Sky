@@ -285,18 +285,18 @@ class Battle
       end
     end
     
-    priority.each do |battler|
-      next if battler.effects[PBEffects::Splinters] == 0 || !battler.takesIndirectDamage?
-      pbCommonAnimation("Splinters", battler)
-      battlerTypes = battler.pbTypes(true)
-      splinterType = battler.effects[PBEffects::SplintersType] || :QMARKS
-      effectiveness = [1, Effectiveness.calculate(splinterType, *battlerTypes)].max
-      damage = ((((2.0 * battler.level / 5) + 2).floor * 25 * battler.attack / battler.defense).floor / 50).floor + 2
-      damage *= effectiveness.to_f / Effectiveness::NORMAL_EFFECTIVE
-      battler.pbTakeEffectDamage(damage) { |hp_lost|
-        pbDisplay(_INTL("¡{1} es dañado por las astillas dentadas!", battler.pbThis))
-      }
-    end
+    # priority.each do |battler|
+    #   next if battler.effects[PBEffects::Splinters] == 0 || !battler.takesIndirectDamage?
+    #   pbCommonAnimation("Splinters", battler)
+    #   battlerTypes = battler.pbTypes(true)
+    #   splinterType = battler.effects[PBEffects::SplintersType] || :QMARKS
+    #   effectiveness = [1, Effectiveness.calculate(splinterType, *battlerTypes)].max
+    #   damage = ((((2.0 * battler.level / 5) + 2).floor * 25 * battler.attack / battler.defense).floor / 50).floor + 2
+    #   damage *= effectiveness.to_f / Effectiveness::NORMAL_EFFECTIVE
+    #   battler.pbTakeEffectDamage(damage) { |hp_lost|
+    #     pbDisplay(_INTL("¡{1} es dañado por las astillas dentadas!", battler.pbThis))
+    #   }
+    # end
     priority.each do |battler|
       next if !battler.effects[PBEffects::SaltCure] || !battler.takesIndirectDamage?
       pbCommonAnimation("SaltCure", battler)
@@ -817,7 +817,7 @@ class Battle
       if Settings::MECHANICS_GENERATION >= 9
         battler.effects[PBEffects::Charge]   += 1 if battler.effects[PBEffects::Charge]     > 0
       end
-      battler.effects[PBEffects::GlaiveRush] -= 1 if battler.effects[PBEffects::GlaiveRush] > 0
+      # battler.effects[PBEffects::GlaiveRush] -= 1 if battler.effects[PBEffects::GlaiveRush] > 0
       @scene.pbRefreshOne(battler.index)
     end
     # Reset/count down side-specific effects (no messages)

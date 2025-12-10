@@ -339,55 +339,6 @@ ItemHandlers::UseInField.add(:EXPALL, proc { |item|
 # UseOnPokemon handlers
 #===============================================================================
 
-# Applies to all TRs, TMs and HMs.
-ItemHandlers::UsableOnPokemon.addIf(:machines,
-  proc { |item| GameData::Item.get(item).is_machine? },
-  proc { |item, pkmn|
-    move = GameData::Item.get(item).move
-    next !pkmn.hasMove?(move) && pkmn.compatible_with_move?(move)
-  }
-)
-
-#-------------------------------------------------------------------------------
-
-# Applies to all items defined as an evolution stone.
-# No need to add more code for new ones.
-ItemHandlers::UsableOnPokemon.addIf(:evolution_stones,
-  proc { |item| GameData::Item.get(item).is_evolution_stone? },
-  proc { |item, pkmn|
-    next true if pkmn.check_evolution_on_use_item(item)
-    next false
-  }
-)
-ItemHandlers::UseOnPokemon.addIf(:evolution_stones,
-  proc { |item| GameData::Item.get(item).is_evolution_stone? },
-  proc { |item, qty, pkmn, scene|
-    if pkmn.shadowPokemon?
-      scene.pbDisplay(_INTL("No tendría ningún efecto."))
-      next false
-    end
-    newspecies = pkmn.check_evolution_on_use_item(item)
-    if newspecies
-      pbFadeOutInWithMusic do
-        evo = PokemonEvolutionScene.new
-        evo.pbStartScreen(pkmn, newspecies)
-        evo.pbEvolution(false)
-        evo.pbEndScreen
-        if scene.is_a?(PokemonPartyScreen)
-          scene.pbRefreshAnnotations(proc { |p| !p.check_evolution_on_use_item(item).nil? })
-          scene.pbRefresh
-        end
-      end
-      next true
-    end
-    scene.pbDisplay(_INTL("No tendría ningún efecto."))
-    next false
-  }
-)
-ItemHandlers::UseOpensScreen.addIf(:evolution_stones,
-  proc { |item| GameData::Item.get(item).is_evolution_stone? },
-  proc { |item| next true }
-)
 
 ItemHandlers::UseOnPokemon.add(:POTION, proc { |item, qty, pkmn, scene|
   next pbHPItem(pkmn, 20, scene)
@@ -1927,3 +1878,53 @@ ItemHandlers::UseOnPokemon.add(:METEORITE, proc { |item, qty, pkmn, scene|
   end
   next false
 })
+
+# Applies to all TRs, TMs and HMs.
+ItemHandlers::UsableOnPokemon.addIf(:machines,
+  proc { |item| GameData::Item.get(item).is_machine? },
+  proc { |item, pkmn|
+    move = GameData::Item.get(item).move
+    next !pkmn.hasMove?(move) && pkmn.compatible_with_move?(move)
+  }
+)
+
+#-------------------------------------------------------------------------------
+
+# Applies to all items defined as an evolution stone.
+# No need to add more code for new ones.
+ItemHandlers::UsableOnPokemon.addIf(:evolution_stones,
+  proc { |item| GameData::Item.get(item).is_evolution_stone? },
+  proc { |item, pkmn|
+    next true if pkmn.check_evolution_on_use_item(item)
+    next false
+  }
+)
+ItemHandlers::UseOnPokemon.addIf(:evolution_stones,
+  proc { |item| GameData::Item.get(item).is_evolution_stone? },
+  proc { |item, qty, pkmn, scene|
+    if pkmn.shadowPokemon?
+      scene.pbDisplay(_INTL("No tendría ningún efecto."))
+      next false
+    end
+    newspecies = pkmn.check_evolution_on_use_item(item)
+    if newspecies
+      pbFadeOutInWithMusic do
+        evo = PokemonEvolutionScene.new
+        evo.pbStartScreen(pkmn, newspecies)
+        evo.pbEvolution(false)
+        evo.pbEndScreen
+        if scene.is_a?(PokemonPartyScreen)
+          scene.pbRefreshAnnotations(proc { |p| !p.check_evolution_on_use_item(item).nil? })
+          scene.pbRefresh
+        end
+      end
+      next true
+    end
+    scene.pbDisplay(_INTL("No tendría ningún efecto."))
+    next false
+  }
+)
+ItemHandlers::UseOpensScreen.addIf(:evolution_stones,
+  proc { |item| GameData::Item.get(item).is_evolution_stone? },
+  proc { |item| next true }
+)

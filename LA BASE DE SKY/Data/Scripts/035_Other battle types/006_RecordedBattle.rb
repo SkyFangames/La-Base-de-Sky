@@ -55,9 +55,6 @@ module RecordedBattleModule
     @properties["party2starts"]    = Marshal.dump(@party2starts)
     @properties["weather"]         = @field.weather
     @properties["weatherDuration"] = @field.weatherDuration
-    @properties["canRun"]          = @canRun
-    @properties["switchStyle"]     = @switchStyle
-    @properties["showAnims"]       = @showAnims
     @properties["items"]           = Marshal.dump(@items)
     @properties["backdrop"]        = @backdrop
     @properties["backdropBase"]    = @backdropBase

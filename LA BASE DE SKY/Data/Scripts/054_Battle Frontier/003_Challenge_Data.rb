@@ -36,7 +36,7 @@ end
 #
 #===============================================================================
 def pbEntryScreen(*arg)
-  retval = false
+  ret_val = false
   pbFadeOutIn do
     scene = PokemonParty_Scene.new
     screen = PokemonPartyScreen.new(scene, $player.party)
@@ -44,9 +44,9 @@ def pbEntryScreen(*arg)
     # Set party
     pbBattleChallenge.setParty(ret) if ret
     # Continue (return true) if Pokémon were chosen
-    retval = (ret && ret.length > 0)
+    ret_val = (ret && ret.length > 0)
   end
-  return retval
+  return ret_val
 end
 
 #===============================================================================
