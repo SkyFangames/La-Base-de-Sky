@@ -450,9 +450,15 @@ class Pokemon
     return species_data.single_gendered?
   end
 
-  def changeGender
+  def changeGender(recheck_form = true)
     return if singleGendered?
     self.male? ? self.makeFemale : self.makeMale
+    if recheck_form
+      form = MultipleForms.call("getFormOnGenderChange", self)
+      if form
+        self.form = form
+      end
+    end
   end
 
   #=============================================================================
@@ -1335,7 +1341,7 @@ class Pokemon
   end
 end
 
-def change_pokemon_gender
+def change_pokemon_gender(recheck_form = true)
   pbChoosePokemon(1, 2, proc { |pkmn|
     !pkmn.egg? && !pkmn.shadowPokemon? && !pkmn.singleGendered?
   })

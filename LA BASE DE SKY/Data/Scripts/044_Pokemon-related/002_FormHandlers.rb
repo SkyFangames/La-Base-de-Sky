@@ -451,10 +451,14 @@ MultipleForms.register(:FURFROU, {
 })
 
 MultipleForms.register(:ESPURR, {
-  "getForm" => proc { |pkmn|
+  # "getForm" => proc { |pkmn|
+  #   next pkmn.gender
+  # },
+  "getFormOnCreation" => proc { |pkmn|
     next pkmn.gender
   },
-  "getFormOnCreation" => proc { |pkmn|
+
+  "getFormOnGenderChange" => proc { |pkmn|
     next pkmn.gender
   }
 })
