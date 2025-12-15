@@ -1504,7 +1504,7 @@ Habitat = Mountain
 Category = Mono Cerdo
 Pokedex = Cuando Primeape se enfada, se le acelera el ritmo cardíaco y se le fortalecen los músculos, pero también pierde en inteligencia.
 Generation = 1
-Evolutions = ANNIHILAPE,LevelUseMoveCount,RAGEFIST
+Evolutions = ANNIHILAPE,Counter,20
 #-------------------------------
 [GROWLITHE]
 Name = Growlithe
@@ -6177,7 +6177,7 @@ Habitat = Forest
 Category = Grancuerno
 Pokedex = Antes se comerciaba con la cornamenta de Stantler, considerada una obra de arte. Esto provocó que muchos intentaran darle caza y casi se extingue.
 Generation = 2
-Evolutions = WYRDEER,HasMove,PSYSHIELDBASH
+Evolutions = WYRDEER,Counter,20
 #-------------------------------
 [SMEARGLE]
 Name = Smeargle
@@ -14342,7 +14342,7 @@ Shape = Finned
 Category = Manso
 Pokedex = A pesar de diferenciarse de otros Basculin, como por su plácida naturaleza, se considera una forma regional por todas las características compartidas.
 Generation = 8
-Evolutions = BASCULEGION,LevelRecoilDamageForm0,294
+Evolutions = BASCULEGION,Counter,294
 #-------------------------------
 [SANDILE]
 Name = Sandile
@@ -16233,7 +16233,7 @@ Shape = Bipedal
 Category = Filo
 Pokedex = Su séquito son los Pawniard. Acorralan a su presa con todo el grupo y Bisharp propina el golpe de gracia.
 Generation = 5
-Evolutions = KINGAMBIT,LevelDefeatItsKindWithItem,LEADERSCREST
+Evolutions = KINGAMBIT,Counter,3
 #-------------------------------
 [BOUFFALANT]
 Name = Bouffalant
@@ -23710,7 +23710,7 @@ Habitat = Grassland
 Category = Ratón
 Pokedex = Cuando su manada se ve amenazada, atacan a la vanguardia usando un arte marcial caracterizado por el empleo de descargas eléctricas.
 Generation = 9
-Evolutions = PAWMOT,LevelWalk,1000
+Evolutions = PAWMOT,Counter,1000
 #-------------------------------
 [PAWMOT]
 Name = Pawmot
@@ -24335,7 +24335,7 @@ Habitat = RoughTerrain
 Category = Estepicursor
 Pokedex = Se dice que este Pokémon nace cuando las almas en pena terminan enredadas en la hierba seca tras ser arrastradas por el viento.
 Generation = 9
-Evolutions = BRAMBLEGHAST,LevelWalk,1000
+Evolutions = BRAMBLEGHAST,Counter,1000
 #-------------------------------
 [BRAMBLEGHAST]
 Name = Brambleghast
@@ -24517,7 +24517,7 @@ Habitat = RoughTerrain
 Category = Pelotero
 Pokedex = Mezcla tierra, arena y energía psíquica para crear una bola de barro que atesora por encima de su propia vida.
 Generation = 9
-Evolutions = RABSCA,LevelWalk,1000
+Evolutions = RABSCA,Counter,1000
 #-------------------------------
 [RABSCA]
 Name = Rabsca
@@ -24776,7 +24776,7 @@ Habitat = Sea
 Category = Delfín
 Pokedex = Le gusta jugar con sus congéneres con el anillo de agua de su aleta caudal. Utiliza ultrasonidos para percibir las emociones de otros seres.
 Generation = 9
-Evolutions = PALAFIN,LevelWithPartner,38
+Evolution = PALAFIN,Level,38
 #-------------------------------
 [PALAFIN]
 Name = Palafin
@@ -25709,7 +25709,7 @@ Habitat = Urban
 Category = Cofre
 Pokedex = El cofre en el que nació data de hace 1500 años aproximadamente. Absorbe la energía vital de los granujas que intentan hacerse con su tesoro.
 Generation = 9
-Evolutions = GHOLDENGO,CollectItems,GIMMIGHOULCOIN
+Evolution = GHOLDENGO,LevelCoins,999
 #-------------------------------
 [GHOLDENGO]
 Name = Gholdengo

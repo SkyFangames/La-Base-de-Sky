@@ -22,6 +22,12 @@ module Settings
     NEW_CRITICAL_HIT_RATE_MECHANICS             = (MECHANICS_GENERATION >= 6)
   
     #=============================================================================
+
+    # Determina si un clima o terreno por defecto puede (false) o no puede (true)
+    # ser reemplazado por una habilidad o movimiento que induzca otro tipo de clima.
+    # Esto no se aplica a los climas primigenios (sol intenso, lluvia fuerte, vientos
+    # fuertes), que siempre pueden reemplazar el clima por defecto.
+    DEFAULT_WEATHER_AND_TERRAIN_CANNOT_BE_REPLACED = (MECHANICS_GENERATION >= 9)
   
     # Determina si varios efectos se aplican en relación con el tipo de un Pokémon:
     #   * Inmunidad de los Pokémon tipo Eléctrico a la parálisis

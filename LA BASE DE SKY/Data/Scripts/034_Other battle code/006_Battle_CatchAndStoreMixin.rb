@@ -17,7 +17,7 @@ module Battle::CatchAndStoreMixin
               _INTL("Enviarlo al PC"),
               _INTL("Ver los datos de {1}", pkmn.name),
               _INTL("Comprobar equipo")]
-      cmds.delete_at(1) if @sendToBoxes == 2
+      cmds.delete_at(1) if @sendToBoxes == 2 # Remove "Send to a Box" option
       loop do
         cmd = pbShowCommands(_INTL("¿Qué quieres hacer con {1}?", pkmn.name), cmds, 99)
         next if cmd == 99 && @sendToBoxes == 2   # Can't cancel if must add to party
@@ -40,7 +40,6 @@ module Battle::CatchAndStoreMixin
           send_pkmn.makeUnmega
           send_pkmn.makeUnprimal
           # Send chosen Pokémon to storage
-          send_pkmn = pbPlayer.party[party_index]
           stored_box = @peer.pbStorePokemon(pbPlayer, send_pkmn)
           pbPlayer.party.delete_at(party_index)
           box_name = @peer.pbBoxName(stored_box)

@@ -18,7 +18,6 @@ module GameData
     DATA = {}
     DATA_FILENAME = "moves.dat"
     PBS_BASE_FILENAME = "moves"
-
     SCHEMA = {
       "SectionName"  => [:id,               "m"],
       "Name"         => [:real_name,        "s"],
@@ -38,6 +37,8 @@ module GameData
 
     extend ClassMethodsSymbols
     include InstanceMethods
+
+    #---------------------------------------------------------------------------
 
     def initialize(hash)
       @id               = hash[:id]
@@ -190,6 +191,18 @@ module GameData
           end
         when "TypeIsUserFirstType"
           return pkmn.types[0]
+        when "TypeDependsOnUserOgerponForm"
+          if pkmn.isSpecies?(:OGERPON)
+            return :WATER if pkmn.form == 1
+            return :FIRE if pkmn.form == 2
+            return :ROCK if pkmn.form == 3
+          end
+        when "TypeDependsOnUserTaurosFormRemoveScreens"
+          if pkmn.isSpecies?(:TAUROS)
+            return :FIGHTING if pkmn.form == 1
+            return :FIRE if pkmn.form == 2
+            return :WATER if pkmn.form == 3
+          end
         end
       end
       return @type

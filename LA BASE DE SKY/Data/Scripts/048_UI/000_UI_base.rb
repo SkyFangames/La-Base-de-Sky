@@ -371,13 +371,6 @@ module UI
     end
 
     def initialize_message_box
-      # TODO: It looks like :message_box isn't used anywhere.
-      @sprites[:message_box] = Window_AdvancedTextPokemon.new("")
-      @sprites[:message_box].viewport       = @viewport
-      @sprites[:message_box].z              = 2000
-      @sprites[:message_box].visible        = false
-      @sprites[:message_box].letterbyletter = true
-      pbBottomLeftLines(@sprites[:message_box], 2)
       @sprites[:speech_box] = Window_AdvancedTextPokemon.new("")
       @sprites[:speech_box].viewport       = @viewport
       @sprites[:speech_box].z              = 2001
@@ -608,10 +601,10 @@ module UI
       return ret
     end
 
-    def show_menu(text, options, index = 0, cmd_side: :right)
+    def show_menu(text, options, index = 0, align: :horizontal, cmd_side: :right)
       old_letter_by_letter = @sprites[:speech_box].letterbyletter
       @sprites[:speech_box].letterbyletter = false
-      ret = show_choice_message(text, options, index, align: :horizontal, cmd_side: cmd_side)
+      ret = show_choice_message(text, options, index, align: align, cmd_side: cmd_side)
       @sprites[:speech_box].letterbyletter = old_letter_by_letter
       return ret
     end
@@ -644,7 +637,7 @@ module UI
       return ret
     end
 
-    # TODO: Rewrite this.
+    # TODO: Rewrite this. Include align: :vertical parameter.
     def choose_number(help_text, maximum, init_value = 1)
       if maximum.is_a?(ChooseNumberParams)
         return pbMessageChooseNumber(help_text, maximum) { update_visuals }
@@ -847,8 +840,8 @@ module UI
 
     alias pbShowCommands show_choice_message
 
-    def show_menu(text, options, initial_index = 0, cmd_side: :right)
-      return @visuals.show_menu(text, options, initial_index, cmd_side: cmd_side)
+    def show_menu(text, options, initial_index = 0, align: :horizontal, cmd_side: :right)
+      return @visuals.show_menu(text, options, initial_index, align: align, cmd_side: cmd_side)
     end
 
     def show_choice(options, initial_index = 0)

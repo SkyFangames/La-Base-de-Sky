@@ -3,8 +3,7 @@
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("FleeFromBattle",
   proc { |move, user, ai, battle|
-    # TODO: Compare with effect code.
-    next !battle.pbCanRun?(user.index) || (user.wild? && user.battler.allAllies(true).length > 0)
+    next !battle.pbCanRun?(user.index) || (user.wild? && user.battler.allAllies.length > 0)
   }
 )
 Battle::AI::Handlers::MoveEffectScore.add("FleeFromBattle",
@@ -19,11 +18,13 @@ Battle::AI::Handlers::MoveEffectScore.add("FleeFromBattle",
 #===============================================================================
 Battle::AI::Handlers::MoveFailureCheck.add("SwitchOutUserStatusMove",
   proc { |move, user, ai, battle|
-    # TODO: Compare with effect code.
     if user.wild?
-      next !battle.pbCanRun?(user.index) || user.battler.allAllies(true).length > 0
+      next true if !battle.pbCanRun?(user.index) || user.battler.allAllies.length > 0
+    elsif !battle.pbCanChooseNonActive?(user.index) ||
+          user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+      next true
     end
-    next !battle.pbCanChooseNonActive?(user.index)
+    next false
   }
 )
 Battle::AI::Handlers::MoveEffectScore.add("SwitchOutUserStatusMove",
@@ -63,8 +64,8 @@ Battle::AI::Handlers::MoveEffectScore.add("SwitchOutUserStatusMove",
 #===============================================================================
 Battle::AI::Handlers::MoveEffectScore.add("SwitchOutUserDamagingMove",
   proc { |score, move, user, ai, battle|
-    # TODO: Compare with effect code.
     next score if !battle.pbCanChooseNonActive?(user.index)
+    next score if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
     # Don't want to switch in ace
     score -= 20 if ai.trainer.has_skill_flag?("ReserveLastPokemon") &&
                    battle.pbTeamAbleNonActiveCount(user.index) == 1

@@ -552,7 +552,6 @@ Battle::AbilityEffects::StatusImmunity.add(:PURIFYINGSALT,
   }
 )
 
-
 Battle::AbilityEffects::StatusImmunity.add(:WATERVEIL,
   proc { |ability, battler, status|
     next true if status == :BURN

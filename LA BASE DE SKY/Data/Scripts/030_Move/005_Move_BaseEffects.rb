@@ -526,7 +526,8 @@ class Battle::Move::WeatherMove < Battle::Move
     when :StrongWinds
       @battle.pbDisplay(_INTL("¡Las misteriosas turbulencias continúan sin cesar!"))
       return true
-    when @weatherType
+    end
+    if !@battle.pbCanStartWeather?(@weatherType)
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
@@ -550,7 +551,7 @@ class Battle::Move::TerrainMove < Battle::Move
   end
 
   def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == @terrainType
+    if !@battle.pbCanStartTerrain?(@terrainType)
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end

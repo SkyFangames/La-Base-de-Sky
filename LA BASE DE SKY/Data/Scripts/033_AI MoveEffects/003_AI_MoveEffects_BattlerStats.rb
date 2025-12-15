@@ -478,7 +478,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("RaiseUserAtkSpd1RemoveEntryHazardsAn
     battle.allBattlers.each do |b|
       will_fail = false if b.effects[PBEffects::Substitute] > 0
     end
-    failed = false if user.pbOwnSide.effects[PBEffects::StealthRock] ||
+    will_fail = false if user.pbOwnSide.effects[PBEffects::StealthRock] ||
                       user.pbOwnSide.effects[PBEffects::Spikes] > 0 ||
                       user.pbOwnSide.effects[PBEffects::ToxicSpikes] > 0 ||
                       user.pbOwnSide.effects[PBEffects::StickyWeb]
