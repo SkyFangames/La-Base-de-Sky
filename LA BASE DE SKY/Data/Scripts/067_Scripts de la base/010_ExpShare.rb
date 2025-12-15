@@ -10,6 +10,13 @@
 #                          Compatible : versión 21.1                            #
 #-------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------#
+
+def expshare_enabled?
+    return false unless $PokemonGlobal
+    $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED || $player&.has_exp_all || $bag.has?(:EXPSHARE2)
+    $PokemonGlobal.expshare_enabled ? true : false
+end
+
 if Settings::USE_NEW_EXP_SHARE
     class PokemonSystem
         attr_accessor :expshareon
@@ -48,13 +55,6 @@ if Settings::USE_NEW_EXP_SHARE
                 pokemon.expshare = !pokemon.expshare if pbConfirmMessage(_INTL("¿Quieres {1} el Repartir Experiencia en este Pokémon?", var_msg))
         }   
     })
-
-
-    def expshare_enabled?
-        return false unless $PokemonGlobal
-        $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED || $player&.has_exp_all || $bag.has?(:EXPSHARE2)
-        $PokemonGlobal.expshare_enabled ? true : false
-    end
 
     def toggle_expshare
         $PokemonGlobal.expshare_enabled ||= Settings::EXPSHARE_ENABLED || $player&.has_exp_all || $bag.has?(:EXPSHARE2)
