@@ -1347,6 +1347,6 @@ def change_pokemon_gender(recheck_form = true)
   })
   return false if $game_variables[1] == -1
   pokemon = pbGetPokemon(1)
-  pokemon.changeGender
+  pokemon.changeGender(recheck_form)
   return true
 end
