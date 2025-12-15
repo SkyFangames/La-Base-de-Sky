@@ -274,6 +274,11 @@ class Pokemon
     @status = new_status.id
   end
 
+  def give_status(status)
+    return if !able? || !can_get_status?(status)
+    self.status = status
+  end
+
   def can_get_status?(status)
     # Type immunities
     hasImmuneType = false
