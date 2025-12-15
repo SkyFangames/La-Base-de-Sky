@@ -422,6 +422,14 @@ class Pokemon
     return @gender
   end
 
+  def gender_name
+    case gender
+    when 0 then _INTL("Masculino")
+    when 1 then _INTL("Femenino")
+    when 2 then _INTL("Sin género")
+    end
+  end
+
   # Sets this Pokémon's gender to a particular gender (if possible).
   # @param value [0, 1] new gender (0 = male, 1 = female)
   def gender=(value)
