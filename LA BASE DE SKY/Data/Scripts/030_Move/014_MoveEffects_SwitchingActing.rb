@@ -655,7 +655,6 @@ class Battle::Move::TargetUsesItsLastUsedMoveAgain < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "MultiTurnAttackBideThenReturnDoubleDamage",       # Bide
       "ProtectUserFromDamagingMovesKingsShield",         # King's Shield
@@ -888,7 +887,6 @@ class Battle::Move::DisableTargetUsingDifferentMove < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "DisableTargetUsingDifferentMove",               # Encore
       # Struggle

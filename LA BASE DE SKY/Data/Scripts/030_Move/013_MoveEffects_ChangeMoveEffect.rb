@@ -701,7 +701,6 @@ class Battle::Move::UseLastMoveUsed < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       # Struggle, Belch
       "Struggle",                                          # Struggle
@@ -839,7 +838,6 @@ class Battle::Move::UseMoveTargetIsAboutToUse < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "UserTakesTargetItem",                # Covet, Thief
       # Struggle, Belch
@@ -953,7 +951,6 @@ class Battle::Move::UseRandomMove < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "FlinchTargetFailsIfUserNotAsleep",                  # Snore
       "TargetActsNext",                                    # After You
@@ -1052,7 +1049,6 @@ class Battle::Move::UseRandomMoveFromUserParty < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       # Struggle, Belch
       "Struggle",                                          # Struggle
@@ -1179,7 +1175,6 @@ class Battle::Move::UseRandomUserMoveIfAsleep < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "MultiTurnAttackPreventSleeping",                  # Uproar
       "MultiTurnAttackBideThenReturnDoubleDamage",       # Bide
@@ -1280,7 +1275,6 @@ class Battle::Move::ReplaceMoveThisBattleWithTargetLastMoveUsed < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "UseRandomMove",                                 # Metronome
       # Struggle

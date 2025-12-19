@@ -461,7 +461,7 @@ class Battle
         end
         # Lose money from losing a battle
         pbLoseMoney
-        pbDisplayPaused(_INTL("You blacked out!")) if !@rules[:continue_if_lose] && pbPlayerBattlerCount == 0
+        pbDisplayPaused(_INTL("¡Estás fuera de combate!")) if !@rules[:continue_if_lose] && pbPlayerBattlerCount == 0
       elsif @decision == Outcome::LOSE   # Lost in a Battle Frontier battle
         if @opponent
           @opponent.each_with_index do |trainer, i|

@@ -2192,7 +2192,8 @@ Battle::AbilityEffects::OnBeingHit.add(:MUMMY,
   proc { |ability, user, target, move, battle|
     next if user.fainted?
     next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
-    next if user.unstoppableAbility? || user.ability == ability
+    next if user.unlosableAbility? || [:LINGERINGAROMA, :MUMMY].include?(user.ability_id)
+    next if user.ability == ability
     battle.pbShowAbilitySplash(target)
     battle.pbShowAbilitySplash(user, true, false) if user.opposes?(target)
     old_ability = user.ability
@@ -2317,7 +2318,7 @@ Battle::AbilityEffects::OnBeingHit.add(:TOXICDEBRIS,
 Battle::AbilityEffects::OnBeingHit.add(:WANDERINGSPIRIT,
   proc { |ability, user, target, move, battle|
     next if !move.pbContactMove?(user) || !user.affectedByContactEffect?
-    next if user.ungainableAbility? || [:RECEIVER, :WONDERGUARD].include?(user.ability_id)
+    next if user.unlosableAbility? || target.ungainableAbility?(user.ability_id)
     # NOTE: target has Wandering Spirit which can be swapped, so no need to
     #       check that.
     oldUserAbil   = nil
@@ -3643,8 +3644,7 @@ Battle::AbilityEffects::OnSwitchOut.copy(:WATERVEIL, :WATERBUBBLE)
 Battle::AbilityEffects::ChangeOnBattlerFainting.add(:POWEROFALCHEMY,
   proc { |ability, battler, fainted, battle|
     next if battler.opposes?(fainted)
-    next if fainted.ungainableAbility? ||
-            [:POWEROFALCHEMY, :RECEIVER, :TRACE, :WONDERGUARD].include?(fainted.ability_id)
+    next if fainted.ungainableAbility? || [:WANDERINGSPIRIT].include?(fainted.ability_id)
     battle.pbShowAbilitySplash(battler, true)
     battler.ability = fainted.ability
     battle.pbReplaceAbilitySplash(battler)

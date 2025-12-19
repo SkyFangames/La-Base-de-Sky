@@ -1120,7 +1120,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetTargetAbilityToInsomn
 #===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SetUserAbilityToTargetAbility",
   proc { |move, user, target, ai, battle|
-    next true if user.battler.unstoppableAbility?
+    next true if user.battler.unlosableAbility?
     next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
   }
 )
@@ -1196,8 +1196,8 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetTargetAbilityToUserAb
 #===============================================================================
 Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("UserTargetSwapAbilities",
   proc { |move, user, target, ai, battle|
-    next true if !user.ability || user.battler.unstoppableAbility? ||
-                 user.battler.ungainableAbility? || user.ability_id == :WONDERGUARD
+    next true if !user.ability || user.battler.unlosableAbility? ||
+                 user.battler.ungainableAbility?
     next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
   }
 )
