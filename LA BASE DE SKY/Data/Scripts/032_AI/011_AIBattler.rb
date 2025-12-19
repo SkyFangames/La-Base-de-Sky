@@ -36,6 +36,7 @@ class Battle::AI::AIBattler
   def wild?;           return battler.wild?;       end
   def form;            return battler.form;        end
   def eachMoveWithIndex(&block); battler.eachMoveWithIndex(&block); end
+  def pbSpeed;         return battler.pbSpeed;         end
 
   def name
     return sprintf("%s (%d)", battler.name, @index)
