@@ -343,6 +343,7 @@ class ChangelingSprite < Sprite
     @bitmaps[filepath] = AnimatedBitmap.new(filepath) if !@bitmaps[filepath]
     @changeling_data[mode] = (data[0].is_a?(Array) ? data[0].clone : [data[0]])
   end
+  alias addBitmap add_bitmap
 
   def change_bitmap(mode)
     @current_mode = mode
@@ -360,6 +361,7 @@ class ChangelingSprite < Sprite
       self.bitmap = nil
     end
   end
+  alias changeBitmap change_bitmap
 
   #-----------------------------------------------------------------------------
 

@@ -467,7 +467,7 @@ class SpriteWindow < Window
     @sprites["cursor"].opacity = cursoropac
   end
 
-  def privRefresh(changeBitmap = false)
+  def privRefresh(change_bitmap = false)
     return if !self || self.disposed?
     backopac = self.back_opacity * self.opacity / 255
     contopac = self.contents_opacity
@@ -673,7 +673,7 @@ class SpriteWindow < Window
         @sprites["back"].y = @y + startY
       end
     end
-    if changeBitmap && @_windowskin && !@_windowskin.disposed?
+    if change_bitmap && @_windowskin && !@_windowskin.disposed?
       if @skinformat == 0
         @sprites["cursor"].x = @x + startX + @cursor_rect.x
         @sprites["cursor"].y = @y + startY + @cursor_rect.y
