@@ -340,12 +340,14 @@ class ChangelingSprite < Sprite
   def add_bitmap(mode, *data)
     raise ArgumentError.new(_INTL("Número incorrecto de parámetros (dado {1}, esperado 2 o 6)", data.length + 1)) if ![1, 5].include?(data.length)
     filepath = (data[0].is_a?(Array)) ? data[0][0] : data[0]
+    mode = mode.is_a?(String) ? mode.to_sym : mode
     @bitmaps[filepath] = AnimatedBitmap.new(filepath) if !@bitmaps[filepath]
     @changeling_data[mode] = (data[0].is_a?(Array) ? data[0].clone : [data[0]])
   end
   alias addBitmap add_bitmap
 
   def change_bitmap(mode)
+    mode = mode.is_a?(String) ? mode.to_sym : mode
     @current_mode = mode
     if @current_mode && @changeling_data[@current_mode]
       data = @changeling_data[@current_mode]
