@@ -625,9 +625,6 @@ class Battle::AI::AIMove
   #   0: Isn't an additional effect or always triggers
   #   -999: Additional effect will be negated
   #   Other: Amount to add to a move's score
-  # TODO: This value just gets added to the score, but it should only modify the
-  #       score for the additional effect and shouldn't reduce that to less than
-  #       0.
   def get_score_change_for_additional_effect(user, target = nil)
     chance = @move.addlEffect
     # Doesn't have an additional effect
@@ -647,8 +644,8 @@ class Battle::AI::AIMove
       ret -= 10
     elsif chance <= 50
       ret -= 5
-    elsif chance >= 80
-      ret += 5
+    elsif chance <= 80
+      ret -= 3
     end
     return ret
   end

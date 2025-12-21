@@ -2,18 +2,19 @@
 # ItemHandlers.
 #===============================================================================
 module ItemHandlers
-  UseText             = ItemHandlerHash.new
-  UseFromBag          = ItemHandlerHash.new
-  ConfirmUseInField   = ItemHandlerHash.new
-  UseInField          = ItemHandlerHash.new
-  UsableOnPokemon     = ItemHandlerHash.new
-  UseOnPokemon        = ItemHandlerHash.new
-  UseOnPokemonMaximum = ItemHandlerHash.new
-  UseOpensScreen      = ItemHandlerHash.new
-  CanUseInBattle      = ItemHandlerHash.new
-  UseInBattle         = ItemHandlerHash.new
-  BattleUseOnBattler  = ItemHandlerHash.new
-  BattleUseOnPokemon  = ItemHandlerHash.new
+  UseText               = ItemHandlerHash.new
+  UseFromBag            = ItemHandlerHash.new
+  ConfirmUseInField     = ItemHandlerHash.new
+  UseInField            = ItemHandlerHash.new
+  UsableOnPokemon       = ItemHandlerHash.new
+  UseOnPokemon          = ItemHandlerHash.new
+  UseOnPokemonMaximum   = ItemHandlerHash.new
+  UseOpensScreen        = ItemHandlerHash.new
+  CanUseInBattle        = ItemHandlerHash.new
+  UseInBattle           = ItemHandlerHash.new
+  BattleUsableOnBattler = ItemHandlerHash.new
+  BattleUseOnBattler    = ItemHandlerHash.new
+  BattleUseOnPokemon    = ItemHandlerHash.new
 
   module_function
 
@@ -49,6 +50,10 @@ module ItemHandlers
 
   def hasUseInBattle(item)
     return !UseInBattle[item].nil?
+  end
+
+  def hasBattleUsableOnBattler(item)
+    return !BattleUsableOnBattler[item].nil?
   end
 
   def hasBattleUseOnBattler(item)
@@ -120,6 +125,12 @@ module ItemHandlers
     UseInBattle.trigger(item, battler, battle)
   end
 
+  # Returns whether item will have an effect if used on battler.
+  def triggerBattleUsableOnBattler(item, battler)
+    return false if !BattleUsableOnBattler[item] || !battler
+    return BattleUsableOnBattler.trigger(item, battler)
+  end
+
   # Returns whether item was used.
   def triggerBattleUseOnBattler(item, battler, screen)
     return false if !BattleUseOnBattler[item]
@@ -172,6 +183,10 @@ def pbCanUseItemOnPokemon?(item)
   return ItemHandlers.hasUseOnPokemon(item) ||
          ItemHandlers.hasUsableOnPokemon(item) ||
          GameData::Item.get(item).is_machine?
+end
+
+def pbCheckUseOnPokemon(item, pkmn, _screen)
+  return pkmn && !pkmn.egg? && (!pkmn.hyper_mode || GameData::Item.get(item)&.is_scent?)
 end
 
 # This method assumes the item is usable on a Pokémon. It returns whether the

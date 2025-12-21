@@ -115,14 +115,13 @@ class Battle::AI
 
   # These values are taken from the Complete-Fire-Red-Upgrade decomp here:
   # https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/f7f35becbd111c7e936b126f6328fc52d9af68c8/src/ability_battle_effects.c#L41
-  # TODO: Ensure all abilities are listed here and have an AbilityRanking if
-  #       appropriate.
   BASE_ABILITY_RATINGS = {
     10 => [:DELTASTREAM, :DESOLATELAND, :HUGEPOWER, :MOODY, :PARENTALBOND,
            :POWERCONSTRUCT, :PRIMORDIALSEA, :PUREPOWER, :SHADOWTAG,
            :STANCECHANGE, :WONDERGUARD],
-    9  => [:ARENATRAP, :HADRONENGINE, :IMPOSTER, :MAGICBOUNCE, :MAGICGUARD,
-           :MAGNETPULL, :ORICHALCUMPULSE, :SPEEDBOOST],
+    9  => [:ARENATRAP, :BEADSOFRUIN, :HADRONENGINE, :IMPOSTER, :MAGICBOUNCE,
+           :MAGICGUARD, :MAGNETPULL, :ORICHALCUMPULSE, :SPEEDBOOST,
+           :SWORDOFRUIN, :TABLETSOFRUIN, :VESSELOFRUIN],
     8  => [:ADAPTABILITY, :AERILATE, :COMMANDER, :CONTRARY, :DISGUISE,
            :DRAGONSMAW, :GALVANIZE, :GOODASGOLD, :ILLUSION, :LIBERO,
            :MULTISCALE, :MULTITYPE, :NOGUARD, :OPPORTUNIST, :POISONHEAL,
@@ -138,11 +137,12 @@ class Battle::AI
     6  => [:ARMORTAIL, :BATTLEBOND, :CHLOROPHYLL, :COMATOSE, :DARKAURA,
            :DAZZLING, :DRYSKIN, :FAIRYAURA, :FILTER, :FLASHFIRE, :FORECAST,
            :GALEWINGS, :GUTS, :INFILTRATOR, :IRONBARBS, :IRONFIST, :MINDSEYE,
-           :MIRRORARMOR, :MOTORDRIVE, :NEUROFORCE, :PRISMARMOR, :PROTOSYNTHESIS,
-           :QUARKDRIVE, :QUEENLYMAJESTY, :RECKLESS, :ROUGHSKIN, :SANDRUSH,
-           :SCHOOLING, :SCRAPPY, :SHARPNESS, :SHIELDSDOWN, :SOLIDROCK,
-           :STAKEOUT, :STAMINA, :STEELWORKER, :STRONGJAW, :STURDY, :SWIFTSWIM,
-           :TOXICBOOST, :TRACE, :UNAWARE, :VICTORYSTAR, :WELLBAKEDBODY],
+           :MIRRORARMOR, :MOTORDRIVE, :NEUROFORCE, :POISONPUPPETEER,
+           :PRISMARMOR, :PROTOSYNTHESIS, :QUARKDRIVE, :QUEENLYMAJESTY,
+           :RECKLESS, :ROUGHSKIN, :SANDRUSH, :SCHOOLING, :SCRAPPY, :SHARPNESS,
+           :SHIELDSDOWN, :SOLIDROCK, :STAKEOUT, :STAMINA, :STEELWORKER,
+           :STRONGJAW, :STURDY, :SWIFTSWIM, :TOXICBOOST, :TRACE, :UNAWARE,
+           :VICTORYSTAR, :WELLBAKEDBODY],
     5  => [:AFTERMATH, :AIRLOCK, :ANALYTIC, :ANGERSHELL, :BERSERK, :BLAZE,
            :CLOUDNINE, :COMPETITIVE, :CORROSION, :DANCER, :DEFIANT, :FLAREBOOST,
            :FLUFFY, :GOOEY, :HARVEST, :HEATPROOF, :INNARDSOUT, :LINGERINGAROMA,
@@ -156,9 +156,9 @@ class Battle::AI
            :INSOMNIA, :JUSTIFIED, :MERCILESS, :PASTELVEIL, :POISONPOINT,
            :POISONTOUCH, :RIPEN, :SANDFORCE, :SOUNDPROOF, :STATIC, :SURGESURFER,
            :SWEETVEIL, :SYNCHRONIZE, :VITALSPIRIT, :WATERCOMPACTION, :WATERVEIL,
-           :WHITESMOKE, :WONDERSKIN],
+           :WHITESMOKE, :WINDRIDER, :WONDERSKIN],
     3  => [:AROMAVEIL, :AURABREAK, :COTTONDOWN, :EMERGENCYEXIT, :GLUTTONY,
-           :GULPMISSLE, :HYPERCUTTER, :ICEBODY, :LIMBER, :LIQUIDOOZE,
+           :GULPMISSILE, :HYPERCUTTER, :ICEBODY, :LIMBER, :LIQUIDOOZE,
            :LONGREACH, :MAGICIAN, :OWNTEMPO, :PICKPOCKET, :RAINDISH, :RATTLED,
            :SANDVEIL, :SNIPER, :SNOWCLOAK, :SOLARPOWER, :STEAMENGINE,
            :STICKYHOLD, :SUPERLUCK, :TERASHELL, :UNNERVE, :WIMPOUT, :WINDPOWER],
@@ -167,12 +167,12 @@ class Battle::AI
            :OBLIVIOUS, :POWERSPOT, :PROPELLERTAIL, :PUNKROCK, :SHELLARMOR,
            :STALWART, :STEADFAST, :STEELYSPIRIT, :SUCTIONCUPS, :TANGLEDFEET,
            :TERASHIFT, :WANDERINGSPIRIT, :WEAKARMOR],
-    1  => [:BIGPECKS, :CUDCHEW, :KEENEYE, :MAGMAARMOR, :PICKUP, :RIVALRY,
-           :STENCH],
+    1  => [:BIGPECKS, :CUDCHEW, :ILLUMINATE, :KEENEYE, :MAGMAARMOR, :PICKUP,
+           :RIVALRY, :STENCH],
     0  => [:ASONECHILLINGNEIGH, :ASONEGRIMNEIGH, :BALLFETCH, :BATTERY,
            :CHILLINGNEIGH, :FLOWERVEIL, :FRIENDGUARD, :GRIMNEIGH, :HEALER,
-           :HONEYGATHER, :ILLUMINATE, :MINUS, :PLUS, :POWEROFALCHEMY,
-           :QUICKDRAW, :RECEIVER, :RUNAWAY, :SYMBIOSIS, :TELEPATHY, :UNSEENFIST,
+           :HONEYGATHER, :MINUS, :PLUS, :POWEROFALCHEMY, :QUICKDRAW, :RECEIVER,
+           :RUNAWAY, :SYMBIOSIS, :TELEPATHY, :UNSEENFIST,
            # Abilities with OnSwitchIn effects that are useless after switching
            # in (because these scores are only used to rate moves, which are
            # used after switch-ins)
@@ -343,6 +343,13 @@ Battle::AI::Handlers::AbilityRanking.add(:HUGEPOWER,
 
 Battle::AI::Handlers::AbilityRanking.copy(:HUGEPOWER, :PUREPOWER)
 
+Battle::AI::Handlers::AbilityRanking.add(:ILLUMINATE,
+  proc { |ability, score, battler, ai|
+    next 0 if Settings::MECHANICS_GENERATION <= 8
+    next score
+  }
+)
+
 Battle::AI::Handlers::AbilityRanking.add(:IRONFIST,
   proc { |ability, score, battler, ai|
     next score if battler.check_for_move { |m| m.punchingMove? }
@@ -374,6 +381,16 @@ Battle::AI::Handlers::AbilityRanking.add(:MYCELIUMMIGHT,
 Battle::AI::Handlers::AbilityRanking.add(:OVERGROW,
   proc { |ability, score, battler, ai|
     next score if battler.has_damaging_move_of_type?(:GRASS)
+    next 0
+  }
+)
+
+Battle::AI::Handlers::AbilityRanking.add(:POISONPUPPETEER,
+  proc { |ability, score, battler, ai|
+    next score if battler.battler.isSpecies?(:PECHARUNT) &&
+                  battler.has_move_with_function?("PoisonTarget",
+                                                  "PoisonTargetLowerTargetSpeed1",
+                                                  "PoisonParalyzeOrSleepTarget")
     next 0
   }
 )

@@ -619,10 +619,20 @@ def getFormattedText(bitmap, xDst, yDst, widthDst, heightDst, text, lineheight =
       end
     end
     isspace = false
+    is_cjk = false
     if textchars[position]
+      is_cjk = textchars[position].match?(/[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF]/)
+      if is_cjk && x > 0 && x + width > widthDst
+        havenl = true
+        characters.insert(characters.length,
+           ["\n", x, (y * lineheight) + yDst, 0, lineheight,
+            false, false, false, colorclone, nil, false, false, "", 8, position])
+        y += 1
+        x = 0
+      end
       isspace = (textchars[position][/\s/] || isWaitChar(textchars[position])) ? true : false
     end
-    if hadspace && !isspace
+    if hadspace && !isspace && !is_cjk
       # set last word to here
       lastword[0] = characters.length
       lastword[1] = x
@@ -647,7 +657,7 @@ def getFormattedText(bitmap, xDst, yDst, widthDst, heightDst, text, lineheight =
       charactersInternal.push([alignment, y, xStart, textchars[position], extraspace])
     end
     x += width
-    if !explicitBreaksOnly && x + 2 > widthDst && lastword[1] != 0 &&
+    if !explicitBreaksOnly && !is_cjk && x + 2 > widthDst && lastword[1] != 0 &&
        (!hadnonspace || !hadspace)
       havenl = true
       characters.insert(lastword[0], ["\n", x, (y * lineheight) + yDst, 0, lineheight,

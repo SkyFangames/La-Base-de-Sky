@@ -3146,7 +3146,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTDEFENSE,
 Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPDEF,
   proc { |ability, battler, battle, switch_in|
     next if battler.abilityUsedOnce?
-    next if !battler.isSpecies?(:OGERPON)
+    next if !battler.isSpecies?(:OGERPON) || battler.effects[PBEffects::Transform]
     battle.pbDisplay(_INTL("¡La {1} usada por {2} brilló fuertemente!", battler.itemName, battler.pbThis(true)))
     battler.pbRaiseStatStageByAbility(:SPECIAL_DEFENSE, 1, battler)
     battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
@@ -3156,7 +3156,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPDEF,
 Battle::AbilityEffects::OnSwitchIn.add(:EMBODYASPECTSPEED,
   proc { |ability, battler, battle, switch_in|
     next if battler.abilityUsedOnce?
-    next if !battler.isSpecies?(:OGERPON)
+    next if !battler.isSpecies?(:OGERPON) || battler.effects[PBEffects::Transform]
     battle.pbDisplay(_INTL("¡La {1} usada por {2} brilló fuertemente!", battler.itemName, battler.pbThis(true)))
     battler.pbRaiseStatStageByAbility(:SPEED, 1, battler)
     battler.markAbilityUsedOnce if Settings::MECHANICS_GENERATION >= 9
@@ -3179,7 +3179,6 @@ Battle::AbilityEffects::OnSwitchIn.add(:FOREWARN,
     battle.allOtherSideBattlers(battler.index).each do |b|
       b.eachMove do |m|
         power = m.power
-        # TODO: Are there any new function codes that need to be added here?
         power = 160 if ["OHKO", "OHKOIce", "OHKOHitsUndergroundTarget"].include?(m.function_code)
         power = 150 if ["PowerHigherWithUserHP"].include?(m.function_code)    # Eruption
         # Counter, Mirror Coat, Metal Burst
@@ -3268,7 +3267,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:HOSPITALITY,
 
 Battle::AbilityEffects::OnSwitchIn.add(:ICEFACE,
   proc { |ability, battler, battle, switch_in|
-    next if !battler.isSpecies?(:EISCUE) || battler.form != 1
+    next if !battler.isSpecies?(:EISCUE) || battler.form != 1 || battler.effects[PBEffects::Transform]
     next if ![:Hail, :Snowstorm].include?(battler.effectiveWeather)
     battle.pbShowAbilitySplash(battler)
     if !Battle::Scene::USE_ABILITY_SPLASH

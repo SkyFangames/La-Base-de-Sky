@@ -512,6 +512,20 @@ MultipleForms.register(:HOOPA, {
   },
   "onSetForm" => proc { |pkmn, form, oldForm|
     pkmn.time_form_set = (form > 0) ? pbGetTimeNow.to_i : nil
+    if Settings::MECHANICS_GENERATION >= 9
+      if form == 0   # Confined
+        old_move = :HYPERSPACEHOLE
+        new_move = :HYPERSPACEFURY
+      elsif form == 1   # Unbound
+        old_move = :HYPERSPACEFURY
+        new_move = :HYPERSPACEHOLE
+      end
+      if GameData::Move.exists?(new_move)
+        pkmn.moves.each_with_index do |move, i|
+          move.id = new_move if move.id == old_move
+        end
+      end
+    end
   }
 })
 
