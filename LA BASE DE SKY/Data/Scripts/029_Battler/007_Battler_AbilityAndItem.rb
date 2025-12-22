@@ -306,12 +306,9 @@ class Battle::Battler
     return false
   end
 
-  # permanent is whether the item is lost even after battle. Is false for Knock
-  # Off.
-  def pbRemoveItem(permanent = true)
+  def pbRemoveItem
     @effects[PBEffects::ChoiceBand] = nil if !hasActiveAbility?(:GORILLATACTICS)
     @effects[PBEffects::Unburden]   = true if self.item && hasActiveAbility?(:UNBURDEN)
-    setInitialItem(nil) if permanent && self.item == self.initialItem
     self.item = nil
   end
 

@@ -161,8 +161,8 @@ class Battle
       [-1] * (@opponent ? @opponent.length : 1)
     ]
     @initialItems      = [
-      Array.new(@party1.length) { |i| (@party1[i]) ? @party1[i].item_id : nil },
-      Array.new(@party2.length) { |i| (@party2[i]) ? @party2[i].item_id : nil }
+      Array.new(@party1.length) { |i| [@party1[i]&.item_id, 0, i, false] },
+      Array.new(@party2.length) { |i| [@party2[i]&.item_id, 1, i, false] }
     ]
     @recycleItems      = [Array.new(@party1.length, nil),   Array.new(@party2.length, nil)]
     @belch             = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
@@ -722,6 +722,43 @@ class Battle
     else
       pbPlayer.pokedex.register_defeated(battler.species)
     end
+  end
+
+  def initialItem(side, idxParty)
+    @initialItems.each do |this_side|
+      this_side.each do |this_pkmn|
+        return this_pkmn[0] if this_pkmn[1] == side && this_pkmn[2] == idxParty
+      end
+    end
+    return nil
+  end
+
+  def swapHeldItems(battler1, battler2)
+    item1 = battler1.item_id
+    item2 = battler2.item_id
+    battler1.item = item2
+    battler1.effects[PBEffects::ChoiceBand] = nil if !battler1.hasActiveAbility?(:GORILLATACTICS)
+    battler1.effects[PBEffects::Unburden]   = (item1 && !battler1.item) if battler1.hasActiveAbility?(:UNBURDEN)
+    battler2.item = item1
+    battler2.effects[PBEffects::ChoiceBand] = nil if !battler2.hasActiveAbility?(:GORILLATACTICS)
+    battler2.effects[PBEffects::Unburden]   = (item2 && !battler2.item) if battler2.hasActiveAbility?(:UNBURDEN)
+    s1 = battler1.idxOwnSide
+    p1 = battler1.pokemonIndex
+    s2 = battler2.idxOwnSide
+    p2 = battler2.pokemonIndex
+    @initialItems[s1][p1], @initialItems[s2][p2] = @initialItems[s2][p2], @initialItems[s1][p1]
+  end
+
+  def knockOffItem(side, idxParty)
+    @initialItems[side][idxParty][3] = true
+  end
+
+  def recycleItem(side, idxParty)
+    return @recycleItems[side][idxParty]
+  end
+
+  def setRecycleItem(side, idxParty, new_item)
+    @recycleItems[side][idxParty] = new_item
   end
 
   def clearStagesChangeRecords

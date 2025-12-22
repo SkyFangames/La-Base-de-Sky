@@ -47,10 +47,10 @@ module Battle::CatchAndStoreMixin
           # Rearrange all remembered properties of party Pokémon
           (party_index...party_size).each do |idx|
             if idx < party_size - 1
-              @initialItems[0][idx] = @initialItems[0][idx + 1]
+              @usedInBattle[0][idx] = @usedInBattle[0][idx + 1]
               $game_temp.party_levels_before_battle[idx] = $game_temp.party_levels_before_battle[idx + 1]
             else
-              @initialItems[0][idx] = nil
+              @usedInBattle[0][idx] = nil
               $game_temp.party_levels_before_battle[idx] = nil
             end
           end
@@ -72,12 +72,11 @@ module Battle::CatchAndStoreMixin
     stored_box = @peer.pbStorePokemon(pbPlayer, pkmn)
     if stored_box < 0
       pbDisplayPaused(_INTL("{1} se ha añadido a tu equipo.", pkmn.name))
-      @initialItems[0][pbPlayer.party.length - 1] = pkmn.item_id if @initialItems
-      return
+    else
+      # Messages saying the Pokémon was stored in a PC box
+      box_name = @peer.pbBoxName(stored_box)
+      pbDisplayPaused(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", pkmn.name, box_name))
     end
-    # Messages saying the Pokémon was stored in a PC box
-    box_name = @peer.pbBoxName(stored_box)
-    pbDisplayPaused(_INTL("¡{1} se ha enviado a la Caja \"{2}\"!", pkmn.name, box_name))
   end
 
   # Register all caught Pokémon in the Pokédex, and store them.
@@ -107,93 +106,58 @@ module Battle::CatchAndStoreMixin
   #=============================================================================
   def pbThrowPokeBall(idxBattler, ball, catch_rate = nil, showPlayer = false)
     # Determine which Pokémon you're throwing the Poké Ball at
-    battler = nil
-    if opposes?(idxBattler)
-      battler = @battlers[idxBattler]
-    else
-      battler = @battlers[idxBattler].pbDirectOpposing(true)
-    end
+    battler = @battlers[idxBattler]
+    battler = @battlers[idxBattler].pbDirectOpposing(true) if !battler.opposes?
     battler = battler.allAllies[0] if battler.fainted?
-    # Messages
-    itemName = GameData::Item.get(ball).name
-    if battler.fainted?
-      if itemName.starts_with_vowel?
-        pbDisplay(_INTL("¡{1} lanzó un {2}!", pbPlayer.name, itemName))
-      else
-        pbDisplay(_INTL("¡{1} lanzó una {2}!", pbPlayer.name, itemName))
-      end
-      pbDisplay(_INTL("Pero no había objetivo..."))
-      return
-    end
-    if itemName.starts_with_vowel?
-      pbDisplayBrief(_INTL("¡{1} lanzó {2}!", pbPlayer.name, itemName))
-    else
-      pbDisplayBrief(_INTL("¡{1} lanzó {2}!", pbPlayer.name, itemName))
-    end
-    # Animation of opposing trainer blocking Poké Balls (unless it's a Snag Ball
-    # at a Shadow Pokémon)
-    if trainerBattle? && !(GameData::Item.get(ball).is_snag_ball? && battler.shadowPokemon?)
-      @scene.pbThrowAndDeflect(ball, 1)
-      pbDisplay(_INTL("¡El Entrenador bloqueó tu Ball! ¡Robar está mal!"))
-      return
-    end
-    # Calculate the number of shakes (4=capture)
     pkmn = battler.pokemon
+    # Throw message
+    pbThrowPokeBallMessage(battler, ball)
+    # Failure checks (Pokémon is fainted, or opposing trainer blocks the Poké
+    # Ball)
+    return if pbThrowPokeBallNegated?(battler, ball)
+    # Calculate the number of shakes (4=capture)
     @criticalCapture = false
-    numShakes = pbCaptureCalc(pkmn, battler, catch_rate, ball)
-    PBDebug.log("[Threw Poké Ball] #{itemName}, #{numShakes} shakes (4=capture)")
+    num_shakes = pbCaptureCalc(pkmn, battler, catch_rate, ball)
+    if num_shakes != 4
+      @first_poke_ball = ball if !@poke_ball_failed   # For Ball Fetch
+      @poke_ball_failed = true                        # For Ball Fetch
+    end
     # Animation of Ball throw, absorb, shake and capture/burst out
-    @scene.pbThrow(ball, numShakes, @criticalCapture, battler.index, showPlayer)
-    # Outcome message
-    case numShakes
-    when 0
-      pbDisplay(_INTL("¡Oh no! ¡El Pokémon se ha escapado!"))
-      Battle::PokeBallEffects.onFailCatch(ball, self, battler)
-    when 1
-      pbDisplay(_INTL("¡Vaya! ¡Parecía que lo habías atrapado!"))
-      Battle::PokeBallEffects.onFailCatch(ball, self, battler)
-    when 2
-      pbDisplay(_INTL("¡Qué pena! ¡Te ha faltado poco!"))
-      Battle::PokeBallEffects.onFailCatch(ball, self, battler)
-    when 3
-      pbDisplay(_INTL("¡Uy! ¡Casi lo consigues!"))
-      Battle::PokeBallEffects.onFailCatch(ball, self, battler)
-    when 4
-      pbDisplayBrief(_INTL("¡Ya está! ¡{1} atrapado!", pkmn.name))
-      @scene.pbThrowSuccess   # Play capture success jingle
-      pbRemoveFromParty(battler.index, battler.pokemonIndex)
-      # Gain Exp
-      if Settings::GAIN_EXP_FOR_CAPTURE
-        battler.captured = true
-        pbGainExp
-        battler.captured = false
-      end
-      battler.pbReset
-      if pbAllFainted?(battler.index)
-        @decision = (trainerBattle?) ? Battle::Outcome::WIN : Battle::Outcome::CATCH
-      end
-      # Modify the Pokémon's properties because of the capture
-      if GameData::Item.get(ball).is_snag_ball?
-        pkmn.owner = Pokemon::Owner.new_from_trainer(pbPlayer)
-      end
-      Battle::PokeBallEffects.onCatch(ball, self, pkmn)
-      pkmn.poke_ball = ball
-      pkmn.makeUnmega if pkmn.mega?
-      pkmn.makeUnprimal
-      pkmn.update_shadow_moves if pkmn.shadowPokemon?
-      pkmn.record_first_moves
-      # Reset form
-      pkmn.forced_form = nil if MultipleForms.hasFunction?(pkmn.species, "getForm")
-      @peer.pbOnLeavingBattle(self, pkmn, true, true)
-      # Make the Poké Ball and data box disappear
-      @scene.pbHideCaptureBall(idxBattler)
-      # Save the Pokémon for storage at the end of battle
-      @caughtPokemon.push(pkmn)
+    @scene.pbThrow(ball, num_shakes, @criticalCapture, battler.index, showPlayer)
+    # Outcome
+    pbThrowPokeBallOutcome(battler, pkmn, ball, num_shakes)
+  end
+
+  def pbThrowPokeBallMessage(battler, ball)
+    return if battler.fainted?   # Messages are shown in def pbThrowPokeBallNegated? for this
+    item_name = GameData::Item.get(ball).name
+    if item_name.starts_with_vowel?
+      pbDisplayBrief(_INTL("{1} lanzó un {2}!", pbPlayer.name, item_name))
+    else
+      pbDisplayBrief(_INTL("{1} lanzó una {2}!", pbPlayer.name, item_name))
     end
-    if numShakes != 4
-      @first_poke_ball = ball if !@poke_ball_failed
-      @poke_ball_failed = true
+  end
+
+  def pbThrowPokeBallNegated?(battler, ball)
+    if battler.fainted?
+      item_name = GameData::Item.get(ball).name
+      PBDebug.log("[Threw Poké Ball] #{item_name}, failed due to no target")
+      if item_name.starts_with_vowel?
+        pbDisplay(_INTL("{1} lanzó un {2}!", pbPlayer.name, item_name))
+      else
+        pbDisplay(_INTL("{1} lanzó una {2}!", pbPlayer.name, item_name))
+      end
+      pbDisplay(_INTL("Pero no había ningún objetivo..."))
+      return true
     end
+    if trainerBattle? && !(GameData::Item.get(ball).is_snag_ball? && battler.shadowPokemon?)
+      item_name = GameData::Item.get(ball).name
+      PBDebug.log("[Threw Poké Ball] #{item_name}, failed due to opposing trainer blocking")
+      @scene.pbThrowAndDeflect(ball, 1)   # Animation
+      pbDisplay(_INTL("¡El Entrenador bloqueó tu {1}! ¡Robar está mal!", item_name))
+      return true
+    end
+    return false
   end
 
   #-----------------------------------------------------------------------------
@@ -279,6 +243,61 @@ module Battle::CatchAndStoreMixin
       num_shakes += 1 if pbRandom(65_536) < shake_chance
     end
     return num_shakes
+  end
+
+  #-----------------------------------------------------------------------------
+  # The outcome of the capture attempt (after the animation).
+  #-----------------------------------------------------------------------------
+
+  def pbThrowPokeBallOutcome(battler, pkmn, ball, num_shakes)
+    # Succeeded
+    if num_shakes == 4
+      PBDebug.log("[Threw Poké Ball] #{GameData::Item.get(ball).name}, #{num_shakes} shakes (succeeded)")
+      pbThrowPokeBallSuccess(battler, pkmn, ball)
+      return
+    end
+    # Failed
+    PBDebug.log("[Threw Poké Ball] #{GameData::Item.get(ball).name}, #{num_shakes} shakes (failed)")
+    case num_shakes
+    when 0 then pbDisplay(_INTL("¡Oh no! ¡El Pokémon se ha escapado!"))
+    when 1 then pbDisplay(_INTL("¡Vaya! ¡Parecía que lo habías atrapado!"))
+    when 2 then pbDisplay(_INTL("¡Qué pena! ¡Te ha faltado poco!"))
+    when 3 then pbDisplay(_INTL("¡Uy! ¡Casi lo consigues!"))
+    end
+    Battle::PokeBallEffects.onFailCatch(ball, self, battler)
+  end
+
+  def pbThrowPokeBallSuccess(battler, pkmn, ball)
+    pbDisplayBrief(_INTL("¡Ya está! ¡{1} atrapado!", pkmn.name))
+    @scene.pbThrowSuccess   # Play capture success jingle
+    pbRemoveFromParty(battler.index, battler.pokemonIndex)
+    # Gain Exp
+    if Settings::GAIN_EXP_FOR_CAPTURE
+      battler.captured = true
+      pbGainExp
+      battler.captured = false
+    end
+    battler.pbReset
+    if pbAllFainted?(battler.index)
+      @decision = (trainerBattle?) ? Battle::Outcome::WIN : Battle::Outcome::CATCH
+    end
+    # Modify the Pokémon's properties because of the capture
+    if GameData::Item.get(ball).is_snag_ball?
+      pkmn.owner = Pokemon::Owner.new_from_trainer(pbPlayer)
+    end
+    Battle::PokeBallEffects.onCatch(ball, self, pkmn)
+    pkmn.poke_ball = ball
+    pkmn.makeUnmega if pkmn.mega?
+    pkmn.makeUnprimal
+    pkmn.update_shadow_moves if pkmn.shadowPokemon?
+    pkmn.record_first_moves
+    # Reset form
+    pkmn.forced_form = nil if MultipleForms.hasFunction?(pkmn.species, "getForm")
+    @peer.pbOnLeavingBattle(self, pkmn, true, true)
+    # Make the Poké Ball and data box disappear
+    @scene.pbHideCaptureBall(idxBattler)
+    # Save the Pokémon for storage at the end of battle
+    @caughtPokemon.push(pkmn)
   end
 end
 

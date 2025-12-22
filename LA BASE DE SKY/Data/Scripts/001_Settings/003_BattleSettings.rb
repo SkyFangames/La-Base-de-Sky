@@ -38,6 +38,11 @@ module Settings
     # Determina si el clima causado por una habilidad dura 5 rondas (true) o para
     # siempre (false).
     FIXED_DURATION_WEATHER_FROM_ABILITY = (MECHANICS_GENERATION >= 6)
+
+    # Determina si los objetos robados a un Pokémon salvaje por un Pokémon del jugador usando
+    # Covet/Thief van directamente a la Mochila del jugador (true) o terminan siendo llevados por
+    # el Pokémon que usó Covet/Thief (false).
+    STOLEN_HELD_ITEMS_GO_INTO_BAG       = (MECHANICS_GENERATION >= 9)
     # Determina si los objetos X (Ataque X, etc.) aumentan su estadística en 2 etapas
     # (true) o en 1 (false).
     X_STAT_ITEMS_RAISE_BY_TWO_STAGES    = (MECHANICS_GENERATION >= 7)

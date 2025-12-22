@@ -378,13 +378,6 @@ class Battle::Battler
   #       the item - the code existing is enough to cause the loop).
   def abilityActive?(ignore_fainted = false, check_ability = nil)
     return false if fainted? && !ignore_fainted
-    if Settings::MECHANICS_GENERATION >= 9
-      return true if !check_ability && self.ability == :BATTLEBOND
-      if @proteanTrigger && self.ability == @effects[PBEffects::OneUseAbility]
-        return false if !check_ability || check_ability == self.ability
-        return false if check_ability.is_a?(Array) && check_ability.include?(@ability_id)
-      end
-    end
     return false if @effects[PBEffects::GastroAcid]
     return false if check_ability != :NEUTRALIZINGGAS && self.ability != :NEUTRALIZINGGAS &&
                     @battle.pbCheckGlobalAbility(:NEUTRALIZINGGAS)
@@ -446,7 +439,7 @@ class Battle::Battler
     return false
   end
 
-    # Applies to losing self's ability (i.e. being replaced by another).
+  # Applies to losing self's ability (i.e. being replaced by another).
   def unlosableAbility?(abil = nil)
     abil = @ability_id if !abil
     abil = GameData::Ability.try_get(abil)
@@ -559,6 +552,10 @@ class Battle::Battler
     return ability_blacklist.include?(abil.id)
   end
 
+  #-----------------------------------------------------------------------------
+  # Held item.
+  #-----------------------------------------------------------------------------
+
   def itemActive?(ignoreFainted = false)
     return false if fainted? && !ignoreFainted
     return false if @effects[PBEffects::Embargo] > 0
@@ -596,28 +593,27 @@ class Battle::Battler
   end
 
   def initialItem
-    return @battle.initialItems[@index & 1][@pokemonIndex]
+    return @battle.initialItem(idxOwnSide, @pokemonIndex)
   end
 
-  def setInitialItem(value)
-    item_data = GameData::Item.try_get(value)
-    new_item = (item_data) ? item_data.id : nil
-    @battle.initialItems[@index & 1][@pokemonIndex] = new_item
+  def knockOffItem
+    @battle.knockOffItem(idxOwnSide, @pokemonIndex)
   end
 
   def recycleItem
-    return @battle.recycleItems[@index & 1][@pokemonIndex]
+    return @battle.recycleItem(idxOwnSide, @pokemonIndex)
   end
 
   def setRecycleItem(value)
     item_data = GameData::Item.try_get(value)
     new_item = (item_data) ? item_data.id : nil
-    @battle.recycleItems[@index & 1][@pokemonIndex] = new_item
+    @battle.setRecycleItem(idxOwnSide, @pokemonIndex, new_item)
   end
 
   #-----------------------------------------------------------------------------
   # Moves.
   #-----------------------------------------------------------------------------
+
   def eachMove
     @moves.each { |m| yield m }
   end
