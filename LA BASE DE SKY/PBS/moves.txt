@@ -5004,7 +5004,7 @@ EffectChance = 20
 Description = Rítmicos puñetazos que pueden causar confusión.
 #-------------------------------
 [FACADE]
-Name = Imagen
+Name = Fachada
 Type = NORMAL
 Category = Physical
 Power = 70
@@ -6507,7 +6507,7 @@ Flags = CanProtect,CanMirrorMove,Sound
 Description = Raras ondas sónicas que pueden confundir al objetivo.
 #-------------------------------
 [SWAGGER]
-Name = Contoneo
+Name = Fanfarronear
 Type = NORMAL
 Category = Status
 Accuracy = 85
@@ -7150,7 +7150,7 @@ EffectChance = 10
 Description = Energía muy extraña que puede amedrentar al objetivo.
 #-------------------------------
 [HYPERSPACEHOLE]
-Name = Cerco Dimensión
+Name = Paso Dimensional
 Type = PSYCHIC
 Category = Special
 Power = 80
@@ -7159,7 +7159,7 @@ TotalPP = 5
 Target = NearOther
 FunctionCode = RemoveProtectionsBypassSubstitute
 Flags = CanMirrorMove,CannotMetronome
-Description = Una ráfaga de golpes que ignoran movimientos como protección. Baja la Defensa del usuario.
+Description = Golpea aunque el rival use Protección, Detección, Vastaguardia o Anticipo ese turno.
 #-------------------------------
 [PSYSHOCK]
 Name = Psicocarga
@@ -8254,7 +8254,7 @@ TotalPP = 10
 Target = User
 Priority = 4
 FunctionCode = ProtectUserFromDamagingMovesKingsShield
-Description = Protege al usuario de cualquier daño y baja mucho el Ataque del rival si lo toca.
+Description = Protege al usuario de cualquier daño y baja el Ataque del rival si lo toca.
 #-------------------------------
 [METALSOUND]
 Name = Eco Metálico
@@ -8855,7 +8855,7 @@ Target = NearOther
 FunctionCode = LowerTargetDefense1FlinchTarget
 Flags = CanProtect,CanMirrorMove,HighCriticalHitRate
 EffectChance = 100
-Description = Asesta un talonazo y lanza tres flechas. Puede amedrentar o bajar la Defensa del objetivo. 
+Description = Asesta un talonazo y lanza tres flechas. Puede amedrentar o bajar la Defensa del objetivo. Alto índice de crítico.
 #-------------------------------
 [BLEAKWINDSTORM]
 Name = Vendaval Gélido
