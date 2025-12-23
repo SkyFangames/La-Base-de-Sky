@@ -161,6 +161,14 @@ module Settings
   
   # Cerrar el recordador luego de cada ataque
   CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE = false
+
+  # Usar nombres default para el jugador en lugar del nombre de usuario del sistema
+  # Si esta constante está en true, se usarán los nombres de las constantes
+  # MALE_PLAYER_NAME y FEMALE_PLAYER_NAME definidas más abajo. 
+  # En caso contrario, se usará el nombre de usuario del sistema como nombre del jugador.
+  USE_DEFAULT_PLAYER_NAMES = false
+  MALE_PLAYER_NAME = "Rojo"
+  FEMALE_PLAYER_NAME = "Hoja"
 end
 
 
