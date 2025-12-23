@@ -1406,6 +1406,20 @@ class Battle::Move::IgnoreTargetDefSpDefEvaStatStages < Battle::Move
 end
 
 #===============================================================================
+# This move ignores target's Defense, Special Defense and evasion stat changes.
+# It also ignores the target's Fairy-type immunity to Dragon-type. (Nihil Light)
+#===============================================================================
+class Battle::Move::IgnoreTargetStatStagesNormalEffectiveAgainstFairy < Battle::Move::IgnoreTargetDefSpDefEvaStatStages
+  def pbCalcTypeModSingle(moveType, defType, user, target)
+    if Effectiveness.ineffective_type?(moveType, defType) &&
+       moveType == :DRAGON && defType == :FAIRY
+      return Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
+    end
+    return super
+  end
+end
+
+#===============================================================================
 # This move's type is the same as the user's first type. (Revelation Dance)
 #===============================================================================
 class Battle::Move::TypeIsUserFirstType < Battle::Move

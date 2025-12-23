@@ -558,7 +558,8 @@ class Battle::AI::AIMove
       modifiers[:evasion_stage] = 0 if target.effects[PBEffects::MiracleEye] && modifiers[:evasion_stage] > 0
     end
     # "AI-specific calculations below"
-    modifiers[:evasion_stage] = 0 if function_code == "IgnoreTargetDefSpDefEvaStatStages"   # Chip Away
+    modifiers[:evasion_stage] = 0 if function_code == "IgnoreTargetDefSpDefEvaStatStages" ||              # Chip Away
+                                     function_code == "IgnoreTargetStatStagesNormalEffectiveAgainstFairy" # Nihil Light
     if @ai.trainer.medium_skill?
       modifiers[:base_accuracy] = 0 if user.effects[PBEffects::LockOn] > 0 &&
                                        user.effects[PBEffects::LockOnPos] == target.index

@@ -9866,7 +9866,7 @@ Power = 200
 Accuracy = 100
 TotalPP = 10
 Target = NearOther
-FunctionCode = HitsFairysIgnoreTargetDefSpDefEvaStatStages
+FunctionCode = IgnoreTargetStatStagesNormalEffectiveAgainstFairy
 Flags = CanProtect,CanMirrorMove
 Description = Luz devastadora que pega de forma neutra a los Pokémon de tipo hada. Ignora cambios de Def. Esp. y Evasión.
 #-------------------------------

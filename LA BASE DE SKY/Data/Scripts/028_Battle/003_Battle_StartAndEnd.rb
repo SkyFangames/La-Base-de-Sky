@@ -508,12 +508,12 @@ class Battle
     @initialItems.each_with_index do |side_items, side|
       side_items.each_with_index do |pkmn_item, i|
         next if pkmn_item[0].nil?   # No initial item to restore
-        next if pbTeam(side)[i].hasItem?   # Can't restore item if already holding one
+        next if pbParty(side)[i].hasItem?   # Can't restore item if already holding one
         if pkmn_item[3] ||   # Knocked off
            (Settings::MECHANICS_GENERATION >= 9 &&   # Only restores consumed items in Gen 9+
             !GameData::Item.get(pkmn_item[0]).is_berry?)   # Can't restore consumed berries
           # Restore knocked off/consumed item
-          pbTeam(side)[i].item = pkmn_item[0]
+          pbParty(side)[i].item = pkmn_item[0]
         end
       end
     end

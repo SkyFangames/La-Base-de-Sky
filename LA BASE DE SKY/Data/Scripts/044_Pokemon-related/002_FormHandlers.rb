@@ -451,12 +451,13 @@ MultipleForms.register(:FURFROU, {
 })
 
 MultipleForms.register(:ESPURR, {
-  # "getForm" => proc { |pkmn|
-  #   next pkmn.gender
-  # },
-  "getFormOnCreation" => proc { |pkmn|
+  "getForm" => proc { |pkmn|
+    next if pkmn.form_simple >= 2   # Don't change form number if Mega Evolved
     next pkmn.gender
   },
+  # "getFormOnCreation" => proc { |pkmn|
+  #   next pkmn.gender
+  # },
 
   "getFormOnGenderChange" => proc { |pkmn|
     next pkmn.gender
@@ -933,7 +934,7 @@ MultipleForms.register(:QUILAVA, {
 MultipleForms.copy(:QUILAVA,
                    :DEWOTT, :PETILIL, :RUFFLET, :GOOMY, :BERGMITE, :DARTRIX)
 
-MultipleForms.copy(:ESPURR, :INDEEDEE, :LECHONK, :OINKOLOGNE, :BASCULEGION)
+MultipleForms.copy(:INDEEDEE, :LECHONK, :OINKOLOGNE, :BASCULEGION)
 
 # Paldean forms.
 # None!
