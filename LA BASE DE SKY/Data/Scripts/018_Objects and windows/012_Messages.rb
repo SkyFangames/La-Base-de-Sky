@@ -112,23 +112,13 @@ class ChooseNumberParams
   end
 
   def minNumber
-    ret = 0
-    if @maxDigits > 0
-      ret = -((10**@maxDigits) - 1)
-    else
-      ret = @minNumber
-    end
+    ret = (@maxDigits > 0) ? -((10**@maxDigits) - 1) : @minNumber
     ret = 0 if !@negativeAllowed && ret < 0
     return ret
   end
 
   def maxNumber
-    ret = 0
-    if @maxDigits > 0
-      ret = ((10**@maxDigits) - 1)
-    else
-      ret = @maxNumber
-    end
+    ret = (@maxDigits > 0) ? ((10**@maxDigits) - 1) : @maxNumber
     ret = 0 if !@negativeAllowed && ret < 0
     return ret
   end
@@ -138,11 +128,8 @@ class ChooseNumberParams
   end
 
   def maxDigits
-    if @maxDigits > 0
-      return @maxDigits
-    else
-      return [numDigits(self.minNumber), numDigits(self.maxNumber)].max
-    end
+    return @maxDigits if @maxDigits > 0
+    return [numDigits(self.minNumber), numDigits(self.maxNumber)].max
   end
 
   #-----------------------------------------------------------------------------

@@ -716,7 +716,15 @@ module UI
     def refresh_on_index_changed(old_index)
     end
 
-    def draw_input_icon(input_x, input_y, input, text = nil, text_spacing = 6, theme: :default, overlay: :overlay)
+    def draw_input_icon(input_x, input_y, input, text = nil, text_spacing = 6,
+                        align: :left, theme: :default, overlay: :overlay)
+      if align == :right
+        if text
+          input_x -= @sprites[:overlay].bitmap.text_size(text).width
+          input_x -= text_spacing
+        end
+        input_x -= @bitmaps[:input_icons].height
+      end
       input_index = UI::BaseVisuals::INPUT_ICONS_ORDER.index(input) || 0
       draw_image(@bitmaps[:input_icons], input_x, input_y,
                 input_index * @bitmaps[:input_icons].height, 0,

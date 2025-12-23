@@ -743,7 +743,7 @@ ItemHandlers::BattleUseOnBattler.add(:MAXMUSHROOMS, proc { |item, battler, scene
 })
 
 ItemHandlers::BattleUsableOnBattler.add(:DIREHIT, proc { |item, battler|
-  next battler.criticalHitRate >= 2
+  next battler.criticalHitRate < 2
 })
 ItemHandlers::BattleUseOnBattler.add(:DIREHIT, proc { |item, battler, scene|
   battler.setCriticalHitRate(2)
@@ -753,7 +753,7 @@ ItemHandlers::BattleUseOnBattler.add(:DIREHIT, proc { |item, battler, scene|
 })
 
 ItemHandlers::BattleUsableOnBattler.add(:DIREHIT2, proc { |item, battler|
-  next battler.criticalHitRate >= 2
+  next battler.criticalHitRate < 2
 })
 ItemHandlers::BattleUseOnBattler.add(:DIREHIT2, proc { |item, battler, scene|
   battler.setCriticalHitRate(2)
@@ -763,7 +763,7 @@ ItemHandlers::BattleUseOnBattler.add(:DIREHIT2, proc { |item, battler, scene|
 })
 
 ItemHandlers::BattleUsableOnBattler.add(:DIREHIT3, proc { |item, battler|
-  next battler.criticalHitRate >= 3
+  next battler.criticalHitRate < 3
 })
 ItemHandlers::BattleUseOnBattler.add(:DIREHIT3, proc { |item, battler, scene|
   battler.setCriticalHitRate(3)

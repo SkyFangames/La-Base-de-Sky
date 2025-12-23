@@ -195,8 +195,17 @@ end
 # on.
 def pbItemHasEffectOnPokemon?(item, pkmn)
   return false if !pbCanPokemonHaveItemUsedOnIt?(pkmn, item)
-  ret = ItemHandlers.triggerUsableOnPokemon(item, pkmn)
-  return ret
+  return ItemHandlers.triggerUsableOnPokemon(item, pkmn)
+end
+
+def pbCanUseItemOnBattler?(item)
+  return ItemHandlers.hasBattleUseOnBattler(item) ||
+         ItemHandlers.hasBattleUsableOnBattler(item)
+end
+
+def pbItemHasEffectOnBattler?(item, battler)
+  return false if !battler || battler.fainted?
+  return ItemHandlers.triggerBattleUsableOnBattler(item, battler)
 end
 
 #===============================================================================
