@@ -13,7 +13,7 @@ class BattleSwapScene
     @sprites = {}
     addBackgroundPlane(@sprites, "bg", "rentbg", @viewport)
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("POKéMON DE PRÉSTAMO"), 0, 0, Graphics.width, 64, @viewport
+      _INTL("POKÉMON DE PRÉSTAMO"), 0, 0, Graphics.width, 64, @viewport
     )
     @sprites["list"] = Window_AdvancedCommandPokemonEx.newWithSize(
       [], 0, 64, Graphics.width, Graphics.height - 128, @viewport
@@ -39,7 +39,7 @@ class BattleSwapScene
     @sprites = {}
     addBackgroundPlane(@sprites, "bg", "swapbg", @viewport)
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("INTERCAMBIO POKéMON"), 0, 0, Graphics.width, 64, @viewport
+      _INTL("INTERCAMBIO POKÉMON"), 0, 0, Graphics.width, 64, @viewport
     )
     @sprites["list"] = Window_AdvancedCommandPokemonEx.newWithSize(
       [], 0, 64, Graphics.width, Graphics.height - 128, @viewport

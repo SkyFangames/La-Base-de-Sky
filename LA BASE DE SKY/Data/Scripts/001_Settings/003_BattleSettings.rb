@@ -22,6 +22,12 @@ module Settings
     NEW_CRITICAL_HIT_RATE_MECHANICS             = (MECHANICS_GENERATION >= 6)
   
     #=============================================================================
+
+    # Determina si un clima o terreno por defecto puede (false) o no puede (true)
+    # ser reemplazado por una habilidad o movimiento que induzca otro tipo de clima.
+    # Esto no se aplica a los climas primigenios (sol intenso, lluvia fuerte, vientos
+    # fuertes), que siempre pueden reemplazar el clima por defecto.
+    DEFAULT_WEATHER_AND_TERRAIN_CANNOT_BE_REPLACED = (MECHANICS_GENERATION >= 9)
   
     # Determina si varios efectos se aplican en relación con el tipo de un Pokémon:
     #   * Inmunidad de los Pokémon tipo Eléctrico a la parálisis
@@ -32,6 +38,11 @@ module Settings
     # Determina si el clima causado por una habilidad dura 5 rondas (true) o para
     # siempre (false).
     FIXED_DURATION_WEATHER_FROM_ABILITY = (MECHANICS_GENERATION >= 6)
+
+    # Determina si los objetos robados a un Pokémon salvaje por un Pokémon del jugador usando
+    # Covet/Thief van directamente a la Mochila del jugador (true) o terminan siendo llevados por
+    # el Pokémon que usó Covet/Thief (false).
+    STOLEN_HELD_ITEMS_GO_INTO_BAG       = (MECHANICS_GENERATION >= 9)
     # Determina si los objetos X (Ataque X, etc.) aumentan su estadística en 2 etapas
     # (true) o en 1 (false).
     X_STAT_ITEMS_RAISE_BY_TWO_STAGES    = (MECHANICS_GENERATION >= 7)
@@ -42,6 +53,11 @@ module Settings
     # Dragón en un 20% (true) o aumenta el Ataque Especial y la Defensa Especial
     # del portador en un 50% (false).
     SOUL_DEW_POWERS_UP_TYPES            = (MECHANICS_GENERATION >= 7)
+
+    # Determina si la habilidad Fuerte Afecto de Greninja hace que cambie a Ash-Greninja
+    # (false) o aumenta su Atk/SpAtk/Spd (true) cuando derrota a un objetivo.
+    # De cualquier manera, solo sucede una vez por batalla.
+    GRENINJA_BATTLE_BOND_RAISES_STATS     = (MECHANICS_GENERATION >= 9)
   
     #=============================================================================
   
@@ -93,6 +109,19 @@ module Settings
     # ser capturadas para proporcionar la mayor probabilidad de captura crítica de 
     # 2.5x), y puede haber menos especies en tu juego.
     ENABLE_CRITICAL_CAPTURES             = (MECHANICS_GENERATION >= 5)
+    # Si es true, se aplica un bono a la tasa de captura para Pokémon debajo de nivel 13.
+    CATCH_RATE_BONUS_FOR_LOW_LEVEL       = (MECHANICS_GENERATION >= 8)
+    # Si el jugador no tiene al menos este número de Medallas de Gimnasio, la
+    # probabilidad de capturar cualquier Pokémon salvaje cuyo nivel sea mayor que
+    # el del Pokémon del jugador se dividirá por 10. 0 significa que esta penalización
+    # nunca se aplica. Ten en cuenta que esto no debe usarse con la configuración
+    # que aparece a continuación.
+    NUM_BADGES_TO_NOT_MAKE_HIGHER_LEVEL_CAPTURES_HARDER = (MECHANICS_GENERATION == 8) ? 8 : 0
+    # Si es true, los Pokémon salvajes que desobedecerían al jugador por su nivel
+    # (excepto si están dentro de 5 niveles del nivel máximo de obediencia) serán
+    # más difíciles de capturar. Ten en cuenta que esto no debe usarse con la
+    # configuración directamente anterior.
+    CATCH_RATE_PENALTY_IF_POKEMON_WILL_NOT_OBEY         = (MECHANICS_GENERATION >= 9)
     # Si es true, los Pokémon ganan Exp por capturar a un Pokémon.
     GAIN_EXP_FOR_CAPTURE                 = (MECHANICS_GENERATION >= 6)
     # Si es true, se le pregunta al jugador qué hacer con un Pokémon recién capturado 

@@ -3,6 +3,7 @@
 #===============================================================================
 module Battle::DebugVariables
   BATTLER_EFFECTS = {
+    PBEffects::AllySwitchRate => {name: "Chance de exito Cambio de Banda 1/x",                  default: 1, max: 999},
     PBEffects::AquaRing       => {name: "Se aplica Acua aro",                              default: false},
     PBEffects::Attract        => {name: "Pokémon al que este se siente atraído",           default: -1},   # Battler index
     PBEffects::BanefulBunker  => {name: "Se aplica Búnker en esta ronda",                  default: false},
@@ -10,12 +11,16 @@ module Battle::DebugVariables
     PBEffects::Bide           => {name: "Rondas que quedan de venganza",                   default: 0},
     PBEffects::BideDamage     => {name: "Daño acumulado de venganza",                      default: 0, max: 999},
     PBEffects::BideTarget     => {name: "Último combatiente que le pegó con venganza",     default: -1},   # Battler index
+    PBEffects::BoosterEnergy  => {name: "Aplica efecto Energía Potenciadora en esta ronda",              default: false},
+    PBEffects::BurningBulwark => {name: "Se aplica Llama Protectora en esta ronda",              default: false},
     PBEffects::BurnUp         => {name: "Llama final ha eliminado el tipo fuego del Pkmn", default: false},
     PBEffects::Charge         => {name: "Número de rondas restantes de Carga",             default: 0},
     PBEffects::ChoiceBand     => {name: "Movimiento bloqueado por objetos elegidos",       default: nil, type: :move},
     PBEffects::Confusion      => {name: "Número de rondas restantes de Confusión",         default: 0},
 #    PBEffects::Counter - not suitable for setting via debug
 #    PBEffects::CounterTarget - not suitable for setting via debug
+    PBEffects::CudChewBerry   => {name: "Objeto a ser consumido por Rumia",                    default: nil, type: :item},
+    PBEffects::CudChewCounter => {name: "Número de rondas restantes de Rumia",             default: 0},
     PBEffects::Curse          => {name: "Se aplica daño de Maldición",                     default: false},
 #    PBEffects::Dancer - only used while Dancer is running, not suitable for setting via debug
     PBEffects::DefenseCurl    => {name: "Has usado Rizo defensa",                          default: false},
@@ -24,6 +29,7 @@ module Battle::DebugVariables
 #    PBEffects::DestinyBondTarget - not suitable for setting via debug
     PBEffects::Disable        => {name: "Número de rondas restantes de Anulación",         default: 0},
     PBEffects::DisableMove    => {name: "Movimiento Anulado",                              default: nil, type: :move},
+    PBEffects::DoubleShock    => {name: "Electropalmas ha eliminado el tipo Eléctrico del usuario",   default: false},
     PBEffects::Electrify      => {name: "Electrificación vuelve los ataques eléctricos",   default: false},
     PBEffects::Embargo        => {name: "Rondas que quedan de embargo",                    default: 0},
     PBEffects::Encore         => {name: "Número de turnos que quedan de Otra vez",         default: 0},
@@ -40,6 +46,7 @@ module Battle::DebugVariables
     PBEffects::FuryCutter     => {name: "Multiplicador de poder de Corte Furia 2**x (0-4)",default: 0, max: 4},
     PBEffects::GastroAcid     => {name: "Bilis ignora su habilidad",                       default: false},
 #    PBEffects::GemConsumed - only applies during use of move, not suitable for setting via debug
+    PBEffects::GigatonHammer  => {name: "Martillo Colosal/Luna Roja es el último movimiento usado", default: false},
     PBEffects::Grudge         => {name: "Rabia se aplica si el usuario se debilita",       default: false},
     PBEffects::HealBlock      => {name: "Turnos restantes de Anticura",                    default: 0},
     PBEffects::HelpingHand    => {name: "Refuerzo aumenta los movimientos del pokémon",    default: false},
@@ -90,6 +97,7 @@ module Battle::DebugVariables
 #    PBEffects::Rage - only applies to use of specific move, not suitable for setting via debug
     PBEffects::Rollout        => {name: "Rondas restantes de Desenrollar/Rodar (menor=más fuerte)",default: 0},
     PBEffects::Roost          => {name: "Respiro eliminando el tipo Volador este turno",   default: false},
+    PBEffects::SaltCure       => {name: "Salazón se aplica (causa daño cada ronda)",     default: false},
 #    PBEffects::ShellTrap - only applies to use of specific move, not suitable for setting via debug
 #    PBEffects::SkyDrop - only applies to use of specific move, not suitable for setting via debug
     PBEffects::SlowStart      => {name: "Turnos restantes de Inicio Lento",                default: 0},
@@ -101,6 +109,8 @@ module Battle::DebugVariables
     PBEffects::StockpileDef   => {name: "Cambios de Defensa ganados por Reserva (0-12)",   default: 0, max: 12},
     PBEffects::StockpileSpDef => {name: "Cambios de Def. Esp ganados por Reserva (0-12)",  default: 0, max: 12},
     PBEffects::Substitute     => {name: "PS del sustituto",                                default: 0, max: 999},
+    PBEffects::SyrupBomb      => {name: "Número de rondas restantes de Bomba Caramelo",           default: 0},
+    PBEffects::SyrupBombUser  => {name: "Combatiente que usó Bomba Caramelo",            default: -1},   # Battler index
     PBEffects::TarShot        => {name: "Alquitranazo haciendo al Pkmn débil al Fuego",    default: false},
     PBEffects::Taunt          => {name: "Turnos restantes de Mofa",                        default: 0},
     PBEffects::Telekinesis    => {name: "Turnos restantes de Telequinesis",                default: 0},
@@ -175,20 +185,20 @@ module Battle::DebugVariables
 #    PBEffects::WishMaker - too complex to be worth bothering with
   }
   
-  BATTLER_EFFECTS[PBEffects::AllySwitch]      = { name: "Ally Switch applies this round",                default: false }
-  BATTLER_EFFECTS[PBEffects::CudChew]         = { name: "Cud Chew number of rounds until active",        default: 0 }
-  BATTLER_EFFECTS[PBEffects::DoubleShock]     = { name: "Double Shock has removed self's Electric type", default: false }
-  BATTLER_EFFECTS[PBEffects::GlaiveRush]      = { name: "Glaive Rush vulnerability rounds remaining",    default: 0 }
-  BATTLER_EFFECTS[PBEffects::ParadoxStat]     = { name: "Protosynthesis/Quark Drive stat boosted",       default: nil, type: :stat }
-  BATTLER_EFFECTS[PBEffects::BoosterEnergy]   = { name: "Booster Energy applies",                        default: false }
-  BATTLER_EFFECTS[PBEffects::SaltCure]        = { name: "Salt Cure applies",                             default: false }
-  BATTLER_EFFECTS[PBEffects::SilkTrap]        = { name: "Silk Trap applies this round",                  default: false }
-  BATTLER_EFFECTS[PBEffects::Splinters]       = { name: "Splinters number of rounds remaining",          default: 0 }
-  BATTLER_EFFECTS[PBEffects::SplintersType]   = { name: "Splinters damage typing",                       default: nil, type: :type }
-  BATTLER_EFFECTS[PBEffects::SupremeOverlord] = { name: "Supreme Overlord multiplier 1 + 0.1*x (0-5)",   default: 0, max: 5 }
-  BATTLER_EFFECTS[PBEffects::Syrupy]          = { name: "Syrupy turns remaining",                        default: 0 }
-  BATTLER_EFFECTS[PBEffects::SyrupyUser]      = { name: "Battler syruped self",                          default: -1 }
-  BATTLER_EFFECTS[PBEffects::BurningBulwark]  = { name: "Burning Bulwark applies this round",            default: false }
+  # BATTLER_EFFECTS[PBEffects::AllySwitch]      = { name: "Ally Switch applies this round",                default: false }
+  # BATTLER_EFFECTS[PBEffects::CudChew]         = { name: "Cud Chew number of rounds until active",        default: 0 }
+  # BATTLER_EFFECTS[PBEffects::DoubleShock]     = { name: "Double Shock has removed self's Electric type", default: false }
+  # BATTLER_EFFECTS[PBEffects::GlaiveRush]      = { name: "Glaive Rush vulnerability rounds remaining",    default: 0 }
+  # BATTLER_EFFECTS[PBEffects::ParadoxStat]     = { name: "Protosynthesis/Quark Drive stat boosted",       default: nil, type: :stat }
+  # BATTLER_EFFECTS[PBEffects::BoosterEnergy]   = { name: "Booster Energy applies",                        default: false }
+  # BATTLER_EFFECTS[PBEffects::SaltCure]        = { name: "Salt Cure applies",                             default: false }
+  # BATTLER_EFFECTS[PBEffects::SilkTrap]        = { name: "Silk Trap applies this round",                  default: false }
+  # BATTLER_EFFECTS[PBEffects::Splinters]       = { name: "Splinters number of rounds remaining",          default: 0 }
+  # BATTLER_EFFECTS[PBEffects::SplintersType]   = { name: "Splinters damage typing",                       default: nil, type: :type }
+  # BATTLER_EFFECTS[PBEffects::SupremeOverlord] = { name: "Supreme Overlord multiplier 1 + 0.1*x (0-5)",   default: 0, max: 5 }
+  # BATTLER_EFFECTS[PBEffects::Syrupy]          = { name: "Syrupy turns remaining",                        default: 0 }
+  # BATTLER_EFFECTS[PBEffects::SyrupyUser]      = { name: "Battler syruped self",                          default: -1 }
+  # BATTLER_EFFECTS[PBEffects::BurningBulwark]  = { name: "Burning Bulwark applies this round",            default: false }
 end
 
 #===============================================================================

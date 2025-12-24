@@ -10,15 +10,13 @@ class Battle::Move
 
   # Reset move usage counters (child classes can increment them).
   def pbChangeUsageCounters(user, specialUsage)
-    user.effects[PBEffects::FuryCutter]   = 0
-    user.effects[PBEffects::ParentalBond] = 0
-    user.effects[PBEffects::ProtectRate]  = 1
+    user.effects[PBEffects::AllySwitchRate] = 1
+    user.effects[PBEffects::FuryCutter]     = 0
+    user.effects[PBEffects::GigatonHammer]  = false
+    user.effects[PBEffects::ParentalBond]   = 0
+    user.effects[PBEffects::ProtectRate]    = 1
     @battle.field.effects[PBEffects::FusionBolt]  = false
     @battle.field.effects[PBEffects::FusionFlare] = false
-    user.proteanTrigger = true
-    user.effects[PBEffects::GlaiveRush] = 0
-    user.effects[PBEffects::SuccessiveMove] = nil if user.effects[PBEffects::SuccessiveMove] != @id
-    user.pokemon.move_count_evolution(@id) if user.pbOwnedByPlayer?
   end
 
   def pbDisplayUseMessage(user)
@@ -41,7 +39,7 @@ class Battle::Move
 
   def pbContactMove?(user)
     return false if user.hasActiveAbility?(:LONGREACH)
-    return false if user.hasActiveItem?(:PUNCHINGGLOVE) && punchingMove?
+    return false if punchingMove? && user.hasActiveItem?(:PUNCHINGGLOVE)
     return contactMove?
   end
 
@@ -60,9 +58,10 @@ class Battle::Move
   # For two-turn moves when they charge and attack in the same turn.
   def pbQuickChargingMove(user, targets); end
 
-  #=============================================================================
-  # Effect methods per hit
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Effect methods per hit.
+  #-----------------------------------------------------------------------------
+
   def pbOverrideSuccessCheckPerHit(user, target); return false; end
   def pbCrashDamage(user); end
   def pbInitialEffect(user, targets, hitNum); end
@@ -87,22 +86,23 @@ class Battle::Move
   def pbSwitchOutTargetEffect(user, targets, numHits, switched_battlers); end
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers); end
 
-  #=============================================================================
-  # Check if target is immune to the move because of its ability
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Check if target is immune to the move because of its ability.
+  #-----------------------------------------------------------------------------
+
   def pbImmunityByAbility(user, target, show_message)
-    return false if @battle.moldBreaker
     ret = false
-    if target.abilityActive?
+    if target.abilityActive? && !target.beingMoldBroken?
       ret = Battle::AbilityEffects.triggerMoveImmunity(target.ability, user, target,
                                                        self, @calcType, @battle, show_message)
     end
     return ret
   end
 
-  #=============================================================================
-  # Move failure checks
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Move failure checks.
+  #-----------------------------------------------------------------------------
+
   # Check whether the move fails completely due to move-specific requirements.
   def pbMoveFailed?(user, targets); return false; end
   # Checks whether the move will be ineffective against the target.
@@ -131,8 +131,7 @@ class Battle::Move
   end
 
   def pbMoveFailedAromaVeil?(user, target, showMessage = true)
-    return false if @battle.moldBreaker
-    if target.hasActiveAbility?(:AROMAVEIL)
+    if target.hasActiveAbility?(:AROMAVEIL) && !target.beingMoldBroken?
       if showMessage
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -146,7 +145,7 @@ class Battle::Move
       return true
     end
     target.allAllies.each do |b|
-      next if !b.hasActiveAbility?(:AROMAVEIL)
+      next if !b.hasActiveAbility?(:AROMAVEIL) || b.beingMoldBroken?
       if showMessage
         @battle.pbShowAbilitySplash(b)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -162,9 +161,10 @@ class Battle::Move
     return false
   end
 
-  #=============================================================================
-  # Weaken the damage dealt (doesn't actually change a battler's HP)
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Weaken the damage dealt (doesn't actually change a battler's HP).
+  #-----------------------------------------------------------------------------
+
   def pbCheckDamageAbsorption(user, target)
     # Substitute will take the damage
     if target.effects[PBEffects::Substitute] > 0 && !ignoresSubstitute?(user) &&
@@ -173,13 +173,13 @@ class Battle::Move
       return
     end
     # Ice Face will take the damage
-    if !@battle.moldBreaker && target.isSpecies?(:EISCUE) &&
+    if !target.beingMoldBroken? && target.isSpecies?(:EISCUE) &&
        target.form == 0 && target.ability == :ICEFACE && physicalMove?
       target.damageState.iceFace = true
       return
     end
     # Disguise will take the damage
-    if !@battle.moldBreaker && target.isSpecies?(:MIMIKYU) &&
+    if !target.beingMoldBroken? && target.isSpecies?(:MIMIKYU) &&
        target.form == 0 && target.ability == :DISGUISE
       target.damageState.disguise = true
       return
@@ -206,23 +206,21 @@ class Battle::Move
       elsif target.effects[PBEffects::Endure]
         target.damageState.endured = true
         damage -= 1
-      elsif damage == target.totalhp
-        if target.hasActiveAbility?(:STURDY) && !@battle.moldBreaker
-          target.damageState.sturdy = true
+      elsif target.hasActiveAbility?(:STURDY) && !target.beingMoldBroken? && target.hp == target.totalhp
+        target.damageState.sturdy = true
+        damage -= 1
+      elsif target.hasActiveItem?(:FOCUSSASH) && target.hp == target.totalhp
+        target.damageState.focusSash = true
+        damage -= 1
+      elsif target.hasActiveItem?(:FOCUSBAND) && @battle.pbRandom(100) < 10
+        target.damageState.focusBand = true
+        damage -= 1
+      elsif Settings::AFFECTION_EFFECTS && @battle.internalBattle &&
+            target.pbOwnedByPlayer? && !target.mega?
+        chance = [0, 0, 0, 10, 15, 25][target.affection_level]
+        if chance > 0 && @battle.pbRandom(100) < chance
+          target.damageState.affection_endured = true
           damage -= 1
-        elsif target.hasActiveItem?(:FOCUSSASH) && target.hp == target.totalhp
-          target.damageState.focusSash = true
-          damage -= 1
-        elsif target.hasActiveItem?(:FOCUSBAND) && @battle.pbRandom(100) < 10
-          target.damageState.focusBand = true
-          damage -= 1
-        elsif Settings::AFFECTION_EFFECTS && @battle.internalBattle &&
-              target.pbOwnedByPlayer? && !target.mega?
-          chance = [0, 0, 0, 10, 15, 25][target.affection_level]
-          if chance > 0 && @battle.pbRandom(100) < chance
-            target.damageState.affection_endured = true
-            damage -= 1
-          end
         end
       end
     end
@@ -231,9 +229,10 @@ class Battle::Move
     target.damageState.totalHPLost += damage
   end
 
-  #=============================================================================
-  # Change the target's HP by the amount calculated above
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Change the target's HP by the amount calculated above.
+  #-----------------------------------------------------------------------------
+
   def pbInflictHPDamage(target)
     if target.damageState.substitute
       target.effects[PBEffects::Substitute] -= target.damageState.hpLost
@@ -242,9 +241,10 @@ class Battle::Move
     end
   end
 
-  #=============================================================================
-  # Animate the damage dealt, including lowering the HP
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Animate the damage dealt, including lowering the HP.
+  #-----------------------------------------------------------------------------
+
   # Animate being damaged and losing HP (by a move)
   def pbAnimateHitAndHPLost(user, targets)
     # Animate allies first, then foes
@@ -277,9 +277,10 @@ class Battle::Move
     end
   end
 
-  #=============================================================================
-  # Messages upon being hit
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Messages upon being hit.
+  #-----------------------------------------------------------------------------
+
   def pbEffectivenessMessage(user, target, numTargets = 1)
     return if self.is_a?(Battle::Move::FixedDamageMove)
     return if target.damageState.disguise || target.damageState.iceFace
@@ -304,10 +305,8 @@ class Battle::Move
       @battle.pbDisplay(_INTL("El sustituto recibió el daño por {1}!", target.pbThis(true)))
     end
     if target.damageState.critical
-      if $game_temp.party_critical_hits_dealt &&
-         $game_temp.party_critical_hits_dealt[user.pokemonIndex] &&
-         user.pbOwnedByPlayer?
-        $game_temp.party_critical_hits_dealt[user.pokemonIndex] += 1
+      if user.pokemon.isSpecies?(:FARFETCHD) && user.pokemon.form == 1
+        user.pokemon.evolution_counter += 1
       end
       if target.damageState.affection_critical
         if numTargets > 1
@@ -389,6 +388,10 @@ class Battle::Move
         target.effects[PBEffects::MirrorCoat]       = damage
         target.effects[PBEffects::MirrorCoatTarget] = user.index
       end
+      if target.opposes?(user)
+        target.lastHPLostFromFoe = damage                # For Metal Burst
+        target.lastFoeAttacker.push(user.pokemonIndex)   # For Metal Burst
+      end
     end
     if target.effects[PBEffects::Bide] > 0
       target.effects[PBEffects::BideDamage] += damage
@@ -399,15 +402,8 @@ class Battle::Move
     target.tookMoveDamageThisRound = true if damage > 0 && !target.damageState.substitute   # For Focus Punch
     target.tookDamageThisRound = true if damage > 0   # For Assurance
     target.lastAttacker.push(user.index)              # For Revenge
-    if target.opposes?(user)
-      target.lastHPLostFromFoe = damage               # For Metal Burst
-      target.lastFoeAttacker.push(user.index)         # For Metal Burst
-    end
-    if $game_temp.party_direct_damage_taken &&
-       $game_temp.party_direct_damage_taken[target.pokemonIndex] &&
-       target.pbOwnedByPlayer?
-      $game_temp.party_direct_damage_taken[target.pokemonIndex] += damage
+    if target.pokemon.isSpecies?(:YAMASK) && target.pokemon.form == 1
+      target.pokemon.evolution_counter += damage
     end
   end
 end
-

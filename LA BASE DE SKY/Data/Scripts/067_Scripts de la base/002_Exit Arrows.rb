@@ -12,7 +12,7 @@ class Game_Player < Game_Character
  # Run when the player turns.
  # The default version of this method is empty, so replacing it outright
  # like this is fine. You may want to double check, just in case, however.
- def pbCheckEventTriggerAfterTurning
+ def check_event_trigger_after_turning
    pxCheckExitArrows
  end
 end

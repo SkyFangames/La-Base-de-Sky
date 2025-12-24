@@ -5,7 +5,7 @@ class Battle
   def pbGainExp
     # Play wild victory music if it's the end of the battle (has to be here)
     @scene.pbWildBattleSuccess if wildBattle? && pbAllFainted?(1) && !pbAllFainted?(0)
-    return if !@internalBattle || !@expGain
+    return if !@internalBattle || @rules[:no_exp_gain]
     # Go through each battler in turn to find the Pokémon that participated in
     # battle against it, and award those Pokémon Exp/EVs
     expAll = $player.has_exp_all || $bag.has?(:EXPALL)
@@ -25,7 +25,7 @@ class Battle
       if !expAll
         eachInTeam(0, 0) do |pkmn, i|
           next if !pkmn.able?
-          next if !pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE
+          next if !pkmn.hasItem?(:EXPSHARE) && initialItem(0, i) != :EXPSHARE
           expShare.push(i)
         end
       end
@@ -69,7 +69,7 @@ class Battle
     GameData::Stat.each_main { |s| evTotal += pkmn.ev[s.id] }
     # Modify EV yield based on pkmn's held item
     if !Battle::ItemEffects.triggerEVGainModifier(pkmn.item, pkmn, evYield)
-      Battle::ItemEffects.triggerEVGainModifier(@initialItems[0][idxParty], pkmn, evYield)
+      Battle::ItemEffects.triggerEVGainModifier(initialItem(0, idxParty), pkmn, evYield)
     end
     # Double EV gain because of Pokérus
     if pkmn.pokerusStage >= 1   # Infected or cured
@@ -154,7 +154,7 @@ class Battle
     # Modify Exp gain based on pkmn's held item
     i = Battle::ItemEffects.triggerExpGainModifier(pkmn.item, pkmn, exp)
     if i < 0
-      i = Battle::ItemEffects.triggerExpGainModifier(@initialItems[0][idxParty], pkmn, exp)
+      i = Battle::ItemEffects.triggerExpGainModifier(initialItem(0, idxParty), pkmn, exp)
     end
     exp = i if i >= 0
     # Boost Exp gained with high affection
@@ -274,4 +274,3 @@ class Battle
     end
   end
 end
-

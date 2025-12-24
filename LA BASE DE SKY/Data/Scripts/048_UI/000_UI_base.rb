@@ -14,12 +14,22 @@ module UI
       :female  => [Color.new(248, 56, 32), Color.new(224, 152, 144)]
     }
     TEXT_COLOR_THEMES = {}   # Extra color themes to be defined in child classes
+    DEFAULT_TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
+      :default => [Color.new(88, 88, 80), Color.new(168, 184, 184)],   # Base and shadow colour
+      :black   => [Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      :white   => [Color.new(248, 248, 248), Color.new(40, 40, 40)],
+      :gray    => [Color.new(88, 88, 80), Color.new(168, 184, 184)],
+      :male    => [Color.new(24, 112, 216), Color.new(136, 168, 208)],
+      :female  => [Color.new(248, 56, 32), Color.new(224, 152, 144)]
+    }
+    TEXT_COLOR_THEMES = {}   # Extra color themes to be defined in child classes
 
     def add_overlay(overlay, overlay_width = -1, overlay_height = -1)
       overlay_width = Graphics.width if overlay_width < 0
       overlay_height = Graphics.height if overlay_height < 0
       @sprites[overlay] = BitmapSprite.new(overlay_width, overlay_height, @viewport)
       @sprites[overlay].z = 1000
+      DEFAULT_TEXT_COLOR_THEMES.each_pair { |key, values| @sprites[overlay].add_text_theme(key, *values) }
       DEFAULT_TEXT_COLOR_THEMES.each_pair { |key, values| @sprites[overlay].add_text_theme(key, *values) }
       self.class::TEXT_COLOR_THEMES.each_pair { |key, values| @sprites[overlay].add_text_theme(key, *values) }
       pbSetSystemFont(@sprites[overlay].bitmap)
@@ -335,6 +345,8 @@ module UI
     def initialize
       @sub_mode = :none
       @viewports = []
+      @sub_mode = :none
+      @viewports = []
       @bitmaps = {}
       @sprites = {}
       initialize_viewport
@@ -601,10 +613,10 @@ module UI
       return ret
     end
 
-    def show_menu(text, options, index = 0, cmd_side: :right)
+    def show_menu(text, options, index = 0, align: :horizontal, cmd_side: :right)
       old_letter_by_letter = @sprites[:speech_box].letterbyletter
       @sprites[:speech_box].letterbyletter = false
-      ret = show_choice_message(text, options, index, align: :horizontal, cmd_side: cmd_side)
+      ret = show_choice_message(text, options, index, align: align, cmd_side: cmd_side)
       @sprites[:speech_box].letterbyletter = old_letter_by_letter
       return ret
     end
@@ -637,7 +649,7 @@ module UI
       return ret
     end
 
-    # TODO: Rewrite this.
+    # TODO: Rewrite this. Include align: :vertical parameter.
     def choose_number(help_text, maximum, init_value = 1)
       if maximum.is_a?(ChooseNumberParams)
         return pbMessageChooseNumber(help_text, maximum) { update_visuals }
@@ -848,8 +860,8 @@ module UI
 
     alias pbShowCommands show_choice_message
 
-    def show_menu(text, options, initial_index = 0, cmd_side: :right)
-      return @visuals.show_menu(text, options, initial_index, cmd_side: cmd_side)
+    def show_menu(text, options, initial_index = 0, align: :horizontal, cmd_side: :right)
+      return @visuals.show_menu(text, options, initial_index, align: align, cmd_side: cmd_side)
     end
 
     def show_choice(options, initial_index = 0)

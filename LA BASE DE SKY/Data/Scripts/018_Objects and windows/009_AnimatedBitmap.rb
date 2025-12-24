@@ -48,14 +48,14 @@ class PngAnimatedBitmap
     if filename[/^\[(\d+)(?:,(\d+))?\]/]   # Starts with 1 or 2 numbers in brackets
       # File has a frame count
       numFrames = $1.to_i
-      duration  = $2.to_i
+      duration  = $2.to_i   # In 1/20ths of a second
       duration  = 5 if duration == 0
       raise "Recuento de frames no válido en #{filename}" if numFrames <= 0
       raise "Duración de frames no válida en #{filename}" if duration <= 0
       if panorama.width % numFrames != 0
         raise _INTL("El ancho del bitmap (#{panorama.width}) no es divisible por el recuento de fotogramas: #{filename}")
       end
-      @frame_duration = duration
+      @frame_duration = duration / 20.0
       subWidth = panorama.width / numFrames
       numFrames.times do |i|
         subBitmap = Bitmap.new(subWidth, panorama.height)
@@ -99,7 +99,7 @@ class PngAnimatedBitmap
 
   # Actually returns the total number of 1/20ths of a second this animation lasts.
   def totalFrames
-    return @frame_duration * @frames.length
+    return (@frame_duration * @frames.length * 20).to_i
   end
 
   def each
@@ -226,4 +226,3 @@ end
 def pbGetAnimation(name, hue = 0)
   return AnimatedBitmap.new("Graphics/Animations/" + name, hue).deanimate
 end
-

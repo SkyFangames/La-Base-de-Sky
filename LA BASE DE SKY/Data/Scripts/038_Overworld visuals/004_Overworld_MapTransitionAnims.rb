@@ -77,7 +77,7 @@ end
 #===============================================================================
 # Blacking out animation
 #===============================================================================
-def pbStartOver(gameover = false)
+def pbStartOver(game_over = false)
   if pbInBugContest?
     pbBugContestStartOver
     return
@@ -85,12 +85,15 @@ def pbStartOver(gameover = false)
   $stats.blacked_out_count += 1
   $player.heal_party
   if $PokemonGlobal.pokecenterMapId && $PokemonGlobal.pokecenterMapId >= 0
-    if gameover
-      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
+    if game_over
+      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
                 _INTL("Tras la derrota, fuiste corriendo a un Centro Pokémon."))
-    else
-      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
+    elsif $player.all_fainted?
+     pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
                 _INTL("Has salido corriendo hacia un Centro Pokémon para que tu equipo no sufra más daño..."))
+    else
+      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+                _INTL("Te fuiste corriendo al Centro Pokémon para reagruparte y reconsiderar tu estrategia de batalla..."))
     end
     pbCancelVehicles
     Followers.clear
@@ -112,12 +115,15 @@ def pbStartOver(gameover = false)
       $player.heal_party
       return
     end
-    if gameover
-      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
-                _INTL("Tras la derrota, volviste corriendo a casa."))
+    if game_over
+      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+                _INTL("Tras la derrota, fuiste corriendo a un Centro Pokémon."))
+    elsif $player.all_fainted?
+     pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
+                _INTL("Has salido corriendo hacia un Centro Pokémon para que tu equipo no sufra más daño..."))
     else
-      pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
-                _INTL("Has vuelto corriendo a casa para que tu equipo no sufra más daños..."))
+      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+                _INTL("Te fuiste corriendo al Centro Pokémon para reagruparte y reconsiderar tu estrategia de batalla..."))
     end
     if homedata
       pbCancelVehicles
@@ -136,4 +142,3 @@ def pbStartOver(gameover = false)
   end
   pbEraseEscapePoint
 end
-

@@ -65,20 +65,6 @@ class Battle::Battler
   end
 
   def pbFaint(showMessage = true)
-    
-    commanderMsg = nil
-    if @effects[PBEffects::Commander]
-      pairedBattler = @battle.battlers[@effects[PBEffects::Commander][0]]
-      batSprite = @battle.scene.sprites["pokemon_#{pairedBattler.index}"]
-      if isCommander?
-        order = [pbThis, pairedBattler.pbThis(true)]
-      else
-        order = [pairedBattler.pbThis, pbThis(true)]
-        pairedBattler.effects[PBEffects::Commander] = nil
-      end
-      commanderMsg = _INTL("¡{1} sale de la boca de {2}!", *order)
-    end
-    
     if !fainted?
       PBDebug.log("!!!***Can't faint with HP greater than 0")
       return
@@ -94,7 +80,7 @@ class Battle::Battler
     self.statusCount = 0
     # Lose happiness
     if @pokemon && @battle.internalBattle
-      badLoss = @battle.allOtherSideBattlers(@index).any? { |b| b.level >= self.level + 30 }
+      badLoss = @battle.allOtherSideBattlers(@index, true).any? { |b| b.level >= self.level + 30 }
       @pokemon.changeHappiness((badLoss) ? "faintbad" : "faint")
     end
     # Reset form
@@ -104,26 +90,17 @@ class Battle::Battler
     # Do other things
     @battle.pbClearChoice(@index)   # Reset choice
     pbOwnSide.effects[PBEffects::LastRoundFainted] = @battle.turnCount
-    if $game_temp.party_direct_damage_taken &&
-       $game_temp.party_direct_damage_taken[@pokemonIndex] &&
-       pbOwnedByPlayer?
-      $game_temp.party_direct_damage_taken[@pokemonIndex] = 0
-    end
+    @battle.sideFaintCounts[idxOwnSide] += 1
     # Check other battlers' abilities that trigger upon a battler fainting
     pbAbilitiesOnFainting
     # Check for end of primordial weather
     @battle.pbEndPrimordialWeather
-    
-    @battle.pbAddFaintedAlly(self)
-    if commanderMsg
-      @battle.pbDisplay(commanderMsg)
-      batSprite.visible = true
-    end
   end
 
-  #=============================================================================
-  # Move PP
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Move PP.
+  #-----------------------------------------------------------------------------
+
   def pbSetPP(move, pp)
     move.pp = pp
     # No need to care about @effects[PBEffects::Mimic], since Mimic can't copy
@@ -146,9 +123,10 @@ class Battle::Battler
     pbSetPP(move, move.pp - 1) if move.pp > 0
   end
 
-  #=============================================================================
-  # Change type
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Change type.
+  #-----------------------------------------------------------------------------
+
   def pbChangeTypes(newType)
     if newType.is_a?(Battle::Battler)
       newTypes = newType.pbTypes
@@ -163,13 +141,8 @@ class Battle::Battler
       @effects[PBEffects::ExtraType] = nil
     end
     @effects[PBEffects::BurnUp] = false
-    @effects[PBEffects::Roost]  = false
-    
-    #Paldea - Gen 9
     @effects[PBEffects::DoubleShock] = false
-    if abilityActive? && @proteanTrigger # Protean/Libero
-      Battle::AbilityEffects.triggerOnTypeChange(self.ability, self, newType)
-    end 
+    @effects[PBEffects::Roost]  = false
     @battle.scene.pbRefreshOne(self.index) if @battle.scene && !fainted?
   end
 
@@ -177,14 +150,15 @@ class Battle::Battler
     @types = @pokemon.types
     @effects[PBEffects::ExtraType] = nil
     @effects[PBEffects::BurnUp] = false
-    @effects[PBEffects::Roost]  = false
     @effects[PBEffects::DoubleShock] = false
+    @effects[PBEffects::Roost]  = false
     @battle.scene.pbRefreshOne(self.index) if @battle.scene && !fainted?
   end
 
-  #=============================================================================
-  # Forms
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Forms.
+  #-----------------------------------------------------------------------------
+
   def pbChangeForm(newForm, msg)
     return if fainted? || @effects[PBEffects::Transform] || @form == newForm
     oldForm = @form
@@ -219,9 +193,6 @@ class Battle::Battler
   end
 
   def pbCheckFormOnWeatherChange(ability_changed = false)
-    if hasActiveAbility?(:PROTOSYNTHESIS)
-      Battle::AbilityEffects.triggerOnSwitchIn(self.ability, self, @battle, false)
-    end
     return if fainted? || @effects[PBEffects::Transform]
     # Castform - Forecast
     if isSpecies?(:CASTFORM)
@@ -230,7 +201,7 @@ class Battle::Battler
         case effectiveWeather
         when :Sun, :HarshSun   then newForm = 1
         when :Rain, :HeavyRain then newForm = 2
-        when :Hail             then newForm = 3
+        when :Hail, :Snowstorm then newForm = 3
         end
         if @form != newForm
           @battle.pbShowAbilitySplash(self, true)
@@ -257,9 +228,13 @@ class Battle::Battler
     end
     # Eiscue - Ice Face
     if !ability_changed && isSpecies?(:EISCUE) && self.ability == :ICEFACE &&
-       @form == 1 && effectiveWeather == :Hail
+       @form == 1 && !@effects[PBEffects::Transform] &&
+       [:Hail, :Snowstorm].include?(effectiveWeather)
       @canRestoreIceFace = true   # Changed form at end of round
     end
+  end
+
+  def pbCheckFormOnTerrainChange(ability_changed = false)
   end
 
   # Checks the Pokémon's form and updates it if necessary. Used for when a
@@ -267,16 +242,6 @@ class Battle::Battler
   # (endOfRound=true).
   def pbCheckForm(endOfRound = false)
     return if fainted? || @effects[PBEffects::Transform]
-    
-    # Paldea - Gen 9
-    if isSpecies?(:TERAPAGOS) && self.ability == :TERASHIFT
-      if @form == 0
-        @battle.pbShowAbilitySplash(self, true)
-        @battle.pbHideAbilitySplash(self)
-        pbChangeForm(1, _INTL("¡{1} se transformó!", pbThis))
-      end
-    end
-    
     # Form changes upon entering battle and when the weather changes
     pbCheckFormOnWeatherChange if !endOfRound
     # Darmanitan - Zen Mode
@@ -332,10 +297,18 @@ class Battle::Battler
       pbChangeForm(newForm, _INTL("¡{1} se ha transformado en su Forma Completa!", pbThis))
     end
     # Morpeko - Hunger Switch
-    if isSpecies?(:MORPEKO) && hasActiveAbility?(:HUNGERSWITCH) && endOfRound
+    if isSpecies?(:MORPEKO) && !@effects[PBEffects::Transform] &&
+       hasActiveAbility?(:HUNGERSWITCH) && endOfRound
       # Intentionally doesn't show the ability splash or a message
       newForm = (@form + 1) % 2
       pbChangeForm(newForm, nil)
+    end
+    # Terapagos - Tera Shift
+    if isSpecies?(:TERAPAGOS) && !@effects[PBEffects::Transform] &&
+       self.ability == :TERASHIFT && @form == 0
+      @battle.pbShowAbilitySplash(self, true)
+      @battle.pbHideAbilitySplash(self)
+      pbChangeForm(1, _INTL("{1} transformed!", pbThis))
     end
   end
 
@@ -343,6 +316,7 @@ class Battle::Battler
     oldAbil = @ability_id
     @effects[PBEffects::Transform]        = true
     @effects[PBEffects::TransformSpecies] = target.species
+    self.form = target.form
     pbChangeTypes(target)
     self.ability = target.ability
     @attack  = target.attack
@@ -352,8 +326,8 @@ class Battle::Battler
     @speed   = target.speed
     GameData::Stat.each_battle { |s| @stages[s.id] = target.stages[s.id] }
     if Settings::NEW_CRITICAL_HIT_RATE_MECHANICS
-      @effects[PBEffects::FocusEnergy] = target.effects[PBEffects::FocusEnergy]
-      @effects[PBEffects::LaserFocus]  = target.effects[PBEffects::LaserFocus]
+      setCriticalHitRate(target.criticalHitRate)
+      @effects[PBEffects::LaserFocus] = target.effects[PBEffects::LaserFocus]
     end
     @moves.clear
     target.moves.each_with_index do |m, i|
@@ -364,15 +338,11 @@ class Battle::Battler
     @effects[PBEffects::Disable]      = 0
     @effects[PBEffects::DisableMove]  = nil
     @effects[PBEffects::WeightChange] = target.effects[PBEffects::WeightChange]
+    @battle.hitsTakenCounts[idxOwnSide][pokemonIndex] = @battle.hitsTakenCounts[target.idxOwnSide][target.pokemonIndex]
     @battle.scene.pbRefreshOne(@index)
     @battle.pbDisplay(_INTL("¡{1} se ha transformado en {2}!", pbThis, target.pbThis(true)))
     pbOnLosingAbility(oldAbil)
-    
-    # Paldea Gen 9
-    rage_counter = @battle.rage_hit_count[@index & 1][@pokemonIndex]
-    rage_counter = @battle.pbRageHitCount(target)
   end
 
   def pbHyperMode; end
 end
-
