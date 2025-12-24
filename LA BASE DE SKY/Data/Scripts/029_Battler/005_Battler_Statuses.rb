@@ -9,11 +9,10 @@ class Battle::Battler
   #       "counts as having that status", which includes Comatose which can't be
   #       cured.
   def pbHasStatus?(checkStatus)
-    ret = false
-    ret = true if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, checkStatus)
-    return ret if ret
-    return true if @status == checkStatus || (checkStatus == :FROZEN && @status == :FROSTBITE && Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE)
-    return ret
+    if Battle::AbilityEffects.triggerStatusCheckNonIgnorable(self.ability, self, checkStatus)
+      return true
+    end
+    return @status == checkStatus
   end
 
   def pbHasAnyStatus?
@@ -77,8 +76,8 @@ class Battle::Battler
       end
     end
     # Uproar immunity
-    if newStatus == :SLEEP && !(hasActiveAbility?(:SOUNDPROOF) && !@battle.moldBreaker)
-      @battle.allBattlers.each do |b|
+    if newStatus == :SLEEP && !(hasActiveAbility?(:SOUNDPROOF) && !beingMoldBroken?)
+      @battle.allBattlers(true).each do |b|
         next if b.effects[PBEffects::Uproar] == 0
         @battle.pbDisplay(_INTL("¡El alboroto mantiene a {1} despierto!", pbThis(true))) if showMessages
         return false
@@ -112,17 +111,16 @@ class Battle::Battler
     immAlly = nil
     if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, newStatus)
       immuneByAbility = true
-    elsif self_inflicted || !@battle.moldBreaker
-      if abilityActive? && Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, newStatus)
+    elsif abilityActive? && (self_inflicted || !beingMoldBroken?) &&
+       Battle::AbilityEffects.triggerStatusImmunity(self.ability, self, newStatus)
+      immuneByAbility = true
+    else
+      allAllies.each do |b|
+        next if !b.abilityActive? || (!self_inflicted && b.beingMoldBroken?)
+        next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, newStatus)
         immuneByAbility = true
-      else
-        allAllies.each do |b|
-          next if !b.abilityActive?
-          next if !Battle::AbilityEffects.triggerStatusImmunityFromAlly(b.ability, self, newStatus)
-          immuneByAbility = true
-          immAlly = b
-          break
-        end
+        immAlly = b
+        break
       end
     end
     if immuneByAbility
@@ -283,6 +281,10 @@ class Battle::Battler
     PBDebug.log("[Status change] #{pbThis}'s sleep count is #{newStatusCount}") if newStatus == :SLEEP
     # Form change check
     pbCheckFormOnStatusChange
+    # Poison Puppeteer
+    if user&.abilityActive?
+      Battle::AbilityEffects.triggerOnDealingStatus(user.ability, user, self, newStatus)
+    end
     # Synchronize
     if abilityActive?
       Battle::AbilityEffects.triggerOnStatusInflicted(self.ability, self, user, newStatus)
@@ -317,7 +319,7 @@ class Battle::Battler
     if affectedByTerrain? && [:Electric, :Misty].include?(@battle.field.terrain)
       return false
     end
-    if !hasActiveAbility?(:SOUNDPROOF) && @battle.allBattlers.any? { |b| b.effects[PBEffects::Uproar] > 0 }
+    if !hasActiveAbility?(:SOUNDPROOF) && @battle.allBattlers(true).any? { |b| b.effects[PBEffects::Uproar] > 0 }
       return false
     end
     if Battle::AbilityEffects.triggerStatusImmunityNonIgnorable(self.ability, self, :SLEEP)
@@ -341,8 +343,8 @@ class Battle::Battler
     return true
   end
 
-  def pbSleep(msg = nil)
-    pbInflictStatus(:SLEEP, pbSleepDuration, msg)
+  def pbSleep(user = nil, msg = nil)
+    pbInflictStatus(:SLEEP, pbSleepDuration, msg, user)
   end
 
   def pbSleepSelf(msg = nil, duration = -1)
@@ -442,8 +444,8 @@ class Battle::Battler
     return pbCanInflictStatus?(:FROZEN, user, showMessages, move)
   end
 
-  def pbFreeze(msg = nil)
-    pbInflictStatus(:FROZEN, 0, msg)
+  def pbFreeze(user = nil, msg = nil)
+    pbInflictStatus(:FROZEN, 0, msg, user)
   end
 
   #=============================================================================
@@ -509,7 +511,7 @@ class Battle::Battler
       @battle.pbDisplay(_INTL("¡El campo de niebla ha protegido a {1}!", pbThis(true))) if showMessages
       return false
     end
-    if (selfInflicted || !@battle.moldBreaker) && hasActiveAbility?(:OWNTEMPO)
+    if (selfInflicted || !beingMoldBroken?) && hasActiveAbility?(:OWNTEMPO)
       if showMessages
         @battle.pbShowAbilitySplash(self)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -569,32 +571,30 @@ class Battle::Battler
       @battle.pbDisplay(_INTL("No afecta a {1}...", pbThis)) if showMessages
       return false
     end
-    if !@battle.moldBreaker
-      if hasActiveAbility?([:AROMAVEIL, :OBLIVIOUS])
+    if hasActiveAbility?([:AROMAVEIL, :OBLIVIOUS]) && !beingMoldBroken?
+      if showMessages
+        @battle.pbShowAbilitySplash(self)
+        if Battle::Scene::USE_ABILITY_SPLASH
+          @battle.pbDisplay(_INTL("No afecta a {1}...", pbThis))
+        else
+          @battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita el enamoramiento!", pbThis, abilityName))
+        end
+        @battle.pbHideAbilitySplash(self)
+      end
+      return false
+    else
+      allAllies.each do |b|
+        next if !b.hasActiveAbility?(:AROMAVEIL) || b.beingMoldBroken?
         if showMessages
-          @battle.pbShowAbilitySplash(self)
+          @battle.pbShowAbilitySplash(b)
           if Battle::Scene::USE_ABILITY_SPLASH
             @battle.pbDisplay(_INTL("No afecta a {1}...", pbThis))
           else
-            @battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita el enamoramiento!", pbThis, abilityName))
+            @battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita el enamoramiento!", b.pbThis, b.abilityName))
           end
-          @battle.pbHideAbilitySplash(self)
+          @battle.pbHideAbilitySplash(b)
         end
         return false
-      else
-        allAllies.each do |b|
-          next if !b.hasActiveAbility?(:AROMAVEIL)
-          if showMessages
-            @battle.pbShowAbilitySplash(b)
-            if Battle::Scene::USE_ABILITY_SPLASH
-              @battle.pbDisplay(_INTL("No afecta a {1}...", pbThis))
-            else
-              @battle.pbDisplay(_INTL("¡La habilidad {2} de {1} evita el enamoramiento!", b.pbThis, b.abilityName))
-            end
-            @battle.pbHideAbilitySplash(b)
-          end
-          return false
-        end
       end
     end
     return true
@@ -622,8 +622,7 @@ class Battle::Battler
   # Flinching
   #=============================================================================
   def pbFlinch(_user = nil)
-    return if hasActiveAbility?(:INNERFOCUS) && !@battle.moldBreaker
+    return if hasActiveAbility?(:INNERFOCUS) && !beingMoldBroken?
     @effects[PBEffects::Flinch] = true
   end
 end
-

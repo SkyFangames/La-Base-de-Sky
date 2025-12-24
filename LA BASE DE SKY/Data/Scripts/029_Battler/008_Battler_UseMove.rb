@@ -5,12 +5,11 @@ class Battle::Battler
   def pbProcessTurn(choice, tryFlee = true)
     return false if fainted?
     # Wild roaming Pokémon always flee if possible
-    if tryFlee && wild? &&
-       @battle.rules["alwaysflee"] && @battle.pbCanRun?(@index)
+    if tryFlee && wild? && @battle.rules[:roamer_flees] && @battle.pbCanRun?(@index)
       pbBeginTurn(choice)
       pbSEPlay("Battle flee")
       @battle.pbDisplay(_INTL("¡{1} ha huido del combate!", pbThis))
-      @battle.decision = 3
+      @battle.decision = Battle::Outcome::FLEE
       pbEndTurn(choice)
       return true
     end
@@ -35,7 +34,7 @@ class Battle::Battler
         end
       end
       pbBeginTurn(choice)
-      pbCancelMoves
+      pbCancelMoves(false)
       @lastRoundMoved = @battle.turnCount   # Done something this round
       return true
     end
@@ -48,7 +47,9 @@ class Battle::Battler
     end
     # Use the move
     PBDebug.log("[Use move] #{pbThis} (#{@index}) usó #{choice[2].name}")
+    @battle.clearStagesChangeRecords
     PBDebug.logonerr { pbUseMove(choice, choice[2] == @battle.struggle) }
+    @battle.checkStatChangeResponses
     @battle.pbJudge
     # Update priority order
     @battle.pbCalculatePriority if Settings::RECALCULATE_TURN_ORDER_AFTER_SPEED_CHANGES
@@ -65,6 +66,7 @@ class Battle::Battler
     @effects[PBEffects::Grudge]              = false
     @effects[PBEffects::MoveNext]            = false
     @effects[PBEffects::Quash]               = 0
+    @effects[PBEffects::Vulnerable]          = false
     # Encore's effect ends if the encored move is no longer available
     if @effects[PBEffects::Encore] > 0 && pbEncoredMoveIndex < 0
       @effects[PBEffects::Encore]     = 0
@@ -77,7 +79,7 @@ class Battle::Battler
   # Pursuit was used specially to intercept a switching foe.
   # Cancels the use of multi-turn moves and counters thereof. Note that Hyper
   # Beam's effect is NOT cancelled.
-  def pbCancelMoves(full_cancel = false)
+  def pbCancelMoves(move_failed = true, full_cancel = false)
     # Outragers get confused anyway if they are disrupted during their final
     # turn of using the move
     if @effects[PBEffects::Outrage] == 1 && pbCanConfuseSelf?(false) && !full_cancel
@@ -85,6 +87,9 @@ class Battle::Battler
     end
     # Cancel usage of most multi-turn moves
     @effects[PBEffects::TwoTurnAttack] = nil
+    @battle.allBattlers(true).each do |b|   # Other battlers no longer Sky Dropped by self
+      b.effects[PBEffects::SkyDrop] = -1 if b.effects[PBEffects::SkyDrop] == @index
+    end
     @effects[PBEffects::Rollout]       = 0
     @effects[PBEffects::Outrage]       = 0
     @effects[PBEffects::Uproar]        = 0
@@ -92,9 +97,10 @@ class Battle::Battler
     @currentMove = nil if @effects[PBEffects::HyperBeam] == 0
     # Reset counters for moves which increase them when used in succession
     @effects[PBEffects::FuryCutter] = 0
+    @effects[PBEffects::GigatonHammer] = false if move_failed
   end
 
-  def pbEndTurn(_choice)
+  def pbEndTurn(choice)
     @lastRoundMoved = @battle.turnCount   # Done something this round
     if !@effects[PBEffects::ChoiceBand] &&
        (hasActiveItem?([:CHOICEBAND, :CHOICESPECS, :CHOICESCARF]) ||
@@ -105,11 +111,16 @@ class Battle::Battler
         @effects[PBEffects::ChoiceBand] = @lastRegularMoveUsed
       end
     end
-    @effects[PBEffects::BeakBlast]   = false
-    @effects[PBEffects::Charge]      = 0 if @effects[PBEffects::Charge] == 1
+    @effects[PBEffects::BeakBlast] = false
+    if @effects[PBEffects::Charge] > 0
+      if Settings::MECHANICS_GENERATION < 9 || @lastMoveUsedType == :ELECTRIC ||
+         (choice[2] && choice[2].pbCalcType(self) == :ELECTRIC)
+        @effects[PBEffects::Charge] = 0 if @effects[PBEffects::Charge] == 1
+      end
+    end
     @effects[PBEffects::GemConsumed] = nil
-    @effects[PBEffects::ShellTrap]   = false
-    @battle.allBattlers.each { |b| b.pbContinualAbilityChecks }   # Trace, end primordial weathers
+    @effects[PBEffects::ShellTrap] = false
+    @battle.allBattlers(true).each { |b| b.pbContinualAbilityChecks }   # Trace, end primordial weathers
   end
 
   def pbConfusionDamage(msg)
@@ -129,10 +140,11 @@ class Battle::Battler
     pbItemHPHealCheck
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
   # Simple "use move" method, used when a move calls another move and for Future
-  # Sight's attack
-  #=============================================================================
+  # Sight's attack.
+  #-----------------------------------------------------------------------------
+
   def pbUseMoveSimple(moveID, target = -1, idxMove = -1, specialUsage = true)
     choice = []
     choice[0] = :UseMove   # "Use move"
@@ -148,9 +160,10 @@ class Battle::Battler
     pbUseMove(choice, specialUsage)
   end
 
-  #=============================================================================
-  # Master "use move" method
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Master "use move" method.
+  #-----------------------------------------------------------------------------
+
   def pbUseMove(choice, specialUsage = false)
     # NOTE: This is intentionally determined before a multi-turn attack can
     #       set specialUsage to true.
@@ -186,7 +199,7 @@ class Battle::Battler
         @lastRegularMoveTarget = -1
       end
       @battle.pbGainExp   # In case self is KO'd due to confusion
-      pbCancelMoves
+      pbCancelMoves(false)
       pbEndTurn(choice)
       return
     end
@@ -217,6 +230,7 @@ class Battle::Battler
     move.calcType = move.pbCalcType(self)
     # Start effect of Mold Breaker
     @battle.moldBreaker = hasMoldBreaker?
+    @battle.moldBreaker ||= hasActiveAbility?(:MYCELIUMMIGHT) && move.statusMove?
     # Remember that user chose a two-turn move
     if move.pbIsChargingTurn?(self)
       # Beginning the use of a two-turn attack
@@ -238,6 +252,12 @@ class Battle::Battler
     # Record move as having been used
     @lastMoveUsed     = move.id
     @lastMoveUsedType = move.calcType   # For Conversion 2
+    if @pokemon.isSpecies?(:PRIMEAPE) && @lastMoveUsed == :RAGEFIST
+      @pokemon.evolution_counter += 1
+    end
+    if @pokemon.isSpecies?(:STANTLER) && @lastMoveUsed == :PSYSHIELDBASH
+      @pokemon.evolution_counter += 1
+    end
     if !specialUsage
       @lastRegularMoveUsed   = move.id   # For Disable, Encore, Instruct, Mimic, Mirror Move, Sketch, Spite
       @lastRegularMoveTarget = choice[3]   # For Instruct (remembering original target is fine)
@@ -266,7 +286,7 @@ class Battle::Battler
         end
       end
     end
-    # Dazzling/Queenly Majesty make the move fail here
+    # Dazzling/Queenly Majesty/Armor Tail make the move fail here
     @battle.pbPriority(true).each do |b|
       next if !b || !b.abilityActive?
       if Battle::AbilityEffects.triggerMoveBlocking(b.ability, b, user, targets, move, @battle)
@@ -350,9 +370,9 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(user)
       user.pbChangeTypes(move.calcType)
       typeName = GameData::Type.get(move.calcType).name
-      @battle.pbDisplay(_INTL("¡{1} ha cambiado a tipo {2}!", user.pbThis, typeName))
-      @battle.pbHideAbilitySplash(user)
+      @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", user.pbThis, typeName))
       user.markAbilityUsedThisSwitchIn if Settings::MECHANICS_GENERATION >= 9
+      @battle.pbHideAbilitySplash(user)
       # NOTE: The GF games say that if Curse is used by a non-Ghost-type
       #       Pokémon which becomes Ghost-type because of Protean, it should
       #       target and curse itself. I think this is silly, so I'm making it
@@ -375,7 +395,7 @@ class Battle::Battler
       user.lastMoveFailed = true
     else   # We have targets, or move doesn't use targets
       # Reset whole damage state, perform various success checks (not accuracy)
-      @battle.allBattlers.each do |b|
+      @battle.allBattlers(true).each do |b|
         b.droppedBelowHalfHP = false
         b.droppedBelowThirdHP = false
         b.statsDropped = false
@@ -394,7 +414,7 @@ class Battle::Battler
             magicCoater = b.index
             b.effects[PBEffects::MagicCoat] = false
             break
-          elsif b.hasActiveAbility?(:MAGICBOUNCE) && !@battle.moldBreaker &&
+          elsif b.hasActiveAbility?(:MAGICBOUNCE) && !b.beingMoldBroken? &&
                 !b.effects[PBEffects::MagicBounce]
             magicBouncer = b.index
             b.effects[PBEffects::MagicBounce] = true
@@ -505,18 +525,19 @@ class Battle::Battler
       user.pbFaint if user.fainted?
       # External/general effects after all hits. Eject Button, Shell Bell, etc.
       pbEffectsAfterMove(user, targets, move, realNumHits)
-      @battle.allBattlers.each do |b|
+      @battle.allBattlers(true).each do |b|
         b.droppedBelowHalfHP = false
         b.droppedBelowThirdHP = false
         b.statsDropped = false
       end
     end
+    @battle.checkStatChangeResponses
     # End effect of Mold Breaker
     @battle.moldBreaker = false
     # Gain Exp
     @battle.pbGainExp
     # Battle Arena only - update skills
-    @battle.allBattlers.each { |b| @battle.successStates[b.index].updateSkill }
+    @battle.allBattlers(true).each { |b| @battle.successStates[b.index].updateSkill }
     # Shadow Pokémon triggering Hyper Mode
     pbHyperMode if @battle.choices[@index][0] != :None   # Not if self is replaced
     # End of move usage
@@ -533,11 +554,13 @@ class Battle::Battler
       b.effects[PBEffects::Instructed] = true
       if b.pbCanChooseMove?(b.moves[idxMove], false)
         PBDebug.logonerr do
+          @battle.clearStagesChangeRecords
           b.pbUseMoveSimple(b.lastMoveUsed, b.lastRegularMoveTarget, idxMove, false)
+          @battle.checkStatChangeResponses
         end
         b.lastRoundMoved = oldLastRoundMoved
         @battle.pbJudge
-        return if @battle.decision > 0
+        return if @battle.decided?
       end
       b.effects[PBEffects::Instructed] = false
     end
@@ -555,8 +578,11 @@ class Battle::Battler
         # NOTE: Petal Dance being used because of Dancer shouldn't lock the
         #       Dancer into using that move, and shouldn't contribute to its
         #       turn counter if it's already locked into Petal Dance.
+        # NOTE: ProtectRate shouldn't be reset because of Dancer using a
+        #       different move.
         oldOutrage = nextUser.effects[PBEffects::Outrage]
         nextUser.effects[PBEffects::Outrage] += 1 if nextUser.effects[PBEffects::Outrage] > 0
+        oldProtectRate = nextUser.effects[PBEffects::ProtectRate]
         oldCurrentMove = nextUser.currentMove
         preTarget = choice[3]
         preTarget = user.index if nextUser.opposes?(user) || !nextUser.opposes?(preTarget)
@@ -568,21 +594,25 @@ class Battle::Battler
         end
         nextUser.effects[PBEffects::Dancer] = true
         if nextUser.pbCanChooseMove?(move, false)
+          @battle.clearStagesChangeRecords
           PBDebug.logonerr { nextUser.pbUseMoveSimple(move.id, preTarget) }
+          @battle.checkStatChangeResponses
           nextUser.lastRoundMoved = oldLastRoundMoved
           nextUser.effects[PBEffects::Outrage] = oldOutrage
+          nextUser.effects[PBEffects::ProtectRate] = oldProtectRate
           nextUser.currentMove = oldCurrentMove
           @battle.pbJudge
-          return if @battle.decision > 0
+          return if @battle.decided?
         end
         nextUser.effects[PBEffects::Dancer] = false
       end
     end
   end
 
-  #=============================================================================
-  # Attack a single target
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+  # Attack a single target.
+  #-----------------------------------------------------------------------------
+
   def pbProcessMoveHit(move, user, targets, hitNum, skipAccuracyCheck)
     return false if user.fainted?
     # For two-turn attacks being used in a single turn
@@ -623,6 +653,11 @@ class Battle::Battler
     targets = move.pbDesignateTargetsForHit(targets, hitNum)   # For Dragon Darts
     targets.each { |b| b.damageState.resetPerHit }
     #---------------------------------------------------------------------------
+    # Trigger abilities before the hit (they can alter b.damageState.typeMod)
+    targets.each do |b|
+      next if !b.abilityActive?
+      Battle::AbilityEffects.triggerOnTargetedForHit(b.ability, user, b, move, hitNum, @battle)
+    end
     # Calculate damage to deal
     if move.pbDamagingMove?
       targets.each do |b|
@@ -636,6 +671,7 @@ class Battle::Battler
         move.pbCalcDamage(user, b, targets.length)   # Stored in damageState.calcDamage
         # Lessen damage dealt because of False Swipe/Endure/etc.
         move.pbReduceDamage(user, b)   # Stored in damageState.hpLost
+        @battle.hitsTakenCounts[b.idxOwnSide][b.pokemonIndex] += 1 if !b.damageState.substitute
       end
     end
     # Show move animation (for this hit)
@@ -710,7 +746,13 @@ class Battle::Battler
       move.pbEffectAgainstTarget(user, b)
     end
     move.pbEffectGeneral(user)
-    targets.each { |b| b.pbFaint if b&.fainted? }
+    targets.each do |b|
+      next if !b&.fainted?
+      b.pbFaint
+      if user.pokemon.isSpecies?(:BISHARP) && b.isSpecies?(:BISHARP) && b.item == :LEADERSCREST
+        user.pokemon.evolution_counter += 1
+      end
+    end
     user.pbFaint if user.fainted?
     # Additional effect
     if !user.hasActiveAbility?(:SHEERFORCE)
@@ -739,6 +781,7 @@ class Battle::Battler
     targets.each do |b|
       next if b.damageState.unaffected
       next if !b.damageState.berryWeakened
+      b.damageState.berryWeakened = false   # Weakening only applies for one hit
       @battle.pbDisplay(_INTL("¡{1} redujo el daño de {2}!", b.itemName, b.pbThis(true)))
       b.pbConsumeItem
     end
@@ -763,4 +806,3 @@ class Battle::Battler
     return true
   end
 end
-

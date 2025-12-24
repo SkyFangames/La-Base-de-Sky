@@ -14,7 +14,7 @@ MenuHandlers.add(:battle_debug_menu, :list_player_battlers, {
   "effect"      => proc { |battle|
     battlers = []
     cmds = []
-    battle.allSameSideBattlers.each do |b|
+    battle.allSameSideBattlers(0, true).each do |b|
       battlers.push(b)
       text = "[#{b.index}] #{b.name}"
       if b.pbOwnedByPlayer?
@@ -40,7 +40,7 @@ MenuHandlers.add(:battle_debug_menu, :list_foe_battlers, {
   "effect"      => proc { |battle|
     battlers = []
     cmds = []
-    battle.allOtherSideBattlers.each do |b|
+    battle.allOtherSideBattlers(0, true).each do |b|
       battlers.push(b)
       cmds.push("[#{b.index}] #{b.name}")
     end

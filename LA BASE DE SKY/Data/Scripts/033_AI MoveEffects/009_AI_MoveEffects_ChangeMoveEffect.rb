@@ -186,7 +186,7 @@ Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("EffectDependsOnEnvironme
 #===============================================================================
 Battle::AI::Handlers::MoveBasePower.add("HitsAllFoesAndPowersUpInPsychicTerrain",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 
@@ -374,7 +374,7 @@ Battle::AI::Handlers::MoveFailureCheck.add("PowerDependsOnUserStockpile",
 )
 Battle::AI::Handlers::MoveBasePower.add("PowerDependsOnUserStockpile",
   proc { |power, move, user, target, ai, battle|
-    next move.move.pbBaseDamage(power, user.battler, target.battler)
+    next move.move.pbBasePower(power, user.battler, target.battler)
   }
 )
 Battle::AI::Handlers::MoveEffectScore.add("PowerDependsOnUserStockpile",
@@ -626,76 +626,3 @@ Battle::AI::Handlers::MoveFailureAgainstTargetCheck.copy("ReplaceMoveThisBattleW
                                                          "ReplaceMoveWithTargetLastMoveUsed")
 Battle::AI::Handlers::MoveEffectScore.copy("ReplaceMoveThisBattleWithTargetLastMoveUsed",
                                            "ReplaceMoveWithTargetLastMoveUsed")
-
-#===============================================================================
-# Gigaton Hammer
-#===============================================================================
-Battle::AI::Handlers::MoveFailureCheck.add("CantSelectConsecutiveTurns",
-  proc { |move, user, ai, battle|
-    next true if user.effects[PBEffects::SuccessiveMove] == @id
-    next false
-  }
-)
-Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("CantSelectConsecutiveTurns",
-  proc { |score, move, user, target, ai, battle|
-    if user.battler.hasActiveItem?([:CHOICEBAND, :CHOICESPECS, :CHOICESCARF]) ||
-       user.battler.hasActiveAbility?(:GORILLATACTICS) || user.effects[PBEffects::Encore] > 0
-     score -= 40
-    end
-    next score
-  }
-)
-
-#===============================================================================
-# Doodle
-#===============================================================================
-Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("SetUserAlliesAbilityToTargetAbility",
-  proc { |move, user, target, ai, battle|
-    will_fail = true
-    battle.allSameSideBattlers(user.index).each do |b|
-      next if b.ability != target.ability && !b.unstoppableAbility? &&
-              b.has_active_item?(:ABILITYSHIELD)
-      will_fail = false
-      break
-    end
-    next true if will_fail
-    next move.move.pbFailsAgainstTarget?(user.battler, target.battler, false)
-  }
-)
-Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("SetUserAlliesAbilityToTargetAbility",
-  proc { |score, move, user, target, ai, battle|
-    ai.each_same_side_battler(user.side) do |b, i|
-      next if !b.ability_active?
-      old_ability_rating = b.wants_ability?(b.ability_id)
-      new_ability_rating = b.wants_ability?(target.ability_id)
-      if old_ability_rating > new_ability_rating
-        score += 5 * [old_ability_rating - new_ability_rating, 3].max
-      elsif old_ability_rating < new_ability_rating
-        score -= 5 * [new_ability_rating - old_ability_rating, 3].max
-      end
-    end
-    next score
-  }
-)
-
-#===============================================================================
-# Psychic Noise
-#===============================================================================
-Battle::AI::Handlers::MoveFailureAgainstTargetCheck.add("DisableTargetHealingMoves2Turns",
-  proc { |move, user, target, ai, battle|
-    next true if target.effects[PBEffects::HealBlock] > 0
-    next true if move.move.pbMoveFailedAromaVeil?(user.battler, target.battler, false)
-    next false
-  }
-)
-
-Battle::AI::Handlers::MoveEffectAgainstTargetScore.add("DisableTargetHealingMoves2Turns",
-  proc { |score, move, user, target, ai, battle|
-    # If the foe can heal themselves with a move or some held items
-    if target.check_for_move { |m| m.healingMove? } || target.has_active_item?(:LEFTOVERS) ||
-       (target.has_active_item?(:BLACKSLUDGE) && target.has_type?(:POISON))
-      score += 10
-    end
-    next score
-  }
-)

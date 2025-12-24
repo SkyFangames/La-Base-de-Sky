@@ -6,7 +6,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
   attr_reader :text
   attr_reader :baseColor
   attr_reader :shadowColor
-  # Letter-by-letter mode.  This mode is not supported in this class.
+  # Letter-by-letter mode. This mode is not supported in this class.
   attr_accessor :letterbyletter
 
   def text=(value)
@@ -30,9 +30,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
     pbSetSystemFont(self.contents)
     @text = text
     @letterbyletter = false # Not supported in this class
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     resizeToFit(text)
   end
 
@@ -88,9 +86,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
     oldshadowg = @shadowColor.green
     oldshadowb = @shadowColor.blue
     oldshadowa = @shadowColor.alpha
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     if oldbaser != @baseColor.red || oldbaseg != @baseColor.green ||
        oldbaseb != @baseColor.blue || oldbasea != @baseColor.alpha ||
        oldshadowr != @shadowColor.red || oldshadowg != @shadowColor.green ||
@@ -142,9 +138,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     self.contents = Bitmap.new(1, 1)
     pbSetSystemFont(self.contents)
     self.resizeToFit(text, Graphics.width)
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor          = colors[0]
-    @shadowColor        = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     self.text           = text
     @starting           = false
   end
@@ -250,7 +244,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     oldstarting = @starting
     @starting = true
     self.width  = (width < 0) ? Graphics.width : width
-    self.height = dims[1] + self.borderY
+    self.height = dims[1] + self.borderY + 2   # TEXT OFFSET
     @starting = oldstarting
     redrawText
   end
@@ -266,9 +260,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     oldshadowg = @shadowColor.green
     oldshadowb = @shadowColor.blue
     oldshadowa = @shadowColor.alpha
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     if redrawText &&
        (oldbaser != @baseColor.red || oldbaseg != @baseColor.green ||
        oldbaseb != @baseColor.blue || oldbasea != @baseColor.alpha ||
@@ -276,6 +268,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
        oldshadowb != @shadowColor.blue || oldshadowa != @shadowColor.alpha)
       setText(self.text)
     end
+    @pausesprite&.dispose
+    @pausesprite = nil
   end
 
   def setTextToFit(text, maxwidth = -1)
@@ -406,25 +400,26 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     return if !busy?
     return if @textchars[@curchar] == "\n"
     resume
-    visiblelines = (self.height - self.borderY) / @lineHeight
-    loop do
-      curcharSkip(true)
-      break if @curchar >= @fmtchars.length    # End of message
-      if @textchars[@curchar] == "\1"          # Pause message
+    if curcharSkip(true)
+      visiblelines = (self.height - self.borderY) / @lineHeight
+      if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+        @scroll_timer_start = System.uptime
+      elsif @textchars[@curchar] == "\1"
         @pausing = true if @curchar < @numtextchars - 1
         self.startPause
         refresh
-        break
       end
-      break if @textchars[@curchar] != "\n"    # Skip past newlines only
-      break if @linesdrawn >= visiblelines - 1   # No more empty lines to continue to
-      @linesdrawn += 1
     end
   end
 
   def allocPause
     return if @pausesprite
-    @pausesprite = AnimatedSprite.create("Graphics/UI/pause_arrow", 4, 3)
+    arrow_filename = "Graphics/Windowskins/pause_arrow"
+    if @windowskin_name
+      try_arrow_filename = "Graphics/Windowskins/#{File.basename(@windowskin_name, ".*")}_arrow"
+      arrow_filename = try_arrow_filename if pbResolveBitmap(try_arrow_filename)
+    end
+    @pausesprite = AnimatedSprite.create(arrow_filename, 4, 3)
     @pausesprite.z       = 100000
     @pausesprite.visible = false
   end
@@ -533,6 +528,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     delta_t = time_now - @display_last_updated
     @display_last_updated = time_now
     visiblelines = (self.height - self.borderY) / @lineHeight
+    @lastchar = -1 if !@lastchar
     show_more_characters = false
     # Pauses and new lines
     if @textchars[@curchar] == "\1"   # Waiting
@@ -554,7 +550,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
           show_more_characters = true
         end
       else   # New line but the next line can be shown without scrolling to it
-        @linesdrawn += 1
+        @linesdrawn += 1 if @lastchar < @curchar
         show_more_characters = true
       end
     elsif @curchar <= @numtextchars   # Displaying more text
@@ -566,6 +562,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
       @scroll_timer_start = nil
       @linesdrawn = 0
     end
+    @lastchar = @curchar
     # Keep displaying more text
     if show_more_characters
       @display_timer += delta_t
@@ -612,8 +609,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
       ret = true
       @curchar += 1
       break if @textchars[@curchar] == "\n" ||   # newline
-               @textchars[@curchar] == "\1" ||   # pause
-               @textchars[@curchar] == "\2" ||   # letter-by-letter break
+               @textchars[@curchar] == "\1" ||   # pause: "\!"
+               @textchars[@curchar] == "\2" ||   # letter-by-letter break: "\wt[]", "\wtnp[]", "\.", "\|"
                @textchars[@curchar].nil?
     end
     return ret
@@ -636,9 +633,7 @@ class Window_InputNumberPokemon < SpriteWindow_Base
     super(0, 0, 32, 32)
     self.width = (digits_max * 24) + 8 + self.borderX
     self.height = 32 + self.borderY
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     @index = digits_max - 1
     self.active = true
     refresh
@@ -901,7 +896,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::QUICK_UP)
+      elsif Input.repeat?(Input::JUMPUP) || (defined?(Input::QUICK_UP) && Input.repeat?(Input::QUICK_UP))
         if @index > 0
           oldindex = @index
           @index = [self.index - self.page_item_max, 0].max
@@ -911,7 +906,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::QUICK_DOWN)
+      elsif Input.repeat?(Input::JUMPDOWN) || (defined?(Input::QUICK_DOWN) && Input.repeat?(Input::QUICK_DOWN))
         if @index < @item_max - 1
           oldindex = @index
           @index = [self.index + self.page_item_max, @item_max - 1].min
@@ -1069,9 +1064,7 @@ class Window_DrawableCommand < SpriteWindow_SelectableEx
       RPG::Cache.retain("Graphics/UI/sel_arrow")
     end
     @index = 0
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
   end
 
@@ -1119,9 +1112,7 @@ class Window_DrawableCommand < SpriteWindow_SelectableEx
   def setSkin(skin)
     super(skin)
     privRefresh(true)
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
   end
 
   def drawCursor(index, rect)
@@ -1174,9 +1165,7 @@ class Window_CommandPokemon < Window_DrawableCommand
     self.height = dims[1]
     @commands = commands
     self.active = true
-    colors = getDefaultTextColors(self.windowskin)
-    self.baseColor = colors[0]
-    self.shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
     @starting = false
   end
@@ -1270,9 +1259,7 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
     self.height = dims[1]
     @commands = commands
     self.active = true
-    colors = getDefaultTextColors(self.windowskin)
-    self.baseColor = colors[0]
-    self.shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
     @starting = false
   end
@@ -1395,8 +1382,8 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
       pbDrawShadowText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
                        rect.width, rect.height, @commands[index], self.baseColor, self.shadowColor)
     else
-      chars = getFormattedText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
-                               rect.width, rect.height, @commands[index], rect.height, true, true)
+      chars = getFormattedText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0) + 2,   # TEXT OFFSET
+                               rect.width, rect.height, @commands[index], rect.height, true, true, false, self)
       drawFormattedChars(self.contents, chars)
     end
   end
@@ -1407,4 +1394,3 @@ end
 #===============================================================================
 class Window_AdvancedCommandPokemonEx < Window_AdvancedCommandPokemon
 end
-

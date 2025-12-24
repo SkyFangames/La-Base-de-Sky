@@ -24,7 +24,7 @@ if Settings::SHOW_PARTY_BALL
         path = Settings::POKEMON_UI_GRAPHICS_PATH + "Party Ball/#{ball}"
         ball_sel   = pbResolveBitmap(path + "_sel") ? "#{ball}_sel"   : "sel"
         ball_desel = pbResolveBitmap(path)          ? "#{ball}_desel" : "desel"
-        @ballsprite.changeBitmap((self.selected) ? ball_sel : ball_desel)
+        @ballsprite.change_bitmap((self.selected) ? ball_sel : ball_desel)
       end
     end
   end

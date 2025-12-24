@@ -17,11 +17,20 @@ end
 #===============================================================================
 # Making roaming Pokémon roam around.
 #===============================================================================
+def each_active_roamer(ignore_caught = true)
+  Settings::ROAMING_SPECIES.each_with_index do |roamer, i|
+    next if !GameData::Species.exists?(roamer[:species])
+    next if roamer[:game_switch] && roamer[:game_switch] > 0 && !$game_switches[roamer[:game_switch]]
+    next if ignore_caught && $PokemonGlobal.roamPokemon[i] == true   # Has been caught
+    yield roamer, i
+  end
+end
+
 # Resets all roaming Pokemon that were defeated without having been caught.
 def pbResetAllRoamers
   return if !$PokemonGlobal.roamPokemon
   $PokemonGlobal.roamPokemon.length.times do |i|
-    next if $PokemonGlobal.roamPokemon[i] != true || !$PokemonGlobal.roamPokemonCaught[i]
+    next if $PokemonGlobal.roamPokemon[i] != true || $PokemonGlobal.roamPokemonCaught[i]
     $PokemonGlobal.roamPokemon[i] = nil
   end
 end
@@ -81,10 +90,10 @@ def pbRoamPokemonOne(idxRoamer)
   return if !nextMaps
   nextMaps.each { |map| newMapChoices.push(map) }
   # Rarely, add a random possible map into the mix
-  newMapChoices.push(mapIDs[rand(mapIDs.length)]) if rand(32) == 0
+  newMapChoices.push(mapIDs.sample) if rand(32) == 0
   # Choose a random new map to roam to
   if newMapChoices.length > 0
-    $PokemonGlobal.roamPosition[idxRoamer] = newMapChoices[rand(newMapChoices.length)]
+    $PokemonGlobal.roamPosition[idxRoamer] = newMapChoices.sample
   end
 end
 
@@ -212,18 +221,17 @@ def pbRoamingPokemonBattle(pkmn, level = 1)
   setBattleRule("single")
   setBattleRule("roamerFlees")
   # Perform the battle
-  decision = WildBattle.start_core($PokemonGlobal.roamPokemon[idxRoamer])
+  outcome = WildBattle.start_core($PokemonGlobal.roamPokemon[idxRoamer])
   # Update Roaming Pokémon data based on result of battle
-  if [1, 4].include?(decision)   # Defeated or caught
+  if [Battle::Outcome::WIN, Battle::Outcome::CATCH].include?(outcome)   # Defeated or caught
     $PokemonGlobal.roamPokemon[idxRoamer]       = true
-    $PokemonGlobal.roamPokemonCaught[idxRoamer] = (decision == 4)
+    $PokemonGlobal.roamPokemonCaught[idxRoamer] = (outcome == Battle::Outcome::CATCH)
   end
   $PokemonGlobal.roamEncounter = nil
   $PokemonGlobal.roamedAlready = true
   $game_temp.roamer_index_for_encounter = nil
   # Used by the Poké Radar to update/break the chain
-  EventHandlers.trigger(:on_wild_battle_end, pkmn.species_data.id, pkmn.level, decision)
+  EventHandlers.trigger(:on_wild_battle_end, pkmn.species_data.id, pkmn.level, outcome)
   # Return false if the player lost or drew the battle, and true if any other result
-  return (decision != 2 && decision != 5)
+  return !Battle::Outcome.should_black_out?(outcome)
 end
-

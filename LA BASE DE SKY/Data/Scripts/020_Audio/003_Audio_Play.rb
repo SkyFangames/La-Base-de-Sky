@@ -277,3 +277,21 @@ def pbPlayCloseMenuSE
   end
 end
 
+def pbPokemonCryPlay(param, volume = nil, pitch = nil)
+  return if !param
+  param = pbResolveAudioFile(param, volume, pitch)
+  if param.name && param.name != ""
+    if $game_system
+      $game_system.pokemon_cry_play(param)
+      return
+    end
+    if (RPG.const_defined?(:SE) rescue false)
+      b = RPG::SE.new(param.name, param.volume, param.pitch)
+      if b.respond_to?("play")
+        b.play
+        return
+      end
+    end
+    Audio.se_play(canonicalize("Audio/SE/" + param.name), param.volume, param.pitch)
+  end
+end

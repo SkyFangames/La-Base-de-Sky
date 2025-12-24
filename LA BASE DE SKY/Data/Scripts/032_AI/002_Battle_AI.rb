@@ -6,36 +6,7 @@ class Battle::AI
   attr_reader :trainer
   attr_reader :battlers
   attr_reader :user, :target, :move
-  
-  GEN_9_BASE_ABILITY_RATINGS = {
-    9  => [:ORICHALCUMPULSE, :HADRONENGINE],
-    8  => [:THERMALEXCHANGE],
-    7  => [:EARTHEATER, :TOXICDEBRIS, :PROTOSYNTHESIS, :QUARKDRIVE, :SUPERSWEETSYRUP, :MINDSEYE],
-    6  => [:SUPREMEOVERLORD, :SEEDSOWER, :OPPORTUNIST],
-    5  => [:ARMORTAIL, :ROCKYPAYLOAD, :SHARPNESS, :LINGERINGAROMA, :CUDCHEW, 
-           :TOXICCHAIN, :POISONPUPPETEER],
-    4  => [:PURIFYINGSALT, :WELLBAKEDBODY, :ANGERSHELL, :ELECTROMORPHOSIS, :WINDPOWER],
-    3  => [:WINDRIDER, :HOSPITALITY,
-           :TABLETSOFRUIN, :SWORDOFRUIN, :VESSELOFRUIN, :BEADSOFRUIN
-          ],
-    1  => [:EMBODYASPECT, :EMBODYASPECT_1, :EMBODYASPECT_2, :EMBODYASPECT_3,
-           :TERASHIFT, :TERASHELL, :TERAFORMZERO
-          ]
 
-  }
-
-  GEN_9_BASE_ITEM_RATINGS = {
-    6  => [ :LEGENDPLATE, :BOOSTERENERGY,
-            # Legendary Orbs
-            :ADAMANTCRYSTAL, :LUSTROUSGLOBE, :GRISEOUSCORE,
-            # Ogerpon Masks
-            :WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK
-          ],
-    5  => [:BLANKPLATE, :PUNCHINGGLOVE, :LOADEDDICE, :FAIRYFEATHER],
-    3  => [:HOPOBERRY, :MIRRORHERB, :COVERTCLOAK],
-    2  => [:CLEARAMULET],
-  }
-  
   def initialize(battle)
     @battle = battle
   end
@@ -105,25 +76,6 @@ class Battle::AI
     set_up(idxBattler)
     return choose_best_replacement_pokemon(idxBattler, true)
   end
-  
-  #-----------------------------------------------------------------------------
-  # Used to allow an AI trainer to select a Pokemon in the party to revive.
-  #-----------------------------------------------------------------------------
-  def choose_best_revive_pokemon(idxBattler, party)
-    reserves = []
-    idxPartyStart, idxPartyEnd = @battle.pbTeamIndexRangeFromBattlerIndex(idxBattler)
-    party.each_with_index do |_p, i|
-      reserves.push([i, 100]) if !_p.egg? && _p.fainted?
-    end
-    return -1 if reserves.length == 0
-    # Rate each possible replacement Pokémon
-    reserves.each_with_index do |reserve, i|
-      reserves[i][1] = rate_replacement_pokemon(idxBattler, party[reserve[0]], reserve[1])
-    end
-    reserves.sort! { |a, b| b[1] <=> a[1] }   # Sort from highest to lowest rated
-    # Return the party index of the best rated replacement Pokémon
-    return reserves[0][0]
-  end
 end
 
 #===============================================================================
@@ -142,30 +94,32 @@ module Battle::AI::Handlers
   AbilityRanking                = AbilityHandlerHash.new
   ItemRanking                   = ItemHandlerHash.new
 
-  def self.move_will_fail?(function_code, *args)
+  module_function
+
+  def move_will_fail?(function_code, *args)
     return MoveFailureCheck.trigger(function_code, *args) || false
   end
 
-  def self.move_will_fail_against_target?(function_code, *args)
+  def move_will_fail_against_target?(function_code, *args)
     return MoveFailureAgainstTargetCheck.trigger(function_code, *args) || false
   end
 
-  def self.apply_move_effect_score(function_code, score, *args)
+  def apply_move_effect_score(function_code, score, *args)
     ret = MoveEffectScore.trigger(function_code, score, *args)
     return (ret.nil?) ? score : ret
   end
 
-  def self.apply_move_effect_against_target_score(function_code, score, *args)
+  def apply_move_effect_against_target_score(function_code, score, *args)
     ret = MoveEffectAgainstTargetScore.trigger(function_code, score, *args)
     return (ret.nil?) ? score : ret
   end
 
-  def self.get_base_power(function_code, power, *args)
+  def get_base_power(function_code, power, *args)
     ret = MoveBasePower.trigger(function_code, power, *args)
     return (ret.nil?) ? power : ret
   end
 
-  def self.apply_general_move_score_modifiers(score, *args)
+  def apply_general_move_score_modifiers(score, *args)
     GeneralMoveScore.each do |id, score_proc|
       new_score = score_proc.call(score, *args)
       score = new_score if new_score
@@ -173,7 +127,7 @@ module Battle::AI::Handlers
     return score
   end
 
-  def self.apply_general_move_against_target_score_modifiers(score, *args)
+  def apply_general_move_against_target_score_modifiers(score, *args)
     GeneralMoveAgainstTargetScore.each do |id, score_proc|
       new_score = score_proc.call(score, *args)
       score = new_score if new_score
@@ -181,7 +135,7 @@ module Battle::AI::Handlers
     return score
   end
 
-  def self.should_switch?(*args)
+  def should_switch?(*args)
     ret = false
     ShouldSwitch.each do |id, switch_proc|
       ret ||= switch_proc.call(*args)
@@ -190,7 +144,7 @@ module Battle::AI::Handlers
     return ret
   end
 
-  def self.should_not_switch?(*args)
+  def should_not_switch?(*args)
     ret = false
     ShouldNotSwitch.each do |id, switch_proc|
       ret ||= switch_proc.call(*args)
@@ -199,14 +153,13 @@ module Battle::AI::Handlers
     return ret
   end
 
-  def self.modify_ability_ranking(ability, score, *args)
+  def modify_ability_ranking(ability, score, *args)
     ret = AbilityRanking.trigger(ability, score, *args)
     return (ret.nil?) ? score : ret
   end
 
-  def self.modify_item_ranking(item, score, *args)
+  def modify_item_ranking(item, score, *args)
     ret = ItemRanking.trigger(item, score, *args)
     return (ret.nil?) ? score : ret
   end
 end
-

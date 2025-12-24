@@ -34,7 +34,7 @@ class SpriteWindow < Window
     @_windowskin
   end
 
-  # Flags used to preserve compatibility with RGSS/RGSS2's version of Window
+  # Flags used to preserve compatibility with RGSS/RGSS2's version of Window.
   module CompatBits
     CORRECT_Z          = 1
     EXPAND_BACK        = 2
@@ -467,7 +467,7 @@ class SpriteWindow < Window
     @sprites["cursor"].opacity = cursoropac
   end
 
-  def privRefresh(changeBitmap = false)
+  def privRefresh(change_bitmap = false)
     return if !self || self.disposed?
     backopac = self.back_opacity * self.opacity / 255
     contopac = self.contents_opacity
@@ -673,7 +673,7 @@ class SpriteWindow < Window
         @sprites["back"].y = @y + startY
       end
     end
-    if changeBitmap && @_windowskin && !@_windowskin.disposed?
+    if change_bitmap && @_windowskin && !@_windowskin.disposed?
       if @skinformat == 0
         @sprites["cursor"].x = @x + startX + @cursor_rect.x
         @sprites["cursor"].y = @y + startY + @cursor_rect.y
@@ -858,6 +858,7 @@ class SpriteWindow_Base < SpriteWindow
     @customskin = nil
     resolvedName = pbResolveBitmap(skin)
     return if nil_or_empty?(resolvedName)
+    @windowskin_name = skin
     @customskin = AnimatedBitmap.new(resolvedName)
     RPG::Cache.retain(resolvedName)
     __setWindowskin(@customskin.bitmap)
@@ -923,4 +924,3 @@ class SpriteWindow_Base < SpriteWindow
     super
   end
 end
-

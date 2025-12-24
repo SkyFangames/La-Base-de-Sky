@@ -34,7 +34,9 @@ module MessageConfig
   @@smallFont       = nil
   @@narrowFont      = nil
 
-  def self.pbDefaultSystemFrame
+  module_function
+
+  def pbDefaultSystemFrame
     if $PokemonSystem
       path = File.join("Graphics", "Windowskins", Settings::MENU_WINDOWSKINS[$PokemonSystem.frame])
       return pbResolveBitmap(path) || ""
@@ -44,7 +46,7 @@ module MessageConfig
     end
   end
 
-  def self.pbDefaultSpeechFrame
+  def pbDefaultSpeechFrame
     if $PokemonSystem
       path = File.join("Graphics", "Windowskins", Settings::SPEECH_WINDOWSKINS[$PokemonSystem.textskin])
       return pbResolveBitmap(path) || ""
@@ -54,7 +56,7 @@ module MessageConfig
     end
   end
 
-  def self.pbDefaultWindowskin
+  def pbDefaultWindowskin
     skin = ($data_system) ? $data_system.windowskin_name : nil
     if skin && skin != ""
       path = File.join("Graphics", "Windowskins", skin)
@@ -67,7 +69,7 @@ module MessageConfig
     return skin || ""
   end
 
-  def self.pbGetSystemFrame
+  def pbGetSystemFrame
     if !@@systemFrame
       skin = MessageConfig.pbDefaultSystemFrame
       skin = MessageConfig.pbDefaultWindowskin if nil_or_empty?(skin)
@@ -76,7 +78,7 @@ module MessageConfig
     return @@systemFrame
   end
 
-  def self.pbGetSpeechFrame
+  def pbGetSpeechFrame
     if !@@defaultTextSkin
       skin = MessageConfig.pbDefaultSpeechFrame
       skin = MessageConfig.pbDefaultWindowskin if nil_or_empty?(skin)
@@ -85,32 +87,32 @@ module MessageConfig
     return @@defaultTextSkin
   end
 
-  def self.pbSetSystemFrame(value)
+  def pbSetSystemFrame(value)
     @@systemFrame = pbResolveBitmap(value) || ""
   end
 
-  def self.pbSetSpeechFrame(value)
+  def pbSetSpeechFrame(value)
     @@defaultTextSkin = pbResolveBitmap(value) || ""
   end
 
   #-----------------------------------------------------------------------------
 
-  def self.pbDefaultTextSpeed
+  def pbDefaultTextSpeed
     return ($PokemonSystem) ? pbSettingToTextSpeed($PokemonSystem.textspeed) : pbSettingToTextSpeed(nil)
   end
 
-  def self.pbGetTextSpeed
+  def pbGetTextSpeed
     @@textSpeed = pbDefaultTextSpeed if !@@textSpeed
     return @@textSpeed
   end
 
-  def self.pbSetTextSpeed(value)
+  def pbSetTextSpeed(value)
     @@textSpeed = value
   end
 
   # Text speed is the delay in seconds between two adjacent characters being
   # shown.
-  def self.pbSettingToTextSpeed(speed)
+  def pbSettingToTextSpeed(speed)
     case speed
     when 0 then return 4 / 80.0   # Slow
     when 1 then return 2 / 80.0   # Medium
@@ -122,49 +124,49 @@ module MessageConfig
 
   #-----------------------------------------------------------------------------
 
-  def self.pbDefaultSystemFontName
+  def pbDefaultSystemFontName
     return MessageConfig.pbTryFonts(FONT_NAME)
   end
 
-  def self.pbDefaultSmallFontName
+  def pbDefaultSmallFontName
     return MessageConfig.pbTryFonts(SMALL_FONT_NAME)
   end
 
-  def self.pbDefaultNarrowFontName
+  def pbDefaultNarrowFontName
     return MessageConfig.pbTryFonts(NARROW_FONT_NAME)
   end
 
-  def self.pbGetSystemFontName
+  def pbGetSystemFontName
     @@systemFont = pbDefaultSystemFontName if !@@systemFont
     return @@systemFont
   end
 
-  def self.pbGetSmallFontName
+  def pbGetSmallFontName
     @@smallFont = pbDefaultSmallFontName if !@@smallFont
     return @@smallFont
   end
 
-  def self.pbGetNarrowFontName
+  def pbGetNarrowFontName
     @@narrowFont = pbDefaultNarrowFontName if !@@narrowFont
     return @@narrowFont
   end
 
-  def self.pbSetSystemFontName(value)
+  def pbSetSystemFontName(value)
     @@systemFont = MessageConfig.pbTryFonts(value)
     @@systemFont = MessageConfig.pbDefaultSystemFontName if @@systemFont == ""
   end
 
-  def self.pbSetSmallFontName(value)
+  def pbSetSmallFontName(value)
     @@smallFont = MessageConfig.pbTryFonts(value)
     @@smallFont = MessageConfig.pbDefaultSmallFontName if @@smallFont == ""
   end
 
-  def self.pbSetNarrowFontName(value)
+  def pbSetNarrowFontName(value)
     @@narrowFont = MessageConfig.pbTryFonts(value)
     @@narrowFont = MessageConfig.pbDefaultNarrowFontName if @@narrowFont == ""
   end
 
-  def self.pbTryFonts(*args)
+  def pbTryFonts(*args)
     args.each do |a|
       next if !a
       case a
@@ -182,7 +184,7 @@ module MessageConfig
 end
 
 #===============================================================================
-# Position a window
+# Position a window.
 #===============================================================================
 def pbBottomRight(window)
   window.x = Graphics.width - window.width
@@ -284,7 +286,7 @@ def pbUpdateMsgWindowPos(msgwindow, event, eventChanged = false)
 end
 
 #===============================================================================
-# Determine the colour of a background
+# Determine the colour of a background.
 #===============================================================================
 def isDarkBackground(background, rect = nil)
   return true if !background || background.disposed?
@@ -335,11 +337,16 @@ def isDarkWindowskin(windowskin)
 end
 
 #===============================================================================
-# Determine which text colours to use based on the darkness of the background
+# Determine which text colours to use based on the darkness of the background.
 #===============================================================================
-def getSkinColor(windowskin, color, isDarkSkin, no_ctag = false)
-  if !windowskin || windowskin.disposed? ||
-     windowskin.width != 128 || windowskin.height != 128
+def get_text_colors_for_windowskin(windowskin, color, isDarkSkin, no_ctag = true)
+  if windowskin && !windowskin.disposed? && windowskin.width == 128 && windowskin.height == 128
+    color = 0 if color >= 32
+    x = 64 + ((color % 8) * 8)
+    y = 96 + ((color / 8) * 8)
+    pixel = windowskin.get_pixel(x, y)
+    return no_ctag ? [pixel, pixel.get_contrast_color] : shadowc3tag(pixel, pixel.get_contrast_color)
+  end
     # Base color, shadow color (these are reversed on dark windowskins)
     # Values in arrays are RGB numbers
     textcolors = [
@@ -370,31 +377,36 @@ def getSkinColor(windowskin, color, isDarkSkin, no_ctag = false)
     end
     # Special colour as listed above
     if isDarkSkin && color != 12   # Dark background, light text
-      return no_ctag ? [textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)]] : shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
-      # return shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
+      if textcolors[2 * (color - 1)].is_a?(Color)
+        if no_ctag
+          return textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)]
+        else
+          return shadowc3tag(textcolors[(2 * (color - 1)) + 1], textcolors[2 * (color - 1)])
+        end
+      else
+        if no_ctag
+          return Color.new(*textcolors[(2 * (color - 1)) + 1]), Color.new(*textcolors[2 * (color - 1)])
+        else
+          return shadowc3tag(Color.new(*textcolors[(2 * (color - 1)) + 1]), Color.new(*textcolors[2 * (color - 1)]))
+        end
+      end
     end
     # Light background, dark text
-    return no_ctag ? [textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1]] : shadowc3tag(textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1])
-    # return shadowc3tag(textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1])
-  else   # VX windowskin
-    color = 0 if color >= 32
-    x = 64 + ((color % 8) * 8)
-    y = 96 + ((color / 8) * 8)
-    pixel = windowskin.get_pixel(x, y)
-    return no_ctag ? [pixel, pixel.get_contrast_color] : shadowc3tag(pixel, pixel.get_contrast_color)
-    # return shadowc3tag(pixel, pixel.get_contrast_color)
-  end
+    if textcolors[2 * (color - 1)].is_a?(Color)
+      if no_ctag
+        return textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1]
+      end
+      return shadowc3tag(textcolors[2 * (color - 1)], textcolors[(2 * (color - 1)) + 1])
+    end
+    if no_ctag
+      return Color.new(*textcolors[2 * (color - 1)]), Color.new(*textcolors[(2 * (color - 1)) + 1])
+    end
+    return shadowc3tag(Color.new(*textcolors[2 * (color - 1)]), Color.new(*textcolors[(2 * (color - 1)) + 1]))
 end
 
 def getDefaultTextColors(windowskin)
-  if !windowskin || windowskin.disposed? ||
-     windowskin.width != 128 || windowskin.height != 128
-    if isDarkWindowskin(windowskin)
-      return [MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR]   # White
-    else
-      return [MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR]   # Dark gray
-    end
-  else   # VX windowskin
+  # VX windowskin
+  if windowskin && !windowskin.disposed? && windowskin.width == 128 && windowskin.height == 128
     color = windowskin.get_pixel(64, 96)
     shadow = nil
     isDark = (color.red + color.green + color.blue) / 3 < 128
@@ -403,12 +415,17 @@ def getDefaultTextColors(windowskin)
     else
       shadow = Color.new(color.red - 64, color.green - 64, color.blue - 64)
     end
-    return [color, shadow]
+    return color, shadow
   end
+  # No windowskin or not a VX windowskin
+  if isDarkWindowskin(windowskin)
+    return MessageConfig::LIGHT_TEXT_MAIN_COLOR, MessageConfig::LIGHT_TEXT_SHADOW_COLOR   # White
+  end
+  return MessageConfig::DARK_TEXT_MAIN_COLOR, MessageConfig::DARK_TEXT_SHADOW_COLOR   # Dark gray
 end
 
 #===============================================================================
-# Makes sure a bitmap exists
+# Makes sure a bitmap exists.
 #===============================================================================
 def pbDoEnsureBitmap(bitmap, dwidth, dheight)
   if !bitmap || bitmap.disposed? || bitmap.width < dwidth || bitmap.height < dheight
@@ -422,7 +439,7 @@ def pbDoEnsureBitmap(bitmap, dwidth, dheight)
 end
 
 #===============================================================================
-# Set a bitmap's font
+# Set a bitmap's font.
 #===============================================================================
 # Sets a bitmap's font to the system font.
 def pbSetSystemFont(bitmap)
@@ -452,7 +469,7 @@ def pbSetNarrowFont(bitmap)
 end
 
 #===============================================================================
-# Blend colours, set the colour of all bitmaps in a sprite hash
+# Blend colours, set the colour of all bitmaps in a sprite hash.
 #===============================================================================
 def pbAlphaBlend(dstColor, srcColor)
   r = (255 * (srcColor.red - dstColor.red) / 255) + dstColor.red
@@ -498,7 +515,7 @@ def pbSetSpritesToColor(sprites, color)
 end
 
 #===============================================================================
-# Update and dispose sprite hashes
+# Update and dispose sprite hashes.
 #===============================================================================
 def using(window)
   begin
@@ -558,7 +575,7 @@ def pbDisposed?(x)
 end
 
 #===============================================================================
-# Fades and window activations for sprite hashes
+# Fades and window activations for sprite hashes.
 #===============================================================================
 def pbPushFade
   $game_temp.fadestate = [$game_temp.fadestate + 1, 0].max if $game_temp
@@ -574,7 +591,7 @@ end
 
 # pbFadeOutIn(z) { block }
 # Fades out the screen before a block is run and fades it back in after the
-# block exits.  z indicates the z-coordinate of the viewport used for this effect
+# block exits. z indicates the z-coordinate of the viewport used for this effect.
 def pbFadeOutIn(z = 99999, nofadeout = false)
   duration = 0.4   # In seconds
   col = Color.new(0, 0, 0, 0)
@@ -748,7 +765,7 @@ def pbActivateWindow(sprites, key)
 end
 
 #===============================================================================
-# Create background planes for a sprite hash
+# Create background planes for a sprite hash.
 #===============================================================================
 # Adds a background to the sprite hash.
 # _planename_ is the hash key of the background.
@@ -831,4 +848,3 @@ if !defined?(_MAPINTL)
     return string
   end
 end
-

@@ -12,7 +12,7 @@ class Battle::Move::FleeFromBattle < Battle::Move
 
   def pbEffectGeneral(user)
     @battle.pbDisplay(_INTL("¡{1} ha huido del combate!", user.pbThis))
-    @battle.decision = 3   # Escaped
+    @battle.decision = Battle::Outcome::FLEE
   end
 end
 
@@ -27,11 +27,19 @@ class Battle::Move::SwitchOutUserStatusMove < Battle::Move
         @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
         return true
       end
-    elsif !@battle.pbCanChooseNonActive?(user.index)
+    elsif !@battle.pbCanChooseNonActive?(user.index) ||
+          user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
     return false
+  end
+
+  def pbEffectGeneral(user)
+    if user.wild?
+      @battle.pbDisplay(_INTL("¡{1} ha huido del combate!", user.pbThis))
+      @battle.decision = Battle::Outcome::FLEE
+    end
   end
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
@@ -48,13 +56,6 @@ class Battle::Move::SwitchOutUserStatusMove < Battle::Move
     @battle.pbOnBattlerEnteringBattle(user.index)
     switchedBattlers.push(user.index)
   end
-
-  def pbEffectGeneral(user)
-    if user.wild?
-      @battle.pbDisplay(_INTL("¡{1} ha huido del combate!", user.pbThis))
-      @battle.decision = 3   # Escaped
-    end
-  end
 end
 
 #===============================================================================
@@ -70,7 +71,8 @@ class Battle::Move::SwitchOutUserDamagingMove < Battle::Move
     end
     return if targetSwitched
     return if !@battle.pbCanChooseNonActive?(user.index)
-    @battle.pbDisplay(_INTL("¡{1} volvió con {2}!", user.pbThis,
+    return if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+    @battle.pbDisplay(_INTL("¡{1} ha vuelto con {2}!", user.pbThis,
                             @battle.pbGetOwnerName(user.index)))
     @battle.pbPursuit(user.index)
     return if user.fainted?
@@ -102,7 +104,8 @@ class Battle::Move::LowerTargetAtkSpAtk1SwitchOutUser < Battle::Move::TargetMult
     end
     return if switcher.fainted? || numHits == 0
     return if !@battle.pbCanChooseNonActive?(switcher.index)
-    @battle.pbDisplay(_INTL("¡{1} volvió con {2}!", switcher.pbThis,
+    return if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+    @battle.pbDisplay(_INTL("¡{1} ha vuelto con {2}!", switcher.pbThis,
                             @battle.pbGetOwnerName(switcher.index)))
     @battle.pbPursuit(switcher.index)
     return if switcher.fainted?
@@ -122,7 +125,8 @@ end
 #===============================================================================
 class Battle::Move::SwitchOutUserPassOnEffects < Battle::Move
   def pbMoveFailed?(user, targets)
-    if !@battle.pbCanChooseNonActive?(user.index)
+    if !@battle.pbCanChooseNonActive?(user.index) ||
+       user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
@@ -145,9 +149,105 @@ class Battle::Move::SwitchOutUserPassOnEffects < Battle::Move
 end
 
 #===============================================================================
-# When used against a sole wild Pokémon, makes target flee and ends the battle;
-# fails if target is a higher level than the user.
-# When used against a trainer's Pokémon, target switches out.
+# User turns 1/2 of max HP into a substitute (it has 1/4 of max HP). User
+# switches out. (Shed Tail)
+#===============================================================================
+class Battle::Move::UserMakeSubstituteSwitchOutUser < Battle::Move
+  def pbMoveFailed?(user, targets)
+    if user.effects[PBEffects::Substitute] > 0
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    @subLife = [(user.totalhp / 2.0).ceil, 1].max
+    if user.hp <= @subLife
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
+  end
+
+  def pbOnStartUse(user, targets)
+    user.pbReduceHP(@subLife, false, false)
+    user.pbItemHPHealCheck
+  end
+
+  def pbEffectGeneral(user)
+    user.effects[PBEffects::Trapping]     = 0
+    user.effects[PBEffects::TrappingMove] = nil
+    user.effects[PBEffects::Substitute]   = @subLife / 2
+    @battle.pbDisplay(_INTL("¡{1} ha hecho un sustituto!", user.pbThis))
+  end
+
+  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
+    return if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+    @battle.pbDisplay(_INTL("¡{1} ha vuelto con {2}!", user.pbThis,
+                            @battle.pbGetOwnerName(user.index)))
+    @battle.pbPursuit(user.index)
+    return if user.fainted?
+    newPkmn = @battle.pbGetReplacementPokemonIndex(user.index)   # Owner chooses
+    return if newPkmn < 0
+    user.effects[PBEffects::ShedTail] = true   # Ensures substitute isn't lost
+    @battle.pbRecallAndReplace(user.index, newPkmn)
+    user.effects[PBEffects::ShedTail] = false
+    @battle.pbClearChoice(user.index)   # Replacement Pokémon does nothing this round
+    @battle.moldBreaker = false
+    @battle.pbOnBattlerEnteringBattle(user.index)
+    switchedBattlers.push(user.index)
+  end
+end
+
+#===============================================================================
+# Starts snowstorm weather. User switches out. (Chilly Reception)
+#===============================================================================
+class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
+  def pbDisplayChargeMessage(user)
+    @battle.pbDisplay(_INTL("{1} is preparing to tell a chillingly bad joke!", user.pbThis))
+  end
+
+  def pbMoveFailed?(user, targets)
+    if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+      if !@battle.pbCanStartWeather?(:Snowstorm)
+        @battle.pbDisplay(_INTL("But it failed!"))
+        return true
+      end
+    end
+    return false
+  end
+
+  def pbEffectGeneral(user)
+    @battle.pbStartWeather(user, :Snowstorm, true, false)
+  end
+
+  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
+    return if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+    return if user.effects[PBEffects::Commanding] >= 0 || user.effects[PBEffects::CommandedBy] >= 0
+    @battle.pbDisplay(_INTL("{1} ha vuelto con {2}!", user.pbThis,
+                            @battle.pbGetOwnerName(user.index)))
+    @battle.pbPursuit(user.index)
+    return if user.fainted?
+    newPkmn = @battle.pbGetReplacementPokemonIndex(user.index)   # Owner chooses
+    return if newPkmn < 0
+    @battle.pbRecallAndReplace(user.index, newPkmn)
+    @battle.pbClearChoice(user.index)   # Replacement Pokémon does nothing this round
+    @battle.moldBreaker = false
+    @battle.pbOnBattlerEnteringBattle(user.index)
+    switchedBattlers.push(user.index)
+  end
+end
+
+#===============================================================================
+# When used in a wild Pokémon battle with only 1 Pokémon on each side, makes
+# target flee and ends the battle; fails if target is a higher level than the
+# user.
+# Otherwise, when used against a trainer's Pokémon, target switches out.
 # For status moves. (Roar, Whirlwind)
 #===============================================================================
 class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
@@ -155,34 +255,18 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
   def canMagicCoat?;            return true; end
 
   def pbFailsAgainstTarget?(user, target, show_message)
-    if target.isCommander?
-      @battle.pbDisplay(_INTL("¡Pero falló!")) if show_message
-      return true
-    end
-    if target.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !@battle.moldBreaker
-      if show_message
-        @battle.pbShowAbilitySplash(target)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡{1} se aferró!", target.pbThis))
-        else
-          @battle.pbDisplay(_INTL("¡{1} se aferró con {2}!", target.pbThis, target.abilityName))
-        end
-        @battle.pbHideAbilitySplash(target)
-      end
-      return true
-    end
-    if target.effects[PBEffects::Ingrain]
-      @battle.pbDisplay(_INTL("¡{1} se aferró con sus raíces!", target.pbThis)) if show_message
-      return true
-    end
-    if target.wild? && target.allAllies.length == 0 && @battle.canRun
+    return true if !target.canBeForcedOutOfBattle?(show_message)
+    if user.allAllies(true).length == 0 && target.allAllies(true).length == 0 &&
+       @battle.wildBattle? && !@battle.rules[:cannot_run]
       # End the battle
       if target.level > user.level
         @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
         return true
       end
-    elsif !target.wild?
-      # Switch target out
+    elsif target.wild?
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
+      return true
+    else
       canSwitch = false
       @battle.eachInTeamFromBattlerIndex(target.index) do |_pkmn, i|
         canSwitch = @battle.pbCanSwitchIn?(target.index, i)
@@ -192,15 +276,15 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
         @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
         return true
       end
-    else
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
-      return true
     end
     return false
   end
 
   def pbEffectAgainstTarget(user, target)
-    @battle.decision = 3 if target.wild?   # Escaped from battle
+    if user.allAllies(true).length == 0 && target.allAllies(true).length == 0 &&
+       @battle.wildBattle? && !@battle.rules[:cannot_run]
+      @battle.decision = Battle::Outcome::FLEE
+    end
   end
 
   def pbSwitchOutTargetEffect(user, targets, numHits, switched_battlers)
@@ -209,8 +293,7 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
     targets.each do |b|
       next if b.fainted? || b.damageState.unaffected
       next if b.wild?
-      next if b.effects[PBEffects::Ingrain]
-      next if b.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !@battle.moldBreaker
+      next if !b.canBeForcedOutOfBattle?(false)
       newPkmn = @battle.pbGetReplacementPokemonIndex(b.index, true)   # Random
       next if newPkmn < 0
       @battle.pbRecallAndReplace(b.index, newPkmn, true)
@@ -224,17 +307,19 @@ class Battle::Move::SwitchOutTargetStatusMove < Battle::Move
 end
 
 #===============================================================================
-# When used against a sole wild Pokémon, makes target flee and ends the battle;
-# fails if target is a higher level than the user.
-# When used against a trainer's Pokémon, target switches out.
+# When used in a wild Pokémon battle with only 1 Pokémon on each side, makes
+# target flee and ends the battle; fails if target is a higher level than the
+# user.
+# Otherwise, when used against a trainer's Pokémon, target switches out.
 # For damaging moves. (Circle Throw, Dragon Tail)
 #===============================================================================
 class Battle::Move::SwitchOutTargetDamagingMove < Battle::Move
   def pbEffectAgainstTarget(user, target)
-    if target.wild? && target.allAllies.length == 0 && @battle.canRun &&
+    if user.allAllies(true).length == 0 && target.allAllies(true).length == 0 &&
+       @battle.wildBattle? && !@battle.rules[:cannot_run] &&
        target.level <= user.level &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      @battle.decision = 3   # Escaped from battle
+      @battle.decision = Battle::Outcome::FLEE
     end
   end
 
@@ -244,9 +329,7 @@ class Battle::Move::SwitchOutTargetDamagingMove < Battle::Move
     targets.each do |b|
       next if b.fainted? || b.damageState.unaffected || b.damageState.substitute
       next if b.wild?
-      next if b.effects[PBEffects::Ingrain]
-      next if b.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !@battle.moldBreaker
-      next if b.isCommander?
+      next if !b.canBeForcedOutOfBattle?(false)
       newPkmn = @battle.pbGetReplacementPokemonIndex(b.index, true)   # Random
       next if newPkmn < 0
       @battle.pbRecallAndReplace(b.index, newPkmn, true)
@@ -269,7 +352,7 @@ class Battle::Move::BindTarget < Battle::Move
     return if target.effects[PBEffects::Trapping] > 0
     # Set trapping effect duration and info
     if user.hasActiveItem?(:GRIPCLAW)
-      target.effects[PBEffects::Trapping] = (Settings::MECHANICS_GENERATION >= 5) ? 8 : 6
+      target.effects[PBEffects::Trapping] = 8
     else
       target.effects[PBEffects::Trapping] = 5 + @battle.pbRandom(2)
     end
@@ -283,7 +366,7 @@ class Battle::Move::BindTarget < Battle::Move
     when :CLAMP
       msg = _INTL("¡{1} atenazó a {2}!", user.pbThis, target.pbThis(true))
     when :FIRESPIN
-      msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
+      msg = _INTL("¡{1} fue atrapado en el torbellino de fuego!", target.pbThis)
     when :INFESTATION
       msg = _INTL("¡{1} es presa del acoso de  {2}!", target.pbThis, user.pbThis(true))
     when :MAGMASTORM
@@ -434,9 +517,9 @@ class Battle::Move::PursueSwitchingFoe < Battle::Move
     return super
   end
 
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if @battle.switching
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if @battle.switching
+    return base_power
   end
 end
 
@@ -473,9 +556,9 @@ end
 # If an ally is about to use the same move, make it go next, ignoring priority.
 #===============================================================================
 class Battle::Move::UsedAfterAllyRoundWithDoublePower < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if user.pbOwnSide.effects[PBEffects::Round]
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if user.pbOwnSide.effects[PBEffects::Round]
+    return base_power
   end
 
   def pbEffectGeneral(user)
@@ -696,6 +779,7 @@ end
 class Battle::Move::LowerPPOfTargetLastMoveBy3 < Battle::Move
   def pbAdditionalEffect(user, target)
     return if target.fainted? || target.damageState.substitute
+    return if !target.affectedByAdditionalEffects?
     last_move = target.pbGetMoveWithID(target.lastRegularMoveUsed)
     return if !last_move || last_move.pp == 0 || last_move.total_pp <= 0
     reduction = [3, last_move.pp].min
@@ -885,7 +969,7 @@ class Battle::Move::DisableTargetStatusMoves < Battle::Move
     end
     return true if pbMoveFailedAromaVeil?(user, target, show_message)
     if Settings::MECHANICS_GENERATION >= 6 && target.hasActiveAbility?(:OBLIVIOUS) &&
-       !@battle.moldBreaker
+       !target.beingMoldBroken?
       if show_message
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -931,16 +1015,27 @@ class Battle::Move::DisableTargetHealingMoves < Battle::Move
 end
 
 #===============================================================================
-# Target cannot use sound-based moves for 2 more rounds. (Throat Chop)
+# For 2 rounds, disables the target's healing moves. (Psychic Noise)
+#===============================================================================
+class Battle::Move::StartTargetCannotHeal < Battle::Move
+  def pbAdditionalEffect(user, target)
+    return if !target.affectedByAdditionalEffects?
+    return if pbMoveFailedAromaVeil?(user, target, false)
+    return if target.effects[PBEffects::HealBlock] > 0
+    target.effects[PBEffects::HealBlock] = 2
+    @battle.pbDisplay(_INTL("¡{1} no puede curarse!", target.pbThis))
+    target.pbItemStatusCureCheck
+  end
+end
+
+#===============================================================================
+# Target cannot use sound-based moves for 2 rounds. (Throat Chop)
 #===============================================================================
 class Battle::Move::DisableTargetSoundMoves < Battle::Move
   def pbAdditionalEffect(user, target)
     return if target.fainted? || target.damageState.substitute
-    if target.effects[PBEffects::ThroatChop] == 0
-      @battle.pbDisplay(_INTL("¡El efecto de {1} previene a {2} de usar ciertos movimientos!",
-                              @name, target.pbThis(true)))
-      target.effects[PBEffects::ThroatChop] = 2
-    end
+    return if !target.affectedByAdditionalEffects?
+    target.effects[PBEffects::ThroatChop] = 2 if target.effects[PBEffects::ThroatChop] == 0
   end
 end
 
@@ -963,90 +1058,3 @@ class Battle::Move::DisableTargetMovesKnownByUser < Battle::Move
     @battle.pbDisplay(_INTL("¡{1} selló movimientos del oponente!", user.pbThis))
   end
 end
-
-#===============================================================================
-# Chilly Reception
-#===============================================================================
-# Starts hail weather, then switches out.
-#-------------------------------------------------------------------------------
-class Battle::Move::SwitchOutUserStartHailWeather < Battle::Move::StartHailWeather  
-  def pbDisplayUseMessage(user)
-    @battle.pbDisplayBrief(_INTL("¡{1} se está preparando para contar una broma que te dejará frío!", user.pbThis))
-    super
-  end
-  
-  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
-    return if user.fainted? || numHits == 0
-    return if !@battle.pbCanChooseNonActive?(user.index)
-    @battle.pbDisplay(_INTL("{1} volvió con {2}!", user.pbThis, @battle.pbGetOwnerName(user.index)))
-    @battle.pbPursuit(user.index)
-    return if user.fainted? 
-    newPkmn = @battle.pbGetReplacementPokemonIndex(user.index)
-    return if newPkmn < 0
-    @battle.pbRecallAndReplace(user.index, newPkmn)
-    @battle.pbClearChoice(user.index)
-    @battle.moldBreaker = false
-    @battle.pbOnBattlerEnteringBattle(user.index)
-    switchedBattlers.push(user.index)
-  end
-end
-
-#===============================================================================
-# Shed Tail
-#===============================================================================
-# User turns 1/4 of max HP into a substitute. Then, the user switches out. The
-# switched-in Pokemon retains the user's substitute.
-#-------------------------------------------------------------------------------
-class Battle::Move::UserMakeSubstituteSwitchOut < Battle::Move
-  def pbMoveFailed?(user, targets)
-    if user.effects[PBEffects::Substitute] > 0
-      @battle.pbDisplay(_INTL("¡{1} ya está detrás de un sustituto!", user.pbThis))
-      return true
-    end
-    if !@battle.pbCanChooseNonActive?(user.index)
-      @battle.pbDisplay(_INTL("¡Pero no puede cambiar de Pokémon!"))
-      return true
-    end
-    @lifeCost = [(user.totalhp / 2).ceil, 1].max
-    @subLife = [(@lifeCost / 4).ceil, 1].max
-    if user.hp <= @lifeCost
-      @battle.pbDisplay(_INTL("¡Pero no tiene suficientes PS para hacer un sustituto!"))
-      return true
-    end
-
-    return false
-  end
-  
-  def pbOnStartUse(user, targets)
-    user.pbReduceHP(@lifeCost, false, false)
-    user.pbItemHPHealCheck
-  end
-
-  def pbEffectGeneral(user)
-    user.effects[PBEffects::Trapping]     = 0
-    user.effects[PBEffects::TrappingMove] = nil
-    user.effects[PBEffects::Substitute]   = @subLife
-    @battle.pbDisplay(_INTL("¡{1} mudó su cola para crear un señuelo!", user.pbThis))
-  end
-
-  def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
-    return if user.fainted? || numHits == 0
-    return if !@battle.pbCanChooseNonActive?(user.index)
-    @battle.pbDisplay(_INTL("{1} volvió con {2}!", user.pbThis, @battle.pbGetOwnerName(user.index)))
-    @battle.pbPursuit(user.index)
-    oldSub = user.effects[PBEffects::Substitute]
-    return if user.fainted?
-    newPkmn = @battle.pbGetReplacementPokemonIndex(user.index)
-    return if newPkmn < 0
-    @battle.pbRecallAndReplace(user.index, newPkmn)
-    @battle.pbClearChoice(user.index)
-    @battle.moldBreaker = false
-    @battle.pbOnBattlerEnteringBattle(user.index)
-    switchedBattlers.push(user.index)
-    user.effects[PBEffects::Substitute] = oldSub
-  end
-end
-
-
-
-
