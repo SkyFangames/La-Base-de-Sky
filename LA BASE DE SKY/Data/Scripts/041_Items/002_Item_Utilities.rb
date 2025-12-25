@@ -540,10 +540,12 @@ def pbChangeLevel(pkmn, new_level, scene)
     pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
                            pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
     # Learn new moves upon level up
-    movelist = pkmn.getMoveList
-    movelist.each do |i|
-      next if i[0] <= old_level || i[0] > pkmn.level
-      pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+    if $PokemonSystem.skip_move_learning == 1
+      movelist = pkmn.getMoveList
+      movelist.each do |i|
+        next if i[0] <= old_level || i[0] > pkmn.level
+        pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+      end
     end
     # Check for evolution
     new_species = pkmn.check_evolution_on_level_up
@@ -635,10 +637,12 @@ def pbChangeExp(pkmn, new_exp, screen)
     pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
                            pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
     # Learn new moves upon level up
-    movelist = pkmn.getMoveList
-    movelist.each do |i|
-      next if i[0] <= old_level || i[0] > pkmn.level
-      pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+    if $PokemonSystem.skip_move_learning == 1
+      movelist = pkmn.getMoveList
+      movelist.each do |i|
+        next if i[0] <= old_level || i[0] > pkmn.level
+        pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+      end
     end
     # Check for evolution
     new_species = pkmn.check_evolution_on_level_up
