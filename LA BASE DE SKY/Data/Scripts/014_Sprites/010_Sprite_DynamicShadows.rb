@@ -36,7 +36,7 @@ class Sprite_Shadow < RPG::Sprite
       @character_name = @character.character_name
       @character_hue  = @character.character_hue
       @chbitmap&.dispose
-      if @tile_id >= 384
+      if @tile_id >= TilemapRenderer::TILESET_START_ID
         @chbitmap = pbGetTileBitmap(@character.map.tileset_name,
                                     @tile_id, @character.character_hue)
         self.src_rect.set(0, 0, 32, 32)
