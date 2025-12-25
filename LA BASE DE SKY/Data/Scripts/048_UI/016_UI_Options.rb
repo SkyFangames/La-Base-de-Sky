@@ -8,6 +8,7 @@ class PokemonSystem
   attr_accessor :battlestyle
   attr_accessor :sendtoboxes
   attr_accessor :givenicknames
+  attr_accessor :skip_move_learning
   attr_accessor :frame
   attr_accessor :textskin
   attr_accessor :screensize
@@ -20,20 +21,21 @@ class PokemonSystem
   attr_accessor :autotile_animations
 
   def initialize
-    @textspeed     = 2     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
-    @battlescene   = 0     # Battle effects (animations) (0=on, 1=off)
-    @battlestyle   = 0     # Battle style (0=switch, 1=set)
-    @sendtoboxes   = 0     # Send to Boxes (0=manual, 1=automatic)
-    @givenicknames = 0     # Give nicknames (0=give, 1=don't give)
-    @frame         = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
-    @textskin      = 0     # Speech frame
-    @screensize    = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
-    @language      = 0     # Language (see also Settings::LANGUAGES in script PokemonSystem)
-    @runstyle      = 0     # Default movement speed (0=walk, 1=run)
-    @bgmvolume     = 80    # Volume of background music and ME
-    @sevolume      = 100   # Volume of sound effects
-    @textinput     = 0     # Text input mode (0=cursor, 1=keyboard)
-    @vsync         = vsync_initial_value?
+    @textspeed           = 2  # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
+    @battlescene         = 0  # Battle effects (animations) (0=on, 1=off)
+    @battlestyle         = 0  # Battle style (0=switch, 1=set)
+    @sendtoboxes         = 0  # Send to Boxes (0=manual, 1=automatic)
+    @givenicknames       = 0  # Give nicknames (0=give, 1=don't give)
+    @skip_move_learning  = 1  # Skip move learning (0=Sí, 1=No)
+    @frame               = 0  # Default window frame (see also Settings::MENU_WINDOWSKINS)
+    @textskin            = 0  # Speech frame
+    @screensize          = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
+    @language            = 0     # Language (see also Settings::LANGUAGES in script PokemonSystem)
+    @runstyle            = 0     # Default movement speed (0=walk, 1=run)
+    @bgmvolume           = 80    # Volume of background music and ME
+    @sevolume            = 100   # Volume of sound effects
+    @textinput           = 0     # Text input mode (0=cursor, 1=keyboard)
+    @vsync               = vsync_initial_value?
     @autotile_animations = 0
   end
 
@@ -628,6 +630,18 @@ MenuHandlers.add(:options_menu, :give_nicknames, {
   "description" => _INTL("Elige si quieres que te pregunte qué mote ponerle a un Pokémon al conseguirlo."),
   "get_proc"    => proc { next $PokemonSystem.givenicknames },
   "set_proc"    => proc { |value, _scene| $PokemonSystem.givenicknames = value }
+})
+
+MenuHandlers.add(:options_menu, :skip_move_learning, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Skip Move Learning"),
+  "order"       => 81,
+  "type"        => :array,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "description" => _INTL("Elige si quieres saltarte el aprendizaje de movimientos al subir de nivel.\nPuedes aprenderlos más tarde desde el recordador de movimientos."),
+  "condition"   => proc { next Settings::ALLOW_SKIPPING_MOVE_LEARNING },
+  "get_proc"    => proc { next $PokemonSystem.skip_move_learning },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.skip_move_learning = value }
 })
 
 MenuHandlers.add(:options_menu, :speech_frame, {

@@ -232,6 +232,7 @@ class Battle
   # Learning a move
   #=============================================================================
   def pbLearnMove(idxParty, newMove)
+    return if $PokemonSystem.skip_move_learning == 0
     pkmn = pbParty(0)[idxParty]
     return if !pkmn
     pkmnName = pkmn.name

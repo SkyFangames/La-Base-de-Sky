@@ -32,7 +32,7 @@ UIHandlers.add(:summary, :page_info, {
   "name"      => "INFORMACIÓN",
   "suffix"    => "info",
   "order"     => 10,
-  "options"   => [:item, :nickname, :pokedex, :mark, :legacy],
+  "options"   => [:item] + (Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN ? [:nickname] : []) + [:pokedex, :mark, :legacy],
   "layout"    => proc { |pkmn, scene| scene.drawPageOne }
 })
 
@@ -41,7 +41,7 @@ UIHandlers.add(:summary, :page_memo, {
   "name"      => "NOTAS ENTREN.",
   "suffix"    => "memo",
   "order"     => 20,
-  "options"   => [:item, :nickname, :pokedex, :mark, :legacy],
+  "options"   => [:item] + (Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN ? [:nickname] : []) + [:pokedex, :mark, :legacy],
   "layout"    => proc { |pkmn, scene| scene.drawPageTwo }
 })
 
@@ -50,7 +50,7 @@ UIHandlers.add(:summary, :page_skills, {
   "name"      => "ESTADÍSTICAS",
   "suffix"    => "skills",
   "order"     => 30,
-  "options"   => [:item, :nickname, :pokedex, :mark, :legacy],
+  "options"   => [:item] + (Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN ? [:nickname] : []) + [:pokedex, :mark, :legacy],
   "layout"    => proc { |pkmn, scene| scene.drawPageThree }
 })
 
@@ -59,7 +59,7 @@ UIHandlers.add(:summary, :page_moves, {
   "name"      => "MOVIMIENTOS",
   "suffix"    => "moves",
   "order"     => 40,
-  "options"   => [:moves, :remember, :forget, :tms],
+  "options"   => [:moves] + (Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN ? [:remember, :forget] : []) + [:tms],
   "layout"    => proc { |pkmn, scene| scene.drawPageFour }
 })
 
