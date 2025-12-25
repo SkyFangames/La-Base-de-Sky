@@ -636,7 +636,11 @@ MenuHandlers.add(:options_menu, :skip_move_learning, {
   "page"        => :gameplay,
   "name"        => _INTL("Skip Move Learning"),
   "order"       => 81,
+<<<<<<< HEAD
   "type"        => EnumOption,
+=======
+  "type"        => :array,
+>>>>>>> ec01eb9ca53f184429caa44682246410a3f1a7fb
   "parameters"  => [_INTL("Sí"), _INTL("No")],
   "description" => _INTL("Elige si quieres saltarte el aprendizaje de movimientos al subir de nivel.\nPuedes aprenderlos más tarde desde el recordador de movimientos."),
   "condition"   => proc { next Settings::ALLOW_SKIPPING_MOVE_LEARNING },
