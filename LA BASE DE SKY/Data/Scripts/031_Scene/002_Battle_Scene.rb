@@ -77,6 +77,8 @@ class Battle::Scene
   # Updating and refreshing
   #=============================================================================
   def pbUpdate(cw = nil)
+    Graphics.update
+    Input.update
     pbGraphicsUpdate
     pbInputUpdate
     pbFrameUpdate(cw)
@@ -97,11 +99,9 @@ class Battle::Scene
     end
     # Update other graphics
     @sprites["battle_bg"].update if @sprites["battle_bg"].respond_to?("update")
-    Graphics.update
   end
 
   def pbInputUpdate
-    Input.update
     if Input.trigger?(Input::BACK) && @abortable && !@aborted
       @aborted = true
       @battle.pbAbort
@@ -170,97 +170,65 @@ class Battle::Scene
   def pbWaitMessage
     return if !@briefMessage
     pbShowWindow(MESSAGE_BOX)
-    cw = @sprites["messageWindow"]
-    timer_start = System.uptime
-    while System.uptime - timer_start < MESSAGE_PAUSE_TIME
-      pbUpdate(cw)
+    msg_window = @sprites["messageWindow"]
+    timer_start = System.real_uptime
+    while System.real_uptime - timer_start < MESSAGE_PAUSE_TIME
+      pbUpdate(msg_window)
     end
-    cw.text    = ""
-    cw.visible = false
+    msg_window.text    = ""
+    msg_window.visible = false
     @briefMessage = false
   end
 
   # NOTE: A regular message is displayed for 1 second after it fully appears (or
-  #       less if Back/Use is pressed). Disappears automatically after that time.
+  #       less if Back/Use is pressed). Disappears automatically after that
+  #       time. Meanwhile, a brief message doesn't wait for 1 second (or an
+  #       input) afterwards, and the message doesn't disappear.
   def pbDisplayMessage(msg, brief = false)
     pbWaitMessage
     pbShowWindow(MESSAGE_BOX)
-    cw = @sprites["messageWindow"]
-    cw.setText(msg)
+    msg_window = @sprites["messageWindow"]
+    # Display message
     PBDebug.log_message(msg)
-    yielded = false
-    timer_start = System.uptime
+    pbMessageDisplay(msg_window, msg, true, proc { |msg_wndw| }) { pbUpdate }
+    # Check if the message is brief
+    @briefMessage = true if brief   # Don't wait at all if a brief message
+    return if @briefMessage
+    # After message has finished displaying, wait for 1 second or input
+    timer_start = System.real_uptime
     loop do
-      pbUpdate(cw)
-      if !cw.busy?
-        if !yielded
-          yield if block_given?   # For playing SE as soon as the message is all shown
-          yielded = true
-        end
-        if brief
-          # NOTE: A brief message lingers on-screen while other things happen. A
-          #       regular message has to end before the game can continue.
-          @briefMessage = true
-          break
-        end
-        if System.uptime - timer_start >= MESSAGE_PAUSE_TIME   # Autoclose after 1 second
-          cw.text = ""
-          cw.visible = false
-          break
-        end
-      end
-      if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE) || @abortable
-        if cw.busy?
-          pbPlayDecisionSE if cw.pausing? && !@abortable
-          cw.skipAhead
-        elsif !@abortable
-          cw.text = ""
-          cw.visible = false
-          break
-        end
-      end
+      pbUpdate(msg_window)
+      break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+      break if System.real_uptime - timer_start >= MESSAGE_PAUSE_TIME   # Autoclose after 1 second
     end
+    msg_window.text = ""
+    msg_window.visible = false
   end
   alias pbDisplay pbDisplayMessage
 
   # NOTE: A paused message has the arrow in the bottom corner indicating there
   #       is another message immediately afterward. It is displayed for 3
-  #       seconds after it fully appears (or less if B/C is pressed) and
+  #       seconds after it fully appears (or less if Back/Use is pressed) and
   #       disappears automatically after that time, except at the end of battle.
   def pbDisplayPausedMessage(msg)
     pbWaitMessage
     pbShowWindow(MESSAGE_BOX)
-    cw = @sprites["messageWindow"]
-    cw.text = msg + "\1"
+    msg_window = @sprites["messageWindow"]
+    # Display message
     PBDebug.log_message(msg)
-    yielded = false
-    timer_start = System.uptime
+    pbMessageDisplay(msg_window, msg + "\1", true, proc { |msg_wndw| }) { pbUpdate }
+    # After message has finished displaying, wait for 3 seconds or input
+    timer_start = System.real_uptime
     loop do
-      pbUpdate(cw)
-      if !cw.busy?
-        if !yielded
-          yield if block_given?   # For playing SE as soon as the message is all shown
-          yielded = true
-        end
-        if !@battleEnd
-          if System.uptime - timer_start >= MESSAGE_PAUSE_TIME * 3   # Autoclose after 3 seconds
-            cw.text = ""
-            cw.visible = false
-            break
-          end
-        end
+      pbUpdate(msg_window)
+      if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
+        pbPlayDecisionSE
+        break
       end
-      if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE) || @abortable
-        if cw.busy?
-          pbPlayDecisionSE if cw.pausing? && !@abortable
-          cw.skipAhead
-        elsif !@abortable
-          cw.text = ""
-          pbPlayDecisionSE
-          break
-        end
-      end
+      break if !@battleEnd && System.real_uptime - timer_start >= MESSAGE_PAUSE_TIME * 3   # Autoclose after 3 seconds
     end
+    msg_window.text = ""
+    msg_window.visible = false
   end
 
   def pbDisplayConfirmMessage(msg)
@@ -270,40 +238,15 @@ class Battle::Scene
   def pbShowCommands(msg, commands, defaultValue)
     pbWaitMessage
     pbShowWindow(MESSAGE_BOX)
-    dw = @sprites["messageWindow"]
-    dw.text = msg
-    cw = Window_CommandPokemon.new(commands)
-    cw.height   = Graphics.height - dw.height if cw.height > Graphics.height - dw.height
-    cw.x        = Graphics.width - cw.width
-    cw.y        = Graphics.height - cw.height - dw.height
-    cw.z        = dw.z + 1
-    cw.index    = 0
-    cw.viewport = @viewport
+    msg_window = @sprites["messageWindow"]
+    # Display message
     PBDebug.log_message(msg)
-    loop do
-      cw.visible = (!dw.busy?)
-      pbUpdate(cw)
-      dw.update
-      if Input.trigger?(Input::BACK) && defaultValue >= 0
-        if dw.busy?
-          pbPlayDecisionSE if dw.pausing?
-          dw.resume
-        else
-          cw.dispose
-          dw.text = ""
-          return defaultValue
-        end
-      elsif Input.trigger?(Input::USE)
-        if dw.busy?
-          pbPlayDecisionSE if dw.pausing?
-          dw.resume
-        else
-          cw.dispose
-          dw.text = ""
-          return cw.index
-        end
-      end
-    end
+    ret = pbMessageDisplay(msg_window, msg, true, proc { |msg_wndw|
+      next Kernel.pbShowCommands(msg_wndw, commands, defaultValue + 1, 0) { pbGraphicsUpdate; pbFrameUpdate(msg_window) }
+    }) { pbGraphicsUpdate; pbFrameUpdate(msg_window) }
+    msg_window.text = ""
+    msg_window.visible = false
+    return ret
   end
 
   #=============================================================================
@@ -423,4 +366,3 @@ class Battle::Scene
     end
   end
 end
-

@@ -440,8 +440,8 @@ class Battle::Battler
   end
 
   def setCriticalHitRate(value)
-    return if criticalHitRate == value
-    old_value = criticalHitRate
+    return if @effects[PBEffects::FocusEnergy] && @effects[PBEffects::FocusEnergy] == value
+    old_value = @effects[PBEffects::FocusEnergy] || 0
     @effects[PBEffects::FocusEnergy] = value
     if @effects[PBEffects::FocusEnergy] > old_value
       @stagesChangeRecord[0][:CRITICAL_HIT] = value
