@@ -54,6 +54,19 @@ class String
   def numeric?
     return !self[/\A[+-]?\d+(?:\.\d+)?\Z/].nil?
   end
+
+  def format_number
+    return self if !numeric?
+    str = self.split(".")
+    tho_separator = '\1' + Translation.thousands_separator
+    str[0] = "0" if str[0].nil?
+    str[0] = str[0].reverse.gsub(/(\d{3})(?=\d)/, tho_separator).reverse
+    if str[1]
+      dec_separator = Translation.decimal_separator
+      return str[0] + dec_separator + str[1]
+    end
+    return str[0]
+  end
 end
 
 #===============================================================================
@@ -62,7 +75,7 @@ end
 class Numeric
   # Convierte un número en una cadena con formato 12.345.678.
   def to_s_formatted
-    return self.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
+    return self.to_s.format_number
   end
 
   def to_word
@@ -74,6 +87,35 @@ class Numeric
            _INTL("veinte")]
     return ret[self] if self.is_a?(Integer) && self >= 0 && self <= ret.length
     return self.to_s
+  end
+
+  def to_ordinal
+    ret = [_INTL("cero"), _INTL("primero"), _INTL("segundo"), _INTL("tercero"),
+          _INTL("cuarto"), _INTL("quinto"), _INTL("sexto"), _INTL("séptimo"),
+          _INTL("octavo"), _INTL("noveno"), _INTL("décimo"), _INTL("undécimo"),
+          _INTL("duodécimo"), _INTL("decimotercero"), _INTL("decimocuarto"), _INTL("decimoquinto"),
+          _INTL("decimosexto"), _INTL("decimoséptimo"), _INTL("decimoctavo"), _INTL("decimonoveno"),
+          _INTL("vigésimo")]
+    return ret[self] if self.is_a?(Integer) && self >= 0 && self <= ret.length - 1
+    return self.to_ord
+  end
+
+  # Returns "1st", "2nd", "3rd", etc.
+  def to_ord
+    return self.to_s if !self.is_a?(Integer)
+    ret = self.to_s
+    if ((self % 100) / 10) == 1   # 10-19
+      ret += "th"
+    elsif (self % 10) == 1
+      ret += "st"
+    elsif (self % 10) == 2
+      ret += "nd"
+    elsif (self % 10) == 3
+      ret += "rd"
+    else
+      ret += "th"
+    end
+    return ret
   end
 end
 
@@ -404,4 +446,3 @@ def lerp(start_val, end_val, duration, delta, now = nil)
   return end_val if delta >= duration
   return start_val + ((end_val - start_val) * delta / duration.to_f)
 end
-
