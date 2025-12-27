@@ -1,34 +1,38 @@
+#===============================================================================
 # Battle scene (the visuals of the battle)
+#===============================================================================
 class Battle::Scene
   attr_accessor :abortable   # For non-interactive battles, can quit immediately
   attr_reader   :viewport
   attr_reader   :sprites
 
-  USE_ABILITY_SPLASH   = (Settings::MECHANICS_GENERATION >= 5)
-  MESSAGE_PAUSE_TIME   = 1.0   # In seconds
+  USE_ABILITY_SPLASH            = (Settings::MECHANICS_GENERATION >= 5)
+  MESSAGE_PAUSE_TIME            = 1.0   # In seconds
   # Text colors
-  MESSAGE_BASE_COLOR   = Color.new(80, 80, 88)
-  MESSAGE_SHADOW_COLOR = Color.new(160, 160, 168)
+  MESSAGE_BASE_COLOR            = Color.new(80, 80, 88)
+  MESSAGE_SHADOW_COLOR          = Color.new(160, 160, 168)
+  MESSAGE_BASE_CRITICAL_COLOR   = Color.new(248, 96, 8)
+  MESSAGE_SHADOW_CRITICAL_COLOR = Color.new(248, 176, 128)
   # The number of party balls to show in each side's lineup.
-  NUM_BALLS            = Settings::MAX_PARTY_SIZE
+  NUM_BALLS                     = Settings::MAX_PARTY_SIZE
   # Centre bottom of the player's side base graphic
-  PLAYER_BASE_X        = 128
-  PLAYER_BASE_Y        = Settings::SCREEN_HEIGHT - 80
+  PLAYER_BASE_X                 = 128
+  PLAYER_BASE_Y                 = Settings::SCREEN_HEIGHT - 80
   # Centre middle of the foe's side base graphic
-  FOE_BASE_X           = Settings::SCREEN_WIDTH - 128
-  FOE_BASE_Y           = (Settings::SCREEN_HEIGHT * 3 / 4) - 112
+  FOE_BASE_X                    = Settings::SCREEN_WIDTH - 128
+  FOE_BASE_Y                    = (Settings::SCREEN_HEIGHT * 3 / 4) - 112
   # Default focal points of user and target in animations - do not change!
   # Is the centre middle of each sprite
-  FOCUSUSER_X          = 128
-  FOCUSUSER_Y          = 224
-  FOCUSTARGET_X        = 384
-  FOCUSTARGET_Y        = 96
+  FOCUSUSER_X                   = 128
+  FOCUSUSER_Y                   = 224
+  FOCUSTARGET_X                 = 384
+  FOCUSTARGET_Y                 = 96
   # Menu types
-  BLANK                = 0
-  MESSAGE_BOX          = 1
-  COMMAND_BOX          = 2
-  FIGHT_BOX            = 3
-  TARGET_BOX           = 4
+  BLANK                         = 0
+  MESSAGE_BOX                   = 1
+  COMMAND_BOX                   = 2
+  FIGHT_BOX                     = 3
+  TARGET_BOX                    = 4
 
   # Returns where the centre bottom of a battler's sprite should be, given its
   # index and the number of battlers on its side, assuming the battler has

@@ -308,17 +308,18 @@ class Battle::Move
       if user.pokemon.isSpecies?(:FARFETCHD) && user.pokemon.form == 1
         user.pokemon.evolution_counter += 1
       end
+      crit_color = Battle::Scene::MESSAGE_BASE_CRITICAL_COLOR.to_rgb24 + "," + Battle::Scene::MESSAGE_SHADOW_CRITICAL_COLOR.to_rgb24
       if target.damageState.affection_critical
         if numTargets > 1
-          @battle.pbDisplay(_INTL("{1} asestó un golpe crítico a {2} para impresionarte!",
-                                  user.pbThis, target.pbThis(true)))
+          @battle.pbDisplay(_INTL("{1} <c3={2}>asestó un golpe crítico</c3> a {3} para impresionarte!",
+                                  user.pbThis, crit_color, target.pbThis(true)))
         else
-          @battle.pbDisplay(_INTL("{1} asestó un golpe crítico para impresionarte!", user.pbThis))
+          @battle.pbDisplay(_INTL("{1} <c3={2}>asestó un golpe crítico para impresionarte!</c3>", user.pbThis, crit_color))
         end
       elsif numTargets > 1
-        @battle.pbDisplay(_INTL("¡{1} recibió un golpe crítico!", target.pbThis))
+        @battle.pbDisplay(_INTL("¡<c3={1}>{2} recibió un golpe crítico!</c3>", crit_color, target.pbThis(true)))
       else
-        @battle.pbDisplay(_INTL("¡Un golpe crítico!"))
+        @battle.pbDisplay(_INTL("<c3={1}>¡Un golpe crítico!</c3>", crit_color))
       end
     end
     # Effectiveness message, for moves with 1 hit
