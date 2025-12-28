@@ -175,8 +175,8 @@ class Battle::AI::AIMove
        target.has_active_ability?(:TERASHELL) && !target.being_mold_broken? &&
        target.hp == target.totalhp &&
        move.damagingMove? && !move.is_a?(Battle::Move::FixedDamageMove) &&
-       !Effectiveness.not_very_effective?(typeMod) && !Effectiveness.ineffective?(typeMod)
-      typeMod = Effectiveness::NOT_VERY_EFFECTIVE_MULTIPLIER
+       !Effectiveness.not_very_effective?(typemod) && !Effectiveness.ineffective?(typemod)
+      typemod = Effectiveness::NOT_VERY_EFFECTIVE_MULTIPLIER
     end
     multipliers[:final_damage_multiplier] *= typemod
   end
