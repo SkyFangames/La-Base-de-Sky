@@ -171,7 +171,7 @@ class Battle::AI::AIMove
     end
     # Type effectiveness
     typemod = target.effectiveness_of_type_against_battler(calc_type, user, @move)
-    if target.battler.is_species?(:TERAPAGOS) && target.battler.form == 1 &&
+    if target.battler.isSpecies?(:TERAPAGOS) && target.battler.form == 1 &&
        target.has_active_ability?(:TERASHELL) && !target.being_mold_broken? &&
        target.hp == target.totalhp &&
        move.damagingMove? && !move.is_a?(Battle::Move::FixedDamageMove) &&
