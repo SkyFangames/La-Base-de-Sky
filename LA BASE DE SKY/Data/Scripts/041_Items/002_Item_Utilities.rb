@@ -291,7 +291,7 @@ def pbUseItemOnPokemon(item, pkmn, scene)
       pbMessage(_INTL("{1} no puede aprender {2}.", pkmn.name, movename)) { scene.pbUpdate }
     else
       pbMessage("\\se[PC access]" + _INTL("Has encendido {1}.", itm.portion_name) + "\1") { scene.pbUpdate }
-      if pbConfirmMessage(_INTL("¿Quieres que {1} aprenda {2}?", movename, pkmn.name)) { scene.pbUpdate }
+      if pbConfirmMessage(_INTL("¿Quieres que {1} aprenda {2}?", pkmn.name, movename)) { scene.pbUpdate }
         if pbLearnMove(pkmn, machine, false, true) { scene.pbUpdate }
           $bag.remove(item) if itm.consumed_after_use?
           return true
