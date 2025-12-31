@@ -199,6 +199,9 @@ module GameData
     def is_mega_stone?;      return has_flag?("MegaStone"); end   # Does NOT include Red Orb/Blue Orb
     def is_scent?;           return has_flag?("Scent"); end
     def is_unlosable?;       return has_flag?("Unlosable"); end
+    def is_healing_item?;    return has_flag?("Healing"); end
+    def is_vitamin?;         return has_flag?("Vitamin"); end
+    def is_x_item?;          return has_flag?("XItem"); end
 
     def is_important?
       return true if is_key_item? || is_HM? || is_TM?
