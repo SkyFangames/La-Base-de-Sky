@@ -380,7 +380,7 @@ class SpritePositioner
         shiny = !shiny
         pbChangeSpecies(allspecies[cw.index][1], allspecies[cw.index][2], shiny)
         ret = true
-      elsif Input.triggerex?(:F)
+      elsif Input.triggerex?(:F) || Input.trigger?(Input::ACTION)
         # Search for a Pokémon by name using floating textbox
         current_index = cw.index
         on_input = lambda { |text, _char = ''|
