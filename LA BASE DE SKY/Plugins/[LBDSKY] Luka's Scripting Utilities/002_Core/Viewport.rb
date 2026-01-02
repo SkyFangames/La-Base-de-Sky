@@ -1,11 +1,30 @@
 #===============================================================================
-#  Extensions for the `Viewport` class
+#  Luka's Scripting Utilities
+#
+#  Core extensions for the `Viewport` class
 #===============================================================================
 class ::Viewport
+  # Allows viewport components to be animated easily
   include LUTS::Concerns::Animatable
-  #-----------------------------------------------------------------------------
-  #  returns an array of all sprites belonging to target viewport
-  #-----------------------------------------------------------------------------
+  # Allows viewport components to take blocks during instanciation
+  include LUTS::Concerns::BlockConstructor
+  # Allows viewport components to use float values for smooth calculations
+  include LUTS::Concerns::Floatable
+
+  # @return [Symbol]
+  attr_accessor :tag
+
+  # @param tag [Symbol]
+  # @return [Array<Viewport>]
+  def self.get_by_tag(tag)
+    [].tap do |array|
+      ObjectSpace.each_object(Viewport) do |viewport|
+        array << viewport if viewport.tag.eql?(tag)
+      end
+    end
+  end
+
+  # @return [Array<Sprite>] all sprites belonging to target viewport
   def sprites
     [].tap do |array|
       ObjectSpace.each_object(Sprite) do |sprite|
@@ -15,54 +34,74 @@ class ::Viewport
       end
     end
   end
-  #-----------------------------------------------------------------------------
-  #  flattens sprites in viewport into a single bitmap
-  #-----------------------------------------------------------------------------
-  def flatten(large: false)
-    bmp = Bitmap.new(width + (large ? width : 0), height + (large ? height : 0))
+
+  # Flattens sprites in viewport into a single bitmap
+  # @return [Bitmap]
+  def flatten
+    bmp = Bitmap.new(width, height)
     sprites.sort { |a, b| [a.z, a.__id__] <=> [b.z, b.__id__] }.each do |sprite|
       next unless sprite.bitmap
       next unless sprite.visible
-      next unless sprite.in_viewport?(large: large)
 
-      x = large ? sprite.apparent_x + width / 2 : sprite.apparent_x
-      y = large ? sprite.apparent_y + height / 2 : sprite.apparent_y
-      rect = Rect.new(x, y, sprite.apparent_width, sprite.apparent_height)
+      rect = Rect.new(sprite.apparent_x, sprite.apparent_y, sprite.apparent_width, sprite.apparent_height)
       bmp.stretch_blt(rect, sprite.bitmap, sprite.src_rect, sprite.opacity)
     end
-    return bmp
+
+    bmp
   end
-  #-----------------------------------------------------------------------------
-  #  removes any applied color
-  #-----------------------------------------------------------------------------
+
+  # Removes any applied color
   def reset_color
-    color = Color.new(0, 0, 0, 0)
+    self.color = Color.blank
   end
-  #-----------------------------------------------------------------------------
-  #  returns the viewport metrics
-  #-----------------------------------------------------------------------------
+
+  # @return [Integer]
   def width
     rect.width
   end
 
+  # @param val [Integer]
+  def width=(val)
+    rect.width = val
+  end
+
+  # @return [Integer]
   def height
     rect.height
   end
 
+  # @param val [Integer]
+  def height=(val)
+    rect.height = val
+  end
+
+  # @return [Integer]
   def x
     rect.x
   end
 
+  # @param val [Integer]
+  def x=(val)
+    rect.x = val
+  end
+
+  # @return [Integer]
   def y
     rect.y
   end
 
+  # @param val [Integer]
+  def y=(val)
+    rect.y = val
+  end
+
+  # @return [Integer] color alpha value
   def alpha
     color.alpha
   end
 
+  # @param val [Integer]
   def alpha=(val)
     color.alpha = val
   end
-  #-----------------------------------------------------------------------------
 end

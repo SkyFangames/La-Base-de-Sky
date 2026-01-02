@@ -1,12 +1,15 @@
 #===============================================================================
-#  Animation engine extensions
+#  Luka's Scripting Utilities
+#
+#  * Various object extensions
 #===============================================================================
 module LUTS
   module Concerns
+    #  Animation automation module.
+    #  Registers attribute values that will be used when calculating
+    #  the animation progress
     module Animatable
-      #-------------------------------------------------------------------------
-      #  animation automation
-      #-------------------------------------------------------------------------
+      #  @param options [Hash{Symbol => Numeric}]
       def animate(options)
         return if animating?
 
@@ -22,10 +25,12 @@ module LUTS
         Graphics.target_object_cache << self
       end
 
+      # @return [Hash{Symbol => Numeric}]
       def anim_target
         @anim_target ||= {}
       end
 
+      # @param duration [Integer] duration in frames (with a target FPS of 60)
       def play_target_animation(duration)
         # animates each property specified for object
         anim_target.each do |property, value|
@@ -36,20 +41,25 @@ module LUTS
           next unless k * (value.last - send(property)) > 0
 
           diff = value.last - value.first
-          anim_target[property][1] += (diff / duration.to_f).lerp
+          if duration.positive?
+            anim_target[property][1] += (diff / duration.to_f).lerp
+          else
+            anim_target[property][1] = value.last
+          end
           # increment values based on delta interpolation
           send("#{property}=", anim_target[property][1])
         end
       end
 
+      # Clear currently animating values
       def clear_anim_target
         anim_target.clear
       end
 
+      # @return [Boolean]
       def animating?
         !anim_target.empty?
       end
-      #-------------------------------------------------------------------------
     end
   end
 end

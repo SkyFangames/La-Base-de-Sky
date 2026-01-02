@@ -1,11 +1,12 @@
 #===============================================================================
-#  Extensions for the `Dir` class
+#  Luka's Scripting Utilities
+#
+#  Core extensions for the `Dir` class
 #===============================================================================
 class ::Dir
   class << self
-    #---------------------------------------------------------------------------
-    #  creates all the required directories for filename path
-    #---------------------------------------------------------------------------
+    # Creates all the required directories for filename path
+    # @param path [String]
     def create(path)
       return if path.nil? || path.empty?
       full = ''
@@ -21,30 +22,29 @@ class ::Dir
         end
       end
     end
-    #---------------------------------------------------------------------------
-    #  generates entire file/folder tree from a certain directory
-    #---------------------------------------------------------------------------
-    def all_dirs(dir)
+
+    # Generates entire file/folder tree from a certain directory
+    # @param path [String]
+    def all_dirs(path)
       # sets variables for starting
       dirs = [].tap do |dir_array|
-        get(dir, '*', true).each do |file|
+        get(path, '*', true).each do |file|
           # engages in recursion to read the entire folder tree
           dir_array << all_dirs(file) if safe?(file)
         end
       end
       # returns all found directories
-      dirs.empty? ? [dir] : (dirs + [dir])
+      dirs.empty? ? [path] : (dirs + [path])
     end
-    #---------------------------------------------------------------------------
-    #  deletes all the files in a directory and all the sub directories (allows for non-empty dirs)
-    #---------------------------------------------------------------------------
-    def delete_all(dir)
+
+    # Deletes all the files in a directory and all the sub directories (allows for non-empty dirs)
+    # @param path [String]
+    def delete_all(path)
       # delete all files in dir
-      all(dir).each { |f| File.delete(f) }
+      all(path).each { |f| File.delete(f) }
 
       # delete all dirs in dir
-      all_dirs(dir).each { |f| Dir.delete(f) }
+      all_dirs(path).each { |f| Dir.delete(f) }
     end
-    #---------------------------------------------------------------------------
   end
 end

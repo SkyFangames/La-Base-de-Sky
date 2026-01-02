@@ -1,25 +1,29 @@
 #===============================================================================
-#  Class used to render animated sprite from spritesheet (horizontal)
+#  Luka's Scripting Utilities
+#
+#  Sheet sprite class for new sprite engine
 #===============================================================================
 module Sprites
   class Sheet < Base
-    #-------------------------------------------------------------------------
+    # @return [Integer]
     attr_reader   :cur_frame
+    # @return [NUmeric]
     attr_accessor :speed
-    #-------------------------------------------------------------------------
-    #  class constructor
-    #-------------------------------------------------------------------------
-    def initialize(viewport)
-      super(viewport)
 
+    # Sets default attribute values
+    def default!
+      super
       @frames    = 1
       @speed     = 1
       @cur_frame = 0
       @vertical  = false
     end
-    #-------------------------------------------------------------------------
-    #  set sprite bitmap
-    #-------------------------------------------------------------------------
+
+    # Sets sprite bitmap
+    # @param file [String]
+    # @param frames [Integer]
+    # @param vertical [Boolean]
+    # @param speed [Numeric]
     def set_bitmap(file, frames: 1, vertical: false, speed: @speed)
       @speed    = speed
       @frames   = frames
@@ -33,9 +37,8 @@ module Sprites
         src_rect.width /= @frames
       end
     end
-    #-------------------------------------------------------------------------
-    #  update sprite animation
-    #-------------------------------------------------------------------------
+
+    # Updates sprite animation
     def update
       return unless bitmap
 
@@ -51,7 +54,6 @@ module Sprites
       end
       @cur_frame += 1
     end
-    #-------------------------------------------------------------------------
   end
 end
 
