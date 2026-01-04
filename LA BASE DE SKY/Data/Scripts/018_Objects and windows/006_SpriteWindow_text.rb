@@ -1046,6 +1046,19 @@ module HoverImageMixin
     @current_image_path = nil
   end
 
+  def parseCommandsWithImages(commands)
+    @commands = []
+    @command_images = []
+    commands.each do |cmd|
+      if cmd.is_a?(Array)
+        @commands.push(cmd[0])
+        @command_images.push(cmd[1]) if cmd.length > 1 && cmd[1]
+      else
+        @commands.push(cmd)
+      end
+    end
+  end
+
   def disposeHoverImage
     if @hover_image
       @hover_image.bitmap.dispose if @hover_image.bitmap && !@hover_animated_bitmap
@@ -1067,6 +1080,7 @@ module HoverImageMixin
       updateHoverImagePosition if @hover_image.visible
     else
       @hover_image.visible = false
+      @current_image_path = nil
     end
   end
 
@@ -1126,9 +1140,8 @@ module HoverImageMixin
   def updateHoverImagePosition
     @hover_image.z = self.z + 100
     @hover_image.viewport = self.viewport
-    # Position image to the left of the menu with a small margin
-    margin = 8
-    @hover_image.x = self.x - @hover_image.bitmap.width - margin
+    margin = 30
+    @hover_image.x = self.x - (@hover_image.bitmap.width - margin)
     @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
   end
 end
@@ -1257,18 +1270,10 @@ class Window_CommandPokemon < Window_DrawableCommand
 
   def initialize(commands, width = nil)
     @starting = true
-    @commands = []
-    @command_images = []
     dims = []
     super(0, 0, 32, 32)
-    commands.each do |cmd|
-      if cmd.is_a?(Array)
-        @commands.push(cmd[0])
-        @command_images.push(cmd[1])
-      else
-        @commands.push(cmd)
-      end
-    end
+    @commands = []
+    parseCommandsWithImages(commands)
     getAutoDims(@commands, dims, width)
     self.width = dims[0]
     self.height = dims[1]
@@ -1377,18 +1382,10 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
   
   def initialize(commands, width = nil)
     @starting = true
-    @commands = []
-    @command_images = []
     dims = []
     super(0, 0, 32, 32)
-    commands.each do |cmd|
-      if cmd.is_a?(Array)
-        @commands.push(cmd[0])
-        @command_images.push(cmd[1])
-      else
-        @commands.push(cmd)
-      end
-    end
+    @commands = []
+    parseCommandsWithImages(commands)
     getAutoDims(@commands, dims, width)
     self.width = dims[0]
     self.height = dims[1]
