@@ -1057,7 +1057,7 @@ module HoverImageMixin
   end
 
   def updateHoverImage
-    return unless self.active && self.visible && @command_images&.length&.> 0
+    return unless self.active && self.visible && @command_images&.length > 0
     
     initHoverImage unless @hover_image
     image_source = @command_images[self.index]
@@ -1126,7 +1126,9 @@ module HoverImageMixin
   def updateHoverImagePosition
     @hover_image.z = self.z + 100
     @hover_image.viewport = self.viewport
-    @hover_image.x = self.x - 100
+    # Position image to the left of the menu with a small margin
+    margin = 8
+    @hover_image.x = self.x - @hover_image.bitmap.width - margin
     @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
   end
 end
