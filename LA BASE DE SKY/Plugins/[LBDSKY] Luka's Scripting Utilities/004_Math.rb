@@ -1,13 +1,18 @@
 #===============================================================================
+#  Luka's Scripting Utilities
+#
 #  Mathematical utilities
 #===============================================================================
 module LUTS
   module Math
     class << self
-      #-------------------------------------------------------------------------
-      #  calculate XY coordinates for all points of a polygon
-      #-------------------------------------------------------------------------
-      def polygon_points(n, radius:, angle: 0, width:, height:)
+      # Calculates XY coordinates for all points of a polygon
+      # @param n [Integer]
+      # @param radius [Integer]
+      # @param width [Integer]
+      # @param height [Integer]
+      # @param angle [Integer]
+      def polygon_points(n, radius:, width:, height:, angle: 0)
         step = 360 / n
 
         [].tap do |points|
@@ -19,9 +24,10 @@ module LUTS
           end
         end
       end
-      #-------------------------------------------------------------------------
-      #  calculate random XY coodrinate on the circumference of a circle
-      #-------------------------------------------------------------------------
+
+      # Calculates random XY coodrinate on the circumference of a circle
+      # @param radius [Integer]
+      # @param x [Integer]
       def rand_circle_coord(radius, x:)
         x ||= rand(radius * 2)
 
@@ -30,7 +36,6 @@ module LUTS
 
         [x, (rand(2).zero? ? y1.to_i : y2.to_i) + r]
       end
-      #-------------------------------------------------------------------------
     end
   end
 end

@@ -115,7 +115,7 @@ module RandomDungeon
       return new_x, new_y
     end
 
-    #===========================================================================
+    #---------------------------------------------------------------------------
 
     def generate_layout
       # Set visitable nodes
@@ -1012,10 +1012,12 @@ module RandomDungeon
               map.data[i, j, layer] = 0
             when :void_decoration_large, :floor_decoration_large
               tile_id = @tileset.get_random_tile_of_type(real_tile_type, self, i, j, layer, tile_version)
-              tile_id = 48 * (tile_id / 48) if tile_id < 384   # Autotile
+              if tile_id < TilemapRenderer::TILESET_START_ID   # Autotile
+                tile_id = TilemapRenderer::TILES_PER_AUTOTILE * (tile_id / TilemapRenderer::TILES_PER_AUTOTILE)
+              end
               4.times do |c|
                 this_tile = tile_id
-                if tile_id < 384   # Autotile
+                if tile_id < TilemapRenderer::TILESET_START_ID   # Autotile
                   this_tile += [34, 36, 40, 38][c]
                 else
                   this_tile += (c % 2) + (8 * (c / 2))

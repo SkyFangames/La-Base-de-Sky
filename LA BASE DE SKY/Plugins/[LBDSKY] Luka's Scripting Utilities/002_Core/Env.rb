@@ -1,11 +1,12 @@
 #===============================================================================
+#  Luka's Scripting Utilities
+#
 #  Environment module for easy Win directory manipulation
 #===============================================================================
 module ::Env
   class << self
-    #---------------------------------------------------------------------------
-    #  constant containing GUIDs found on MSDN for common directories
-    #---------------------------------------------------------------------------
+    # Constant containing GUIDs found on MSDN for common directories
+    # @return [Hash{String => String}]
     COMMON_PATHS = {
       'CAMERA_ROLL'       => 'AB5FB87B-7CE2-4F83-915D-550846C9537B',
       'START_MENU'        => 'A4115719-D62E-491D-AA7C-E74B8BE3B067',
@@ -26,24 +27,25 @@ module ::Env
       'PROGRAM_FILES_X86' => '7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E',
       'COMMON_FILES'      => 'F7F1ED05-9F6D-47A2-AAAE-29D317C6F066',
       'PUBLIC'            => 'DFDF76A2-C82A-4D63-906A-5644AC457385'
-    }
-    #---------------------------------------------------------------------------
-    #  escape chars for Directories
-    #---------------------------------------------------------------------------
-    @char_set = {
+    }.freeze
+
+    # Escape chars for Directories
+    # @return [Hash{String => String}]
+    CHAR_SET = {
       '\\' => '&bs;', '/' => '&fs;', ':' => '&cn;', '*' => '&as;',
       '?' => '&qm;', '\'' => '&dq;', '<' => '&lt;', '>' => '&gt;',
       '|' => '&po;'
-    }
-    #---------------------------------------------------------------------------
-    #  returns directory path based on GUID
-    #---------------------------------------------------------------------------
+    }.freeze
+
+    # @param type [String]
+    # @return [String] directory path based on GUID
     def path(type)
       getKnownFolder(guid_to_hex(COMMON_PATHS[type]))
     end
-    #---------------------------------------------------------------------------
-    #  converts GUID to proper hex array
-    #---------------------------------------------------------------------------
+
+    # Converts GUID to proper hex array
+    # @param string [String]
+    # @return [Array<String>]
     def guid_to_hex(string)
       [].tap do |hex_array|
         string.split('-').each_with_index do |chunk, i|
@@ -57,32 +59,30 @@ module ::Env
         end
       end
     end
-    #---------------------------------------------------------------------------
-    #  returns working directory
-    #---------------------------------------------------------------------------
+
+    # @return [String] working directory
     def directory
       Dir.pwd
     end
-    #---------------------------------------------------------------------------
-    #  escape characters
-    #---------------------------------------------------------------------------
+
+    # @param string [String]
+    # @return [String] escape characters
     def char_esc(string)
-      @char_set.each do |key, val|
+      CHAR_SET.each do |key, val|
         string.gsub!(key, val)
       end
 
       string
     end
-    #---------------------------------------------------------------------------
-    #  describe characters
-    #---------------------------------------------------------------------------
+
+    # @param string [String]
+    # @return [String] described characters
     def char_dsc(string)
-      @char_set.each do |key, val|
+      CHAR_SET.each do |key, val|
         string.gsub!(val, key)
       end
 
       string
     end
-    #---------------------------------------------------------------------------
   end
 end

@@ -1,32 +1,32 @@
 #===============================================================================
-#  Extensions for the `Array` data types
+#  Luka's Scripting Utilities
+#
+#  Core extensions for the `Array` data types
 #===============================================================================
 class ::Array
-  #-----------------------------------------------------------------------------
-  #  swaps specific indexes
-  #-----------------------------------------------------------------------------
+  # Swaps specific indexes
+  # @param index1 [Integer]
+  # @param index2 [Integer]
   def swap_at(index1, index2)
     val1 = self[index1].clone
     val2 = self[index2].clone
     self[index1] = val2
     self[index2] = val1
   end
-  #-----------------------------------------------------------------------------
-  #  pushes value to last index
-  #-----------------------------------------------------------------------------
+
+  # Pushes value to last index
+  # @param val [Object]
   def to_last(val)
     delete(val) if include?(val)
     push(val)
   end
-  #-----------------------------------------------------------------------------
-  #  check if index is last
-  #-----------------------------------------------------------------------------
+
+  # @return [Boolean]
   def last?(index)
     (length - 1).eql?(index)
   end
-  #-----------------------------------------------------------------------------
-  #  check if part of string matches
-  #-----------------------------------------------------------------------------
+
+  # @return [Boolean]
   def string_include?(val)
     return false unless val.is_a?(String)
 
@@ -37,18 +37,19 @@ class ::Array
     false
   end
 
+  # @param index [Integer]
+  # @return [Object]
   def value(index)
     self[index]
   end
-  #-----------------------------------------------------------------------------
-  #  returns value if blank or present
-  #-----------------------------------------------------------------------------
+
+  # @return [Boolean]
   def blank?
     empty?
   end
 
+  # @return [Boolean]
   def present?
     !blank?
   end
-  #-----------------------------------------------------------------------------
 end

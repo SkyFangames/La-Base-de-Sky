@@ -121,12 +121,12 @@ class PokemonSummary_Scene
       when :item
         commands[:item] = _INTL("Dar Objeto")
         commands[:take] = _INTL("Quitar Objeto") if @pokemon.hasItem?
-      when :nickname then commands[cmd] = _INTL("Mote")      if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.foreign?
+      when :nickname then commands[cmd] = _INTL("Mote")      if Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN && !@pokemon.foreign?
       when :pokedex  then commands[cmd] = _INTL("Ver Pokédex")  if $player.has_pokedex && $player.pokedex.unlocked?(-1)
       when :moves    then commands[cmd] = _INTL("Movimientos")   if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.moves.empty?
-      when :remember then commands[cmd] = _INTL("Recordar Movimiento") if Settings::MECHANICS_GENERATION >= 9 && @pokemon.can_relearn_move?
-      when :forget   then commands[cmd] = _INTL("Olvidar Movimiento")   if Settings::MECHANICS_GENERATION >= 9 && @pokemon.moves.length > 1
-      when :tms      then commands[cmd] = _INTL("Usar MT")      if Settings::MECHANICS_GENERATION >= 9 && $bag.has_compatible_tm?(@pokemon)
+      when :remember then commands[cmd] = _INTL("Recordar Movimiento") if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && @pokemon.can_relearn_move?
+      when :forget   then commands[cmd] = _INTL("Olvidar Movimiento")   if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && @pokemon.moves.length > 1
+      when :tms      then commands[cmd] = _INTL("Usar MT")      if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && $bag.has_compatible_tm?(@pokemon)
       when :mark     then commands[cmd] = _INTL("Marcas")
       when :ability  then commands[cmd] = _INTL("Ver Habilidad")
       when :legacy   then commands[cmd] = _INTL("Histórico") if (!@pokemon.egg? && defined?(show_legacy))

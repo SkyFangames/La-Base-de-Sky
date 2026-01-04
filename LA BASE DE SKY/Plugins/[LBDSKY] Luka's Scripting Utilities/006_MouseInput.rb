@@ -1,43 +1,40 @@
 #===============================================================================
-#  Easy Mouse System
-#   by Luka S.J
+#  Luka's Scripting Utilities
 #
 #  Adds easy to use mouse functionality for your Essentials code
 #===============================================================================
 module Mouse
+  # @return [Numeric]
   CLICK_TIMEOUT = 0.5
-  #-----------------------------------------------------------------------------
-  #  mouse button input map
-  #-----------------------------------------------------------------------------
+
+  # Mouse button input map
+  # @return [Hash{Symbol => Const}]
   INPUTS = {
     left: Input::MOUSELEFT,
     right: Input::MOUSERIGHT,
     middle: Input::MOUSEMIDDLE
-  }
-  #-----------------------------------------------------------------------------
+  }.freeze
+
   class << self
-    #---------------------------------------------------------------------------
-    #  checks if mouse is in game window
-    #---------------------------------------------------------------------------
+    # @return [Boolean] mouse is in game window
     def active?
       Input.mouse_in_window?
     end
-    #---------------------------------------------------------------------------
-    #  show mouse cursor in game window
-    #---------------------------------------------------------------------------
+
+    # Shows mouse cursor in game window
     def show
       Graphics.show_cursor = true
     end
-    #---------------------------------------------------------------------------
-    #  hide mouse cursor in game window
-    #---------------------------------------------------------------------------
+
+    # Hides mouse cursor in game window
     def hide
       Graphics.show_cursor = false
     end
-    #---------------------------------------------------------------------------
-    #  standard mouse input checks
-    #---------------------------------------------------------------------------
+
+    # @param button [Symbol]
+    # @return [Boolean] mouse button clicked
     def click?(button = :left)
+      return false if @drag
       return @hold = 0 || true if !press?(button) && @hold&.between?(1, CLICK_TIMEOUT * Graphics.frame_rate)
 
       @hold ||= 0
@@ -50,34 +47,48 @@ module Mouse
       false
     end
 
+    # @param button [Symbol]
+    # @return [Boolean] mouse button pressed
     def press?(button = :left)
       Input.press?(INPUTS[button])
     end
 
+    # @param button [Symbol]
+    # @return [Boolean] mouse button released
     def release?(button = :left)
       Input.release?(INPUTS[button])
     end
 
+    # @param button [Symbol]
+    # @return [Boolean] mouse button repeated
     def repeat?(button = :left)
       Input.repeat?(INPUTS[button])
     end
 
+    # @param button [Symbol]
+    # @return [Boolean] mouse button held
     def hold?(button)
       press?(button) && Input.time?(INPUTS[button]) > CLICK_TIMEOUT * 1_000_000
     end
-    #---------------------------------------------------------------------------
-    #  mouse scroll checks
-    #---------------------------------------------------------------------------
-    def scroll_up?
-      Input.scroll_v > 0
+
+    # @param rect [Rect]
+    # @return [Boolean] mouse scroll up
+    def scroll_up?(rect = nil)
+      return false if rect && !over?(rect)
+
+      Input.scroll_v.positive?
     end
 
-    def scroll_down?
-      Input.scroll_v < 0
+    # @param rect [Rect]
+    # @return [Boolean] mouse scroll down
+    def scroll_down?(rect = nil)
+      return false if rect && !over?(rect)
+
+      Input.scroll_v.negative?
     end
-    #---------------------------------------------------------------------------
-    #  check if mouse is over supported object
-    #---------------------------------------------------------------------------
+
+    # @param object [Object]
+    # @return [Boolean] mouse is over supported object
     def over?(object)
       return false unless object.respond_to?(:mouse_params)
 
@@ -85,15 +96,19 @@ module Mouse
 
       Input.mouse_x.between?(ox, ox + ow) && Input.mouse_y.between?(oy, oy + oh)
     end
-    #---------------------------------------------------------------------------
-    #  check if mouse is in specified area
-    #---------------------------------------------------------------------------
+
+    # @param arx [Integer] X coordinate
+    # @param ary [Integer] Y coordinate
+    # @param arw [Integer] width
+    # @param arh [Integer] height
+    # @return [Boolean] mouse is in specified area
     def over_area?(arx, ary, arw, arh)
       Rect.new(arx, ary, arw, arh).over?
     end
-    #---------------------------------------------------------------------------
-    #  create rectangle from mouse drag selection
-    #---------------------------------------------------------------------------
+
+    # Creates rectangle from mouse drag selection
+    # @param button [Symbol]
+    # @return [Rect]
     def create_rect(button = :left)
       if press?(button)
         @rect_x ||= x
@@ -111,9 +126,10 @@ module Mouse
       @rect_y = nil
       Rect.new(0, 0, 0, 0)
     end
-    #---------------------------------------------------------------------------
-    #  checks if object is being dragged with mouse
-    #---------------------------------------------------------------------------
+
+    # @param object [Object]
+    # @param button [Symbol]
+    # @return [Boolean] object is being dragged with mouse
     def dragging?(object, button = :left)
       unless (over?(object) || @drag.eql?(object)) && press?(button)
         @drag = nil    unless press?(button)
@@ -131,17 +147,19 @@ module Mouse
 
       true
     end
-    #---------------------------------------------------------------------------
-    #  method to drag object using mouse
-    #    - `lock` argument decides which axis to lock the dragging on
-    #    - `rect` parameter creates a maximum dragging area
-    #---------------------------------------------------------------------------
+
+    # Method to drag object using mouse
+    # @param object [Object]
+    # @param button [Symbol]
+    # @param rect [Rect] creates a maximum dragging area
+    # @param lock [Symbol] drag lock direction
+    # @return [Boolean]
     def drag_object(object, button = :left, rect = nil, lock = nil)
       return false unless dragging?(object, button) && @drag.eql?(object)
 
       object.x = Input.mouse_x - (@object_ox || 0) unless lock.eql?(:vertical)
       object.y = Input.mouse_y - (@object_oy || 0) unless lock.eql?(:horizontal)
-      return unless rect.is_a?(Rect)
+      return true unless rect.is_a?(Rect)
 
       rx, ry, rw, rh = rect.mouse_params
       _ox, _oy, ow, oh = object.mouse_params
@@ -149,41 +167,48 @@ module Mouse
       object.y = ry if object.y < ry && !lock.eql?(:horizontal)
       object.x = rx + rw - ow if object.x > rx + rw - ow && !lock.eql?(:vertical)
       object.y = ry + rh - oh if object.y > ry + rh - oh && !lock.eql?(:horizontal)
+
+      true
     end
-    #---------------------------------------------------------------------------
-    #  method to drag object only on the X axis
-    #---------------------------------------------------------------------------
+
+    # Method to drag object only on the X axis
+    # @param object [Object]
+    # @param button [Symbol]
+    # @param rect [Rect] creates a maximum dragging area
     def drag_object_x(object, button = :left, rect = nil)
       drag_object(object, button, rect, :horizontal)
     end
-    #---------------------------------------------------------------------------
-    #  method to drag object only on the Y axis
-    #---------------------------------------------------------------------------
+
+    # Method to drag object only on the Y axis
+    # @param object [Object]
+    # @param button [Symbol]
+    # @param rect [Rect] creates a maximum dragging area
     def drag_object_y(object, button = :left, rect = nil)
       drag_object(object, button, rect, :vertical)
     end
-    #---------------------------------------------------------------------------
   end
-  #-----------------------------------------------------------------------------
-  #  sprite extensions
-  #-----------------------------------------------------------------------------
-  module Sprite
-    def mouse_params(pure: false)
-      return [self.x, self.y, self.width, self.height] if pure
 
-      ox = self.x - self.ox + (viewport ? viewport.rect.x : 0)
-      oy = self.y - self.oy + (viewport ? viewport.rect.y : 0)
-      ow = bitmap ? bitmap.width * zoom_x : 0
-      oh = bitmap ? bitmap.height * zoom_y : 0
+  # Sprite class extensions
+  module Sprite
+    # @param pure [Boolean] only actual values (non-transformative)
+    # @return [Array<Integer>]
+    def mouse_params(pure: false)
+      return [x, y, width, height] if pure
+
+      sox = x - ox + (viewport ? viewport.rect.x : 0)
+      soy = y - oy + (viewport ? viewport.rect.y : 0)
+      sow = bitmap ? bitmap.width * zoom_x : 0
+      soh = bitmap ? bitmap.height * zoom_y : 0
 
       if src_rect
-        ow = src_rect.width * zoom_x unless src_rect.width.eql?(ow)
-        oh = src_rect.height * zoom_y unless src_rect.height.eql?(oh)
+        sow = src_rect.width * zoom_x unless src_rect.width.eql?(sow)
+        soh = src_rect.height * zoom_y unless src_rect.height.eql?(soh)
       end
 
-      [ox, oy, ow, oh]
+      [sox, soy, sow, soh]
     end
 
+    # @return [Boolean] if alpha of pixel is greater than 0
     def over_pixel?
       return false unless over? && bitmap
 
@@ -192,89 +217,100 @@ module Mouse
       bitmap.get_pixel(x - ox, y - oy).alpha.positive?
     end
   end
-  #-----------------------------------------------------------------------------
-  #  viewport extensions
-  #-----------------------------------------------------------------------------
+
+  # Viewport class extensions
   module Viewport
+    # @return [Array<Integer>]
     def mouse_params
       [rect.x, rect.y, rect.width, rect.height]
     end
   end
-  #-----------------------------------------------------------------------------
-  #  shared extensions
-  #-----------------------------------------------------------------------------
+
+  # Rect class extensions
+  module Rect
+    # @return [Array<Integer>]
+    def mouse_params
+      [x, y, width, height]
+    end
+  end
+
+  # Shared extensions
   module Extensions
+    # @return [Boolean]
     def click?
-      Mouse.click?
+      over? && Mouse.click?
     end
 
+    # @return [Boolean]
     def press?
-      Mouse.press?
+      over? && Mouse.press?
     end
 
+    # @return [Boolean]
     def over?
       Mouse.over?(self)
     end
 
+    # Drags object
+    # @param rect [Rect]
     def mouse_drag(rect = nil)
-      Mouse.drag_object(self, rect)
+      Mouse.drag_object(self, :left, rect)
     end
 
+    # Drags object on X axis
+    # @param rect [Rect]
     def mouse_drag_x(rect = nil)
-      Mouse.drag_object_x(self, rect)
+      Mouse.drag_object_x(self, :left, rect)
     end
 
+    # Drags object on Y axis
+    # @param rect [Rect]
     def mouse_drag_y(rect = nil)
-      Mouse.drag_object_y(self, rect)
+      Mouse.drag_object_y(self, :left, rect)
     end
 
+    # @param target [Object]
+    # @return [Boolean]
     def overlap?(target)
-      return false unless target.respond_to?(:mouse_params)
+      obj_x, obj_y, obj_w, obj_h = mouse_params
+      tar_x, tar_y, tar_w, tar_h = target.mouse_params
 
-      ox, oy, ow, oh = mouse_params
-      tx, ty, tw, th = target.mouse_params
-
-      ox < tx + tw && ox + ow > tx && oy < ty + th && oy + oh > ty
+      !(obj_x + obj_w < tar_x || obj_y + obj_h < tar_y || obj_x > tar_x + tar_w || obj_y > tar_y + tar_h)
     end
 
+    # @param target [Object]
+    # @return [Boolean]
     def released_in?(target)
-      return false unless target.respond_to?(:mouse_params)
-
-      ox, oy, ow, oh = mouse_params
-      tx, ty, tw, th = target.mouse_params
-
-      Mouse.release? && ox < tx + tw && ox + ow > tx && oy < ty + th && oy + oh > ty
+      overlap?(target) && Mouse.release?
     end
 
+    # @param target [Rect]
+    # @return [Boolean]
     def released_in_rect?(target)
-      return false unless target.is_a?(Rect)
-
-      ox, oy, ow, oh = mouse_params
-      tx, ty, tw, th = target.mouse_params
-
-      Mouse.release? && ox < tx + tw && ox + ow > tx && oy < ty + th && oy + oh > ty
+      x.between?(target.x, target.x + target.width) && y.between?(target.y, target.y + target.height) && Mouse.release?
     end
   end
 end
+
 #-------------------------------------------------------------------------------
-#  add mouse functionality to sprite class
+# Add mouse functionality to various classes
 #-------------------------------------------------------------------------------
-class FloatSprite < Sprite
+class ::FloatSprite
   include Mouse::Extensions
+  include Mouse::Sprite
 end
 
 class Sprite
   include Mouse::Extensions
+  include Mouse::Sprite
 end
-#-------------------------------------------------------------------------------
-#  add mouse functionality to rect class
-#-------------------------------------------------------------------------------
-class Rect
+
+class ::Rect
   include Mouse::Extensions
+  include Mouse::Rect
 end
-#-------------------------------------------------------------------------------
-#  add mouse functionality to viewport class
-#-------------------------------------------------------------------------------
-class Viewport
+
+class ::Viewport
   include Mouse::Extensions
+  include Mouse::Viewport
 end

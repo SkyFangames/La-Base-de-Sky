@@ -753,9 +753,9 @@ end
 
 def pbCheckTileValidity(tile_id, map, tilesets, passages)
   return false if !tile_id
-  if tile_id > 0 && tile_id < 384
+  if tile_id > 0 && tile_id < TilemapRenderer::TILESET_START_ID
     # Check for defined autotile
-    autotile_id = (tile_id / 48) - 1
+    autotile_id = (tile_id / TilemapRenderer::TILES_PER_AUTOTILE) - 1
     autotile_name = tilesets[map.tileset_id].autotile_names[autotile_id]
     return true if autotile_name && autotile_name != ""
   else

@@ -269,6 +269,7 @@ module PluginManager
           self.error("El campo de créditos del plugin '#{name}' debe contener una cadena o una matriz de cadenas.")
         end
       when :disabled # Requerido para que no tire error.
+      when :last  # Requerido para que no tire error.
       else
         self.error("Clave de registro de plugin no válida '#{key}'.")
       end
@@ -477,6 +478,8 @@ module PluginManager
         meta[:link] = data[0]
       when "DISABLED"
         meta[:disabled] = data[0] if data[0]
+      when "LAST"
+        meta[:last] = data[0] if data[0]
       else
         meta[property.downcase.to_sym] = data[0]
       end
@@ -503,6 +506,12 @@ module PluginManager
     Dir.get("Plugins").each { |d| dirs.push(d) if Dir.safe?(d) }
     # devuelve todos los plugins
     return dirs
+  end
+
+  # Comprueba si un plugin está marcado como :last
+  def self.isLastPlugin?(plugin_meta)
+    return false if !plugin_meta || !plugin_meta[:last]
+    return [true, 'true', 'verdadero', 'si', 'x'].include?(plugin_meta[:last].to_s.downcase)
   end
 
   # Captura cualquier posible bucle con dependencias y genera un error
@@ -549,6 +558,41 @@ module PluginManager
         order = self.sortLoadOrder(order, plugins)
       end
     end
+    # Mover los plugins con :last => true al principio (después del reverse, estarán al final)
+    last_plugins = []
+    order.each do |o|
+      next if !self.isLastPlugin?(plugins[o])
+      last_plugins.push(o)
+    end
+    # Ordenar los plugins :last entre sí según sus dependencias
+    # (mantener el orden relativo que ya tienen de la ordenación por dependencias)
+    last_plugins_ordered = []
+    last_plugins.each do |lp|
+      inserted = false
+      # Buscar la posición correcta basada en dependencias
+      last_plugins_ordered.each_with_index do |existing, idx|
+        # Si el plugin existente depende del nuevo, insertar antes
+        if plugins[existing][:dependencies]
+          plugins[existing][:dependencies].each do |dname|
+            dep_name = dname
+            dep_name = dname[0] if dname.is_a?(Array) && dname.length == 2
+            dep_name = dname[1] if dname.is_a?(Array) && dname.length == 3
+            if dep_name == lp
+              last_plugins_ordered.insert(idx, lp)
+              inserted = true
+              break
+            end
+          end
+        end
+        break if inserted
+      end
+      last_plugins_ordered.push(lp) if !inserted
+    end
+    # Remover los plugins :last de su posición original y agregarlos al principio
+    last_plugins_ordered.each do |lp|
+      order.delete(lp)
+      order.unshift(lp)
+    end
     return order
   end
 
@@ -575,6 +619,24 @@ module PluginManager
     end
     # validar todas las dependencias
     order.each { |o| self.validateDependencies(o, plugins) }
+    # validar que plugins no-last no dependan de plugins last
+    order.each do |o|
+      next if !plugins[o] || !plugins[o][:dependencies]
+      is_current_last = self.isLastPlugin?(plugins[o])
+      plugins[o][:dependencies].each do |dname|
+        # limpiar el nombre a una cadena simple
+        dep_name = dname
+        dep_name = dname[0] if dname.is_a?(Array) && dname.length == 2
+        dep_name = dname[1] if dname.is_a?(Array) && dname.length == 3
+        next if !plugins[dep_name]
+        is_dep_last = self.isLastPlugin?(plugins[dep_name])
+        # Si la dependencia es :last pero el plugin actual no es :last, error
+        if is_dep_last && !is_current_last
+          self.error("El plugin '#{o}' no puede depender de '#{dep_name}' porque '#{dep_name}' está marcado como 'Last'. " +
+                     "Solo los plugins marcados como 'Last' pueden depender de otros plugins 'Last'.")
+        end
+      end
+    end
     # ordenar el orden de carga
     return self.sortLoadOrder(order, plugins).reverse, plugins
   end

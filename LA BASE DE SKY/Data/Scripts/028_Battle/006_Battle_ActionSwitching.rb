@@ -57,14 +57,14 @@ class Battle
     allOtherSideBattlers(idxBattler).each do |b|
       next if !b.abilityActive?
       if Battle::AbilityEffects.triggerTrappingByTarget(b.ability, battler, b, self)
-        party_screen&.pbDisplay(_INTL("¡{1} de {2} previene el cambio!", b.pbThis, b.abilityName))
+        party_screen&.pbDisplay(_INTL("¡{1} de {2} previene el cambio!", b.abilityName, b.pbThis))
         return false
       end
     end
     allOtherSideBattlers(idxBattler).each do |b|
       next if !b.itemActive?
       if Battle::ItemEffects.triggerTrappingByTarget(b.item, battler, b, self)
-        party_screen&.pbDisplay(_INTL("¡{1} de {2} previene el cambio!", b.pbThis, b.itemName))
+        party_screen&.pbDisplay(_INTL("¡{1} de {2} previene el cambio!", b.itemName, b.pbThis))
         return false
       end
     end

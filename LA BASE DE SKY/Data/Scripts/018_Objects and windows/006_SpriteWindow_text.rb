@@ -10,7 +10,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
   attr_accessor :letterbyletter
 
   def text=(value)
-    @text = value
+    @text = value || ""
     refresh
   end
 

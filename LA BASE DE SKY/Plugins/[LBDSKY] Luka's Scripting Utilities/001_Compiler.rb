@@ -1,12 +1,13 @@
 #===============================================================================
-#  LUTS compiler definition
+#  Luka's Scripting Utilities
+#
+#  Custom compiler components
 #===============================================================================
 module LUTS
   module Compiler
     class << self
-      #-------------------------------------------------------------------------
-      #  get base files to compile
-      #-------------------------------------------------------------------------
+      # @param path [String]
+      # @return [Array<String>] base files to compile
       def compile_files(path)
         [].tap do |files|
           Dir.get(path, '*.txt', false).each do |d|
@@ -15,9 +16,13 @@ module LUTS
           end
         end
       end
-      #-------------------------------------------------------------------------
-      #  start LUTS compiling process
-      #-------------------------------------------------------------------------
+
+      # Starts LUTS compiling process
+      # @param path [String]
+      # @param schema [Object]
+      # @param file_ext [String]
+      # @param force [Boolean]
+      # @return [Hash]
       def compile(path:, schema:, file_ext:, force: false)
         path = path.split('/').compact.join('/')
         # don't compile if project archive exists or game is not running in debug
@@ -86,9 +91,12 @@ module LUTS
         end
         pbSetWindowText(nil)
       end
-      #-------------------------------------------------------------------------
-      #  compile data for specified schema
-      #-------------------------------------------------------------------------
+
+      # Compiles data for specified schema
+      # @param path [String]
+      # @param schema [Object]
+      # @param const [Symbol]
+      # @return [Hash]
       def compile_data(path, schema:, const:)
         current_schema = "#{schema}::#{const}".constantize
         data_hash      = {}
