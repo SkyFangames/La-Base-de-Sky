@@ -70,14 +70,14 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   POKEMON_ICON_Y     = 84
   HEADER_X           = 16
   HEADER_Y           = 14
-  BUTTON_UP_HEIGHT   = 32
-  BUTTON_UP_WIDTH    = 76
-  BUTTON_UP_X        = 44
-  BUTTON_UP_Y        = 350
-  BUTTON_DOWN_HEIGHT = 32
   BUTTON_DOWN_WIDTH  = 76
-  BUTTON_DOWN_X      = 132
+  BUTTON_DOWN_HEIGHT = 32
+  BUTTON_DOWN_X      = 47
   BUTTON_DOWN_Y      = 350
+  BUTTON_UP_WIDTH    = 76
+  BUTTON_UP_HEIGHT   = 32
+  BUTTON_UP_X        = 135
+  BUTTON_UP_Y        = 350
 
   def initialize(pokemon, moves)
     @pokemon   = pokemon
@@ -201,8 +201,10 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   end
 
   def draw_buttons
-    draw_image(@bitmaps[:buttons], BUTTON_UP_X, BUTTON_UP_Y, 0, 0, BUTTON_UP_WIDTH, BUTTON_UP_HEIGHT) if @top_index < @moves.length - VISIBLE_MOVES
-    draw_image(@bitmaps[:buttons], BUTTON_DOWN_X, BUTTON_DOWN_Y, 20, 0, BUTTON_DOWN_WIDTH, BUTTON_DOWN_HEIGHT) if @top_index > 0
+    echoln "@top_index: #{@top_index}, moves length: #{@moves.length}"
+    echoln "@index: #{@index}"
+    draw_image(@bitmaps[:buttons], BUTTON_DOWN_X, BUTTON_DOWN_Y, 0, 0, BUTTON_DOWN_WIDTH, BUTTON_DOWN_HEIGHT) if @index < @moves.length - 1 
+    draw_image(@bitmaps[:buttons], BUTTON_UP_X, BUTTON_UP_Y, BUTTON_DOWN_WIDTH, 0, BUTTON_UP_WIDTH, BUTTON_UP_HEIGHT) if @top_index > 0
   end
 
   #-----------------------------------------------------------------------------
@@ -367,18 +369,16 @@ class UI::MoveReminder < UI::BaseScreen
       # [:MOVE_ID, "TM"]
       # [:MOVE_ID, "HM"]
       move = screen.move
-      if screen.show_confirm_message(_INTL("¿Enseñar {1}?", GameData::Move.get(move[0]).name))
-        is_machine = ["TM", "HM"].include?(move[1]) ? true : false
-        relearn = is_machine ? false : true
-        if pbLearnMove(screen.pokemon, move[0], false, is_machine, relearn)
-          $stats.moves_taught_by_reminder += 1 if !is_machine
-          $stats.moves_taught_by_item += 1 if is_machine
-          if screen.mode == :normal
-            screen.refresh_move_list
-          else
-            screen.end_screen
-          end
-        end
+      next if !screen.show_confirm_message(_INTL("¿Enseñar {1}?", GameData::Move.get(move[0]).name))
+      is_machine = ["TM", "HM"].include?(move[1]) ? true : false
+      relearn = is_machine ? false : true
+      next if !pbLearnMove(screen.pokemon, move[0], false, is_machine, relearn)
+      $stats.moves_taught_by_reminder += 1 if !is_machine
+      $stats.moves_taught_by_item     += 1 if is_machine
+      if screen.mode == :normal
+        screen.refresh_move_list
+      else
+        screen.end_screen
       end
     }
   })
@@ -393,7 +393,7 @@ class UI::MoveReminder < UI::BaseScreen
     loop do
       on_start_main_loop
       command = @visuals.navigate
-      break if command == :quit && (@mode == @normal ||
+      break if command == :quit && (@mode == :normal ||
                show_confirm_message(_INTL("¿Prefieres que {1} no aprenda un movimiento nuevo?", @pokemon.name)))
       perform_action(command)
       if @moves.empty?

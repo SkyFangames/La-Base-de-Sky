@@ -144,7 +144,9 @@ class Battle::AI
       min_accuracy = 100
       target.battler.moves.each do |m|
         next if m.accuracy == 0 || m.is_a?(Battle::Move::OHKO)
-        min_accuracy = m.accuracy if m.accuracy < min_accuracy
+        this_accuracy = m.accuracy
+        this_accuracy = (this_accuracy * 4 / 5) if target.has_active_ability?(:HUSTLE) && m.physicalMove?(m.type)
+        min_accuracy = this_accuracy if this_accuracy < min_accuracy
       end
       if min_accuracy >= 90 && target.stages[:ACCURACY] >= 0
         meaningful = false

@@ -1,20 +1,20 @@
 #===============================================================================
+#  Luka's Scripting Utilities
+#
 #  Error logger utility
-#-------------------------------------------------------------------------------
-#  used to store custom error log messages
+#  Used to store custom error log messages
 #===============================================================================
 module LUTS
   module Logger
     class << self
-      #-------------------------------------------------------------------------
-      #  define path to which to log message output
-      #-------------------------------------------------------------------------
+      # @return [String] path to which to log message output
       def log_path
         'luts_log.txt' # ::RTP.getSaveFileName('luts_log.txt')
       end
-      #-------------------------------------------------------------------------
-      #  log message to console and file
-      #-------------------------------------------------------------------------
+
+      # Logs message to console and file
+      # @param msg [String]
+      # @param options [Hash]
       def log_msg(msg, options = {})
         log_to_console(msg, options)
 
@@ -22,9 +22,10 @@ module LUTS
           f.write("#{timestamp} [#{options[:type].to_s.upcase}] #{msg}\r\n")
         end
       end
-      #-------------------------------------------------------------------------
-      #  log message to console with formatting
-      #-------------------------------------------------------------------------
+
+      # Logs message to console with formatting
+      # @param msg [String]
+      # @param options [String]
       def log_to_console(msg, options)
         return if options[:skip_console] == true
 
@@ -52,9 +53,9 @@ module LUTS
           Console.echo_p(msg.sub('-> ', '').gsub('`', '"'), options.except(:type, :break))
         end
       end
-      #-------------------------------------------------------------------------
-      #  get console color for message type
-      #-------------------------------------------------------------------------
+
+      # Get console color for message type
+      # @param type [Symbol]
       def console_color(type)
         case type
         when :error
@@ -65,41 +66,45 @@ module LUTS
           :cyan
         end
       end
-      #-------------------------------------------------------------------------
-      #  format timestamp
-      #-------------------------------------------------------------------------
+
+      # @return [String] formated timestamp
       def timestamp
         Time.now.strftime('[%H:%M:%S %a %d-%b-%Y]')
       end
-      #-------------------------------------------------------------------------
-      #  INFO level log
-      #-------------------------------------------------------------------------
+
+      # INFO level log
+      # @param msg [String]
+      # @param options [Hash]
       def info(msg, options = {})
         log_msg(msg, options.merge({ type: :info }))
       end
-      #-------------------------------------------------------------------------
-      #  ERROR level log
-      #-------------------------------------------------------------------------
+
+      # ERROR level log
+      # @param msg [String]
+      # @param options [Hash]
       def error(msg, options = {})
         log_msg(msg, options.merge({ type: :error }))
       end
-      #-------------------------------------------------------------------------
-      #  ERROR level log and crash application
-      #-------------------------------------------------------------------------
+
+      # ERROR level log and crash application
+      # @param msg [String]
+      # @param options [Hash]
       def critical(msg, options = {})
         log_msg(msg, options.merge({ type: :error }))
 
         raise LUTS::ScriptError, msg
       end
-      #-------------------------------------------------------------------------
-      #  WARN level log
-      #-------------------------------------------------------------------------
+
+      # WARN level log
+      # @param msg [String]
+      # @param options [Hash]
       def warn(msg, options = {})
         log_msg(msg, options.merge({ type: :warn }))
       end
-      #-------------------------------------------------------------------------
-      #  DEBUG level log
-      #-------------------------------------------------------------------------
+
+      # DEBUG level log
+      # @param msg [String]
+      # @param options [Hash]
       def debug(msg, options = {})
         return unless $DEBUG
 

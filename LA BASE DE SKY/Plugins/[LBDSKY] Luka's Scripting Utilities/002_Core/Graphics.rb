@@ -1,17 +1,18 @@
 #===============================================================================
-#  Extensions for the `Graphics` module
+#  Luka's Scripting Utilities
+#
+#  Core extensions for the `Graphics` module
 #===============================================================================
 module ::Graphics
   class << self
-    #---------------------------------------------------------------------------
-    #  objects waiting to be animated
-    #---------------------------------------------------------------------------
+    # @return [Array<Object>] objects waiting to be animated
     def target_object_cache
       @target_object_cache ||= []
     end
-    #---------------------------------------------------------------------------
-    #  animate code block for a specific duration
-    #---------------------------------------------------------------------------
+
+    # Animates code block for a specific duration
+    # @param duration [Integer]
+    # @param block [Proc]
     def animate(duration, &block)
       # calculates initial timings (converts frames to microseconds)
       start_timer   = System.uptime
@@ -25,7 +26,7 @@ module ::Graphics
           next unless object.respond_to?(:play_target_animation)
 
           object.play_target_animation(duration)
-          object.update
+          # object.update
         end
         update
 
@@ -43,8 +44,8 @@ module ::Graphics
       # clear all animation objects
       target_object_cache.clear
     end
-    #---------------------------------------------------------------------------
   end
 end
-# clear target cache (soft reset fix)
+#===============================================================================
+# Clear target cache (soft reset fix)
 Graphics.target_object_cache.clear

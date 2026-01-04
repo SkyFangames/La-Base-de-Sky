@@ -221,6 +221,7 @@ end
 #===============================================================================
 class Battle::Scene
   def pbBattleArenaUpdate
+    Graphics.update
     pbGraphicsUpdate
   end
 
@@ -281,6 +282,8 @@ class Battle::Scene
       infowindow.z        = 99999
       infowindow.visible  = false
       11.times do |i|
+        Graphics.update
+        Input.update
         pbGraphicsUpdate
         pbInputUpdate
         msgwindow.update
@@ -290,6 +293,8 @@ class Battle::Scene
       updateJudgment(infowindow, 0, battler1, battler2, ratings1, ratings2)
       infowindow.visible = true
       11.times do |i|
+        Graphics.update
+        Input.update
         pbGraphicsUpdate
         pbInputUpdate
         msgwindow.update
@@ -350,6 +355,8 @@ class Battle::Scene
       infowindow.visible = false
       msgwindow.visible  = false
       11.times do |i|
+        Graphics.update
+        Input.update
         pbGraphicsUpdate
         pbInputUpdate
         msgwindow.update

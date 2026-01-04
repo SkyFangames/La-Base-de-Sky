@@ -291,7 +291,7 @@ def pbUseItemOnPokemon(item, pkmn, scene)
       pbMessage(_INTL("{1} no puede aprender {2}.", pkmn.name, movename)) { scene.pbUpdate }
     else
       pbMessage("\\se[PC access]" + _INTL("Has encendido {1}.", itm.portion_name) + "\1") { scene.pbUpdate }
-      if pbConfirmMessage(_INTL("¿Quieres que {1} aprenda {2}?", movename, pkmn.name)) { scene.pbUpdate }
+      if pbConfirmMessage(_INTL("¿Quieres que {1} aprenda {2}?", pkmn.name, movename)) { scene.pbUpdate }
         if pbLearnMove(pkmn, machine, false, true) { scene.pbUpdate }
           $bag.remove(item) if itm.consumed_after_use?
           return true
@@ -540,10 +540,12 @@ def pbChangeLevel(pkmn, new_level, scene)
     pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
                            pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
     # Learn new moves upon level up
-    movelist = pkmn.getMoveList
-    movelist.each do |i|
-      next if i[0] <= old_level || i[0] > pkmn.level
-      pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+    if $PokemonSystem.skip_move_learning == 1
+      movelist = pkmn.getMoveList
+      movelist.each do |i|
+        next if i[0] <= old_level || i[0] > pkmn.level
+        pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+      end
     end
     # Check for evolution
     new_species = pkmn.check_evolution_on_level_up
@@ -635,10 +637,12 @@ def pbChangeExp(pkmn, new_exp, screen)
     pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
                            pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
     # Learn new moves upon level up
-    movelist = pkmn.getMoveList
-    movelist.each do |i|
-      next if i[0] <= old_level || i[0] > pkmn.level
-      pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+    if $PokemonSystem.skip_move_learning == 1
+      movelist = pkmn.getMoveList
+      movelist.each do |i|
+        next if i[0] <= old_level || i[0] > pkmn.level
+        pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+      end
     end
     # Check for evolution
     new_species = pkmn.check_evolution_on_level_up
@@ -938,7 +942,7 @@ def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, relearn
     return false
   elsif pkmn.numMoves < Pokemon::MAX_MOVES
     pkmn.learn_move(move)
-    pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]", &block)
+    pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]\\wtnp[30]", &block)
     return true
   end
   relearn_text = (relearn) ? "recordar" : "aprender"
@@ -954,9 +958,9 @@ def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, relearn
         if by_machine && Settings::TAUGHT_MACHINES_KEEP_OLD_PP
           pkmn.moves[move_index].pp = [oldmovepp, pkmn.moves[move_index].total_pp].min
         end
-        pbMessage(_INTL("1, 2, y...\\wt[16] ...\\wt[16] ...\\wt[16] ¡puf!") + "\\se[Battle ball drop]\1", &block)
+        pbMessage(_INTL("1, 2, y...\\wt[16] ...\\wt[16] ...\\wt[16] ¡puf!") + "\\se[Battle ball drop]\\wtnp[10]\1", &block)
         pbMessage(_INTL("{1} ha olvidado cómo utilizar {2} y..." + "\1", pkmn_name, old_move_name), &block)
-        pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]", &block)
+        pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]\\wtnp[30]", &block)
         pkmn.changeHappiness("machine") if by_machine
         return true
       elsif pbConfirmMessage(_INTL("¿Dejas de aprender {1}?", move_name), &block)

@@ -1,12 +1,16 @@
 #===============================================================================
-#  UI class to generate window from skin
+#  Luka's Scripting Utilities
+#
+#  Window sprite to render windowskin as bitmap
 #===============================================================================
 module LUTS
   module UI
     class Window < ::Sprites::Base
-      #-------------------------------------------------------------------------
-      #  function that returns a fully rendered window bitmap from a skin
-      #-------------------------------------------------------------------------
+      # Renders a windowskip to bitmap
+      # @param width [Integer]
+      # @param height [Integer]
+      # @param path [String]
+      # @param slice [Rect]
       def set_bitmap(width:, height:, path:, slice:)
         window = SpriteHash.bitmap(path)
         output = ::Bitmap.new(width, height)
@@ -43,7 +47,6 @@ module LUTS
         # returns the newly formed window
         self.bitmap = output
       end
-      #-------------------------------------------------------------------------
     end
   end
 end

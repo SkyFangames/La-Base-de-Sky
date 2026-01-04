@@ -482,7 +482,7 @@ class Battle
     # Swap held items back to their original holders (in trainer battles only)
     if trainerBattle?
       2.times do |side|
-        pbParty(side).length.each do |i|
+        pbParty(side).length.times do |i|
           pkmn = pbParty(side)[i]
           next if !pkmn
           next if @initialItems[side][i][1] == side && @initialItems[side][i][2] == i

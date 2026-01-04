@@ -219,7 +219,7 @@ class Battle
       pkmn.calc_stats
       battler&.pbUpdate(false)
       @scene.pbRefreshOne(battler.index) if battler
-      pbDisplayPaused(_INTL("¡{1} subió al nivel {2}!", pkmn.name, curLevel)) { pbSEPlay("Pkmn level up") }
+      pbDisplayPaused(_INTL("¡{1} subió al nivel {2}!", pkmn.name, curLevel) + "\\se[Pkmn level up]\\wtnp[30]")
       @scene.pbLevelUp(pkmn, battler, oldTotalHP, oldAttack, oldDefense,
                        oldSpAtk, oldSpDef, oldSpeed)
       # Learn all moves learned at this level
@@ -232,6 +232,7 @@ class Battle
   # Learning a move
   #=============================================================================
   def pbLearnMove(idxParty, newMove)
+    return if $PokemonSystem.skip_move_learning == 0
     pkmn = pbParty(0)[idxParty]
     return if !pkmn
     pkmnName = pkmn.name
@@ -242,7 +243,7 @@ class Battle
     # Pokémon has space for the new move; just learn it
     if pkmn.numMoves < Pokemon::MAX_MOVES
       pkmn.learn_move(newMove)
-      pbDisplay(_INTL("¡{1} ha aprendido {2}!", pkmnName, moveName)) { pbSEPlay("Pkmn move learnt") }
+      pbDisplay(_INTL("¡{1} ha aprendido {2}!", pkmnName, moveName) + "\\se[Pkmn move learnt]\\wtnp[30]")
       if battler
         battler.moves.push(Move.from_pokemon_move(self, pkmn.moves.last))
         battler.pbCheckFormOnMovesetChange
@@ -259,9 +260,9 @@ class Battle
           oldMoveName = pkmn.moves[forgetMove].name
           pkmn.moves[forgetMove] = Pokemon::Move.new(newMove)   # Replaces current/total PP
           battler.moves[forgetMove] = Move.from_pokemon_move(self, pkmn.moves[forgetMove]) if battler
-          pbDisplayPaused(_INTL("1, 2, y... ... ... ¡Puf!")) { pbSEPlay("Battle ball drop") }
+          pbDisplayPaused(_INTL("1, 2, y... ... ... ¡Puf!") + "\\se[Battle ball drop]\\wtnp[10]")
           pbDisplayPaused(_INTL("{1} olvidó como usar {2}. Y...", pkmnName, oldMoveName))
-          pbDisplay(_INTL("¡{1} aprendió {2}!", pkmnName, moveName)) { pbSEPlay("Pkmn move learnt") }
+          pbDisplay(_INTL("¡{1} aprendió {2}!", pkmnName, moveName) + "\\se[Pkmn move learnt]\\wtnp[30]")
           battler&.pbCheckFormOnMovesetChange
           break
         elsif pbDisplayConfirm(_INTL("¿Quieres que no aprenda {1}?", moveName))

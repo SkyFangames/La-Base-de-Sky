@@ -1,24 +1,26 @@
 #===============================================================================
-#  Class used for generating scrolling backgrounds (move animations)
+#  Luka's Scripting Utilities
+#
+#  Scrolling sprite class for new sprite engine
 #===============================================================================
 module Sprites
   class Scrolling < Base
-    #-------------------------------------------------------------------------
-    attr_accessor :speed, :direction, :vertical, :pulse, :min_o, :max_o
-    #-------------------------------------------------------------------------
-    #  set default attribute values
-    #-------------------------------------------------------------------------
+    # @return [Numeric] additional properties
+    attr_accessor :speed, :direction, :vertical, :pulse, :min_o, :max_o, :current_x, :current_y
+
+    # Sets default attribute values
     def default!
       super
       additional_defaults
     end
-    #-------------------------------------------------------------------------
-    #  set sprite bitmap
-    #-------------------------------------------------------------------------
-    def set_bitmap(bmp, vertical: false, pulse: false, speed: 1)
-      additional_defaults
 
-      bmp       = SpriteHash.bitmap(bmp)
+    # Sets sprite bitmap
+    # @param path [String]
+    # @param vertical [Boolean]
+    # @param pulse [Boolean]
+    # @param speed [Numeric]
+    def set_bitmap(path, vertical: false, pulse: false, speed: @speed)
+      bmp       = SpriteHash.bitmap(path)
       @vertical = vertical
       @pulse    = pulse
       @speed    = speed
@@ -43,10 +45,10 @@ module Sprites
       end
 
       bmp.dispose
+      self
     end
-    #-------------------------------------------------------------------------
-    #  update sprite animation
-    #-------------------------------------------------------------------------
+
+    # Updates sprite animation
     def update
       @frame += 1
 
@@ -75,9 +77,8 @@ module Sprites
     end
 
     private
-    #-------------------------------------------------------------------------
-    #  class specific defaults
-    #-------------------------------------------------------------------------
+
+    # Class specific defaults
     def additional_defaults
       @direction ||= 1
       @speed     ||= 3
@@ -88,7 +89,6 @@ module Sprites
       @current_x   = 0.0
       @current_y   = 0.0
     end
-    #-------------------------------------------------------------------------
   end
 end
 

@@ -336,6 +336,20 @@ module Settings
   # 1 (como pasa en Teselia con Victini, que es el nº 0 de la Pokédex).
   DEXES_WITH_OFFSETS  = []
 
+  #-----------------------------------------------------------------------------
+  # Pokémon summary.
+  #-----------------------------------------------------------------------------
+
+  # Determina si se muestra la opcion para cambiar los motes en los datos del Pokémon
+  ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN = (MECHANICS_GENERATION >= 9)
+  # Determina si se muestra la opcion para cambiar los movimientos en los datos del Pokémon
+  ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN   = (MECHANICS_GENERATION >= 9)
+
+  # Agregar opcion para skippear el aprendizaje de movimientos al subir de nivel
+  # luego podrán ser recordados en el recordador.
+  ALLOW_SKIPPING_MOVE_LEARNING = (MECHANICS_GENERATION >= 9)
+
+
   #=============================================================================
 
   # Un conjunto de listas, cada contiene detalles de un gráfico que será mostrado

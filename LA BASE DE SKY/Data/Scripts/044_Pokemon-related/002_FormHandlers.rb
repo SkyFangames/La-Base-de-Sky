@@ -261,7 +261,7 @@ MultipleForms.register(:ROTOM, {
         pkmn.moves[old_move_index].id = new_move_id
         new_move_name = pkmn.moves[old_move_index].name
         pbMessage(_INTL("{1} olvidó {2}...", pkmn.name, old_move_name) + "\1")
-        pbMessage("\\se[]" + _INTL("¡{1} aprendió {2}!", pkmn.name, new_move_name) + "\\se[Pkmn move learnt]")
+        pbMessage("\\se[]" + _INTL("¡{1} aprendió {2}!", pkmn.name, new_move_name) + "\\se[Pkmn move learnt]\\wtnp[30]")
       end
     elsif !new_move_id.nil?
       # Just learn the new move
@@ -498,7 +498,7 @@ MultipleForms.register(:ZYGARDE, {
     next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
   },
   "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    if endBattle
+    if pkmn.fainted? || endBattle
       pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
     end
   }
