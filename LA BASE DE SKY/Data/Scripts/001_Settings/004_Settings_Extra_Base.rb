@@ -277,4 +277,6 @@ REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NI
 ########################################################################################
 FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
 
+SHOW_SPRITES_IN_FORM_CHANGER = true
+
 
