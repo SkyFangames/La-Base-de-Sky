@@ -1035,6 +1035,117 @@ module UpDownArrowMixin
 end
 
 #===============================================================================
+# Hover image mixin for command windows with images
+#===============================================================================
+module HoverImageMixin
+  def initHoverImage
+    @hover_image = Sprite.new(self.viewport)
+    @hover_image.z = self.z + 100
+    @hover_image.visible = false
+    @hover_animated_bitmap = nil
+    @current_image_path = nil
+  end
+
+  def parseCommandsWithImages(commands)
+    @commands = []
+    @command_images = []
+    commands.each do |cmd|
+      if cmd.is_a?(Array)
+        @commands.push(cmd[0])
+        @command_images.push(cmd[1]) if cmd.length > 1 && cmd[1]
+      else
+        @commands.push(cmd)
+      end
+    end
+  end
+
+  def disposeHoverImage
+    if @hover_image
+      @hover_image.bitmap.dispose if @hover_image.bitmap && !@hover_animated_bitmap
+      @hover_image.dispose
+      @hover_image = nil
+    end
+    @hover_animated_bitmap.dispose if @hover_animated_bitmap&.respond_to?(:dispose)
+    @hover_animated_bitmap = nil
+  end
+
+  def updateHoverImage
+    return unless self.active && self.visible && @command_images&.length > 0
+    
+    initHoverImage unless @hover_image
+    image_source = @command_images[self.index]
+    
+    if image_source && self.index >= 0 && self.index < @command_images.length
+      setHoverImage(image_source) if @current_image_path != image_source
+      updateHoverImagePosition if @hover_image.visible
+    else
+      @hover_image.visible = false
+      @current_image_path = nil
+    end
+  end
+
+  private
+
+  def setHoverImage(source)
+    return unless isValidImageSource?(source)
+    
+    clearHoverBitmap
+    # Keep reference to AnimatedBitmap or DeluxeBitmapWrapper to prevent garbage collection
+    if source.is_a?(AnimatedBitmap) || (defined?(DeluxeBitmapWrapper) && source.is_a?(DeluxeBitmapWrapper))
+      @hover_animated_bitmap = source
+    end
+    @hover_image.bitmap = copyBitmap(extractBitmap(source))
+    @current_image_path = source
+    @hover_image.visible = true
+    updateHoverImagePosition
+  rescue => e
+    puts "Error loading hover image: #{e.message}"
+    @hover_image.visible = false
+    @current_image_path = nil
+  end
+
+  def isValidImageSource?(source)
+    source.is_a?(Bitmap) || source.is_a?(AnimatedBitmap) || 
+    (defined?(DeluxeBitmapWrapper) && source.is_a?(DeluxeBitmapWrapper)) ||
+    (source.is_a?(String) && File.exist?(source))
+  end
+
+  def extractBitmap(source)
+    case source
+    when AnimatedBitmap then source.bitmap
+    when Bitmap then source
+    when String then Bitmap.new(source)
+    else
+      # Handle DeluxeBitmapWrapper if defined
+      if defined?(DeluxeBitmapWrapper) && source.is_a?(DeluxeBitmapWrapper)
+        source.bitmap
+      end
+    end
+  end
+
+  def copyBitmap(bitmap)
+    return nil unless bitmap && !bitmap.disposed?
+    copy = Bitmap.new(bitmap.width, bitmap.height)
+    copy.blt(0, 0, bitmap, Rect.new(0, 0, bitmap.width, bitmap.height))
+    copy
+  end
+
+  def clearHoverBitmap
+    if @hover_image.bitmap && !@hover_animated_bitmap
+      @hover_image.bitmap.dispose
+    end
+    @hover_image.bitmap = nil
+  end
+
+  def updateHoverImagePosition
+    @hover_image.z = self.z + 100
+    @hover_image.viewport = self.viewport
+    @hover_image.x = self.x - @hover_image.bitmap.width
+    @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
+  end
+end
+
+#===============================================================================
 #
 #===============================================================================
 class SpriteWindow_SelectableEx < SpriteWindow_Selectable
@@ -1153,17 +1264,19 @@ end
 #
 #===============================================================================
 class Window_CommandPokemon < Window_DrawableCommand
+  include HoverImageMixin
   attr_reader :commands
 
   def initialize(commands, width = nil)
     @starting = true
-    @commands = []
     dims = []
     super(0, 0, 32, 32)
-    getAutoDims(commands, dims, width)
+    @commands = []
+    parseCommandsWithImages(commands)
+    getAutoDims(@commands, dims, width)
     self.width = dims[0]
     self.height = dims[1]
-    @commands = commands
+    initHoverImage
     self.active = true
     @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
@@ -1190,6 +1303,11 @@ class Window_CommandPokemon < Window_DrawableCommand
     return ret
   end
 
+  def dispose
+    disposeHoverImage
+    super
+  end
+
   def index=(value)
     super
     refresh if !@starting
@@ -1199,6 +1317,11 @@ class Window_CommandPokemon < Window_DrawableCommand
     @commands = value
     @item_max = commands.length
     self.update_cursor_rect
+    self.refresh
+  end
+
+  def command_images=(value)
+    @command_images = value
     self.refresh
   end
 
@@ -1235,6 +1358,11 @@ class Window_CommandPokemon < Window_DrawableCommand
     pbDrawShadowText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
                      rect.width, rect.height, @commands[index], self.baseColor, self.shadowColor)
   end
+  
+  def update
+    super
+    updateHoverImage
+  end
 end
 
 #===============================================================================
@@ -1247,17 +1375,20 @@ end
 #
 #===============================================================================
 class Window_AdvancedCommandPokemon < Window_DrawableCommand
+  include HoverImageMixin
   attr_reader :commands
-
+  attr_reader :command_images
+  
   def initialize(commands, width = nil)
     @starting = true
-    @commands = []
     dims = []
     super(0, 0, 32, 32)
-    getAutoDims(commands, dims, width)
+    @commands = []
+    parseCommandsWithImages(commands)
+    getAutoDims(@commands, dims, width)
     self.width = dims[0]
     self.height = dims[1]
-    @commands = commands
+    initHoverImage
     self.active = true
     @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
@@ -1284,6 +1415,11 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
     return ret
   end
 
+  def dispose
+    disposeHoverImage
+    super
+  end
+
   def index=(value)
     super
     refresh if !@starting
@@ -1293,6 +1429,11 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
     @commands = value
     @item_max = commands.length
     self.update_cursor_rect
+    self.refresh
+  end
+
+  def command_images=(value)
+    @command_images = value
     self.refresh
   end
 
@@ -1386,6 +1527,11 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
                                rect.width, rect.height, @commands[index], rect.height, true, true, false, self)
       drawFormattedChars(self.contents, chars)
     end
+  end
+
+  def update
+    super
+    updateHoverImage
   end
 end
 
