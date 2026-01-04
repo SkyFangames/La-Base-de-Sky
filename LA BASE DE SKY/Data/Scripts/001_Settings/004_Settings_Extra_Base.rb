@@ -277,6 +277,12 @@ REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NI
 ########################################################################################
 FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
 
+# Este listado es para que el cambia formas permita cambiar a esa especie pero no a una forma especifica
+# Por ejemplo, si quieres que el cambia formas permita cambiar a Floette pero no cambiarlo a la form Flor Eterna
+CURRENT_SPECIES_BLACKLIST = [:FLOETTE_5]
+
+# Habilitar o deshabilitar la visualización de sprites en el cambiador de formas
+# Al posarse sobre una opción en el cambia formas, se mostrará el sprite del Pokémon con esa forma
 SHOW_SPRITES_IN_FORM_CHANGER = true
 
 
