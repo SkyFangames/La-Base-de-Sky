@@ -20,6 +20,78 @@ def pbUpdateSceneMap
 end
 
 #===============================================================================
+# Parse choice images from event comments
+# Place comments before Show Choices command in the event:
+#   ChoiceImage: 1, species, PIKACHU, 0
+#   ChoiceImage: 2, species, CHARIZARD, 0
+#   ChoiceImage: 1, Graphics/Pokemon/Front/PIKACHU
+#===============================================================================
+def pbGetChoiceImages(commands)
+  return nil unless pbMapInterpreterRunning?
+  interpreter = pbMapInterpreter
+  event = interpreter.get_self
+  return nil unless event
+  
+  # Find the current command index in the event
+  current_index = interpreter.instance_variable_get(:@index)
+  return nil unless current_index
+  
+  choice_images = {}
+  # Look backwards from current position for ChoiceImage comments
+  # Stop when we hit structural boundaries (When branches, other Show Choices, etc.)
+  (current_index - 1).downto(0) do |i|
+    item = event.list[i]
+    # Stop at structural commands that indicate we've crossed into another section
+    # 102: Show Choices, 402: When [**] (choice branch), 404: End (choice branch)
+    break if [102, 402, 404].include?(item.code)
+    # Skip non-comment commands but continue searching
+    next unless [108, 408].include?(item.code)
+    next unless item.parameters[0].start_with?("ChoiceImage:")
+    
+    # Parse: "ChoiceImage: INDEX, TYPE, ..."
+    parts = item.parameters[0].sub("ChoiceImage:", "").split(",").map(&:strip)
+    next if parts.length < 2
+    
+    index = parts[0].to_i - 1  # Convert to 0-based index
+    next if index < 0
+    
+    bitmap = nil
+    if parts[1] == "species" && parts.length >= 3
+      species = parts[2].to_sym
+      form = parts[3] ? parts[3].to_i : 0
+      bitmap = GameData::Species.sprite_bitmap(species, form) if GameData::Species.exists?(species)
+    else
+      # Direct file path - join all parts after index in case path contains commas
+      file_path = parts[1..-1].join(",").strip
+      # Try to resolve bitmap with or without extension
+      resolved_path = pbResolveBitmap(file_path)
+      if resolved_path
+        bitmap = AnimatedBitmap.new(resolved_path)
+      end
+    end
+    
+    choice_images[index] = bitmap if bitmap
+  end
+  
+  return choice_images.empty? ? nil : choice_images
+end
+
+def pbParseChoiceImages(commands)
+  choice_images = pbGetChoiceImages(commands)
+  return commands unless choice_images
+  
+  parsed_commands = []
+  commands.each_with_index do |cmd, i|
+    if choice_images[i]
+      parsed_commands.push([cmd, choice_images[i]])
+    else
+      parsed_commands.push(cmd)
+    end
+  end
+  return parsed_commands
+end
+
+#===============================================================================
 #
 #===============================================================================
 def pbEventCommentInput(*args)
@@ -771,7 +843,9 @@ end
 
 def pbShowCommands(msgwindow, commands = nil, cmdIfCancel = 0, defaultCmd = 0)
   return 0 if !commands
-  cmdwindow = Window_AdvancedCommandPokemon.new(commands)
+  # Parse commands to extract any image tags
+  parsed_commands = pbParseChoiceImages(commands)
+  cmdwindow = Window_AdvancedCommandPokemon.new(parsed_commands)
   cmdwindow.z = 99999
   cmdwindow.visible = true
   cmdwindow.resizeToFit(cmdwindow.commands)
