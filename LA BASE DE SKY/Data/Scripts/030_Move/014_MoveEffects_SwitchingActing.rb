@@ -213,10 +213,11 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   end
 
   def pbMoveFailed?(user, targets)
-    if @battle.field.weather == :Snowstorm &&
-       (user.wild? || !@battle.pbCanChooseNonActive?(user.index))
-      @battle.pbDisplay(_INTL("But it failed!"))
-      return true
+    if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
+      if !@battle.pbCanStartWeather?(:Snowstorm)
+        @battle.pbDisplay(_INTL("But it failed!"))
+        return true
+      end
     end
     return false
   end
@@ -365,7 +366,7 @@ class Battle::Move::BindTarget < Battle::Move
     when :CLAMP
       msg = _INTL("¡{1} atenazó a {2}!", user.pbThis, target.pbThis(true))
     when :FIRESPIN
-      msg = _INTL("¡{1} fue atrapado en el torbellino!", target.pbThis)
+      msg = _INTL("¡{1} fue atrapado en el torbellino de fuego!", target.pbThis)
     when :INFESTATION
       msg = _INTL("¡{1} es presa del acoso de  {2}!", target.pbThis, user.pbThis(true))
     when :MAGMASTORM
@@ -654,7 +655,6 @@ class Battle::Move::TargetUsesItsLastUsedMoveAgain < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "MultiTurnAttackBideThenReturnDoubleDamage",       # Bide
       "ProtectUserFromDamagingMovesKingsShield",         # King's Shield
@@ -887,7 +887,6 @@ class Battle::Move::DisableTargetUsingDifferentMove < Battle::Move
 
   def initialize(battle, move)
     super
-    # TODO: Any more function codes that belong in here?
     @moveBlacklist = [
       "DisableTargetUsingDifferentMove",               # Encore
       # Struggle

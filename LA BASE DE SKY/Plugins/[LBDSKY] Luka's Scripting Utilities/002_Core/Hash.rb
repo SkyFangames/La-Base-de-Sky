@@ -1,5 +1,7 @@
 #===============================================================================
-#  Extensions for the `Hash` data types
+#  Luka's Scripting Utilities
+#
+#  Core extensions for the `Hash` class
 #===============================================================================
 class ::Hash
   #-----------------------------------------------------------------------------
@@ -71,11 +73,13 @@ class ::Hash
       end
     end
   end
-  #-----------------------------------------------------------------------------
+
+  # @return [Boolean]
   def blank?
     keys.empty?
   end
 
+  # @return [Boolean]
   def present?
     !blank?
   end

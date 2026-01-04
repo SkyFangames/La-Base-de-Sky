@@ -13,30 +13,30 @@ class Battle::AI::AIBattler
   end
 
   def refresh_battler
+    old_party_index = @party_index
     @battler = @ai.battle.battlers[@index]
     @party_index = battler.pokemonIndex
   end
 
-  def pokemon;     return battler.pokemon;     end
-  def level;       return battler.level;       end
-  def hp;          return battler.hp;          end
-  def totalhp;     return battler.totalhp;     end
-  def fainted?;    return battler.fainted?;    end
-  def status;      return battler.status;      end
-  def statusCount; return battler.statusCount; end
-  def gender;      return battler.gender;      end
-  def turnCount;   return battler.turnCount;   end
-  def effects;     return battler.effects;     end
-  def stages;      return battler.stages;      end
+  def pokemon;         return battler.pokemon;         end
+  def level;           return battler.level;           end
+  def hp;              return battler.hp;              end
+  def totalhp;         return battler.totalhp;         end
+  def fainted?;        return battler.fainted?;        end
+  def status;          return battler.status;          end
+  def statusCount;     return battler.statusCount;     end
+  def gender;          return battler.gender;          end
+  def turnCount;       return battler.turnCount;       end
+  def effects;         return battler.effects;         end
+  def stages;          return battler.stages;          end
   def statStageAtMax?(stat); return battler.statStageAtMax?(stat); end
   def statStageAtMin?(stat); return battler.statStageAtMin?(stat); end
-  def moves;       return battler.moves;       end
-  def form;        return battler.form;        end
+  def criticalHitRate; return battler.criticalHitRate; end
+  def moves;           return battler.moves;       end
+  def wild?;           return battler.wild?;       end
+  def form;            return battler.form;        end
   def eachMoveWithIndex(&block); battler.eachMoveWithIndex(&block); end
-
-  def wild?
-    return @ai.battle.wildBattle? && opposes?
-  end
+  def pbSpeed;         return battler.pbSpeed;         end
 
   def name
     return sprintf("%s (%d)", battler.name, @index)
@@ -77,7 +77,7 @@ class Battle::AI::AIBattler
       ret += [self.totalhp / 8, 1].max if [:Sun, :HarshSun].include?(weather) && battler.takesIndirectDamage?
       ret -= [self.totalhp / 8, 1].max if [:Rain, :HeavyRain].include?(weather) && battler.canHeal?
     when :ICEBODY
-      ret -= [self.totalhp / 16, 1].max if weather == :Hail && battler.canHeal?
+      ret -= [self.totalhp / 16, 1].max if [:Hail, :Snowstorm].include?(weather) && battler.canHeal?
     when :RAINDISH
       ret -= [self.totalhp / 16, 1].max if [:Rain, :HeavyRain].include?(weather) && battler.canHeal?
     when :SOLARPOWER
@@ -126,7 +126,7 @@ class Battle::AI::AIBattler
         ret += [self.totalhp / 8, 1].max if battler.takesIndirectDamage?
       end
     else
-      @ai.each_battler do |b, i|
+      @ai.each_battler(true) do |b, i|
         next if i == @index || b.effects[PBEffects::LeechSeed] != @index
         amt = [[b.totalhp / 8, b.hp].min, 1].max
         amt = (amt * 1.3).floor if has_active_item?(:BIGROOT)
@@ -159,6 +159,11 @@ class Battle::AI::AIBattler
     if self.effects[PBEffects::Curse]
       ret += [self.totalhp / 4, 1].max if battler.takesIndirectDamage?
     end
+    # Salt Cure
+    if self.effects[PBEffects::SaltCure]
+      fraction = (has_type?(:STEEL) || has_type?(:WATER)) ? 4 : 8
+      ret += [self.totalhp / fraction, 1].max if battler.takesIndirectDamage?
+    end
     # Trapping damage
     if self.effects[PBEffects::Trapping] > 1 && battler.takesIndirectDamage?
       amt = (Settings::MECHANICS_GENERATION >= 6) ? self.totalhp / 8 : self.totalhp / 16
@@ -171,7 +176,7 @@ class Battle::AI::AIBattler
     return 999_999 if self.effects[PBEffects::PerishSong] == 1
     # Bad Dreams
     if battler.asleep? && self.statusCount > 1 && battler.takesIndirectDamage?
-      @ai.each_battler do |b, i|
+      @ai.each_battler(true) do |b, i|
         next if i == @index || !b.battler.near?(battler) || !b.has_active_ability?(:BADDREAMS)
         ret += [self.totalhp / 8, 1].max
       end
@@ -180,16 +185,6 @@ class Battle::AI::AIBattler
     if has_active_item?(:STICKYBARB) && battler.takesIndirectDamage?
       ret += [self.totalhp / 8, 1].max
     end
-    
-    # Salt Cure
-    if self.effects[PBEffects::SaltCure]
-      if has_type?(:WATER) || has_type?(:STEEL)
-        ret += [self.totalhp / 4, 1].max
-      else
-        ret += [self.totalhp / 8, 1].max
-      end
-    end
-    
     return ret
   end
 
@@ -229,7 +224,7 @@ class Battle::AI::AIBattler
 
   #-----------------------------------------------------------------------------
 
-  def types; return battler.types; end
+  def types;                          return battler.types;                  end
   def pbTypes(withExtraType = false); return battler.pbTypes(withExtraType); end
 
   def has_type?(type)
@@ -283,6 +278,10 @@ class Battle::AI::AIBattler
 
   def has_mold_breaker?
     return battler.hasMoldBreaker?
+  end
+
+  def being_mold_broken?
+    return battler.beingMoldBroken?
   end
 
   #-----------------------------------------------------------------------------
@@ -416,13 +415,6 @@ class Battle::AI::AIBattler
   #       that call this method separately check for it being negated, because
   #       they need to do something special in that case.
   def wants_ability?(ability = :NONE)
-    Battle::AI::GEN_9_BASE_ABILITY_RATINGS.each_pair do |val, abilities|
-      next if Battle::AI::BASE_ABILITY_RATINGS[val] && Battle::AI::BASE_ABILITY_RATINGS[val].include?(ability)
-      Battle::AI::BASE_ABILITY_RATINGS[val] = [] if !Battle::AI::BASE_ABILITY_RATINGS[val]
-      abilities.each{|ab|
-        Battle::AI::BASE_ABILITY_RATINGS[val].push(ab)
-      }
-    end
     ability = ability.id if !ability.is_a?(Symbol) && ability.respond_to?("id")
     # Get the base ability rating
     ret = 0
@@ -448,13 +440,6 @@ class Battle::AI::AIBattler
   #       that call this method separately check for it being negated, because
   #       they need to do something special in that case.
   def wants_item?(item)
-    Battle::AI::GEN_9_BASE_ITEM_RATINGS.each_pair do |val, items|
-      next if Battle::AI::BASE_ITEM_RATINGS[val] && Battle::AI::BASE_ITEM_RATINGS[val].include?(item)
-      Battle::AI::BASE_ITEM_RATINGS[val] = [] if !Battle::AI::BASE_ITEM_RATINGS[val]
-      items.each{|itm|
-        Battle::AI::BASE_ITEM_RATINGS[val].push(itm)
-      }
-    end
     item = :NONE if !item
     item = item.id if !item.is_a?(Symbol) && item.respond_to?("id")
     # Get the base item rating
@@ -517,14 +502,14 @@ class Battle::AI::AIBattler
           :MAGOBERRY   => :SPEED,
           :WIKIBERRY   => :SPECIAL_ATTACK
         }[item]
-        if @battler.nature.stat_changes.any? { |val| val[0] == flavor_stat && val[1] < 0 }
-          ret -= 3 if @battler.pbCanConfuseSelf?(false)
+        if battler.nature.stat_changes.any? { |val| val[0] == flavor_stat && val[1] < 0 }
+          ret -= 3 if battler.pbCanConfuseSelf?(false)
         end
       end
     when :ASPEARBERRY, :CHERIBERRY, :CHESTOBERRY, :PECHABERRY, :RAWSTBERRY
       # Status cure
       cured_status = {
-        :ASPEAR      => :FROZEN,
+        :ASPEARBERRY => :FROZEN,
         :CHERIBERRY  => :PARALYSIS,
         :CHESTOBERRY => :SLEEP,
         :PECHABERRY  => :POISON,
@@ -575,7 +560,7 @@ class Battle::AI::AIBattler
       ret += (@ai.stat_raise_worthwhile?(self, :ACCURACY, true)) ? 6 : -6
     when :LANSATBERRY
       # Focus energy
-      ret += (self.effects[PBEffects::FocusEnergy] < 2) ? 6 : -6
+      ret += (self.criticalHitRate < 2) ? 6 : -6
     when :LEPPABERRY
       # Restore PP
       ret += 6
@@ -597,8 +582,9 @@ class Battle::AI::AIBattler
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
       # Foresight
-      if (user&.has_active_ability?(:SCRAPPY) || self.effects[PBEffects::Foresight]) &&
-         defend_type == :GHOST
+      if (user&.has_active_ability?(:SCRAPPY) ||
+          user&.has_active_ability?(:MINDSEYE) ||
+          self.effects[PBEffects::Foresight]) && defend_type == :GHOST
         ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
       end
       # Miracle Eye
@@ -615,14 +601,6 @@ class Battle::AI::AIBattler
     if !battler.airborne? && defend_type == :FLYING && type == :GROUND
       ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
     end
-    
-    if Effectiveness.ineffective_type?(type, defend_type)
-      if user&.has_active_ability?(:MINDSEYE) && defend_type == :GHOST
-        ret = Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
-      end
-    end
-    
     return ret
   end
 end
-

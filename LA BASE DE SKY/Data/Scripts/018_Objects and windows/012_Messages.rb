@@ -20,6 +20,78 @@ def pbUpdateSceneMap
 end
 
 #===============================================================================
+# Parse choice images from event comments
+# Place comments before Show Choices command in the event:
+#   ChoiceImage: 1, species, PIKACHU, 0
+#   ChoiceImage: 2, species, CHARIZARD, 0
+#   ChoiceImage: 1, Graphics/Pokemon/Front/PIKACHU
+#===============================================================================
+def pbGetChoiceImages(commands)
+  return nil unless pbMapInterpreterRunning?
+  interpreter = pbMapInterpreter
+  event = interpreter.get_self
+  return nil unless event
+  
+  # Find the current command index in the event
+  current_index = interpreter.instance_variable_get(:@index)
+  return nil unless current_index
+  
+  choice_images = {}
+  # Look backwards from current position for ChoiceImage comments
+  # Stop when we hit structural boundaries (When branches, other Show Choices, etc.)
+  (current_index - 1).downto(0) do |i|
+    item = event.list[i]
+    # Stop at structural commands that indicate we've crossed into another section
+    # 102: Show Choices, 402: When [**] (choice branch), 404: End (choice branch)
+    break if [102, 402, 404].include?(item.code)
+    # Skip non-comment commands but continue searching
+    next unless [108, 408].include?(item.code)
+    next unless item.parameters[0].start_with?("ChoiceImage:")
+    
+    # Parse: "ChoiceImage: INDEX, TYPE, ..."
+    parts = item.parameters[0].sub("ChoiceImage:", "").split(",").map(&:strip)
+    next if parts.length < 2
+    
+    index = parts[0].to_i - 1  # Convert to 0-based index
+    next if index < 0
+    
+    bitmap = nil
+    if parts[1] == "species" && parts.length >= 3
+      species = parts[2].to_sym
+      form = parts[3] ? parts[3].to_i : 0
+      bitmap = GameData::Species.sprite_bitmap(species, form) if GameData::Species.exists?(species)
+    else
+      # Direct file path - join all parts after index in case path contains commas
+      file_path = parts[1..-1].join(",").strip
+      # Try to resolve bitmap with or without extension
+      resolved_path = pbResolveBitmap(file_path)
+      if resolved_path
+        bitmap = AnimatedBitmap.new(resolved_path)
+      end
+    end
+    
+    choice_images[index] = bitmap if bitmap
+  end
+  
+  return choice_images.empty? ? nil : choice_images
+end
+
+def pbParseChoiceImages(commands)
+  choice_images = pbGetChoiceImages(commands)
+  return commands unless choice_images
+  
+  parsed_commands = []
+  commands.each_with_index do |cmd, i|
+    if choice_images[i]
+      parsed_commands.push([cmd, choice_images[i]])
+    else
+      parsed_commands.push(cmd)
+    end
+  end
+  return parsed_commands
+end
+
+#===============================================================================
 #
 #===============================================================================
 def pbEventCommentInput(*args)
@@ -112,23 +184,13 @@ class ChooseNumberParams
   end
 
   def minNumber
-    ret = 0
-    if @maxDigits > 0
-      ret = -((10**@maxDigits) - 1)
-    else
-      ret = @minNumber
-    end
+    ret = (@maxDigits > 0) ? -((10**@maxDigits) - 1) : @minNumber
     ret = 0 if !@negativeAllowed && ret < 0
     return ret
   end
 
   def maxNumber
-    ret = 0
-    if @maxDigits > 0
-      ret = ((10**@maxDigits) - 1)
-    else
-      ret = @maxNumber
-    end
+    ret = (@maxDigits > 0) ? ((10**@maxDigits) - 1) : @maxNumber
     ret = 0 if !@negativeAllowed && ret < 0
     return ret
   end
@@ -138,11 +200,8 @@ class ChooseNumberParams
   end
 
   def maxDigits
-    if @maxDigits > 0
-      return @maxDigits
-    else
-      return [numDigits(self.minNumber), numDigits(self.maxNumber)].max
-    end
+    return @maxDigits if @maxDigits > 0
+    return [numDigits(self.minNumber), numDigits(self.maxNumber)].max
   end
 
   #-----------------------------------------------------------------------------
@@ -439,7 +498,7 @@ def pbDisposeMessageWindow(msgwindow)
 end
 
 #===============================================================================
-# Main message-displaying function
+# Main message-displaying function.
 #===============================================================================
 def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = nil)
   return if !msgwindow
@@ -784,7 +843,9 @@ end
 
 def pbShowCommands(msgwindow, commands = nil, cmdIfCancel = 0, defaultCmd = 0)
   return 0 if !commands
-  cmdwindow = Window_AdvancedCommandPokemon.new(commands)
+  # Parse commands to extract any image tags
+  parsed_commands = pbParseChoiceImages(commands)
+  cmdwindow = Window_AdvancedCommandPokemon.new(parsed_commands)
   cmdwindow.z = 99999
   cmdwindow.visible = true
   cmdwindow.resizeToFit(cmdwindow.commands)
@@ -794,8 +855,8 @@ def pbShowCommands(msgwindow, commands = nil, cmdIfCancel = 0, defaultCmd = 0)
   loop do
     Graphics.update
     Input.update
-    cmdwindow.update
     msgwindow&.update
+    cmdwindow.update
     yield if block_given?
     if Input.trigger?(Input::BACK)
       if cmdIfCancel > 0
@@ -923,9 +984,9 @@ def pbMessageFreeText(message, currenttext, passwordbox, maxlength, width = 240,
 end
 
 
-def pb_free_text_with_on_input(msg_window, current_text, password_box, max_length, width = 240, on_input = nil)
+def pb_free_text_with_on_input(msg_window, current_text, password_box, max_length, width = 240, on_input = nil, position = :right)
   window = WindowTextEntryKeyboardPerKey.new(current_text, 0, 0, width, 64, nil, false, on_input)
-  configure_window(window, msg_window, password_box, max_length, current_text)
+  configure_window(window, msg_window, password_box, max_length, current_text, position)
 
   Input.text_input = true
   loop do
@@ -952,20 +1013,20 @@ def handle_input(window, msg_window, current_text = '')
   yield if block_given?
 end
 
-def configure_window(window, msg_window, password_box, max_length, current_text)
+def configure_window(window, msg_window, password_box, max_length, current_text, position = :right)
   window.maxlength = max_length
   window.visible = true
   window.z = 99_999
-  pbPositionNearMsgWindow(window, msg_window, :right)
+  pbPositionNearMsgWindow(window, msg_window, position)
   window.text = current_text
   window.password_char = '*' if password_box
 end
 
-def pb_message_free_text_with_on_input(message, currenttext, passwordbox, maxlength, width = 240, on_input = nil, &block)
+def pb_message_free_text_with_on_input(message, currenttext, passwordbox, maxlength, width = 240, on_input = nil, position = :right, &block)
   msgwindow = pbCreateMessageWindow
   retval = pbMessageDisplay(msgwindow, message, true,
                             proc { |msgwndw|
-                              next pb_free_text_with_on_input(msgwndw, currenttext, passwordbox, maxlength, width, on_input, &block)
+                              next pb_free_text_with_on_input(msgwndw, currenttext, passwordbox, maxlength, width, on_input, position, &block)
                             }, &block)
   pbDisposeMessageWindow(msgwindow)
   retval

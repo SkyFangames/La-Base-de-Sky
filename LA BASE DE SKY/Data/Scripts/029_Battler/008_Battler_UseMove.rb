@@ -370,9 +370,9 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(user)
       user.pbChangeTypes(move.calcType)
       typeName = GameData::Type.get(move.calcType).name
-      @battle.pbDisplay(_INTL("¡{1} ha cambiado a tipo {2}!", user.pbThis, typeName))
-      @battle.pbHideAbilitySplash(user)
+      @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", user.pbThis, typeName))
       user.markAbilityUsedThisSwitchIn if Settings::MECHANICS_GENERATION >= 9
+      @battle.pbHideAbilitySplash(user)
       # NOTE: The GF games say that if Curse is used by a non-Ghost-type
       #       Pokémon which becomes Ghost-type because of Protean, it should
       #       target and curse itself. I think this is silly, so I'm making it
@@ -578,8 +578,11 @@ class Battle::Battler
         # NOTE: Petal Dance being used because of Dancer shouldn't lock the
         #       Dancer into using that move, and shouldn't contribute to its
         #       turn counter if it's already locked into Petal Dance.
+        # NOTE: ProtectRate shouldn't be reset because of Dancer using a
+        #       different move.
         oldOutrage = nextUser.effects[PBEffects::Outrage]
         nextUser.effects[PBEffects::Outrage] += 1 if nextUser.effects[PBEffects::Outrage] > 0
+        oldProtectRate = nextUser.effects[PBEffects::ProtectRate]
         oldCurrentMove = nextUser.currentMove
         preTarget = choice[3]
         preTarget = user.index if nextUser.opposes?(user) || !nextUser.opposes?(preTarget)
@@ -596,6 +599,7 @@ class Battle::Battler
           @battle.checkStatChangeResponses
           nextUser.lastRoundMoved = oldLastRoundMoved
           nextUser.effects[PBEffects::Outrage] = oldOutrage
+          nextUser.effects[PBEffects::ProtectRate] = oldProtectRate
           nextUser.currentMove = oldCurrentMove
           @battle.pbJudge
           return if @battle.decided?

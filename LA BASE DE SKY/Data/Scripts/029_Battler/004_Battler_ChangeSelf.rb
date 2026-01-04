@@ -228,7 +228,8 @@ class Battle::Battler
     end
     # Eiscue - Ice Face
     if !ability_changed && isSpecies?(:EISCUE) && self.ability == :ICEFACE &&
-       @form == 1 && [:Hail, :Snowstorm].include?(effectiveWeather)
+       @form == 1 && !@effects[PBEffects::Transform] &&
+       [:Hail, :Snowstorm].include?(effectiveWeather)
       @canRestoreIceFace = true   # Changed form at end of round
     end
   end
@@ -296,13 +297,15 @@ class Battle::Battler
       pbChangeForm(newForm, _INTL("¡{1} se ha transformado en su Forma Completa!", pbThis))
     end
     # Morpeko - Hunger Switch
-    if isSpecies?(:MORPEKO) && hasActiveAbility?(:HUNGERSWITCH) && endOfRound
+    if isSpecies?(:MORPEKO) && !@effects[PBEffects::Transform] &&
+       hasActiveAbility?(:HUNGERSWITCH) && endOfRound
       # Intentionally doesn't show the ability splash or a message
       newForm = (@form + 1) % 2
       pbChangeForm(newForm, nil)
     end
     # Terapagos - Tera Shift
-    if isSpecies?(:TERAPAGOS) && self.ability == :TERASHIFT && @form == 0
+    if isSpecies?(:TERAPAGOS) && !@effects[PBEffects::Transform] &&
+       self.ability == :TERASHIFT && @form == 0
       @battle.pbShowAbilitySplash(self, true)
       @battle.pbHideAbilitySplash(self)
       pbChangeForm(1, _INTL("{1} transformed!", pbThis))

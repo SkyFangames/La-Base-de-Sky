@@ -509,6 +509,7 @@ class Battle::Move::AddStickyWebToFoeSide < Battle::Move
   def canMagicCoat?; return true; end
 
   def pbMoveFailed?(user, targets)
+    return false if damagingMove?
     if user.pbOpposingSide.effects[PBEffects::StickyWeb]
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
@@ -642,6 +643,10 @@ class Battle::Move::RemoveUserBindingAndEntryHazards < Battle::Move::StatUpMove
     @statUp = [:SPEED, 1]
   end
 
+  def pbAdditionalEffect(user, target)
+    super if Settings::MECHANICS_GENERATION >= 8
+  end
+
   def pbEffectAfterAllHits(user, target)
     return if user.fainted? || target.damageState.unaffected
     if user.effects[PBEffects::Trapping] > 0
@@ -676,10 +681,6 @@ class Battle::Move::RemoveUserBindingAndEntryHazards < Battle::Move::StatUpMove
       @battle.scene.pbUpdateHazardSprites if @battle.scene.respond_to?(:pbUpdateHazardSprites)
       @battle.pbDisplay(_INTL("La red viscosa lanzada a {1} ha desaparecido.", user.pbTeam))
     end
-  end
-
-  def pbAdditionalEffect(user, target)
-    super if Settings::MECHANICS_GENERATION >= 8
   end
 end
 

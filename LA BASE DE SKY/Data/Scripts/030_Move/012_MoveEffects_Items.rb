@@ -7,23 +7,19 @@ class Battle::Move::UserTakesTargetItem < Battle::Move
     return if user.wild?   # Wild Pokémon can't thieve
     return if user.fainted?
     return if target.damageState.unaffected || target.damageState.substitute
-    return if !target.item || (user.item && !target.wild?)
+    return if !target.item || user.item
     return if target.unlosableItem?(target.item)
     return if user.unlosableItem?(target.item)
     return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
-    itemName = target.itemName
-    user.item = target.item unless target.wild?
-    # Permanently steal the item from wild Pokémon
-    if target.wild? && target.item == target.initialItem #&& !user.initialItem
-      # user.setInitialItem(target.item)
-      # De acuerdo a los cambios de 9na gen los objetos robados de salvajes deben ir a la mochila
-      $bag.add(target.item)
+    if Settings::STOLEN_HELD_ITEMS_GO_INTO_BAG && user.pbOwnedByPlayer? && target.wild? &&
+       $bag.can_add?(target.item_id)
+      $bag.add(target.item_id)
       target.pbRemoveItem
-      @battle.pbDisplay(_INTL("¡{1} robó {2} a {3}! ¡El objeto está en la mochila!", user.pbThis, itemName, target.pbThis(true)))
+      @battle.initialItems[target.idxOwnSide][target.pokemonIndex][0] = nil   # To avoid duplication
     else
-      target.pbRemoveItem(false)
-      @battle.pbDisplay(_INTL("¡{1} robó {2} a {3}!", user.pbThis, itemName, target.pbThis(true)))
+      @battle.swapHeldItems(user, target)
     end
+    @battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, target.pbThis(true), user.itemName))
     user.pbHeldItemTriggerCheck
   end
 end
@@ -55,16 +51,8 @@ class Battle::Move::TargetTakesUserItem < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    itemName = user.itemName
-    target.item = user.item
-    # Permanently steal the item from wild Pokémon
-    if user.wild? && !target.initialItem && user.item == user.initialItem
-      target.setInitialItem(user.item)
-      user.pbRemoveItem
-    else
-      user.pbRemoveItem(false)
-    end
-    @battle.pbDisplay(_INTL("¡{1} ha recibido {2} de {3}!", target.pbThis, itemName, user.pbThis(true)))
+    @battle.swapHeldItems(user, target)
+    @battle.pbDisplay(_INTL("{1} recibió {2} de {3}!", target.pbThis, target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggerCheck
   end
 end
@@ -111,23 +99,10 @@ class Battle::Move::UserTargetSwapItems < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    oldUserItem = user.item
-    oldUserItemName = user.itemName
-    oldTargetItem = target.item
-    oldTargetItemName = target.itemName
-    user.item                             = oldTargetItem
-    user.effects[PBEffects::ChoiceBand]   = nil if !user.hasActiveAbility?(:GORILLATACTICS)
-    user.effects[PBEffects::Unburden]     = (!user.item && oldUserItem) if user.hasActiveAbility?(:UNBURDEN)
-    target.item                           = oldUserItem
-    target.effects[PBEffects::ChoiceBand] = nil if !target.hasActiveAbility?(:GORILLATACTICS)
-    target.effects[PBEffects::Unburden]   = (!target.item && oldTargetItem) if target.hasActiveAbility?(:UNBURDEN)
-    # Permanently steal the item from wild Pokémon
-    if target.wild? && !user.initialItem && oldTargetItem == target.initialItem
-      user.setInitialItem(oldTargetItem)
-    end
+    @battle.swapHeldItems(user, target)
     @battle.pbDisplay(_INTL("¡{1} cambió objetos con su oponente!", user.pbThis))
-    @battle.pbDisplay(_INTL("{1} obtuvo {2}.", user.pbThis, oldTargetItemName)) if oldTargetItem
-    @battle.pbDisplay(_INTL("{1} obtuvo {2}.", target.pbThis, oldUserItemName)) if oldUserItem
+    @battle.pbDisplay(_INTL("{1} obtuvo {2}.", user.pbThis, user.itemName)) if user.item
+    @battle.pbDisplay(_INTL("{1} obtuvo {2}.", target.pbThis, target.itemName)) if target.item
     user.pbHeldItemTriggerCheck
     target.pbHeldItemTriggerCheck
   end
@@ -148,17 +123,15 @@ class Battle::Move::RestoreUserConsumedItem < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    item = user.recycleItem
-    user.item = item
-    user.setInitialItem(item) if @battle.wildBattle? && !user.initialItem
+    user.item = user.recycleItem
     user.setRecycleItem(nil)
     user.effects[PBEffects::PickupItem] = nil
     user.effects[PBEffects::PickupUse]  = 0
-    itemName = GameData::Item.get(item).name
-    if itemName.starts_with_vowel?
-      @battle.pbDisplay(_INTL("¡{1} encontró un {2}!", user.pbThis, itemName))
+    item_name = user.itemName
+    if item_name.starts_with_vowel?
+      @battle.pbDisplay(_INTL("¡{1} encontró un {2}!", user.pbThis, item_name))
     else
-      @battle.pbDisplay(_INTL("¡{1} encontró un {2}!", user.pbThis, itemName))
+      @battle.pbDisplay(_INTL("¡{1} encontró un {2}!", user.pbThis, item_name))
     end
     user.pbHeldItemTriggerCheck
   end
@@ -186,7 +159,8 @@ class Battle::Move::RemoveTargetItem < Battle::Move
     return if !target.item || target.unlosableItem?(target.item)
     return if target.hasActiveAbility?(:STICKYHOLD) && !target.beingMoldBroken?
     itemName = target.itemName
-    target.pbRemoveItem(false)
+    target.pbRemoveItem
+    target.knockOffItem
     @battle.pbDisplay(_INTL("¡{1} dejó caer su {2}!", target.pbThis, itemName))
   end
 end
@@ -341,7 +315,6 @@ end
 # that negates the move, e.g. Lightning Rod, the bearer of that ability will
 # have their ability triggered regardless of whether they are holding a berry,
 # and they will not consume their berry. (Teatime)
-# TODO: This isn't quite right for the messages shown when a berry is consumed.
 #===============================================================================
 class Battle::Move::AllBattlersConsumeBerry < Battle::Move
   def pbMoveFailed?(user, targets)

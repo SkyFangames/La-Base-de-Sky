@@ -94,7 +94,7 @@ class TriadCard
     if type
       typebitmap = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
       type_number = GameData::Type.get(type).icon_position
-      typerect = Rect.new(0, type_number * 28, 64, 28)
+      typerect = Rect.new(0, type_number * GameData::Type::ICON_SIZE[1], *GameData::Type::ICON_SIZE)
       bitmap.blt(8, 50, typebitmap.bitmap, typerect, 192)
       typebitmap.dispose
     end
@@ -116,7 +116,7 @@ class TriadCard
     bitmap.blt(0, 0, cardbitmap.bitmap, Rect.new(0, 0, cardbitmap.width, cardbitmap.height))
     # Draw type icon
     type_number = GameData::Type.get(@type).icon_position
-    typerect = Rect.new(0, type_number * 28, 64, 28)
+    typerect = Rect.new(0, type_number * GameData::Type::ICON_SIZE[1], *GameData::Type::ICON_SIZE)
     bitmap.blt(8, 50, typebitmap.bitmap, typerect, 192)
     # Draw Pokémon icon
     bitmap.blt(8, 24, iconbitmap.bitmap, Rect.new(0, 0, 64, 64))
@@ -1128,7 +1128,7 @@ def pbBuyTriads
       $PokemonGlobal.triads.add(item, quantity)
       $player.money -= price
       goldwindow.text = _INTL("Dinero:\n{1}", pbGetGoldString)
-      pbMessage(_INTL("¡Aquí tienes! ¡Muchas gracias!") + "\\se[Mart buy item]")
+      pbMessage(_INTL("¡Aquí tienes! ¡Muchas gracias!") + "\\se[Mart buy item]\\wtnp[20]")
     end
   end
   cmdwindow.dispose
@@ -1222,7 +1222,7 @@ def pbSellTriads
             $player.money += price
             goldwindow.text = _INTL("Dinero:\n{1}", pbGetGoldString)
             $PokemonGlobal.triads.remove(item, quantity)
-            pbMessage(_INTL("Has entregado las cartas de {1} y has recibido ${2}.", itemname, price.to_s_formatted) + "\\se[Mart buy item]")
+            pbMessage(_INTL("Has entregado las cartas de {1} y has recibido ${2}.", itemname, price.to_s_formatted) + "\\se[Mart buy item]\\wtnp[20]")
             commands = []
             $PokemonGlobal.triads.length.times do |i|
               item = $PokemonGlobal.triads[i]

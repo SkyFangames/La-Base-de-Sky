@@ -39,6 +39,18 @@ def shadowctagFromRgb(param)
   return shadowctagFromColor(Color.new_from_rgb(param))
 end
 
+#===============================================================================
+# CJK (Chinese, Japanese, Korean) Character Detection.
+#===============================================================================
+# Detects if a string (character or text) contains CJK characters
+# Supports: Chinese (U+4E00-U+9FFF), Hiragana (U+3040-U+309F),
+#           Katakana (U+30A0-U+30FF), Hangul (UAC00-UD7AF)
+def is_CJK?(str)
+  return false if !str || str.empty?
+  return str[/[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]/] ? true : false
+end
+
+
 # @deprecated This method is slated to be removed in v22.
 def colorToRgb32(color)
   Deprecation.warn_method("colorToRgb32", "v22", "color.to_rgb32")
@@ -170,7 +182,8 @@ def getFormattedTextFast(bitmap, xDst, yDst, widthDst, heightDst, text, lineheig
       end
     end
     isspace = (textchars[position][/\s/] || isWaitChar(textchars[position])) ? true : false
-    if hadspace && !isspace
+    isCJKChar = is_CJK?(textchars[position])
+    if hadspace && !isspace && !isCJKChar
       # set last word to here
       lastword[0] = characters.length
       lastword[1] = x
@@ -178,6 +191,12 @@ def getFormattedTextFast(bitmap, xDst, yDst, widthDst, heightDst, text, lineheig
       hadnonspace = true
     elsif isspace
       hadspace = true
+    elsif isCJKChar
+      # CJK characters can always break, treat each as a potential word boundary
+      lastword[0] = characters.length
+      lastword[1] = x
+      hadspace = false
+      hadnonspace = true
     end
     texty = (lineheight * y) + yDst + yStart - 2   # TEXT OFFSET
     # Push character
@@ -619,10 +638,12 @@ def getFormattedText(bitmap, xDst, yDst, widthDst, heightDst, text, lineheight =
       end
     end
     isspace = false
+    isCJKChar = false
     if textchars[position]
       isspace = (textchars[position][/\s/] || isWaitChar(textchars[position])) ? true : false
+      isCJKChar = is_CJK?(textchars[position])
     end
-    if hadspace && !isspace
+    if hadspace && !isspace && !isCJKChar
       # set last word to here
       lastword[0] = characters.length
       lastword[1] = x
@@ -630,6 +651,12 @@ def getFormattedText(bitmap, xDst, yDst, widthDst, heightDst, text, lineheight =
       hadnonspace = true
     elsif isspace
       hadspace = true
+    elsif isCJKChar
+      # CJK characters can always break, treat each as a potential word boundary
+      lastword[0] = characters.length
+      lastword[1] = x
+      hadspace = false
+      hadnonspace = true
     end
     texty = (lineheight * y) + yDst + yStart - 2   # TEXT OFFSET
     colors = getLastColors(colorstack, opacitystack, defaultcolors)
@@ -814,7 +841,7 @@ def getLineBrokenText(bitmap, value, width, dims)
   return ret if !bitmap || bitmap.disposed? || width <= 0
   textmsg = value.clone
   ret.push(["", 0, 0, 0, bitmap.text_size("X").height, 0, 0, 0, 0])
-  while (c = textmsg.slice!(/\n|(\S*([ \r\t\f]?))/)) != nil
+  while (c = textmsg.slice!(/\n|[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]|(\S*([ \r\t\f]?))/)) != nil
     break if c == ""
     length = c.scan(/./m).length
     ccheck = c
@@ -869,7 +896,7 @@ def getLineBrokenChunks(bitmap, value, width, dims, plain = false)
   return ret if !bitmap || bitmap.disposed? || width <= 0
   textmsg = value.clone
   color = Font.default_color
-  while (c = textmsg.slice!(/\n|[^ \r\t\f\n\-]*\-+|(\S*([ \r\t\f]?))/)) != nil
+  while (c = textmsg.slice!(/\n|[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]|[^ \r\t\f\n\-]*\-+|(\S*([ \r\t\f]?))/)) != nil
     break if c == ""
     ccheck = c
     if ccheck == "\n"

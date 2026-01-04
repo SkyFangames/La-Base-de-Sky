@@ -352,7 +352,7 @@ class Window
     end
   end
 
-  def privRefresh(changeBitmap = false)
+  def privRefresh(change_bitmap = false)
     return if self.disposed?
     backopac = self.back_opacity * self.opacity / 255
     contopac = self.contents_opacity
@@ -505,7 +505,7 @@ class Window
     @sprites["back"].y = @y + 2
     @sprites["cursor"].x = @x + 16 + @cursor_rect.x
     @sprites["cursor"].y = @y + 16 + @cursor_rect.y
-    if changeBitmap && @_windowskin && !@_windowskin.disposed?
+    if change_bitmap && @_windowskin && !@_windowskin.disposed?
       width = @cursor_rect.width
       height = @cursor_rect.height
       if width > 0 && height > 0

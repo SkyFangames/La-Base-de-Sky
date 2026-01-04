@@ -461,7 +461,7 @@ class Battle
         end
         # Lose money from losing a battle
         pbLoseMoney
-        pbDisplayPaused(_INTL("You blacked out!")) if !@rules[:continue_if_lose] && pbPlayerBattlerCount == 0
+        pbDisplayPaused(_INTL("¡Estás fuera de combate!")) if !@rules[:continue_if_lose] && pbPlayerBattlerCount == 0
       elsif @decision == Outcome::LOSE   # Lost in a Battle Frontier battle
         if @opponent
           @opponent.each_with_index do |trainer, i|
@@ -478,6 +478,44 @@ class Battle
       PBDebug.log_header("===== Pokémon caught =====")
       PBDebug.log("")
       @scene.pbWildBattleSuccess if !Settings::GAIN_EXP_FOR_CAPTURE
+    end
+    # Swap held items back to their original holders (in trainer battles only)
+    if trainerBattle?
+      2.times do |side|
+        pbParty(side).length.times do |i|
+          pkmn = pbParty(side)[i]
+          next if !pkmn
+          next if @initialItems[side][i][1] == side && @initialItems[side][i][2] == i
+          # Find other Pokémon holding the item originally held by pkmn
+          other_side = side
+          other_i = i
+          @initialItems.each_with_index do |side_items, this_side|
+            side_items.each_with_index do |pkmn_item, this_i|
+              next if pkmn_item[1] != side || pkmn_item[2] != i
+              other_side = this_side
+              other_i = this_i
+              break
+            end
+            break if other_side != side || other_i != i
+          end
+          # Swap items
+          pkmn.item, pbParty(other_side)[other_i].item = pbParty(other_side)[other_i].item, pkmn.item
+          @initialItems[side][i], @initialItems[other_side][other_i] = @initialItems[other_side][other_i], @initialItems[side][i]
+        end
+      end
+    end
+    # Restore knocked-off items and some consumed items
+    @initialItems.each_with_index do |side_items, side|
+      side_items.each_with_index do |pkmn_item, i|
+        next if pkmn_item[0].nil?   # No initial item to restore
+        next if pbParty(side)[i].hasItem?   # Can't restore item if already holding one
+        if pkmn_item[3] ||   # Knocked off
+           (Settings::MECHANICS_GENERATION >= 9 &&   # Only restores consumed items in Gen 9+
+            !GameData::Item.get(pkmn_item[0]).is_berry?)   # Can't restore consumed berries
+          # Restore knocked off/consumed item
+          pbParty(side)[i].item = pkmn_item[0]
+        end
+      end
     end
     # Register captured Pokémon in the Pokédex, and store them
     pbRecordAndStoreCaughtPokemon
@@ -507,12 +545,11 @@ class Battle
       Battle::AbilityEffects.triggerOnSwitchOut(b.ability, b, true) if b.abilityActive?
       b.pokemon.makeUnmega if b.mega? 
     end
+    # Reset Pokémon forms upon leaving battle
     2.times do |side|   # We do both sides in case the foe side includes a caught wild Pokémon
       pbParty(side).each_with_index do |pkmn, i|
         next if !pkmn
-        @peer.pbOnLeavingBattle(self, pkmn, @usedInBattle[side][i], true)   # Reset form
-        pkmn.item = @initialItems[side][i]
-        # TODO: Restore all consumed held items (except berries).
+        @peer.pbOnLeavingBattle(self, pkmn, @usedInBattle[side][i], true)
       end
     end
     return @decision

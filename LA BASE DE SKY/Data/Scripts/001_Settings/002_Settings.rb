@@ -70,6 +70,8 @@ module Settings
   SHINY_POKEMON_CHANCE = (MECHANICS_GENERATION >= 6) ? 16 : 8
   # Si los Super Variocolor están activados (usan una animación distinta).
   SUPER_SHINY          = (MECHANICS_GENERATION >= 8)
+
+  LEGENDARIES_HAVE_SOME_PERFECT_IVS   = (MECHANICS_GENERATION >= 6)
   # La posibilidad de que un Pokémon salvaje o de Huevo tenga Pokérus
   # (Cuántos de cada 65536).
   POKERUS_CHANCE       = 3
@@ -330,6 +332,20 @@ module Settings
   # diferentes Pokédex que pongas aquí empezarán su número en 0 en lugar de en
   # 1 (como pasa en Teselia con Victini, que es el nº 0 de la Pokédex).
   DEXES_WITH_OFFSETS  = []
+
+  #-----------------------------------------------------------------------------
+  # Pokémon summary.
+  #-----------------------------------------------------------------------------
+
+  # Determina si se muestra la opcion para cambiar los motes en los datos del Pokémon
+  ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN = (MECHANICS_GENERATION >= 9)
+  # Determina si se muestra la opcion para cambiar los movimientos en los datos del Pokémon
+  ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN   = (MECHANICS_GENERATION >= 9)
+
+  # Agregar opcion para skippear el aprendizaje de movimientos al subir de nivel
+  # luego podrán ser recordados en el recordador.
+  ALLOW_SKIPPING_MOVE_LEARNING = (MECHANICS_GENERATION >= 9)
+
 
   #=============================================================================
 

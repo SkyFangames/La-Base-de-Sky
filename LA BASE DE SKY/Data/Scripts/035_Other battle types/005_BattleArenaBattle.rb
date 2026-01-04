@@ -1,5 +1,5 @@
 #===============================================================================
-# Success state
+# Success state.
 #===============================================================================
 class Battle::SuccessState
   attr_accessor :typeMod
@@ -56,10 +56,10 @@ class BattleArenaBattle < Battle
   end
 
   def pbEORSwitch(favorDraws = false)
-    return if favorDraws && @decision == 5
-    return if !favorDraws && @decision > 0
+    return if favorDraws && @decision == Battle::Outcome::DRAW
+    return if !favorDraws && decided?
     pbJudge
-    return if @decision > 0
+    return if decided?
     2.times do |side|
       next if !@battlers[side].fainted?
       next if @partyindexes[side] + 1 >= self.pbParty(side).length
@@ -115,7 +115,7 @@ class BattleArenaBattle < Battle
       @count = 0
     end
     super
-    return if @decision != 0
+    return if decided?
     # Update mind rating (asserting that a move was chosen)
     2.times do |side|
       if @choices[side][2] && @choices[side][0] == :UseMove
@@ -126,7 +126,7 @@ class BattleArenaBattle < Battle
 
   def pbEndOfRoundPhase
     super
-    return if @decision != 0
+    return if decided?
     # Update skill rating
     2.times do |side|
       @skill[side] += self.successStates[side].skill
@@ -136,8 +136,8 @@ class BattleArenaBattle < Battle
     @count += 1
     return if @count < 3
     # Half all multi-turn moves
-    @battlers[0].pbCancelMoves(true)
-    @battlers[1].pbCancelMoves(true)
+    @battlers[0].pbCancelMoves(true, true)
+    @battlers[1].pbCancelMoves(true, true)
     # Calculate scores in each category
     ratings1 = [0, 0, 0]
     ratings2 = [0, 0, 0]
@@ -221,6 +221,7 @@ end
 #===============================================================================
 class Battle::Scene
   def pbBattleArenaUpdate
+    Graphics.update
     pbGraphicsUpdate
   end
 
@@ -281,6 +282,8 @@ class Battle::Scene
       infowindow.z        = 99999
       infowindow.visible  = false
       11.times do |i|
+        Graphics.update
+        Input.update
         pbGraphicsUpdate
         pbInputUpdate
         msgwindow.update
@@ -290,6 +293,8 @@ class Battle::Scene
       updateJudgment(infowindow, 0, battler1, battler2, ratings1, ratings2)
       infowindow.visible = true
       11.times do |i|
+        Graphics.update
+        Input.update
         pbGraphicsUpdate
         pbInputUpdate
         msgwindow.update
@@ -350,6 +355,8 @@ class Battle::Scene
       infowindow.visible = false
       msgwindow.visible  = false
       11.times do |i|
+        Graphics.update
+        Input.update
         pbGraphicsUpdate
         pbInputUpdate
         msgwindow.update
@@ -364,4 +371,3 @@ class Battle::Scene
     end
   end
 end
-

@@ -553,8 +553,8 @@ class Battle::Move::RaiseUserAtkSpd1 < Battle::Move::MultiStatUpMove
 end
 
 #===============================================================================
-# Removes trapping moves, entry hazards and Leech Seed on user/user's side.
-# Poisons the target. (Tidy Up)
+# Increases the user's Attack and Speed by 1 stage each. Removes substitutes and
+# entry hazards on both sides. (Tidy Up)
 #===============================================================================
 class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::Move::RaiseUserAtkSpd1
   def pbMoveFailed?(user, targets)
@@ -580,6 +580,7 @@ class Battle::Move::RaiseUserAtkSpd1RemoveEntryHazardsAndSubstitutes < Battle::M
   end
 
   def pbEffectGeneral(user)
+    super
     something_tidied = false
     @battle.allBattlers.each do |b|
       next if b.effects[PBEffects::Substitute] == 0
@@ -872,6 +873,21 @@ class Battle::Move::LowerUserSpAtk1 < Battle::Move::StatDownMove
   def initialize(battle, move)
     super
     @statDown = [:SPECIAL_ATTACK, 1]
+  end
+end
+
+#===============================================================================
+# Decreases the user's Special Attack by 1 stage. Scatters coins that the player
+# picks up after winning the battle. (Make It Rain)
+#===============================================================================
+class Battle::Move::AddMoneyGainedFromBattleLowerUserSpAtk1 < Battle::Move::LowerUserSpAtk1
+  def pbEffectWhenDealingDamage(user, target)
+    return if @stats_lowered
+    if user.pbOwnedByPlayer?
+      @battle.field.effects[PBEffects::PayDay] += 5 * user.level
+    end
+    @battle.pbDisplay(_INTL("¡Se esparcieron monedas por todos lados!"))
+    super
   end
 end
 

@@ -161,6 +161,14 @@ module Settings
   
   # Cerrar el recordador luego de cada ataque
   CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE = false
+
+  # Usar nombres default para el jugador en lugar del nombre de usuario del sistema
+  # Si esta constante está en true, se usarán los nombres de las constantes
+  # MALE_PLAYER_NAME y FEMALE_PLAYER_NAME definidas más abajo. 
+  # En caso contrario, se usará el nombre de usuario del sistema como nombre del jugador.
+  USE_DEFAULT_PLAYER_NAMES = false
+  MALE_PLAYER_NAME = "Rojo"
+  FEMALE_PLAYER_NAME = "Hoja"
 end
 
 
@@ -268,5 +276,13 @@ REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NI
 # Para que el cambia formas no las muestre
 ########################################################################################
 FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
+
+# Este listado es para que el cambia formas permita cambiar a esa especie pero no a una forma especifica
+# Por ejemplo, si quieres que el cambia formas permita cambiar a Floette pero no cambiarlo a la form Flor Eterna
+CURRENT_SPECIES_BLACKLIST = [:FLOETTE_5]
+
+# Habilitar o deshabilitar la visualización de sprites en el cambiador de formas
+# Al posarse sobre una opción en el cambia formas, se mostrará el sprite del Pokémon con esa forma
+SHOW_SPRITES_IN_FORM_CHANGER = true
 
 

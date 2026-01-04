@@ -1,25 +1,32 @@
 #===============================================================================
-#  Extensions for the `Bitmap` class
+#  Luka's Scripting Utilities
+#
+#  Base bitmap class for new sprite engine
 #===============================================================================
 module Sprites
   class Bitmap < ::Bitmap
-    #-------------------------------------------------------------------------
+    # @return [String]
     attr_accessor :path
 
-    def initialize(*args)
+    # @param args [Array<String, Integer]
+    # @param block [Proc]
+    def initialize(*args, &block)
       @path = args.first if args.first.is_a?(String)
 
       super(*args)
+      block.call(self) if block_given?
     end
-    #-------------------------------------------------------------------------
-    #  draws circle on bitmap
-    #-------------------------------------------------------------------------
+
+    # Draws circle on bitmap
+    # @param color [Color]
+    # @param radius [Integer]
+    # @param hollow [Boolean] if circle should be filled in
     def draw_circle(color, radius:, hollow: false)
       # basic circle formula
       # (x - center_x)**2 + (y - center_y)**2 = r**2
       width.times do |x|
         f = (radius**2 - (x - width / 2)**2)
-        next if f < 0
+        next if f.negative?
 
         y1 = -Math.sqrt(f).to_i + height / 2
         y2 = Math.sqrt(f).to_i + height / 2
@@ -32,25 +39,30 @@ module Sprites
         end
       end
     end
-    #-------------------------------------------------------------------------
-    #  sets font parameters
-    #-------------------------------------------------------------------------
+
+    # Sets font parameters
+    # @param name [String]
+    # @param size [Integer]
+    # @param bold [Boolean]
     def set_font(name:, size:, bold: false)
       font.name = name
       font.size = size
       font.bold = bold
     end
-    #-------------------------------------------------------------------------
-    #  applies mask on bitmap
-    #-------------------------------------------------------------------------
+
+    # Applies mask on bitmap
+    # @param mask [Bitmap]
+    # @param offset_x [Integer]
+    # @param offset_y [Integer]
     def mask!(mask = nil, offset_x: 0, offset_y: 0)
       bitmap = clone
-      if mask.is_a?(Bitmap)
+      case mask
+      when Bitmap
         mbmp = mask
-      elsif mask.is_a?(Sprite)
+      when Sprite
         mbmp = mask.bitmap
-      elsif mask.is_a?(String)
-        mbmp = Sprites.bitmap(mask)
+      when String
+        mbmp = LUTS::Sprites.bitmap(mask)
       else
         return false
       end
@@ -76,9 +88,9 @@ module Sprites
       mask.dispose
       cbmp
     end
-    #-------------------------------------------------------------------------
-    #  swap out specified colors (resource intensive, best not use on large sprites)
-    #-------------------------------------------------------------------------
+
+    # Swaps out specified colors (resource intensive, best not use on large sprites)
+    # @param bmp [Bitmap]
     def swap_colors(bmp)
       map = {}.tap do |map_hash|
         bmp.width.times do |x|
@@ -95,20 +107,53 @@ module Sprites
       width.times do |x|
         height.times do |y|
           pixel = get_pixel(x, y)
-          next if pixel.alpha == 0
+          next if pixel.alpha.zero?
 
           final = nil
-          map.keys.each do |key|
+          map.each_key do |key|
             # check for key mapping
             target = Color.new(*key)
             final  = Color.new(*map[key]) if tolerance?(pixel, target)
           end
           # swap current pixel color with target
-          set_pixel(x, y, final) if final && final.is_a?(Color)
+          set_pixel(x, y, final) if final.is_a?(Color)
         end
       end
     end
 
+    # Applies tone to bitmap directly
+    # @param tone [Tone]
+    def apply_tone(tone)
+      # Get raw pixel data
+      pixels = raw_data.unpack('C*')
+
+      # Process 4 pixels at a time (16 bytes) for better performance
+      (0...pixels.length).step(16) do |i|
+        # Bulk process multiple pixels
+        end_idx = [i + 15, pixels.length - 1].min
+
+        (i..end_idx).step(4) do |pixel_base|
+          break if pixel_base + 2 >= pixels.length
+
+          r, g, b = tone.lookup_table.transform(
+            pixels[pixel_base],
+            pixels[pixel_base + 1],
+            pixels[pixel_base + 2]
+          )
+
+          pixels[pixel_base]     = r
+          pixels[pixel_base + 1] = g
+          pixels[pixel_base + 2] = b
+        end
+      end
+
+      # Write modified data back to bitmap
+      self.raw_data = pixels.pack('C*')
+    end
+
+    # @return [Boolean] pixel matches color tolerance
+    # @param pixel [Color]
+    # @param target [Color]
     def tolerance?(pixel, target)
       tol = 0.05
 
@@ -118,7 +163,11 @@ module Sprites
 
       true
     end
-    #-------------------------------------------------------------------------
+
+    # @return [Boolean] finished animating
+    def finished?
+      true
+    end
   end
 end
 
@@ -132,7 +181,7 @@ def pbBitmap(name)
     bmp = RPG::Cache.load_bitmap(dir, file)
     bmp.storedPath = name
   rescue
-    Env.log.warn("Image located at '#{name}' was not found!")
+    LUTS::Logger.warn("Image located at '#{name}' was not found!")
     bmp = Bitmap.new(2,2)
   end
   return bmp

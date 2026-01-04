@@ -161,8 +161,8 @@ class Battle
       [-1] * (@opponent ? @opponent.length : 1)
     ]
     @initialItems      = [
-      Array.new(@party1.length) { |i| (@party1[i]) ? @party1[i].item_id : nil },
-      Array.new(@party2.length) { |i| (@party2[i]) ? @party2[i].item_id : nil }
+      Array.new(@party1.length) { |i| [@party1[i]&.item_id, 0, i, false] },
+      Array.new(@party2.length) { |i| [@party2[i]&.item_id, 1, i, false] }
     ]
     @recycleItems      = [Array.new(@party1.length, nil),   Array.new(@party2.length, nil)]
     @belch             = [Array.new(@party1.length, false), Array.new(@party2.length, false)]
@@ -724,6 +724,43 @@ class Battle
     end
   end
 
+  def initialItem(side, idxParty)
+    @initialItems.each do |this_side|
+      this_side.each do |this_pkmn|
+        return this_pkmn[0] if this_pkmn[1] == side && this_pkmn[2] == idxParty
+      end
+    end
+    return nil
+  end
+
+  def swapHeldItems(battler1, battler2)
+    item1 = battler1.item_id
+    item2 = battler2.item_id
+    battler1.item = item2
+    battler1.effects[PBEffects::ChoiceBand] = nil if !battler1.hasActiveAbility?(:GORILLATACTICS)
+    battler1.effects[PBEffects::Unburden]   = (item1 && !battler1.item) if battler1.hasActiveAbility?(:UNBURDEN)
+    battler2.item = item1
+    battler2.effects[PBEffects::ChoiceBand] = nil if !battler2.hasActiveAbility?(:GORILLATACTICS)
+    battler2.effects[PBEffects::Unburden]   = (item2 && !battler2.item) if battler2.hasActiveAbility?(:UNBURDEN)
+    s1 = battler1.idxOwnSide
+    p1 = battler1.pokemonIndex
+    s2 = battler2.idxOwnSide
+    p2 = battler2.pokemonIndex
+    @initialItems[s1][p1], @initialItems[s2][p2] = @initialItems[s2][p2], @initialItems[s1][p1]
+  end
+
+  def knockOffItem(side, idxParty)
+    @initialItems[side][idxParty][3] = true
+  end
+
+  def recycleItem(side, idxParty)
+    return @recycleItems[side][idxParty]
+  end
+
+  def setRecycleItem(side, idxParty, new_item)
+    @recycleItems[side][idxParty] = new_item
+  end
+
   def clearStagesChangeRecords
     allBattlers(true).each { |b| b.clearStagesChangeRecord }
   end
@@ -761,9 +798,21 @@ class Battle
     return @field.weather
   end
 
+  def pbCanStartWeather?(newWeather, ignore_primal)
+    return false if @field.weather == newWeather
+    primal_weathers = [:HarshSun, :HeavyRain, :StrongWinds]
+    if !ignore_primal && primal_weathers.include?(@field.weather)
+      return newWeather == :None || primal_weathers.include?(newWeather)
+    end
+    return false if Settings::DEFAULT_WEATHER_AND_TERRAIN_CANNOT_BE_REPLACED &&
+                    ![:None, newWeather].include?(@field.defaultWeather) &&
+                    !primal_weathers.include?(newWeather)
+    return true
+  end
+
   # Used for causing weather by a move or by an ability.
   def pbStartWeather(user, newWeather, fixedDuration = false, showAnim = true, message = nil)
-    return if @field.weather == newWeather
+    return if !pbCanStartWeather?(newWeather)
     old_weather = @field.weather
     @field.weather = newWeather
     duration = (fixedDuration) ? 5 : -1
@@ -852,8 +901,7 @@ class Battle
   end
 
   def pbStartWeatherAbility(new_weather, battler, ignore_primal = false, message = nil)
-    return if !ignore_primal && [:HarshSun, :HeavyRain, :StrongWinds].include?(@field.weather)
-    return if @field.weather == new_weather
+    return if !pbCanStartWeather?(newWeather, ignore_primal)
     pbShowAbilitySplash(battler)
     if !Scene::USE_ABILITY_SPLASH
       pbDisplay(_INTL("¡{2} de {1} se activó!", battler.pbThis, battler.abilityName))
@@ -874,8 +922,15 @@ class Battle
     @field.terrainDuration = -1
   end
 
+  def pbCanStartTerrain?(newTerrain)
+    return false if @field.terrain == newTerrain
+    return false if Settings::DEFAULT_WEATHER_AND_TERRAIN_CANNOT_BE_REPLACED &&
+                    ![:None, newTerrain].include?(@field.defaultTerrain)
+    return true
+  end
+
   def pbStartTerrain(user, newTerrain, fixedDuration = true, message = nil)
-    return if @field.terrain == newTerrain
+    return if !pbCanStartTerrain?(newTerrain)
     old_terrain = @field.terrain
     @field.terrain = newTerrain
     duration = (fixedDuration) ? 5 : -1
@@ -892,10 +947,9 @@ class Battle
     else
       case @field.terrain
       when :Electric then pbDisplay(_INTL("¡Se ha formado un campo de corriente eléctrica en el terreno de combate!"))
-      when :Grassy then pbDisplay(_INTL("¡El terreno de combate se ha cubierto de hierba!"))
-      when :Misty then pbDisplay(_INTL("¡La niebla ha envuelto el terreno de combate!"))
-      when :Psychic then pbDisplay(_INTL("¡El terreno de combate se ha vuelto muy extraño!"))
-        pbDisplay(_INTL("¡El terreno de combate se ha vuelto muy extraño!"))
+      when :Grassy   then pbDisplay(_INTL("¡El terreno de combate se ha cubierto de hierba!"))
+      when :Misty    then pbDisplay(_INTL("¡La niebla ha envuelto el terreno de combate!"))
+      when :Psychic  then pbDisplay(_INTL("¡El terreno de combate se ha vuelto muy extraño!"))
       end
     end
     # Check for abilities/items that trigger upon the terrain changing
@@ -919,6 +973,17 @@ class Battle
     allBattlers(true).each { |b| b.pbCheckFormOnTerrainChange }
     allBattlers(true).each { |b| b.pbAbilityOnTerrainChange(old_terrain) }
     allBattlers(true).each { |b| b.pbItemOnTerrainChange(old_terrain) }
+  end
+
+  def pbStartTerrainAbility(new_terrain, battler, message = nil)
+    return if !pbCanStartTerrain?(new_terrain)
+    pbShowAbilitySplash(battler)
+    if !Scene::USE_ABILITY_SPLASH
+      pbDisplay(_INTL("¡{2} de {1} se activó!", battler.pbThis, battler.abilityName))
+    end
+    fixed_duration = true
+    pbStartTerrain(battler, new_terrain, fixed_duration, message)
+    # NOTE: The ability splash is hidden again in def pbStartTerrain.
   end
 
   #-----------------------------------------------------------------------------

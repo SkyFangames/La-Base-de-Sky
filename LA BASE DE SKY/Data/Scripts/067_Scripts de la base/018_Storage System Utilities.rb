@@ -317,12 +317,12 @@ class PokemonBoxArrow < Sprite
     b = @multi ? "g" : (@quickswap ? "q" : "")
     if @grabbingState > 0
       if @grabbingState <= 4 * Graphics.frame_rate / 20
-        @handsprite.changeBitmap("grab" + b)
+        @handsprite.change_bitmap("grab" + b)
         self.y = @spriteY + (4.0 * @grabbingState * 20 / Graphics.frame_rate)
         @grabbingState += 1
       elsif @grabbingState <= 8 * Graphics.frame_rate / 20
         @holding = true
-        @handsprite.changeBitmap("fist" + b)
+        @handsprite.change_bitmap("fist" + b)
         self.y = @spriteY + (4 * ((8 * Graphics.frame_rate / 20) - @grabbingState) * 20 / Graphics.frame_rate)
         @grabbingState += 1
       else
@@ -330,31 +330,31 @@ class PokemonBoxArrow < Sprite
       end
     elsif @placingState > 0
       if @placingState <= 4 * Graphics.frame_rate / 20
-        @handsprite.changeBitmap("fist" + b)
+        @handsprite.change_bitmap("fist" + b)
         self.y = @spriteY + (4.0 * @placingState * 20 / Graphics.frame_rate)
 		    @placingState += 1
       elsif @placingState <= 8 * Graphics.frame_rate / 20
         @holding = false
         @heldpkmn = nil
-        @handsprite.changeBitmap("grab" + b)
+        @handsprite.change_bitmap("grab" + b)
         self.y = @spriteY + (4 * ((8 * Graphics.frame_rate / 20) - @placingState) * 20 / Graphics.frame_rate)
 		    @placingState += 1
       else
         @placingState = 0
       end
     elsif holding?
-      @handsprite.changeBitmap("fist" + b)
+      @handsprite.change_bitmap("fist" + b)
     elsif t == :Selecting
-      @handsprite.changeBitmap("grab" + b)
+      @handsprite.change_bitmap("grab" + b)
     elsif t == :Moving
-      @handsprite.changeBitmap("fist" + b)
+      @handsprite.change_bitmap("fist" + b)
     else   # Idling
       self.x = @spriteX
       self.y = @spriteY
       if @frame < Graphics.frame_rate / 2
-        @handsprite.changeBitmap("point1" + b)
+        @handsprite.change_bitmap("point1" + b)
       else
-        @handsprite.changeBitmap("point2" + b)
+        @handsprite.change_bitmap("point2" + b)
       end
     end
     @frame += 1
@@ -374,40 +374,40 @@ class PokemonBoxArrow < Sprite
     b = @multi ? "g" : (@quickswap ? "q" : "")
     if @grabbing_timer_start
       if System.uptime - @grabbing_timer_start <= GRAB_TIME / 2
-        @handsprite.changeBitmap("grab" + b)
+        @handsprite.change_bitmap("grab" + b)
         self.y = @spriteY + lerp(0, 16, GRAB_TIME / 2, @grabbing_timer_start, System.uptime)
       else
         @holding = true
-        @handsprite.changeBitmap("fist" + b)
+        @handsprite.change_bitmap("fist" + b)
         delta_y = lerp(16, 0, GRAB_TIME / 2, @grabbing_timer_start + (GRAB_TIME / 2), System.uptime)
         self.y = @spriteY + delta_y
         @grabbing_timer_start = nil if delta_y == 0
       end
     elsif @placing_timer_start
       if System.uptime - @placing_timer_start <= GRAB_TIME / 2
-        @handsprite.changeBitmap("fist" + b)
+        @handsprite.change_bitmap("fist" + b)
         self.y = @spriteY + lerp(0, 16, GRAB_TIME / 2, @placing_timer_start, System.uptime)
       else
         @holding = false
         @heldpkmn = nil
-        @handsprite.changeBitmap("grab" + b)
+        @handsprite.change_bitmap("grab" + b)
         delta_y = lerp(16, 0, GRAB_TIME / 2, @placing_timer_start + (GRAB_TIME / 2), System.uptime)
         self.y = @spriteY + delta_y
         @placing_timer_start = nil if delta_y == 0
       end
     elsif holding?
-      @handsprite.changeBitmap("fist" + b)
+      @handsprite.change_bitmap("fist" + b)
     elsif t == :Selecting
-      @handsprite.changeBitmap("grab" + b)
+      @handsprite.change_bitmap("grab" + b)
     elsif t == :Moving
-      @handsprite.changeBitmap("fist" + b)
+      @handsprite.change_bitmap("fist" + b)
     else   # Idling
       self.x = @spriteX
       self.y = @spriteY
       if (System.uptime / 0.5).to_i.even?   # Changes every 0.5 seconds
-        @handsprite.changeBitmap("point1" + b)
+        @handsprite.change_bitmap("point1" + b)
       else
-        @handsprite.changeBitmap("point2" + b)
+        @handsprite.change_bitmap("point2" + b)
       end
     end
     @updating = false

@@ -211,9 +211,9 @@ class Game_Map
     $passa_data = @data
 
     # Debug temporal
-    echoln "Passages: #{$passa_passages.nil? ? 'NIL' : 'OK'}"
-    echoln "Priorities: #{$passa_priorities.nil? ? 'NIL' : 'OK'}"
-    echoln "Terrain tags: #{$passa_terrain_tags.nil? ? 'NIL' : 'OK'}"
+    # echoln "Passages: #{$passa_passages.nil? ? 'NIL' : 'OK'}"
+    # echoln "Priorities: #{$passa_priorities.nil? ? 'NIL' : 'OK'}"
+    # echoln "Terrain tags: #{$passa_terrain_tags.nil? ? 'NIL' : 'OK'}"
   end
 end
 

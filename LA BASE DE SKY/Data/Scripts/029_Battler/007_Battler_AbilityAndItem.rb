@@ -113,8 +113,7 @@ class Battle::Battler
       #       up later. Essentials ignores this, and allows Trace to trigger
       #       whenever it can even in Gen 5 battle mechanics.
       choices = @battle.allOtherSideBattlers(@index).select do |b|
-        next !b.ungainableAbility? &&
-             ![:POWEROFALCHEMY, :RECEIVER, :TRACE].include?(b.ability_id)
+        next !b.ungainableAbility? || b.ability_id == :WONDERGUARD
       end
       if choices.length > 0
         choice = choices[@battle.pbRandom(choices.length)]
@@ -307,12 +306,9 @@ class Battle::Battler
     return false
   end
 
-  # permanent is whether the item is lost even after battle. Is false for Knock
-  # Off.
-  def pbRemoveItem(permanent = true)
+  def pbRemoveItem
     @effects[PBEffects::ChoiceBand] = nil if !hasActiveAbility?(:GORILLATACTICS)
     @effects[PBEffects::Unburden]   = true if self.item && hasActiveAbility?(:UNBURDEN)
-    setInitialItem(nil) if permanent && self.item == self.initialItem
     self.item = nil
   end
 

@@ -907,7 +907,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 25
 Flags = Fling_10
-Description = Aumenta el Ataque pero solo permite usar un tipo de movimiento. Debe llevarla un Pokémon.
+Description = Aumenta el Ataque un 50% pero solo permite usar un tipo de movimiento un 50%. Debe llevarla un Pokémon.
 #-------------------------------
 [CHOICESPECS]
 Name = Gafas Elección
@@ -916,7 +916,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 25
 Flags = Fling_10
-Description = Potencian el At. Esp. pero solo permiten usar un tipo de movimiento. Debe llevarlas un Pokémon.
+Description = Potencian el At. Esp. un 50% pero solo permiten usar un tipo de movimiento. Debe llevarlas un Pokémon.
 #-------------------------------
 [CHOICESCARF]
 Name = Pañuelo Elección
@@ -925,7 +925,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 25
 Flags = Fling_10
-Description = Debe llevarlo un Pokémon. Potencia la Velocidad, pero solo permite usar un tipo de movimiento.
+Description = Debe llevarlo un Pokémon. Potencia la Velocidad un 50%, pero solo permite usar un tipo de movimiento.
 #-------------------------------
 [HEATROCK]
 Name = Roca Calor
@@ -1188,7 +1188,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 25
 Flags = Fling_30
-Description = Potencia los movimientos, pero consume PS con cada ataque. Debe llevarla un Pokémon.
+Description = Potencia los movimientos, pero consume PS con cada ataque un 30%. Debe llevarla un Pokémon.
 #-------------------------------
 [EXPERTBELT]
 Name = Cinta Experto
@@ -1197,7 +1197,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 25
 Flags = Fling_10
-Description = Potencia ligeramente los movimientos supereficaces. Debe llevarla un Pokémon.
+Description = Potencia ligeramente los movimientos supereficaces un 20%. Debe llevarla un Pokémon.
 #-------------------------------
 [METRONOME]
 Name = Metrónomo
@@ -1518,7 +1518,7 @@ Pocket = 1
 Price = 3000
 SellPrice = 500
 Flags = Fling_30
-Description = Gema con forma de lágrima que fortalece los ataques de tipo Agua. Debe llevarla un Pokémon.
+Description = Gema con forma de lágrima que fortalece los ataques de tipo Agua un 20%. Debe llevarla un Pokémon.
 #-------------------------------
 [MAGNET]
 Name = Imán
@@ -1563,7 +1563,7 @@ Pocket = 1
 Price = 3000
 SellPrice = 500
 Flags = Fling_70
-Description = Flecha venenosa que refuerza los movimientos de tipo Veneno. Debe llevarla un Pokémon.
+Description = Flecha venenosa que refuerza los movimientos de tipo Veneno un 20%. Debe llevarla un Pokémon.
 #-------------------------------
 [SOFTSAND]
 Name = Arena Fina
@@ -3107,7 +3107,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que cura heridas y restaura 20 PS de un Pokémon.
 #-------------------------------
 [SUPERPOTION]
@@ -3117,7 +3117,7 @@ Pocket = 2
 Price = 700
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que cura heridas y restaura 60 PS de un Pokémon.
 #-------------------------------
 [HYPERPOTION]
@@ -3127,7 +3127,7 @@ Pocket = 2
 Price = 1500
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que cura heridas y restaura 120 PS de un Pokémon.
 #-------------------------------
 [MAXPOTION]
@@ -3138,7 +3138,7 @@ Price = 2500
 BPPrice = 2
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que cura heridas y restaura todos los PS de un Pokémon.
 #-------------------------------
 [FULLRESTORE]
@@ -3148,7 +3148,7 @@ Pocket = 2
 Price = 3000
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina que restaura todos los PS y cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [SACREDASH]
@@ -3167,7 +3167,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que libera a un Pokémon de las garras del sueño.
 #-------------------------------
 [ANTIDOTE]
@@ -3177,7 +3177,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que contrarresta los efectos del veneno en un Pokémon.
 #-------------------------------
 [BURNHEAL]
@@ -3187,7 +3187,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing    
 Description = Medicina en spray que cura las quemaduras a un Pokémon.
 #-------------------------------
 [PARALYZEHEAL]
@@ -3197,7 +3197,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que cura a un Pokémon paralizado.
 #-------------------------------
 [ICEHEAL]
@@ -3207,7 +3207,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que descongela a un Pokémon.
 #-------------------------------
 [FULLHEAL]
@@ -3217,7 +3217,7 @@ Pocket = 2
 Price = 400
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina en spray que cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [PEWTERCRUNCHIES]
@@ -3227,7 +3227,7 @@ Pocket = 2
 Price = 250
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Snack crujiente típico de Ciudad Plateada. Cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [RAGECANDYBAR]
@@ -3247,7 +3247,7 @@ Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Dulce típico de Pueblo Lavacalda que cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [OLDGATEAU]
@@ -3257,7 +3257,7 @@ Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Especialidad de la Vieja Mansión. Cura los problemas de estado de un Pokémon.
 #-------------------------------
 [CASTELIACONE]
@@ -3267,7 +3267,7 @@ Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Especialidad de Ciudad Porcelana. Cura los problemas de estado de un Pokémon.
 #-------------------------------
 [LUMIOSEGALETTE]
@@ -3277,7 +3277,7 @@ Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Postre típico de Ciudad Luminalia. Cura los problemas de estado de un Pokémon.
 #-------------------------------
 [SHALOURSABLE]
@@ -3287,7 +3287,7 @@ Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Especialidad de Ciudad Yantra. Cura los problemas de estado de un Pokémon.
 #-------------------------------
 [BIGMALASADA]
@@ -3297,7 +3297,7 @@ Pocket = 2
 Price = 350
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Fritura típica de Alola que cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [REVIVE]
@@ -3307,7 +3307,7 @@ Pocket = 2
 Price = 2000
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina que reanima a un Pokémon debilitado y restaura la mitad de sus PS.
 #-------------------------------
 [MAXREVIVE]
@@ -3318,7 +3318,7 @@ Price = 4000
 BPPrice = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Medicina que reanima a un Pokémon debilitado y restaura todos sus PS.
 #-------------------------------
 [BERRYJUICE]
@@ -3338,7 +3338,7 @@ Pocket = 2
 Price = 3000
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Chocolatina de sabor dulce. Restaura 20 PS de un Pokémon.
 #-------------------------------
 [FRESHWATER]
@@ -3348,7 +3348,7 @@ Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Agua de alto contenido mineral que restaura 30 PS de un Pokémon.
 #-------------------------------
 [SODAPOP]
@@ -3358,7 +3358,7 @@ Pocket = 2
 Price = 300
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Chispeante bebida gaseosa que restaura 50 PS de un Pokémon.
 #-------------------------------
 [LEMONADE]
@@ -3369,7 +3369,7 @@ Price = 350
 SellPrice = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Bebida dulce que restaura 70 PS de un Pokémon.
 #-------------------------------
 [MOOMOOMILK]
@@ -3379,7 +3379,7 @@ Pocket = 2
 Price = 600
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Leche de alto valor nutritivo que restaura 100 PS de un Pokémon.
 #-------------------------------
 [ENERGYPOWDER]
@@ -3389,7 +3389,7 @@ Pocket = 2
 Price = 500
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Polvo medicinal muy amargo que restaura 50 PS de un Pokémon.
 #-------------------------------
 [ENERGYROOT]
@@ -3399,7 +3399,7 @@ Pocket = 2
 Price = 1200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Raíz muy amarga que restaura 120 PS de un Pokémon.
 #-------------------------------
 [HEALPOWDER]
@@ -3409,7 +3409,7 @@ Pocket = 2
 Price = 300
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Polvos muy amargos que curan todos los problemas de estado de un Pokémon.
 #-------------------------------
 [REVIVALHERB]
@@ -3419,7 +3419,7 @@ Pocket = 2
 Price = 2800
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Hierba muy amarga que reanima a un Pokémon debilitado y restaura todos sus PS.
 #-------------------------------
 [MAXHONEY]
@@ -3429,7 +3429,7 @@ Pocket = 2
 Price = 8000
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Description = Miel producida por un Vespiquen Dinamax. Revive y restaura todos los PS de un Pokémon.
 #-------------------------------
 [ETHER]
@@ -3480,7 +3480,7 @@ Pocket = 2
 Price = 10000
 BPPrice = 10
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Aumenta ligeramente los PP máximos del ataque que elijas de un Pokémon.
 #-------------------------------
 [PPMAX]
@@ -3489,7 +3489,7 @@ NamePlural = PP Máximos
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Aumenta al máximo los PP del ataque que elijas de un Pokémon.
 #-------------------------------
 [HPUP]
@@ -3498,7 +3498,7 @@ NamePlural = Más PS
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Nutritiva bebida que aumenta los PS de un Pokémon.
 #-------------------------------
 [PROTEIN]
@@ -3507,7 +3507,7 @@ NamePlural = Proteínas
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Nutritiva bebida que aumenta el Ataque de un Pokémon.
 #-------------------------------
 [IRON]
@@ -3516,7 +3516,7 @@ NamePlural = Hierros
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Nutritiva bebida que aumenta la Defensa de un Pokémon.
 #-------------------------------
 [CALCIUM]
@@ -3525,7 +3525,7 @@ NamePlural = Calcios
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Nutritiva bebida que sube el At. Esp. de un Pokémon.
 #-------------------------------
 [ZINC]
@@ -3534,7 +3534,7 @@ NamePlural = Zincs
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Nutritiva bebida que aumenta la Defensa Especial de un Pokémon.
 #-------------------------------
 [CARBOS]
@@ -3543,7 +3543,7 @@ NamePlural = Carburantes
 Pocket = 2
 Price = 10000
 FieldUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Vitamin
 Description = Nutritiva bebida que sube la Velocidad de un Pokémon.
 #-------------------------------
 [HEALTHFEATHER]
@@ -3551,7 +3551,7 @@ Name = Pluma Vigor
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
-Flags = Fling_20
+Flags = Fling_20,Vitamin
 Description = Objeto que aumenta los PS base de un Pokémon.
 #-------------------------------
 [MUSCLEFEATHER]
@@ -3559,7 +3559,7 @@ Name = Pluma Músculo
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
-Flags = Fling_20
+Flags = Fling_20,Vitamin
 Description = Objeto que aumenta el Ataque base de un Pokémon.
 #-------------------------------
 [RESISTFEATHER]
@@ -3567,7 +3567,7 @@ Name = Pluma Aguante
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
-Flags = Fling_20
+Flags = Fling_20,Vitamin
 Description = Objeto que aumenta la Defensa base de un Pokémon.
 #-------------------------------
 [GENIUSFEATHER]
@@ -3575,7 +3575,7 @@ Name = Pluma Intelecto
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
-Flags = Fling_20
+Flags = Fling_20,Vitamin
 Description = Objeto que aumenta el Ataque Especial base de un Pokémon.
 #-------------------------------
 [CLEVERFEATHER]
@@ -3583,7 +3583,7 @@ Name = Pluma Mente
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
-Flags = Fling_20
+Flags = Fling_20,Vitamin
 Description = Objeto que aumenta la Defensa Especial base de un Pokémon.
 #-------------------------------
 [SWIFTFEATHER]
@@ -3591,7 +3591,7 @@ Name = Pluma Ímpetu
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
-Flags = Fling_20
+Flags = Fling_20,Vitamin
 Description = Objeto que aumenta la Velocidad base de un Pokémon.
 #-------------------------------
 [LONELYMINT]
@@ -5291,7 +5291,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_FIRE_80
+Flags = Berry,Fling_10,NaturalGift_FIRE_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para recuperarse de la parálisis.
 #-------------------------------
 [CHESTOBERRY]
@@ -5301,7 +5301,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_WATER_80
+Flags = Berry,Fling_10,NaturalGift_WATER_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para despertar del sueño.
 #-------------------------------
 [PECHABERRY]
@@ -5311,7 +5311,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_ELECTRIC_80
+Flags = Berry,Fling_10,NaturalGift_ELECTRIC_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para curarse del envenenamiento.
 #-------------------------------
 [RAWSTBERRY]
@@ -5321,7 +5321,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_GRASS_80
+Flags = Berry,Fling_10,NaturalGift_GRASS_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para curarse las quemaduras.
 #-------------------------------
 [ASPEARBERRY]
@@ -5331,7 +5331,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_ICE_80
+Flags = Berry,Fling_10,NaturalGift_ICE_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para descongelarse.
 #-------------------------------
 [LEPPABERRY]
@@ -5341,7 +5341,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnMove
-Flags = Berry,Fling_10,NaturalGift_FIGHTING_80
+Flags = Berry,Fling_10,NaturalGift_FIGHTING_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para restaurar 10 PP de un movimiento.
 #-------------------------------
 [ORANBERRY]
@@ -5351,7 +5351,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_POISON_80
+Flags = Berry,Fling_10,NaturalGift_POISON_80,Healing
 Description = Los Pokémon pueden usarla o llevarla para restaurar 10 PS.
 #-------------------------------
 [PERSIMBERRY]
@@ -5360,7 +5360,7 @@ NamePlural = Bayas Caquic
 Pocket = 5
 Price = 20
 BattleUse = OnBattler
-Flags = Berry,Fling_10,NaturalGift_GROUND_80
+Flags = Berry,Fling_10,NaturalGift_GROUND_80,Healing
 Description = Los Pokémon pueden usarla o llevarla para salir del estado de confusión.
 #-------------------------------
 [LUMBERRY]
@@ -5370,7 +5370,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_FLYING_80
+Flags = Berry,Fling_10,NaturalGift_FLYING_80,Healing
 Description = Los Pokémon pueden llevarla o usarla para recuperarse de problemas de estado.
 #-------------------------------
 [SITRUSBERRY]
@@ -5380,7 +5380,7 @@ Pocket = 5
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Berry,Fling_10,NaturalGift_PSYCHIC_80
+Flags = Berry,Fling_10,NaturalGift_PSYCHIC_80,Healing
 Description = Los Pokémon pueden usarla o llevarla para restaurar algunos PS.
 #-------------------------------
 [FIGYBERRY]
@@ -5388,7 +5388,7 @@ Name = Baya Higog
 NamePlural = Bayas Higog
 Pocket = 5
 Price = 20
-Flags = Berry,Fling_10,NaturalGift_BUG_80
+Flags = Berry,Fling_10,NaturalGift_BUG_80,Healing
 Description = Restaura los PS del Pokémon que la usa en un apuro, pero puede causar confusión.
 #-------------------------------
 [WIKIBERRY]
@@ -5396,7 +5396,7 @@ Name = Baya Wiki
 NamePlural = Bayas Wiki
 Pocket = 5
 Price = 20
-Flags = Berry,Fling_10,NaturalGift_ROCK_80
+Flags = Berry,Fling_10,NaturalGift_ROCK_80,Healing
 Description = Restaura los PS del Pokémon que la usa en un apuro, pero puede causar confusión.
 #-------------------------------
 [MAGOBERRY]
@@ -5404,7 +5404,7 @@ Name = Baya Ango
 NamePlural = Bayas Ango
 Pocket = 5
 Price = 20
-Flags = Berry,Fling_10,NaturalGift_GHOST_80
+Flags = Berry,Fling_10,NaturalGift_GHOST_80,Healing
 Description = Restaura los PS del Pokémon que la usa en un apuro, pero puede causar confusión.
 #-------------------------------
 [AGUAVBERRY]
@@ -5412,7 +5412,7 @@ Name = Baya Guaya
 NamePlural = Bayas Guaya
 Pocket = 5
 Price = 20
-Flags = Berry,Fling_10,NaturalGift_DRAGON_80
+Flags = Berry,Fling_10,NaturalGift_DRAGON_80,Healing
 Description = Restaura los PS del Pokémon que la usa en un apuro, pero puede causar confusión.
 #-------------------------------
 [IAPAPABERRY]
@@ -5420,7 +5420,7 @@ Name = Baya Pabaya
 NamePlural = Bayas Pabaya
 Pocket = 5
 Price = 20
-Flags = Berry,Fling_10,NaturalGift_DARK_80
+Flags = Berry,Fling_10,NaturalGift_DARK_80,Healing
 Description = Restaura los PS del Pokémon que la usa en un apuro, pero puede causar confusión.
 #-------------------------------
 [RAZZBERRY]
@@ -5947,7 +5947,7 @@ NamePlural = Ataque X
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel el Ataque en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XATTACK2]
@@ -5956,7 +5956,7 @@ NamePlural = Ataque X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles el Ataque en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XATTACK3]
@@ -5965,7 +5965,7 @@ NamePlural = Ataque X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles el Ataque en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XATTACK6]
@@ -5974,7 +5974,7 @@ NamePlural = Ataque X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 6 niveles el Ataque en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE]
@@ -5983,7 +5983,7 @@ NamePlural = Defensas X 1
 Pocket = 7
 Price = 2000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE2]
@@ -5992,7 +5992,7 @@ NamePlural = Defensas X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE3]
@@ -6001,7 +6001,7 @@ NamePlural = Defensas X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE6]
@@ -6010,7 +6010,7 @@ NamePlural = Defensas X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK]
@@ -6019,7 +6019,7 @@ NamePlural = Ataques Especiales X 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK2]
@@ -6028,7 +6028,7 @@ NamePlural = Ataques Especiales X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK3]
@@ -6037,7 +6037,7 @@ NamePlural = Ataques Especiales X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK6]
@@ -6046,7 +6046,7 @@ NamePlural = Ataques Especiales X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 6 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPDEF]
@@ -6055,7 +6055,7 @@ NamePlural = Defensas Especiales X 1
 Pocket = 7
 Price = 2000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel la Def. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPDEF2]
@@ -6064,7 +6064,7 @@ NamePlural = Defensas Especiales X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles la Def. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPDEF3]
@@ -6073,7 +6073,7 @@ NamePlural = Defensas Especiales X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles la Def. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPDEF6]
@@ -6082,7 +6082,7 @@ NamePlural = Defensas Especiales X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Def. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPEED]
@@ -6091,7 +6091,7 @@ NamePlural = Velocidades X 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel la Velocidad en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPEED2]
@@ -6100,7 +6100,7 @@ NamePlural = Velocidades X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles la Velocidad en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPEED3]
@@ -6109,7 +6109,7 @@ NamePlural = Velocidades X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles la Velocidad en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPEED6]
@@ -6118,7 +6118,7 @@ NamePlural = Velocidades X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Velocidad en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XACCURACY]
@@ -6127,7 +6127,7 @@ NamePlural = Precisiones X 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel la Precisión en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XACCURACY2]
@@ -6136,7 +6136,7 @@ NamePlural = Precisiones X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles la Precisión en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XACCURACY3]
@@ -6145,7 +6145,7 @@ NamePlural = Precisiones X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles la Precisión en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XACCURACY6]
@@ -6154,7 +6154,7 @@ NamePlural = Precisiones X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Precisión en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [MAXMUSHROOMS]
@@ -6163,7 +6163,7 @@ NamePlural = Maxisetas
 Pocket = 7
 Price = 8000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Setas que aumentan todas las estadísticas de un Pokémon en combate.
 #-------------------------------
 [DIREHIT]
@@ -6172,7 +6172,7 @@ NamePlural = Directos 1
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 1 nivel el índice de golpe crítico en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [DIREHIT2]
@@ -6181,7 +6181,7 @@ NamePlural = Directos 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 2 niveles el índice de golpe crítico en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [DIREHIT3]
@@ -6190,7 +6190,7 @@ NamePlural = Directos 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Aumenta 3 niveles el índice de golpe crítico en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [GUARDSPEC]
@@ -6199,7 +6199,7 @@ NamePlural = Prot. Especiales
 Pocket = 7
 Price = 1500
 BattleUse = Direct
-Flags = Fling_30
+Flags = Fling_30,XItem
 Description = Evita que bajen las características del equipo Pokémon durante cinco turnos.
 #-------------------------------
 [RESETURGE]
@@ -6241,7 +6241,7 @@ Pocket = 7
 Price = 20
 FieldUse = OnPokemon
 BattleUse = OnPokemon
-Flags = Fling_30
+Flags = Fling_30,Healing
 Consumable = false
 Description = Flauta de cristal azul cuya melodía despierta a los Pokémon dormidos.
 #-------------------------------

@@ -526,7 +526,8 @@ class Battle::Move::WeatherMove < Battle::Move
     when :StrongWinds
       @battle.pbDisplay(_INTL("¡Las misteriosas turbulencias continúan sin cesar!"))
       return true
-    when @weatherType
+    end
+    if !@battle.pbCanStartWeather?(@weatherType)
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
@@ -550,7 +551,7 @@ class Battle::Move::TerrainMove < Battle::Move
   end
 
   def pbMoveFailed?(user, targets)
-    if @battle.field.terrain == @terrainType
+    if !@battle.pbCanStartTerrain?(@terrainType)
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
@@ -659,6 +660,45 @@ class Battle::Move::PledgeMove < Battle::Move
   def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
     return if @pledgeSetup   # No animation for setting up
     id = @overrideAnim if @overrideAnim
+    return super
+  end
+end
+
+class Battle::Move::TerapagosCategoryDependsOnHigherDamage < Battle::Move
+
+  def initialize(battle, move)
+    super
+    @calcCategory = 1
+  end
+
+  def pbTarget(user)
+    # Si es Terapagos en forma astral (forma 2) en combate doble, golpea a ambos rivales
+    if @battle.pbSideSize(0) > 1 && user.species == :TERAPAGOS && user.form == 2
+      return GameData::Target.get(:AllNearFoes)  # Golpea a todos los rivales cercanos
+    end
+    # Comportamiento normal: un solo objetivo
+    return GameData::Target.get(:NearOther)
+  end
+
+  def pbBaseType(user)
+    # Si es Terapagos en forma astral, usar tipo Stellar
+    if user.species == :TERAPAGOS && user.form == 2
+      return :STELLAR if GameData::Type.exists?(:STELLAR)
+    end
+    # Si no, mantener tipo Normal
+    return :NORMAL
+  end
+
+  def pbCalcTypeModSingle(moveType, defType, user, target)
+    # Si es tipo Stellar vs Pokémon teracristalizados, es supereficaz
+    if moveType == :STELLAR && target.tera?
+      return Effectiveness::SUPER_EFFECTIVE_MULTIPLIER
+    end
+    # Si es tipo Stellar vs Pokémon normales, es neutral
+    if moveType == :STELLAR
+      return Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
+    end
+    # Para otros casos, cálculo normal
     return super
   end
 end

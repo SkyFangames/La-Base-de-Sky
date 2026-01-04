@@ -796,7 +796,8 @@ class Battle::Move::UserEnduresFaintingThisTurn < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# Weakens Electric attacks. (Mud Sport)
+# Weakens Electric attacks. Lasts for 5 rounds (Gen 6+) or as long as the user
+# is in battle (Gen 5-). (Mud Sport)
 #===============================================================================
 class Battle::Move::StartWeakenElectricMoves < Battle::Move
   def pbMoveFailed?(user, targets)
@@ -823,7 +824,8 @@ class Battle::Move::StartWeakenElectricMoves < Battle::Move
 end
 
 #===============================================================================
-# Weakens Fire attacks. (Water Sport)
+# Weakens Fire attacks. Lasts for 5 rounds (Gen 6+) or as long as the user
+# is in battle (Gen 5-). (Water Sport)
 #===============================================================================
 class Battle::Move::StartWeakenFireMoves < Battle::Move
   def pbMoveFailed?(user, targets)
@@ -872,7 +874,8 @@ class Battle::Move::StartWeakenPhysicalDamageAgainstUserSide < Battle::Move
 end
 
 #===============================================================================
-# For 5 rounds, lowers power of special attacks against the user's side. (Light Screen)
+# For 5 rounds, lowers power of special attacks against the user's side.
+# (Light Screen)
 #===============================================================================
 class Battle::Move::StartWeakenSpecialDamageAgainstUserSide < Battle::Move
   def canSnatch?; return true; end
@@ -1399,6 +1402,20 @@ class Battle::Move::IgnoreTargetDefSpDefEvaStatStages < Battle::Move
   def pbGetDefenseStats(user, target)
     ret1, _ret2 = super
     return ret1, Battle::Battler::STAT_STAGE_MAXIMUM   # Def/SpDef stat stage
+  end
+end
+
+#===============================================================================
+# This move ignores target's Defense, Special Defense and evasion stat changes.
+# It also ignores the target's Fairy-type immunity to Dragon-type. (Nihil Light)
+#===============================================================================
+class Battle::Move::IgnoreTargetStatStagesNormalEffectiveAgainstFairy < Battle::Move::IgnoreTargetDefSpDefEvaStatStages
+  def pbCalcTypeModSingle(moveType, defType, user, target)
+    if Effectiveness.ineffective_type?(moveType, defType) &&
+       moveType == :DRAGON && defType == :FAIRY
+      return Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
+    end
+    return super
   end
 end
 

@@ -9,10 +9,13 @@ end
 # Speed-up config
 #===============================================================================#
 SPEEDUP_STAGES = [1, 1.5, 2]
+TURBO_BUTTON_DISPLAY_FRAMES = 150
+FOG_SCROLL_MULTIPLIER = 5
+
 $GameSpeed = 0
 $CanToggle = true
 $RefreshEventsForTurbo = false
-$SpeedDiference = 0
+$SpeedDifference = 0
 
 #===============================================================================#
 # Set $CanToggle depending on the saved setting
@@ -25,7 +28,7 @@ module Game
   def self.load(save_data)
     original_load(save_data)
     # echoln "UNSCALED #{System.unscaled_uptime} * #{SPEEDUP_STAGES[$GameSpeed]} - #{$GameSpeed}"
-    $CanToggle = $PokemonSystem.only_speedup_battles == 0
+    $CanToggle = $PokemonSystem&.only_speedup_battles == 0
   end
 end
 
@@ -40,11 +43,11 @@ module Input
       $GameSpeed += 1
       if $GameSpeed >= SPEEDUP_STAGES.size
         $GameSpeed = 0 
-        $SpeedDiference += (System.real_uptime * SPEEDUP_STAGES[-1])
+        $SpeedDifference += (System.real_uptime * SPEEDUP_STAGES[-1])
       end
       # $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
       $buttonframes = 0
-      $RefreshEventsForTurbo  = true
+      $RefreshEventsForTurbo = true
     end
   end
 end
@@ -64,7 +67,7 @@ module System
   end
 
   def self.uptime
-    return (SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime) + $SpeedDiference
+    return (SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime) + $SpeedDifference
   end
 end
 
@@ -72,12 +75,16 @@ end
 # Event handlers for in-battle speed-up restrictions
 #===============================================================================#
 EventHandlers.add(:on_start_battle, :start_speedup, proc {
-  $CanToggle = true if $PokemonSystem.only_speedup_battles == 1
-  $GameSpeed = $PokemonSystem.battle_speed if $PokemonSystem.only_speedup_battles == 1
+  if $PokemonSystem&.only_speedup_battles == 1
+    $CanToggle = true
+    $GameSpeed = $PokemonSystem.battle_speed
+  end
 })
 EventHandlers.add(:on_end_battle, :stop_speedup, proc {
-  $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
-  $CanToggle = false if $PokemonSystem.only_speedup_battles == 1
+  if $PokemonSystem&.only_speedup_battles == 1
+    $GameSpeed = 0
+    $CanToggle = false
+  end
 })
 
 
@@ -159,16 +166,22 @@ class Game_Map
 
   def update
     if $RefreshEventsForTurbo
-      if $game_map&.events
-        $game_map.events.each_value { |event| event.pbResetInterpreterWaitCount }
+      begin
+        if $game_map&.events
+          $game_map.events.each_value { |event| event.pbResetInterpreterWaitCount if event }
+        end
+        @scroll_timer_start = System.uptime/SPEEDUP_STAGES[SPEEDUP_STAGES.size-1] if (@scroll_distance_x || 0) != 0 || (@scroll_distance_y || 0) != 0
+        $CurrentMsgWindow.pbResetWaitCounter if $game_temp&.message_window_showing && $CurrentMsgWindow
+      rescue => e
+        # Registrar error pero no interrumpir el juego
+        Console.echo_warn("Error actualizando eventos para turbo: #{e.message}")
+      ensure
+        $RefreshEventsForTurbo = false
       end
-      @scroll_timer_start = System.uptime/SPEEDUP_STAGES[SPEEDUP_STAGES.size-1] if (@scroll_distance_x || 0) != 0 || (@scroll_distance_y || 0) != 0
-      $CurrentMsgWindow.pbResetWaitCounter if $game_temp.message_window_showing && $CurrentMsgWindow 
-      $RefreshEventsForTurbo = false
     end
 
     temp_timer = @fog_scroll_last_update_timer
-    @fog_scroll_last_update_timer = System.uptime # Don't scroll in the original update method
+    @fog_scroll_last_update_timer = System.uptime # No desplazar en el método original de actualización
     original_update
     @fog_scroll_last_update_timer = temp_timer
     update_fog
@@ -177,8 +190,8 @@ class Game_Map
   def update_fog
     uptime_now = System.unscaled_uptime
     @fog_scroll_last_update_timer = uptime_now unless @fog_scroll_last_update_timer
-    speedup_mult = $PokemonSystem.only_speedup_battles == 1 ? 1 : SPEEDUP_STAGES[$GameSpeed]
-    scroll_mult = (uptime_now - @fog_scroll_last_update_timer) * 5 * speedup_mult
+    speedup_mult = $PokemonSystem&.only_speedup_battles == 1 ? 1 : SPEEDUP_STAGES[$GameSpeed]
+    scroll_mult = (uptime_now - @fog_scroll_last_update_timer) * FOG_SCROLL_MULTIPLIER * speedup_mult
     @fog_ox -= @fog_sx * scroll_mult
     @fog_oy -= @fog_sy * scroll_mult
     @fog_scroll_last_update_timer = uptime_now
@@ -236,8 +249,9 @@ MenuHandlers.add(:options_menu, :turbo, {
   "condition"   => proc { next expshare_enabled? },
   "parameters"  => [_INTL("Siempre"), _INTL("Combates")],
   "description" => _INTL("Define el modo del turbo, si se puede activar siempre o solo en combates."),
-  "get_proc"    => proc { next $PokemonSystem.only_speedup_battles },
+  "get_proc"    => proc { next $PokemonSystem&.only_speedup_battles || 0 },
   "set_proc"    => proc { |value, _scene| 
+    next unless $PokemonSystem
     $PokemonSystem.only_speedup_battles = value 
     $CanToggle = $PokemonSystem.only_speedup_battles == 0
     $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
@@ -249,32 +263,51 @@ MenuHandlers.add(:options_menu, :turbo, {
 module Graphics
   class << self
     alias _old_update_turbo update
+    
+    # Cachear los bitmaps para evitar fugas de memoria
+    def get_turbo_bitmap(speed)
+      @turbo_bitmaps ||= {}
+      unless @turbo_bitmaps[speed]
+        begin
+          @turbo_bitmaps[speed] = Bitmap.new("Graphics/Pictures/Turbo#{speed}")
+        rescue => e
+          Console.echo_warn("Error cargando bitmap de turbo: #{e.message}")
+          return nil
+        end
+      end
+      @turbo_bitmaps[speed]
+    end
+    
+    # Limpiar bitmaps cacheados cuando sea necesario
+    def dispose_turbo_bitmaps
+      return unless @turbo_bitmaps
+      @turbo_bitmaps.each_value { |bitmap| bitmap&.dispose }
+      @turbo_bitmaps.clear
+    end
+    
     def update
       _old_update_turbo
-      $buttonframes = 150 if !$buttonframes
-      if $buttonframes < 150 # Frames en pantalla
+      $buttonframes = TURBO_BUTTON_DISPLAY_FRAMES unless $buttonframes
+      
+      if $buttonframes < TURBO_BUTTON_DISPLAY_FRAMES
+        # Crear sprite solo si no existe o está disposed
         if !@boton_turbo || @boton_turbo.disposed?
           @boton_turbo = Sprite.new
-          if $GameSpeed == 0
-            @boton_turbo.bitmap = Bitmap.new("Graphics/Pictures/Turbo0")
-          elsif $GameSpeed == 1
-            @boton_turbo.bitmap = Bitmap.new("Graphics/Pictures/Turbo1")
-          else
-            @boton_turbo.bitmap = Bitmap.new("Graphics/Pictures/Turbo2")
-          end
           @boton_turbo.z = 999999
-        elsif @boton_turbo
-          if $GameSpeed == 0
-            @boton_turbo.bitmap = Bitmap.new("Graphics/Pictures/Turbo0")
-          elsif $GameSpeed == 1
-            @boton_turbo.bitmap = Bitmap.new("Graphics/Pictures/Turbo1")
-          else
-            @boton_turbo.bitmap = Bitmap.new("Graphics/Pictures/Turbo2")
-          end
+          @last_displayed_speed = nil
         end
+        
+        # Solo actualizar bitmap si la velocidad cambió
+        if @last_displayed_speed != $GameSpeed
+          bitmap = get_turbo_bitmap($GameSpeed)
+          @boton_turbo.bitmap = bitmap if bitmap
+          @last_displayed_speed = $GameSpeed
+        end
+        
         $buttonframes += 1
-        if $buttonframes == 150
-          @boton_turbo.dispose
+        if $buttonframes >= TURBO_BUTTON_DISPLAY_FRAMES
+          @boton_turbo&.dispose
+          @last_displayed_speed = nil
         end
       end
     end

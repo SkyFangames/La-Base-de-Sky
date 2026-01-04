@@ -127,7 +127,8 @@ class Battle::Battler
           user.pbChangeForm(2, _INTL("¡{1} se convirtió en Greninja Ash!", user.pbThis))
       end
       # Cramorant = Gulp Missile
-      if user.isSpecies?(:CRAMORANT) && user.ability == :GULPMISSILE && user.form == 0 &&
+      if user.isSpecies?(:CRAMORANT) && user.ability == :GULPMISSILE &&
+         user.form == 0 && !user.effects[PBEffects::Transform] &&
          ((move.id == :SURF && numHits > 0) || (move.id == :DIVE && move.chargingTurn))
         # NOTE: Intentionally no ability splash or message here.
         user.pbChangeForm((user.hp > user.totalhp / 2) ? 1 : 2, nil)

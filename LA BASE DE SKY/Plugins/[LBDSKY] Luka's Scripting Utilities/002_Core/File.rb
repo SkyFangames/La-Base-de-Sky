@@ -1,16 +1,15 @@
 #===============================================================================
-#  Extensions for the `File` class
+#  Luka's Scripting Utilities
+#
+#  Core extensions for the `File` class
 #===============================================================================
 class ::File
   class << self
-    #---------------------------------------------------------------------------
-    #  checks for existing .rxdata file
-    #---------------------------------------------------------------------------
+    # @return [Boolean] safely checks for existing .rxdata file
     def safe_data?(file)
       load_data(file) ? true : false
-    rescue
+    rescue StandardError
       false
     end
-    #---------------------------------------------------------------------------
   end
 end

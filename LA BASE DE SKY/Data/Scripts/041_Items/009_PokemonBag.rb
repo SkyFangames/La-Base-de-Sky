@@ -337,19 +337,21 @@ class PCItemStorage
 end
 
 #===============================================================================
-# Implements methods that act on arrays of items.  Each element in an item
-# array is itself an array of [itemID, itemCount].
+# Implements methods that act on arrays of items. Each element in an item array
+# is itself an array of [itemID, itemCount].
 # Used by the Bag, PC item storage, and Triple Triad.
 #===============================================================================
 module ItemStorageHelper
-  # Returns the quantity of item in items
-  def self.quantity(items, item)
+  module_function
+
+  # Returns the quantity of item in items.
+  def quantity(items, item)
     ret = 0
     items.each { |i| ret += i[1] if i && i[0] == item }
     return ret
   end
 
-  def self.can_add?(items, max_slots, max_per_slot, item, qty)
+  def can_add?(items, max_slots, max_per_slot, item, qty)
     raise "Invalid value for qty: #{qty}" if qty < 0
     return true if qty == 0
     max_slots.times do |i|
@@ -367,7 +369,7 @@ module ItemStorageHelper
     return false
   end
 
-  def self.add(items, max_slots, max_per_slot, item, qty)
+  def add(items, max_slots, max_per_slot, item, qty)
     raise "Invalid value for qty: #{qty}" if qty < 0
     return true if qty == 0
     max_slots.times do |i|
@@ -387,8 +389,8 @@ module ItemStorageHelper
     return false
   end
 
-  # Deletes an item (items array, max. size per slot, item, no. of items to delete)
-  def self.remove(items, item, qty)
+  # Deletes an item (items array, max. size per slot, item, no. of items to delete).
+  def remove(items, item, qty)
     raise "Invalid value for qty: #{qty}" if qty < 0
     return true if qty == 0
     ret = false
@@ -407,4 +409,3 @@ module ItemStorageHelper
     return ret
   end
 end
-
