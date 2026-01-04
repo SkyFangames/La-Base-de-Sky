@@ -1140,8 +1140,7 @@ module HoverImageMixin
   def updateHoverImagePosition
     @hover_image.z = self.z + 100
     @hover_image.viewport = self.viewport
-    margin = 30
-    @hover_image.x = self.x - (@hover_image.bitmap.width - margin)
+    @hover_image.x = self.x - @hover_image.bitmap.width
     @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
   end
 end
