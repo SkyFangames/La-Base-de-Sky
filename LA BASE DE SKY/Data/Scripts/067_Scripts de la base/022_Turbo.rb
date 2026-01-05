@@ -16,6 +16,7 @@ $GameSpeed = 0
 $CanToggle = true
 $RefreshEventsForTurbo = false
 $SpeedDifference = 0
+$ActiveAnimations = []
 
 #===============================================================================#
 # Set $CanToggle depending on the saved setting
@@ -39,11 +40,28 @@ module Input
   def self.update
     update_KGC_ScreenCapture
     pbScreenCapture if trigger?(Input::F8)
-    if $CanToggle && (trigger?(Input::ALT) || trigger?(Input::AUX1))
+    if $CanToggle && (trigger?(Input::ALT) || (trigger?(Input::AUX1) && !Input.text_input))
+      old_speed = $GameSpeed
       $GameSpeed += 1
       if $GameSpeed >= SPEEDUP_STAGES.size
         $GameSpeed = 0 
         $SpeedDifference += (System.real_uptime * SPEEDUP_STAGES[-1])
+      end
+      # Adjust active animation timers to prevent skipping
+      if old_speed != $GameSpeed
+        current_time = System.unscaled_uptime
+        $ActiveAnimations.each do |anim|
+          next unless anim && !anim.disposed?
+          next unless anim.animation_active?
+          # Calculate how much time has passed in the old speed
+          old_elapsed = current_time - anim.instance_variable_get(:@_animation_real_start)
+          # Calculate current frame progress
+          old_progress = old_elapsed * SPEEDUP_STAGES[old_speed]
+          # Set new timer start to maintain current frame
+          new_start = current_time - (old_progress / SPEEDUP_STAGES[$GameSpeed])
+          anim.instance_variable_set(:@_animation_real_start, new_start)
+          anim.instance_variable_set(:@_animation_timer_start, System.uptime)
+        end
       end
       # $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
       $buttonframes = 0
@@ -109,18 +127,56 @@ def pbBattleOnStepTaken(repel_active)
   original_pbBattleOnStepTaken(repel_active)
 end
 
+#===============================================================================#
+# Fix for skipping player touch events at high turbo speeds
+#===============================================================================#
+class Game_Player < Game_Character
+  alias_method :original_moveto, :moveto unless method_defined?(:original_moveto)
+  
+  def moveto(x, y, center = false)
+    # Check intermediate tiles when turbo is active to prevent skipping events
+    if $GameSpeed > 0 && @x && @y
+      old_x, old_y = @x, @y
+      # Check tiles between old and new position
+      dx = (x - old_x).abs
+      dy = (y - old_y).abs
+      steps = [dx, dy].max
+      
+      if steps > 1
+        steps.times do |i|
+          progress = (i + 1).to_f / steps
+          check_x = (old_x + (x - old_x) * progress).round
+          check_y = (old_y + (y - old_y) * progress).round
+          
+          # Check for player touch events at intermediate positions
+          $game_map.events.each_value do |event|
+            next if event.tile_id >= 0 || event.character_name == ""
+            next unless event.x == check_x && event.y == check_y
+            next if event.jumping? || event.over_trigger?
+            if event.list && event.list.size > 1 && [1, 2].include?(event.trigger)
+              event.start
+            end
+          end
+        end
+      end
+    end
+    
+    original_moveto(x, y, center)
+  end
+end
+
 class Game_Event < Game_Character
-def pbGetInterpreter
-  return @interpreter
-end
+  def pbGetInterpreter
+    return @interpreter
+  end
 
-def pbResetInterpreterWaitCount
-  @interpreter.pbRefreshWaitCount if @interpreter
-end
+  def pbResetInterpreterWaitCount
+    @interpreter.pbRefreshWaitCount if @interpreter
+  end
 
-def IsParallel
-  return @trigger == 4
-end  
+  def IsParallel
+    return @trigger == 4
+  end  
 end  
 
 class Interpreter
@@ -202,6 +258,25 @@ end
 # Fix for animation index crash
 #===============================================================================#
 class SpriteAnimation
+  alias_method :original_animation, :animation unless method_defined?(:original_animation)
+  
+  def animation(animation, hit, height = 3)
+    @_animation_real_start = System.unscaled_uptime
+    $ActiveAnimations << self unless $ActiveAnimations.include?(self)
+    original_animation(animation, hit, height)
+  end
+  
+  def animation_active?
+    return @_animation_duration && @_animation_duration > 0
+  end
+  
+  alias_method :original_dispose_animation, :dispose_animation unless method_defined?(:original_dispose_animation)
+  
+  def dispose_animation
+    $ActiveAnimations.delete(self)
+    original_dispose_animation
+  end
+  
   def update_animation
     new_index = ((System.uptime - @_animation_timer_start) / @_animation_time_per_frame).to_i
     if new_index >= @_animation_duration
