@@ -1381,7 +1381,7 @@ ItemHandlers::UsableOnPokemon.add(:GRACIDEA, proc { |item, pkmn|
 })
 ItemHandlers::UseOnPokemon.add(:GRACIDEA, proc { |item, qty, pkmn, scene|
   if !pkmn.isSpecies?(:SHAYMIN) || pkmn.form != 0 ||
-     [:FROZEN, :FROSTBITE].include?(pkmn.status)|| PBDayNight.isNight?
+     [:FROZEN, :FROSTBITE].include?(pkmn.status) || PBDayNight.isNight?
     scene.pbDisplay(_INTL("No tendría efecto."))
     next false
   elsif pkmn.fainted?
