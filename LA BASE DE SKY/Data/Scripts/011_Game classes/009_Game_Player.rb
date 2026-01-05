@@ -250,6 +250,33 @@ class Game_Player < Game_Character
     return super
   end
 
+  def find_nearest_passable_spot(x, y)
+    # Buscar hasta la distancia máxima a cualquier borde del mapa
+    max_search = [x, y, 
+                $game_map.width - x - 1, 
+                $game_map.height - y - 1].max
+  
+    # Buscar en cuadrados expansivos alrededor del jugador
+    (1..max_search).each do |radius|
+      (-radius..radius).each do |dx|
+        (-radius..radius).each do |dy|
+          next if dx.abs != radius && dy.abs != radius  # Solo comprobar el perímetro
+          test_x = player_x + dx
+          test_y = player_y + dy
+          
+          # Omitir si está fuera de los límites del mapa
+          next if test_x < 0 || test_x >= $game_map.width
+          next if test_y < 0 || test_y >= $game_map.height
+          
+          if self.passable?(test_x, test_y, 0)
+            return test_x, test_y
+          end
+        end
+      end
+    end
+    return nil, nil
+  end
+
   # Set Map Display Position to Center of Screen
   def center(x, y)
     self.map.display_x = (x * Game_Map::REAL_RES_X) - SCREEN_CENTER_X

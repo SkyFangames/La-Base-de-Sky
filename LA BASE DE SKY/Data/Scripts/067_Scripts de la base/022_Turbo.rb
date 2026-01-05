@@ -314,7 +314,23 @@ EventHandlers.add(:on_enter_map, :fix_turbo_collision, proc { |_map_id|
   # Solo forzamos la colisión si NO estamos presionando CTRL en modo Debug.
   unless $DEBUG && Input.press?(Input::CTRL)
     if $game_player
-      $game_player.through = false 
+      # Verificar si el jugador tiene through activado
+      if $game_player.through
+        player_x = $game_player.x
+        player_y = $game_player.y
+        
+        # Verificar si la posición actual será transitable después de desactivar through
+        unless $game_player.passable?(player_x, player_y, 0)
+          # Buscar la posición transitable más cercana
+          passable_x, passable_y = $game_player.find_nearest_passable_spot(player_x, player_y)
+          if passable_x && passable_y
+            $game_player.moveto(passable_x, passable_y)
+            $game_player.through = false
+          end
+        else
+          $game_player.through = false
+        end
+      end
       $game_player.always_on_top = false
     end
   end
