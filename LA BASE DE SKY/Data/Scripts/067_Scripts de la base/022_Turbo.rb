@@ -1,26 +1,96 @@
-#===============================================================================#
-# Whether the options menu shows the speed up settings (true by default)
-#===============================================================================#
-module Settings
-  SPEED_OPTIONS = true
+#===============================================================================
+# TURBO V21.1
+#===============================================================================
+
+#===============================================================================
+# 1. Configuración.
+#===============================================================================
+module TurboConfig
+  # Velocidades: [Normal, x1.5, x2.0]
+  SPEED_STAGES = [1.0, 2.0, 3.0]
+  
+  # Teclas para activar
+  TOGGLE_KEYS = [Input::ALT, Input::AUX1]
+  
+  # Duración del icono en pantalla (frames)
+  ICON_DURATION = 150
 end
 
-#===============================================================================#
-# Speed-up config
-#===============================================================================#
-SPEEDUP_STAGES = [1, 1.5, 2]
-TURBO_BUTTON_DISPLAY_FRAMES = 150
-FOG_SCROLL_MULTIPLIER = 5
-
+# Variables globales
 $GameSpeed = 0
 $CanToggle = true
 $RefreshEventsForTurbo = false
 $SpeedDifference = 0
-$ActiveAnimations = []
 
-#===============================================================================#
-# Set $CanToggle depending on the saved setting
-#===============================================================================#
+#===============================================================================
+# 2. System Uptime.
+#===============================================================================
+module System
+  class << self
+    # Guardamos el método original si no existe
+    unless method_defined?(:unscaled_uptime)
+      alias_method :unscaled_uptime, :uptime
+    end
+    
+    # Compatibilidad con scripts externos
+    unless method_defined?(:real_uptime)
+      def real_uptime
+        return unscaled_uptime
+      end
+    end
+  end
+
+  def self.uptime
+    # (Tiempo Real * Velocidad) + Diferencia acumulada
+    return (unscaled_uptime * TurboConfig::SPEED_STAGES[$GameSpeed]) + $SpeedDifference
+  end
+end
+
+#===============================================================================
+# 3. Input y lógica de cambio.
+#===============================================================================
+module Input
+  class << self
+    alias_method :turbo_update, :update unless method_defined?(:turbo_update)
+  end
+
+  def self.update
+    turbo_update
+    
+    # Detectar teclas de Turbo
+    if $CanToggle && TurboConfig::TOGGLE_KEYS.any? { |key| trigger?(key) }
+      # Guardar tiempo actual antes del cambio
+      real_now = System.unscaled_uptime
+      virtual_now = System.uptime
+      
+      # Cambiar velocidad
+      $GameSpeed += 1
+      $GameSpeed = 0 if $GameSpeed >= TurboConfig::SPEED_STAGES.size
+      
+      # Calcular nueva diferencia para que no haya saltos bruscos de tiempo
+      new_mult = TurboConfig::SPEED_STAGES[$GameSpeed]
+      $SpeedDifference = virtual_now - (real_now * new_mult)
+      $RefreshEventsForTurbo = true
+      $buttonframes = 0
+    end
+  end
+end
+
+#===============================================================================
+# 4. Opciones.
+#===============================================================================
+class PokemonSystem
+  alias_method :original_initialize, :initialize unless method_defined?(:original_initialize)
+  attr_accessor :only_speedup_battles
+  attr_accessor :battle_speed
+
+  def initialize
+    original_initialize
+    @only_speedup_battles = 0 # 0 = Siempre, 1 = Solo Batalla
+    @battle_speed = 0 
+  end
+end
+
 module Game
   class << self
     alias_method :original_load, :load unless method_defined?(:original_load)
@@ -28,76 +98,44 @@ module Game
 
   def self.load(save_data)
     original_load(save_data)
-    # echoln "UNSCALED #{System.unscaled_uptime} * #{SPEEDUP_STAGES[$GameSpeed]} - #{$GameSpeed}"
-    $CanToggle = $PokemonSystem&.only_speedup_battles == 0
-  end
-end
-
-#===============================================================================#
-# Handle incrementing speed stages if $CanToggle allows it
-#===============================================================================#
-module Input
-  def self.update
-    update_KGC_ScreenCapture
-    pbScreenCapture if trigger?(Input::F8)
-    if $CanToggle && (trigger?(Input::ALT) || (trigger?(Input::AUX1) && !Input.text_input))
-      old_speed = $GameSpeed
-      $GameSpeed += 1
-      if $GameSpeed >= SPEEDUP_STAGES.size
-        $GameSpeed = 0 
-        $SpeedDifference += (System.real_uptime * SPEEDUP_STAGES[-1])
-      end
-      # Adjust active animation timers to prevent skipping
-      if old_speed != $GameSpeed
-        current_time = System.unscaled_uptime
-        $ActiveAnimations.each do |anim|
-          next unless anim && !anim.disposed?
-          next unless anim.animation_active?
-          # Calculate how much time has passed in the old speed
-          old_elapsed = current_time - anim.instance_variable_get(:@_animation_real_start)
-          # Calculate current frame progress
-          old_progress = old_elapsed * SPEEDUP_STAGES[old_speed]
-          # Set new timer start to maintain current frame
-          new_start = current_time - (old_progress / SPEEDUP_STAGES[$GameSpeed])
-          anim.instance_variable_set(:@_animation_real_start, new_start)
-          anim.instance_variable_set(:@_animation_timer_start, System.uptime)
-        end
-      end
-      # $PokemonSystem.battle_speed = $GameSpeed if $PokemonSystem && $PokemonSystem.only_speedup_battles == 1
-      $buttonframes = 0
-      $RefreshEventsForTurbo = true
+    if $PokemonSystem
+      $CanToggle = ($PokemonSystem.only_speedup_battles == 0)
     end
   end
 end
 
-#===============================================================================#
-# Return System.Uptime with a multiplier to create an alternative timeline
-#===============================================================================#
-module System
-  class << self
-    unless method_defined?(:unscaled_uptime)
-      alias_method :unscaled_uptime, :uptime
-    end
-  end
-
-  def self.real_uptime
-    return unscaled_uptime
-  end
-
-  def self.uptime
-    return (SPEEDUP_STAGES[$GameSpeed] * unscaled_uptime) + $SpeedDifference
-  end
+if defined?(MenuHandlers)
+  MenuHandlers.add(:options_menu, :turbo, {
+    "name"        => _INTL("Modo turbo"),
+    "order"       => 45,
+    "type"        => EnumOption,
+    "condition"   => proc { next $player },
+    "parameters"  => [_INTL("Siempre"), _INTL("Combates")],
+    "description" => _INTL("Define si el turbo se activa siempre o solo en combates."),
+    "get_proc"    => proc { next $PokemonSystem&.only_speedup_battles || 0 },
+    "set_proc"    => proc { |value, _scene| 
+      next unless $PokemonSystem
+      $PokemonSystem.only_speedup_battles = value 
+      
+      # Actualizar permisos inmediatamente
+      if $PokemonSystem.only_speedup_battles == 0
+        $CanToggle = true
+      else
+        $CanToggle = false
+        $GameSpeed = 0
+      end
+    }
+  })
 end
 
-#===============================================================================#
-# Event handlers for in-battle speed-up restrictions
-#===============================================================================#
+# Controladores para activar/desactivar en batalla automáticamente
 EventHandlers.add(:on_start_battle, :start_speedup, proc {
   if $PokemonSystem&.only_speedup_battles == 1
     $CanToggle = true
     $GameSpeed = $PokemonSystem.battle_speed
   end
 })
+
 EventHandlers.add(:on_end_battle, :stop_speedup, proc {
   if $PokemonSystem&.only_speedup_battles == 1
     $GameSpeed = 0
@@ -105,139 +143,26 @@ EventHandlers.add(:on_end_battle, :stop_speedup, proc {
   end
 })
 
-
-#===============================================================================#
-# Can only change speed in battle during command phase (prevents weird animation glitches)
-#===============================================================================#
-# class Battle
-#   alias_method :original_pbCommandPhase, :pbCommandPhase unless method_defined?(:original_pbCommandPhase)
-#   def pbCommandPhase
-#     $CanToggle = true
-#     original_pbCommandPhase
-#     $CanToggle = false
-#   end
-# end
-
-#===============================================================================#
-# Fix for consecutive battle soft-lock glitch
-#===============================================================================#
-alias :original_pbBattleOnStepTaken :pbBattleOnStepTaken
-def pbBattleOnStepTaken(repel_active)
-  return if $game_temp.in_battle
-  original_pbBattleOnStepTaken(repel_active)
-end
-
-#===============================================================================#
-# Fix for skipping player touch events at high turbo speeds
-#===============================================================================#
-class Game_Player < Game_Character
-  alias_method :original_moveto, :moveto unless method_defined?(:original_moveto)
-  
-  def moveto(x, y, center = false)
-    # Check intermediate tiles when turbo is active to prevent skipping events
-    if $GameSpeed > 0 && @x && @y
-      old_x, old_y = @x, @y
-      # Check tiles between old and new position
-      dx = (x - old_x).abs
-      dy = (y - old_y).abs
-      steps = [dx, dy].max
-      
-      if steps > 1
-        steps.times do |i|
-          progress = (i + 1).to_f / steps
-          check_x = (old_x + (x - old_x) * progress).round
-          check_y = (old_y + (y - old_y) * progress).round
-          
-          # Check for player touch events at intermediate positions
-          $game_map.events.each_value do |event|
-            next if event.tile_id >= 0 || event.character_name == ""
-            next unless event.x == check_x && event.y == check_y
-            next if event.jumping? || event.over_trigger?
-            if event.list && event.list.size > 1 && [1, 2].include?(event.trigger)
-              event.start
-            end
-          end
-        end
-      end
-    end
-    
-    original_moveto(x, y, center)
-  end
-end
-
-class Game_Event < Game_Character
-  def pbGetInterpreter
-    return @interpreter
-  end
-
-  def pbResetInterpreterWaitCount
-    @interpreter.pbRefreshWaitCount if @interpreter
-  end
-
-  def IsParallel
-    return @trigger == 4
-  end  
-end  
-
-class Interpreter
-  def pbRefreshWaitCount
-    @wait_count = 0
-    @wait_start = System.uptime
-  end  
-end  
-
-class Window_AdvancedTextPokemon < SpriteWindow_Base
-  def pbResetWaitCounter
-    @wait_timer_start = nil
-    @waitcount = 0
-    @display_last_updated = nil
-  end  
-end  
-
-$CurrentMsgWindow = nil;
-def pbMessage(message, commands = nil, cmdIfCancel = 0, skin = nil, defaultCmd = 0, &block)
-  ret = 0
-  msgwindow = pbCreateMessageWindow(nil, skin)
-  $CurrentMsgWindow = msgwindow
-
-  if commands
-    ret = pbMessageDisplay(msgwindow, message, true,
-                           proc { |msgwndw|
-                             next Kernel.pbShowCommands(msgwndw, commands, cmdIfCancel, defaultCmd, &block)
-                           }, &block)
-  else
-    pbMessageDisplay(msgwindow, message, &block)
-  end
-  pbDisposeMessageWindow(msgwindow)
-  $CurrentMsgWindow = nil
-  Input.update
-  return ret
-end
-
-#===============================================================================#
-# Fix for scrolling fog speed
-#===============================================================================#
+#===============================================================================
+# 5. Fixes Visuales.
+#===============================================================================
 class Game_Map
   alias_method :original_update, :update unless method_defined?(:original_update)
 
   def update
+    # Si se activó el turbo, actualizamos temporizadores de eventos
     if $RefreshEventsForTurbo
-      begin
-        if $game_map&.events
-          $game_map.events.each_value { |event| event.pbResetInterpreterWaitCount if event }
-        end
-        @scroll_timer_start = System.uptime/SPEEDUP_STAGES[SPEEDUP_STAGES.size-1] if (@scroll_distance_x || 0) != 0 || (@scroll_distance_y || 0) != 0
-        $CurrentMsgWindow.pbResetWaitCounter if $game_temp&.message_window_showing && $CurrentMsgWindow
-      rescue => e
-        # Registrar error pero no interrumpir el juego
-        Console.echo_warn("Error actualizando eventos para turbo: #{e.message}")
-      ensure
-        $RefreshEventsForTurbo = false
+      if $game_map&.events
+        $game_map.events.each_value { |event| event.pbResetInterpreterWaitCount if event }
       end
+      if $game_temp.respond_to?(:message_window_showing) && $game_temp.message_window_showing && $CurrentMsgWindow
+        $CurrentMsgWindow.pbResetWaitCounter 
+      end
+      $RefreshEventsForTurbo = false
     end
 
     temp_timer = @fog_scroll_last_update_timer
-    @fog_scroll_last_update_timer = System.uptime # No desplazar en el método original de actualización
+    @fog_scroll_last_update_timer = System.uptime 
     original_update
     @fog_scroll_last_update_timer = temp_timer
     update_fog
@@ -246,37 +171,17 @@ class Game_Map
   def update_fog
     uptime_now = System.unscaled_uptime
     @fog_scroll_last_update_timer = uptime_now unless @fog_scroll_last_update_timer
-    speedup_mult = $PokemonSystem&.only_speedup_battles == 1 ? 1 : SPEEDUP_STAGES[$GameSpeed]
-    scroll_mult = (uptime_now - @fog_scroll_last_update_timer) * FOG_SCROLL_MULTIPLIER * speedup_mult
+    speedup_mult = ($PokemonSystem&.only_speedup_battles == 1) ? 1 : TurboConfig::SPEED_STAGES[$GameSpeed]
+    
+    scroll_mult = (uptime_now - @fog_scroll_last_update_timer) * 5 * speedup_mult
     @fog_ox -= @fog_sx * scroll_mult
     @fog_oy -= @fog_sy * scroll_mult
     @fog_scroll_last_update_timer = uptime_now
   end
 end
 
-#===============================================================================#
-# Fix for animation index crash
-#===============================================================================#
+# Fix para evitar crasheos en animaciones de batalla por el cambio de tiempo
 class SpriteAnimation
-  alias_method :original_animation, :animation unless method_defined?(:original_animation)
-  
-  def animation(animation, hit, height = 3)
-    @_animation_real_start = System.unscaled_uptime
-    $ActiveAnimations << self unless $ActiveAnimations.include?(self)
-    original_animation(animation, hit, height)
-  end
-  
-  def animation_active?
-    return @_animation_duration && @_animation_duration > 0
-  end
-  
-  alias_method :original_dispose_animation, :dispose_animation unless method_defined?(:original_dispose_animation)
-  
-  def dispose_animation
-    $ActiveAnimations.delete(self)
-    original_dispose_animation
-  end
-  
   def update_animation
     new_index = ((System.uptime - @_animation_timer_start) / @_animation_time_per_frame).to_i
     if new_index >= @_animation_duration
@@ -302,89 +207,115 @@ class SpriteAnimation
   end
 end
 
-#===============================================================================#
-# PokemonSystem Accessors
-#===============================================================================#
-class PokemonSystem
-  alias_method :original_initialize, :initialize unless method_defined?(:original_initialize)
-  attr_accessor :only_speedup_battles
-  attr_accessor :battle_speed
-
-  def initialize
-    original_initialize
-    @only_speedup_battles = 0 # Speed up setting (0=always, 1=battle_only)
-    @battle_speed = 0 # Depends on the SPEEDUP_STAGES array size
-  end
+#===============================================================================
+# 6. Fixes de Estabilidad
+#===============================================================================
+alias :original_pbBattleOnStepTaken :pbBattleOnStepTaken
+def pbBattleOnStepTaken(repel_active)
+  return if $game_temp.in_battle
+  original_pbBattleOnStepTaken(repel_active)
 end
 
-MenuHandlers.add(:options_menu, :turbo, {
-  "name"        => _INTL("Modo turbo"),
-  "order"       => 45,
-  "type"        => EnumOption,
-  "condition"   => proc { next expshare_enabled? },
-  "parameters"  => [_INTL("Siempre"), _INTL("Combates")],
-  "description" => _INTL("Define el modo del turbo, si se puede activar siempre o solo en combates."),
-  "get_proc"    => proc { next $PokemonSystem&.only_speedup_battles || 0 },
-  "set_proc"    => proc { |value, _scene| 
-    next unless $PokemonSystem
-    $PokemonSystem.only_speedup_battles = value 
-    $CanToggle = $PokemonSystem.only_speedup_battles == 0
-    $GameSpeed = 0 if $PokemonSystem.only_speedup_battles == 1
-  }
-})
+class Game_Event < Game_Character
+  def pbResetInterpreterWaitCount
+    @interpreter.pbRefreshWaitCount if @interpreter
+  end
+end  
 
+class Interpreter
+  def pbRefreshWaitCount
+    @wait_count = 0
+    @wait_start = System.uptime
+  end  
+end  
 
+class Window_AdvancedTextPokemon < SpriteWindow_Base
+  def pbResetWaitCounter
+    @wait_timer_start = nil
+    @waitcount = 0
+    @display_last_updated = nil
+  end  
+end  
 
+# Variable global para rastrear la ventana de mensaje activa
+$CurrentMsgWindow = nil;
+def pbMessage(message, commands = nil, cmdIfCancel = 0, skin = nil, defaultCmd = 0, &block)
+  ret = 0
+  msgwindow = pbCreateMessageWindow(nil, skin)
+  $CurrentMsgWindow = msgwindow
+
+  if commands
+    ret = pbMessageDisplay(msgwindow, message, true,
+                           proc { |msgwndw|
+                             next Kernel.pbShowCommands(msgwndw, commands, cmdIfCancel, defaultCmd, &block)
+                           }, &block)
+  else
+    pbMessageDisplay(msgwindow, message, &block)
+  end
+  pbDisposeMessageWindow(msgwindow)
+  $CurrentMsgWindow = nil
+  Input.update
+  return ret
+end
+
+#===============================================================================
+# 7. Icono del Turbo.
+#===============================================================================
 module Graphics
   class << self
     alias _old_update_turbo update
     
-    # Cachear los bitmaps para evitar fugas de memoria
-    def get_turbo_bitmap(speed)
-      @turbo_bitmaps ||= {}
-      unless @turbo_bitmaps[speed]
-        begin
-          @turbo_bitmaps[speed] = Bitmap.new("Graphics/Pictures/Turbo#{speed}")
-        rescue => e
-          Console.echo_warn("Error cargando bitmap de turbo: #{e.message}")
-          return nil
-        end
-      end
-      @turbo_bitmaps[speed]
-    end
-    
-    # Limpiar bitmaps cacheados cuando sea necesario
-    def dispose_turbo_bitmaps
-      return unless @turbo_bitmaps
-      @turbo_bitmaps.each_value { |bitmap| bitmap&.dispose }
-      @turbo_bitmaps.clear
-    end
-    
     def update
       _old_update_turbo
-      $buttonframes = TURBO_BUTTON_DISPLAY_FRAMES unless $buttonframes
+      $buttonframes = TurboConfig::ICON_DURATION if !$buttonframes
       
-      if $buttonframes < TURBO_BUTTON_DISPLAY_FRAMES
-        # Crear sprite solo si no existe o está disposed
+      # Mostrar icono si el contador está activo
+      if $buttonframes < TurboConfig::ICON_DURATION
         if !@boton_turbo || @boton_turbo.disposed?
           @boton_turbo = Sprite.new
           @boton_turbo.z = 999999
-          @last_displayed_speed = nil
-        end
-        
-        # Solo actualizar bitmap si la velocidad cambió
-        if @last_displayed_speed != $GameSpeed
-          bitmap = get_turbo_bitmap($GameSpeed)
-          @boton_turbo.bitmap = bitmap if bitmap
-          @last_displayed_speed = $GameSpeed
+          @boton_turbo.x = 8
+          @boton_turbo.y = 8
+          set_turbo_bitmap
+        elsif @boton_turbo
+          set_turbo_bitmap
         end
         
         $buttonframes += 1
-        if $buttonframes >= TURBO_BUTTON_DISPLAY_FRAMES
-          @boton_turbo&.dispose
-          @last_displayed_speed = nil
+        if $buttonframes >= TurboConfig::ICON_DURATION
+          @boton_turbo.dispose
         end
       end
     end
+
+    # Helper para cargar la imagen correcta
+    def set_turbo_bitmap
+      bmp_name = "Graphics/Pictures/Turbo#{$GameSpeed}"
+      return if @last_turbo_speed == $GameSpeed && @boton_turbo.bitmap
+      
+      if defined?(pbResolveBitmap) && pbResolveBitmap(bmp_name)
+        @boton_turbo.bitmap = Bitmap.new(bmp_name)
+      else
+        # Fallback
+        @boton_turbo.bitmap = Bitmap.new(32, 32) unless @boton_turbo.bitmap
+      end
+      
+      @last_turbo_speed = $GameSpeed
+    end
   end
 end
+
+#===============================================================================
+# 8. Fix de Colisiones
+#===============================================================================
+
+# Asegura que al cambiar de mapa, el jugador vuelva a tener colisiones.
+EventHandlers.add(:on_enter_map, :fix_turbo_collision, proc { |_map_id|
+  # Solo forzamos la colisión si NO estamos presionando CTRL en modo Debug.
+  unless $DEBUG && Input.press?(Input::CTRL)
+    if $game_player
+      $game_player.through = false 
+      $game_player.always_on_top = false
+    end
+  end
+})

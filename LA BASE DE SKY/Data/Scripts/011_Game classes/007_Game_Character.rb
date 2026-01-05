@@ -25,6 +25,7 @@ class Game_Character
   attr_accessor :lock_pattern
   attr_reader   :move_route_forcing
   attr_accessor :through
+  attr_accessor :always_on_top
   attr_reader   :animation_id
   attr_accessor :animation_height
   attr_accessor :animation_regular_tone
