@@ -5,6 +5,7 @@ module GameData
     attr_reader :gender
     attr_reader :base_money
     attr_reader :skill_level
+    attr_reader :poke_ball
     attr_reader :flags
     attr_reader :intro_BGM
     attr_reader :battle_BGM
@@ -24,6 +25,7 @@ module GameData
                                             "Mixed" => 2, "mixed" => 2, "X" => 2, "x" => 2, "2" => 2}],
       "BaseMoney"   => [:base_money,  "u"],
       "SkillLevel"  => [:skill_level, "u"],
+      "PokeBall"    => [:poke_ball,   "e", :Item],
       "Flags"       => [:flags,       "*s"],
       "IntroBGM"    => [:intro_BGM,   "s"],
       "BattleBGM"   => [:battle_BGM,  "s"],
@@ -42,6 +44,7 @@ module GameData
         ["Gender",     EnumProperty.new(gender_array), _INTL("Genero de este tipo de entrenador.")],
         ["BaseMoney",  LimitProperty.new(9999),        _INTL("El jugador gana esta cantidad de dinero multiplicada por el nivel más alto de los Pokémon del entrenador.")],
         ["SkillLevel", LimitProperty2.new(9999),       _INTL("Nivel de habilidad de este tipo de entrenador.")],
+        ["PokeBall",   ItemProperty,                   _INTL("Poké Ball por defecto que tendrán todos los entrenadores de este tipo.")],
         ["Flags",      StringListProperty,             _INTL("Palabras/frases que pueden usarse para hacer que los entrenadores de este tipo se comporten de manera diferente a los demás.")],
         ["IntroBGM",   BGMProperty,                    _INTL("Música de fondo reproducida antes de los combates contra entrenadores de este tipo.")],
         ["BattleBGM",  BGMProperty,                    _INTL("Música de fondo reproducida en los combates contra entrenadores de este tipo.")],
@@ -104,6 +107,7 @@ module GameData
       @gender          = hash[:gender]          || 2
       @base_money      = hash[:base_money]      || 30
       @skill_level     = hash[:skill_level]     || @base_money
+      @poke_ball       = hash[:poke_ball]
       @flags           = hash[:flags]           || []
       @intro_BGM       = hash[:intro_BGM]
       @battle_BGM      = hash[:battle_BGM]
@@ -132,4 +136,3 @@ module GameData
     end
   end
 end
-

@@ -268,15 +268,15 @@ module GameData
                        :DRAGONMEMORY,
                        :DARKMEMORY,
                        :FAIRYMEMORY],
+        :DIALGA    => [:ADAMANTCRYSTAL],
+        :PALKIA    => [:LUSTROUSGLOBE],
+        :GIRATINA  => [:GRISEOUSORB, :GRISEOUSCORE],
         :GENESECT  => [:BURNDRIVE, :CHILLDRIVE, :DOUSEDRIVE, :SHOCKDRIVE],
         :KYOGRE    => [:BLUEORB],
         :GROUDON   => [:REDORB],
         :ZACIAN    => [:RUSTEDSWORD],
         :ZAMAZENTA => [:RUSTEDSHIELD],
-        :DIALGA   => [:ADAMANTCRYSTAL],
-        :PALKIA   => [:LUSTROUSGLOBE],
-        :GIRATINA => [:GRISEOUSCORE],
-        :OGERPON  => [:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK]
+        :OGERPON   => [:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK]
       }
       return true if @id == :BOOSTERENERGY &&
                      [:PROTOSYNTHESIS, :QUARKDRIVE].include?(ability) &&
@@ -303,4 +303,3 @@ module GameData
     end
   end
 end
-
