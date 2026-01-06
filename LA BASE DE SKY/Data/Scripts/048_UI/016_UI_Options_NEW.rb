@@ -862,27 +862,83 @@ class UI::Options < UI::BaseScreen
 
   def get_all_options
     ret = []
+    seen_options = {}
+    
+    # First pass: collect all options and track which format they use
     MenuHandlers.each_available(:options_menu) do |option, hash, name|
+      has_explicit_page = !hash["page"].nil?
+      
+      # If this option was already seen with an explicit page, skip old format versions
+      next if seen_options[option] && !has_explicit_page
+      
       if hash["description"].is_a?(Proc)
         description = hash["description"].call
       elsif !hash["description"].nil?
         description = _INTL(hash["description"])
       end
-      ret.push({
+      
+      # Auto-assign page for options without one (backward compatibility)
+      page = hash["page"] || auto_detect_page(hash["type"], hash["name"] || name)
+      # Convert old option types to new format
+      type = convert_option_type(hash["type"])
+      
+      option_data = {
         :option      => option,
-        :page        => hash["page"],
+        :page        => page,
         :name        => name,
         :description => description,
-        :type        => hash["type"],
+        :type        => type,
         :parameters  => hash["parameters"],
         :on_select   => hash["on_select"],
         :get_proc    => hash["get_proc"],
         :set_proc    => hash["set_proc"],
         :use_proc    => hash["use_proc"]
-      })
-      ret.last[:parameters].map! { |val| _INTL(val) } if ret.last[:type] == :array
+      }
+      option_data[:parameters].map! { |val| _INTL(val) } if option_data[:type] == :array
+      
+      # Remove old version if it exists and this is a new format version
+      if has_explicit_page && seen_options[option]
+        ret.delete_if { |opt| opt[:option] == option }
+      end
+      
+      ret.push(option_data)
+      seen_options[option] = has_explicit_page
     end
+    
     return ret
+  end
+
+  # Auto-detect appropriate page based on option type and name
+  def auto_detect_page(type, name)
+    name_lower = name.to_s.downcase
+    # Check by name keywords
+    return :audio if name_lower.include?("volumen") || name_lower.include?("volume") || 
+                     name_lower.include?("bgm") || name_lower.include?("sound") || 
+                     name_lower.include?("música") || name_lower.include?("music")
+    return :graphics if name_lower.include?("frame") || name_lower.include?("marco") ||
+                        name_lower.include?("screen") || name_lower.include?("pantalla") ||
+                        name_lower.include?("text") || name_lower.include?("texto") ||
+                        name_lower.include?("animation") || name_lower.include?("animación") ||
+                        name_lower.include?("vsync") || name_lower.include?("autotile")
+    # Default to gameplay for everything else
+    return :gameplay
+  end
+
+  # Convert old option type classes to new format symbols
+  def convert_option_type(type)
+    return type if type.is_a?(Symbol)
+    case type.to_s
+    when "SliderOption"
+      return :number_slider
+    when "EnumOption"
+      return :array
+    when "NumberOption"
+      return :number_type
+    when "ButtonOption"
+      return :use
+    else
+      return :array  # default fallback
+    end
   end
 
   ACTIONS.add(:use_option, {
