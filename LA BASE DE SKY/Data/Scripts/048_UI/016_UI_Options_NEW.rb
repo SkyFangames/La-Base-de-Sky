@@ -2,10 +2,24 @@
 #
 #===============================================================================
 class PokemonSystem
+  attr_accessor :textspeed
+  attr_accessor :battlescene
   attr_accessor :battlestyle
   attr_accessor :runstyle
   attr_accessor :sendtoboxes
   attr_accessor :givenicknames
+  attr_accessor :skip_move_learning
+  attr_accessor :frame
+  attr_accessor :textskin
+  attr_accessor :screensize
+  attr_accessor :language
+  attr_accessor :runstyle
+  
+  attr_accessor :main_volume
+  attr_accessor :bgmvolume
+  attr_accessor :sevolume
+  attr_accessor :pokemon_cry_volume
+  
   attr_accessor :textinput
   attr_reader   :bgmvolume
   attr_reader   :sevolume
@@ -17,12 +31,15 @@ class PokemonSystem
   attr_reader   :screensize
   attr_reader   :language
   attr_writer   :controls
+  attr_accessor :vsync
+  attr_accessor :autotile_animations
 
   def initialize
     @battlestyle        = 0     # Battle style (0=switch, 1=set)
     @runstyle           = 0     # Default movement speed (0=walk, 1=run)
     @sendtoboxes        = 0     # Send to Boxes (0=manual, 1=automatic)
     @givenicknames      = 0     # Give nicknames (0=give, 1=don't give)
+    @skip_move_learning = 1  # Skip move learning (0=Sí, 1=No)
     @textinput          = 0     # Text input mode (0=cursor, 1=keyboard)
     @language           = 0     # Language (see also Settings::LANGUAGES)
     @main_volume        = 100
@@ -34,6 +51,79 @@ class PokemonSystem
     @textskin           = 0     # Speech frame
     @frame              = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
     @screensize         = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
+    @vsync               = vsync_initial_value?
+    @autotile_animations = 0
+  end
+
+  def vsync_initial_value?
+    return 1 if !File.exist?("mkxp.json") || $joiplay
+    file_content = File.read("mkxp.json")
+    clean_json_string = json_remove_comments(file_content)
+    # Parse JSON content
+    begin
+      config = HTTPLite::JSON.parse(clean_json_string)
+
+      # Check the vsync value
+      vsync_value = config['vsync']
+      return vsync_value == true ? 0 : 1
+    rescue HTTPLite::JSON::ParserError => e
+      echoln "Error parsing JSON: #{e.message}"
+    end
+  end
+
+  def update_vsync(vsync_value)
+    file_path = "mkxp.json"
+    vsync_value = vsync_value == 1 ? false : true
+    vsync_str = vsync_value ? 'true' : 'false'
+    sync_to_refresh_str = vsync_str
+
+    # Read the file line-by-line to preserve comments and order
+    lines = File.readlines(file_path)
+    
+    updated_lines = lines.map do |line|
+      # Update the "vsync" value
+      if line.match?(/"vsync":\s*(true|false)/)
+        line.sub(/"vsync":\s*(true|false)/, "\"vsync\": #{vsync_str}")
+      # Update the "syncToRefreshrate" value
+      elsif line.match?(/"syncToRefreshrate":\s*(true|false)/)
+        if vsync_value
+          # Set to true with a trailing comma
+          line.sub(/"syncToRefreshrate":\s*(true|false),?/, "\"syncToRefreshrate\": #{sync_to_refresh_str}")
+        else
+          # Set to false without a trailing comma
+          line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{sync_to_refresh_str},")
+        end
+      # Comment out "fixedFramerate" if vsync is true
+      elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
+        "//#{line.strip}" # Comment out the line
+      # Uncomment "fixedFramerate" if vsync is false
+      elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
+        line.sub(/\/\/\s*/, '') # Uncomment the line
+      else
+        line # Return the line unchanged
+      end
+    end
+    
+    # Write the updated lines back to the file
+    File.open(file_path, 'w') do |file|
+      file.puts(updated_lines)
+    end
+    # Handle game restart after vsync value change
+    message = $player ? _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\nPodrás guardar antes de reiniciar.\n¿Deseas reiniciar ahora?") : _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\n¿Deseas reiniciar ahora?")
+    if Kernel.pbConfirmMessageSerious(message)
+      pbSaveScreen if $player
+      if System.is_really_windows?
+        # Launch Game.exe and immediately exit the current process
+        Thread.new do
+          system('start "" "Game.exe"')
+        end
+        sleep(0.1) # Give the thread some time to execute
+      else
+        pbMessage("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente")
+      end
+
+      Kernel.exit!
+    end
   end
 
   def language=(value)
@@ -467,7 +557,7 @@ class UI::OptionsVisuals < UI::BaseVisuals
 
   PAGE_HANDLERS = HandlerHash.new
   PAGE_HANDLERS.add(:gameplay, {
-    :name  => proc { next _INTL("Jugabilidad") },
+    :name  => proc { next _INTL("Juego") },
     :order => 10,
     :description => proc { next _INTL("Cambia cómo se comporta el juego.") }
   })
@@ -879,7 +969,7 @@ MenuHandlers.add(:options_menu, :language, {
 
 MenuHandlers.add(:options_menu, :main_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Main Volume"),
+  "name"        => _INTL("Volumen General"),
   "order"       => 10,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -914,20 +1004,20 @@ MenuHandlers.add(:options_menu, :se_volume, {
   }
 })
 
-# MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
-#   "page"        => :audio,
-#   "name"        => _INTL("Pokémon Cries"),
-#   "order"       => 40,
-#   "type"        => :number_slider,
-#   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
-#   "description" => _INTL("Adjust the volume of Pokémon cries."),
-#   "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
-#   "set_proc"    => proc { |value, _screen|
-#     next if $PokemonSystem.pokemon_cry_volume == value
-#     $PokemonSystem.pokemon_cry_volume = value
-#     pbPlayCursorSE
-#   }
-# })
+MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
+  "page"        => :audio,
+  "name"        => _INTL("Volumen Gritos Pkmn"),
+  "order"       => 40,
+  "type"        => :number_slider,
+  "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
+  "description" => _INTL("Ajusta el volumen de los gritos de los Pokémon."),
+  "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
+  "set_proc"    => proc { |value, _screen|
+    next if $PokemonSystem.pokemon_cry_volume == value
+    $PokemonSystem.pokemon_cry_volume = value
+    pbPlayCursorSE
+  }
+})
 
 #-------------------------------------------------------------------------------
 
@@ -1002,6 +1092,33 @@ MenuHandlers.add(:options_menu, :screen_size, {
   "description" => _INTL("Elije el tamaño de la ventana del juego."),
   "get_proc"    => proc { next [$PokemonSystem.screensize, 4].min },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.screensize = value }
+})
+
+MenuHandlers.add(:options_menu, :vsync, {
+  "page"        => :graphics,
+  "name"        => _INTL("VSync"),
+  "order"       => 60,
+  "type"        => :array,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "condition"   => proc { next !$joiplay },
+  "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego"),
+  "get_proc"    => proc { next $PokemonSystem.vsync },
+  "set_proc"    => proc { |value, _scene|
+    next if $PokemonSystem.vsync == value
+    $PokemonSystem.vsync = value
+    $PokemonSystem.update_vsync($PokemonSystem.vsync)
+  }
+})
+
+MenuHandlers.add(:options_menu, :autotile_animations, {
+  "page"        => :graphics,
+  "name"        => _INTL("Anim. de mapas"),
+  "order"       => 70,
+  "type"        => :array,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "description" => _INTL("Activa o desactiva las animaciones de los mapas."),
+  "get_proc"    => proc { next $PokemonSystem.autotile_animations || 0 },
+  "set_proc"    => proc { |value, _scene| $PokemonSystem.autotile_animations = value }
 })
 
 #-------------------------------------------------------------------------------
