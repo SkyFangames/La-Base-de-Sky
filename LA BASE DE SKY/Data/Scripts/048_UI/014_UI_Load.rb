@@ -321,11 +321,15 @@ class PokemonLoadScreen
       when cmd_mystery_gift
         pbFadeOutIn { pbDownloadMysteryGift(@save_data[:player]) }
       when cmd_options
+        if Settings::USE_NEW_OPTIONS_UI
+          UI::Options.new.main
+        else
         pbFadeOutIn do
           scene = PokemonOption_Scene.new
           screen = PokemonOptionScreen.new(scene)
           screen.pbStartScreen(true)
         end
+      end
       when cmd_language
         @scene.pbEndScene
         $PokemonSystem.language = pbChooseLanguage

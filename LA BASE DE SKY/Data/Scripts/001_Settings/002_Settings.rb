@@ -604,6 +604,10 @@ module Settings
   # Este numero deberia ser mayor a NUM_STORAGE_BOXES
   MAX_STORAGE_BOXES_EXTEND = 70
 
+  
+  # Si quieres usar la nueva interfaz de opciones (true) o la clásica (false).
+  USE_NEW_OPTIONS_UI = true
+
   #=============================================================================
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 
   # dentro de un _INTL() para que sea fácil de traducirlas a otros idiomas.
