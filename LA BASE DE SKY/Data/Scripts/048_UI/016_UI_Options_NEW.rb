@@ -608,7 +608,7 @@ class UI::OptionsVisuals < UI::BaseVisuals
                 all_pages.length * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING),
                 @bitmaps[:page_icons].height)
     # @sprites[:page_icons].x = Graphics.width - @sprites[:page_icons].width
-    @sprites[:page_icons].x = 70
+    @sprites[:page_icons].x = 57
     @sprites[:page_icons].y = 4
   end
 
