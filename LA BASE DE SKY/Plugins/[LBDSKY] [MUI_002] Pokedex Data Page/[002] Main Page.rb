@@ -204,29 +204,16 @@ class PokemonPokedexInfo_Scene
                   species.species == :PIKACHU && (8..15).include?(species.form)
 
     GameData::Species.each do |sp|
-
-      
-
-      # Family members.
-      next if blacklisted
-      if sp.display_species?(@dexlist, species)
-        if family.include?(sp.species)
-          if sp.species == species.species
-            special_form, _check_form, _check_item = pbGetSpecialFormData(sp)
-            next if !special_form
-          end
-          # @data_hash[:family] << sp.id if (sp.form == species.form || (family_evos.include?(sp.id) && !@data_hash[:family].include?(sp.id)))
-          family_to_insert << sp if family_evos.include?(sp.species) || sp.form != species.form
+      # Family members - collect ALL evolutions, not filtered by display_species
+      if !blacklisted && family.include?(sp.species)
+        if sp.species == species.species
+          special_form, _check_form, _check_item = pbGetSpecialFormData(sp)
+          next if !special_form
         end
-      elsif sp.display_species?(@dexlist, species, false, true)
-          if family.include?(sp.species)
-            if sp.species == species.species
-              special_form, _check_form, _check_item = pbGetSpecialFormData(sp)
-              next if !special_form
-            end
-            # @data_hash[:family] << sp.id if sp.form == species.form || ( sp.id )
-            family_to_insert << sp if family_evos.include?(sp.species) || sp.form != species.form
-          end
+        # Add to family_to_insert if it's an evolution or different form
+        if family_evos.include?(sp.species) || sp.form != species.form
+          family_to_insert << sp
+        end
       end
       #-------------------------------------------------------------------------
       next if !sp.display_species?(@dexlist, species)

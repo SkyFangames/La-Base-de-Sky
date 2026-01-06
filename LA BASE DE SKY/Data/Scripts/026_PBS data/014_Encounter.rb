@@ -59,6 +59,19 @@ module GameData
       end
     end
 
+    def self.each_with_species(species, version = 0)
+      self.each_of_version(version) do |data|
+        has_species = false
+        data.types.each_value do |slots|
+          next if !slots
+          slots.each { |slot| has_species = true if GameData::Species.get(slot[1]).species == species }
+        end
+        yield data if has_species
+      end
+    end
+
+    #---------------------------------------------------------------------------
+
     def initialize(hash)
       @id              = hash[:id]
       @map             = hash[:map]
@@ -69,4 +82,3 @@ module GameData
     end
   end
 end
-

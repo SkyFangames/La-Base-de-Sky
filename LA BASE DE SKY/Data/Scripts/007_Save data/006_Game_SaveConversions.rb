@@ -13,6 +13,9 @@ SaveData.register_conversion(:v19_define_versions) do
     unless save_data.has_key?(:game_version)
       save_data[:game_version] = Settings::GAME_VERSION
     end
+    unless save_data.has_key?(:lbdsky_version)
+      save_data[:lbdsky_version] = LBDSKY::VERSION
+    end
   end
 end
 
@@ -656,6 +659,18 @@ SaveData.register_conversion(:v21_add_bump_stat) do
   to_value :stats do |stats|
     stats.instance_eval do
       @bump_count = 0 if !@bump_count
+    end
+  end
+end
+
+SaveData.register_conversion(:v22_add_new_options) do
+  lbds_version "1.2.0"
+  display_title "Setting default values for new options"
+  to_value :pokemon_system do |pokemon_system|
+    pokemon_system.instance_eval do
+      @skip_move_learning = 0
+      @main_volume = 100
+      @pokemon_cry_volume = 100
     end
   end
 end

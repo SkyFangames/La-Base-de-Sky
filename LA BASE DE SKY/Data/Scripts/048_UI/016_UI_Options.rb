@@ -14,8 +14,12 @@ class PokemonSystem
   attr_accessor :screensize
   attr_accessor :language
   attr_accessor :runstyle
+  
+  attr_accessor :main_volume
   attr_accessor :bgmvolume
   attr_accessor :sevolume
+  attr_accessor :pokemon_cry_volume
+  
   attr_accessor :textinput
   attr_accessor :vsync
   attr_accessor :autotile_animations
@@ -32,11 +36,29 @@ class PokemonSystem
     @screensize          = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
     @language            = 0     # Language (see also Settings::LANGUAGES in script PokemonSystem)
     @runstyle            = 0     # Default movement speed (0=walk, 1=run)
+    @main_volume         = 100   # Main volume control
     @bgmvolume           = 80    # Volume of background music and ME
     @sevolume            = 100   # Volume of sound effects
+    @pokemon_cry_volume  = 100   # Volume of Pokémon cries
     @textinput           = 0     # Text input mode (0=cursor, 1=keyboard)
     @vsync               = vsync_initial_value?
     @autotile_animations = 0
+  end
+
+  def main_volume=(value)
+    return if @main_volume == value #&& !@force_set_options
+    @main_volume = value
+    return if !$game_system
+    if $game_system.playing_bgm
+      playingBGM = $game_system.getPlayingBGM
+      $game_system.bgm_pause
+      $game_system.bgm_resume(playingBGM)
+    end
+    if $game_system.playing_bgs
+      playingBGS = $game_system.getPlayingBGS
+      $game_system.bgs_pause
+      $game_system.bgs_resume(playingBGS)
+    end
   end
 
   def vsync_initial_value?
@@ -524,6 +546,17 @@ end
 #===============================================================================
 # Options Menu commands
 #===============================================================================
+MenuHandlers.add(:options_menu, :main_volume, {
+  "name"        => _INTL("Volumen General"),
+  "order"       => 9,
+  "type"        => SliderOption,
+  "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
+  "description" => _INTL("Ajusta el volumen de todo el audio en el juego."),
+  "get_proc"    => proc { next $PokemonSystem.main_volume },
+  "set_proc"    => proc { |value, screen| $PokemonSystem.main_volume = value }
+})
+
+
 MenuHandlers.add(:options_menu, :bgm_volume, {
   "name"        => _INTL("Volumen Música"),
   "order"       => 10,
@@ -557,6 +590,20 @@ MenuHandlers.add(:options_menu, :se_volume, {
       $game_system.bgs_pause
       $game_system.bgs_resume(playingBGS)
     end
+    pbPlayCursorSE
+  }
+})
+
+MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
+  "name"        => _INTL("Volumen Gritos Pkmn"),
+  "order"       => 21,
+  "type"        => SliderOption,
+  "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
+  "description" => _INTL("Ajusta el volumen de los gritos de los Pokémon."),
+  "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
+  "set_proc"    => proc { |value, _scene|
+    next if $PokemonSystem.pokemon_cry_volume == value
+    $PokemonSystem.pokemon_cry_volume = value
     pbPlayCursorSE
   }
 })
