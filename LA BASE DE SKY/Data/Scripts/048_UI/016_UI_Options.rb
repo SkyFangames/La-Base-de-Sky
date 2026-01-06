@@ -595,7 +595,7 @@ MenuHandlers.add(:options_menu, :se_volume, {
 })
 
 MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
-  "name"        => _INTL("Volumen Gritos Pokémon"),
+  "name"        => _INTL("Volumen Gritos Pkmn"),
   "order"       => 21,
   "type"        => SliderOption,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
