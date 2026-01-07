@@ -40,7 +40,7 @@ class PokemonSummary_Scene
       elsif @pokemon.status != :NONE
         status = GameData::Status.get(@pokemon.status).icon_position
       elsif @pokemon.pokerusStage == 1
-        status = GameData::Status.count 
+        status = GameData::Status.count
       end
       if status >= 0
         imagepos.push(["Graphics/UI/statuses", 124, 100, 0, 16 * status, 44, 16])
@@ -97,7 +97,7 @@ class PokemonSummary_Scene
     end
     drawFormattedTextEx(@sprites["overlay"].bitmap, 232, 86, 268, memo)
   end
-
+  
   #-----------------------------------------------------------------------------
   # Rewritten so that the commands that appear in the Options menu are now
   # determined by which options are set in each page handler.
@@ -223,7 +223,7 @@ class PokemonSummary_Scene
       pbFadeOutIn {
         scene  = PokemonBag_Scene.new
         screen = PokemonBagScreen.new(scene, $bag)
-        item = screen.pbChooseItemScreen( Proc.new{ |itm|
+        item = screen.pbChooseItemScreen(Proc.new{ |itm|
           move = GameData::Item.get(itm).move  
           next false if !move || @pokemon.hasMove?(move) #|| !@pokemon.compatible_with_move?(move)
           next true
@@ -274,7 +274,6 @@ class PokemonSummary_Scene
         @show_back = !@show_back
         if PluginManager.installed?("[DBK] Animated Pokémon System")
           @sprites["pokemon"].setSummaryBitmap(@pokemon, @show_back)
-          # @sprites["pokemon"].constrict([208, 164])
         else
           @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
         end
@@ -362,6 +361,4 @@ class PokemonSummary_Scene
     end
     return @partyindex
   end
-
-
 end
