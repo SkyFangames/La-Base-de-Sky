@@ -270,7 +270,7 @@ class PokemonBoxArrow < Sprite
   def deleteSprite
     @holding = false
     if @heldpkmn
-      @heldpkmn.dispose
+      @heldpkmn.dispose if !@heldpkmn.disposed?
       @heldpkmn = nil
     end
   end
@@ -1320,6 +1320,9 @@ class PokemonStorageScene
         Graphics.update
         sprite.update
         self.update
+      end
+      if heldpoke
+        @sprites["arrow"].deleteSprite
       end
     end
   end
