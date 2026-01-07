@@ -22,7 +22,7 @@ class Battle::Scene
 
   def pbDeleteTrickRoomBackground
     if @sprites["trick_room_bg"]&.visible
-      28.times do
+      25.times do
         @sprites["trick_room_bg"].opacity -= 8
         sceneWait(2)
       end
@@ -39,7 +39,7 @@ class Battle::Scene
       bg.visible = true
 
       pbSEPlay("PRSFX- Trick Room", 80)
-      28.times do
+      25.times do
         @sprites["trick_room_bg"].opacity += 8
         sceneWait(2)
       end
