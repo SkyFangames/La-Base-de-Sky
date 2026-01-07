@@ -480,6 +480,10 @@ module Settings
   # está en el mimso mapa (solo para nuevas mecánicas de crecimiento).
   PLANT_SPARKLE_ANIMATION_ID   = 7
 
+  # Animación que aparece cuando el jugador termina de dar un paso sobre agua
+  # quieta (muestra una ondulación de agua).
+  WATER_RIPPLE_ANIMATION_ID    = 8
+
   #=============================================================================
 
   # El ANCHO por defecto de la pantalla en píxeles (en escala 1.0).
