@@ -850,9 +850,9 @@ end
 class UI::Options < UI::BaseScreen
   ACTIONS = HandlerHash.new
 
-  def initialize(in_load_screen = false)
+  def initialize(in_load_screen = false, menu = :options_menu)
     @in_load_screen = in_load_screen
-    @options = get_all_options
+    @options = get_all_options(menu)
     super()
   end
 
@@ -860,12 +860,12 @@ class UI::Options < UI::BaseScreen
     @visuals = UI::OptionsVisuals.new(@options, @in_load_screen)
   end
 
-  def get_all_options
+  def get_all_options(menu = :options_menu)
     ret = []
     seen_options = {}
     
     # First pass: collect all options and track which format they use
-    MenuHandlers.each_available(:options_menu) do |option, hash, name|
+    MenuHandlers.each_available(menu) do |option, hash, name|
       has_explicit_page = !hash["page"].nil?
       
       # If this option was already seen with an explicit page, skip old format versions
