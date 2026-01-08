@@ -322,7 +322,7 @@ class PokemonLoadScreen
         pbFadeOutIn { pbDownloadMysteryGift(@save_data[:player]) }
       when cmd_options
         if Settings::USE_NEW_OPTIONS_UI
-          UI::Options.new.main
+          UI::Options.new(true).main
         else
         pbFadeOutIn do
           scene = PokemonOption_Scene.new
