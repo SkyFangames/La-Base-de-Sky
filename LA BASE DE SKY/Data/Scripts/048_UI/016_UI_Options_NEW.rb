@@ -552,37 +552,16 @@ class UI::OptionsVisuals < UI::BaseVisuals
   }
   OPTIONS_VISIBLE  = 6
   PAGE_TAB_SPACING = 4
+  MAX_VISIBLE_TABS = 4   # Maximum number of tabs visible per page
 
   #-----------------------------------------------------------------------------
 
-  PAGE_HANDLERS = HandlerHash.new
-  PAGE_HANDLERS.add(:gameplay, {
-    :name  => proc { next _INTL("Juego") },
-    :order => 10,
-    :description => proc { next _INTL("Cambia cómo se comporta el juego.") }
-  })
-  PAGE_HANDLERS.add(:audio, {
-    :name  => proc { next _INTL("Audio") },
-    :order => 20,
-    :description => proc { next _INTL("Cambia el volumen del juego.") }
-  })
-  PAGE_HANDLERS.add(:graphics, {
-    :name  => proc { next _INTL("Gráficos") },
-    :order => 30,
-    :description => proc { next _INTL("Cambia cómo se ve el juego.") }
-  })
-  # PAGE_HANDLERS.add(:controls, {
-  #   :name  => proc { next _INTL("Controles") },
-  #   :order => 40,
-  #   :description => proc { next _INTL("Edita los controles del juego.") }
-  # })
-
-  #-----------------------------------------------------------------------------
-
-  def initialize(options, in_load_screen = false)
+  def initialize(options, in_load_screen = false, menu = :options_menu)
     @options        = options
     @in_load_screen = in_load_screen
+    @menu           = menu
     @page           = all_pages.first
+    @tab_scroll     = 0   # Track which tab is the leftmost visible
     super()
   end
 
@@ -604,9 +583,11 @@ class UI::OptionsVisuals < UI::BaseVisuals
   end
 
   def initialize_page_tabs
+    # Use max visible tabs or actual tab count, whichever is smaller
+    visible_tabs = [all_pages.length, MAX_VISIBLE_TABS].min
     add_overlay(:page_icons,
-                all_pages.length * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING),
-                @bitmaps[:page_icons].height)
+                visible_tabs * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING),
+                @bitmaps[:page_icons].height + 16)  # Extra height for page dots
     # @sprites[:page_icons].x = Graphics.width - @sprites[:page_icons].width
     @sprites[:page_icons].x = 57
     @sprites[:page_icons].y = 4
@@ -635,7 +616,9 @@ class UI::OptionsVisuals < UI::BaseVisuals
 
   def all_pages
     ret = []
-    PAGE_HANDLERS.each { |key, hash| ret.push([key, hash[:order] || 0]) }
+    PageHandlers.each_available(@menu) do |page, hash, name|
+      ret.push([page, hash[:order] || 0])
+    end
     ret.sort_by! { |val| val[1] }
     ret.map! { |val| val[0] }
     return ret
@@ -644,8 +627,32 @@ class UI::OptionsVisuals < UI::BaseVisuals
   def set_page(value)
     return if @page == value
     @page = value
+    update_tab_page
     @sprites[:options_list].options = options_for_page(@page)
     refresh
+  end
+
+  def update_tab_page
+    page_index = all_pages.index(@page)
+    return if !page_index
+    
+    pages_length = all_pages.length
+    return if pages_length <= MAX_VISIBLE_TABS
+    
+    # Calculate which "page" of tabs this belongs to
+    # If we're navigating to a tab outside the current page, switch pages
+    current_page_start = @tab_scroll
+    current_page_end = @tab_scroll + MAX_VISIBLE_TABS
+    
+    if page_index < current_page_start || page_index >= current_page_end
+      # Calculate which page this tab is on
+      tab_page_number = page_index / MAX_VISIBLE_TABS
+      @tab_scroll = tab_page_number * MAX_VISIBLE_TABS
+      
+      # Make sure we don't scroll past the last complete page
+      max_scroll = ((pages_length - 1) / MAX_VISIBLE_TABS) * MAX_VISIBLE_TABS
+      @tab_scroll = [@tab_scroll, max_scroll].min
+    end
   end
 
   def go_to_next_page
@@ -704,13 +711,36 @@ class UI::OptionsVisuals < UI::BaseVisuals
 
   def refresh_page_tabs
     @sprites[:page_icons].bitmap.clear
-    all_pages.each_with_index do |this_page, i|
-      tab_x = i * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
+    pages = all_pages
+    visible_start = @tab_scroll
+    visible_end = [@tab_scroll + MAX_VISIBLE_TABS, pages.length].min
+    
+    # Draw only visible tabs
+    (visible_start...visible_end).each do |i|
+      this_page = pages[i]
+      tab_x = (i - @tab_scroll) * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
       draw_image(@bitmaps[:page_icons], tab_x, 0,
                  (this_page == @page) ? @bitmaps[:page_icons].width / 2 : 0, 0,
                  @bitmaps[:page_icons].width / 2, @bitmaps[:page_icons].height, overlay: :page_icons)
-      page_name = PAGE_HANDLERS[this_page][:name].call
+      page_handler = PageHandlers.call(@menu, this_page)
+      page_name = page_handler[:name].call
       draw_text(page_name, tab_x + (@bitmaps[:page_icons].width / 4), 14,
+                align: :center, theme: :page_name, overlay: :page_icons)
+    end
+    
+    # Draw page indicators if there are multiple pages of tabs
+    total_pages = (pages.length.to_f / MAX_VISIBLE_TABS).ceil
+    if total_pages > 1
+      current_page = (@tab_scroll / MAX_VISIBLE_TABS) + 1
+      # Draw page dots at the bottom of the tab area
+      dots_text = ""
+      (1..total_pages).each do |page_num|
+        dots_text += (page_num == current_page) ? "●" : "○"
+        dots_text += " " if page_num < total_pages
+      end
+      # Center the dots below the tabs
+      dots_x = @sprites[:page_icons].bitmap.width - 50
+      draw_text(dots_text, dots_x, @bitmaps[:page_icons].height + 2,
                 align: :center, theme: :page_name, overlay: :page_icons)
     end
   end
@@ -718,7 +748,10 @@ class UI::OptionsVisuals < UI::BaseVisuals
   def refresh_page_cursor
     @sprites[:page_cursor].visible = (index < 0)
     @sprites[:page_cursor].x = @sprites[:page_icons].x - 2
-    @sprites[:page_cursor].x += all_pages.index(@page) * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
+    page_index = all_pages.index(@page)
+    # Calculate position relative to scroll
+    visible_position = page_index - @tab_scroll
+    @sprites[:page_cursor].x += visible_position * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
   end
 
   def refresh_options_list
@@ -732,10 +765,19 @@ class UI::OptionsVisuals < UI::BaseVisuals
     description = ""
     option = selected_option
     if index < 0   # Selecting a tab
-      if PAGE_HANDLERS[@page][:description].is_a?(Proc)
-        description = PAGE_HANDLERS[@page][:description].call
-      elsif !PAGE_HANDLERS[@page][:description].nil?
-        description = _INTL(PAGE_HANDLERS[@page][:description])
+      page_handler = PageHandlers.call(@menu, @page)
+      if page_handler && page_handler[:description].is_a?(Proc)
+        # If the description proc expects arguments, pass the page and visuals
+        desc_proc = page_handler[:description]
+        description = if desc_proc.arity == 0
+                        desc_proc.call
+                      elsif desc_proc.arity == 1
+                        desc_proc.call(@page)
+                      else
+                        desc_proc.call(@page, self)
+                      end
+      elsif page_handler && !page_handler[:description].nil?
+        description = _INTL(page_handler[:description])
       end
     elsif option
       option[:on_select]&.call(self)   # Can change speech box's letterbyletter
@@ -748,6 +790,10 @@ class UI::OptionsVisuals < UI::BaseVisuals
       description = _INTL("Atrás.")
     end
     @sprites[:speech_box].text = description
+  end
+
+  def description=(value)
+    @sprites[:speech_box].text = value
   end
 
   #-----------------------------------------------------------------------------
@@ -852,12 +898,13 @@ class UI::Options < UI::BaseScreen
 
   def initialize(in_load_screen = false, menu = :options_menu)
     @in_load_screen = in_load_screen
+    @menu = menu
     @options = get_all_options(menu)
     super()
   end
 
   def initialize_visuals
-    @visuals = UI::OptionsVisuals.new(@options, @in_load_screen)
+    @visuals = UI::OptionsVisuals.new(@options, @in_load_screen, @menu)
   end
 
   def get_all_options(menu = :options_menu)
@@ -952,6 +999,31 @@ end
 #===============================================================================
 # Options Menu commands.
 #===============================================================================
+
+# Default page handlers for options menu
+PageHandlers.add(:options_menu, :gameplay, {
+  :name  => proc { next _INTL("Juego") },
+  :order => 10,
+  :description => proc { next _INTL("Cambia cómo se comporta el juego.") }
+})
+
+PageHandlers.add(:options_menu, :audio, {
+  :name  => proc { next _INTL("Audio") },
+  :order => 20,
+  :description => proc { next _INTL("Cambia el volumen del juego.") }
+})
+
+PageHandlers.add(:options_menu, :graphics, {
+  :name  => proc { next _INTL("Gráficos") },
+  :order => 30,
+  :description => proc { next _INTL("Cambia cómo se ve el juego.") }
+})
+
+# PageHandlers.add(:options_menu, :controls, {
+#   :name  => proc { next _INTL("Controles") },
+#   :order => 40,
+#   :description => proc { next _INTL("Edita los controles del juego.") }
+# })
 
 MenuHandlers.add(:options_menu, :battle_style, {
   "page"        => :gameplay,
