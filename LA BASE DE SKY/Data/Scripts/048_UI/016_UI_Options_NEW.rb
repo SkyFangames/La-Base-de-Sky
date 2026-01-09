@@ -142,16 +142,15 @@ class PokemonSystem
     return if @main_volume == value && !@force_set_options
     @main_volume = value
     return if !$game_system
-    if $game_system.playing_bgm.nil?
-      playingBGM = $game_system.getPlayingBGM
+    if $game_system.playing_bgm
+      playing_bgm = $game_system.getPlayingBGM
       $game_system.bgm_pause
-      $game_system.bgm_resume(playingBGM)
+      $game_system.bgm_resume(playing_bgm)
     end
     if $game_system.playing_bgs
-      $game_system.playing_bgs.volume = @sevolume
-      playingBGS = $game_system.getPlayingBGS
+      playing_bgs = $game_system.getPlayingBGS
       $game_system.bgs_pause
-      $game_system.bgs_resume(playingBGS)
+      $game_system.bgs_resume(playing_bgs)
     end
   end
 
@@ -159,19 +158,18 @@ class PokemonSystem
     return if @bgmvolume == value && !@force_set_options
     @bgmvolume = value
     return if !$game_system || $game_system.playing_bgm.nil?
-    playingBGM = $game_system.getPlayingBGM
+    playing_bgm = $game_system.getPlayingBGM
     $game_system.bgm_pause
-    $game_system.bgm_resume(playingBGM)
+    $game_system.bgm_resume(playing_bgm)
   end
 
   def sevolume=(value)
     return if @sevolume == value && !@force_set_options
     @sevolume = value
     return if !$game_system || $game_system.playing_bgs.nil?
-    $game_system.playing_bgs.volume = @sevolume
-    playingBGS = $game_system.getPlayingBGS
+    playing_bgs = $game_system.getPlayingBGS
     $game_system.bgs_pause
-    $game_system.bgs_resume(playingBGS)
+    $game_system.bgs_resume(playing_bgs)
   end
 
   def pokemon_cry_volume
