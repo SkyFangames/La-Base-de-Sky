@@ -396,8 +396,11 @@ TARGET_LISTERS.each do |klass_name|
         if @commands_override
             if @needs_id_refresh
                 new_ids = []
+                new_maps = []
+
                 # Obtenemos la lista completa original
                 original_cmds = commands_original_for_search
+                original_offset = (defined?(@addGlobalOffset)) ? @addGlobalOffset : 0
                 
                 # Reconstruimos los IDs basándonos en el índice original
                 @commands_override.each do |cmd| 
@@ -406,11 +409,22 @@ TARGET_LISTERS.each do |klass_name|
                     if defined?(@ids) && @ids
                         new_ids.push(@ids[original_index]) 
                     end
+                  if defined?(@maps) && @maps
+                      # Calculamos el índice real en el array @maps original
+                      map_real_index = original_index - original_offset
+                      if map_real_index >= 0 && map_real_index < @maps.length
+                        new_maps.push(@maps[map_real_index])
+                      end
+                    end
                   end
                 end
                 
                 if defined?(@ids) && @ids
                     @ids = new_ids
+                end
+                if defined?(@maps) && @maps
+                  @maps = new_maps
+                  @addGlobalOffset = 0 if defined?(@addGlobalOffset)
                 end
                 @needs_id_refresh = false
             end
