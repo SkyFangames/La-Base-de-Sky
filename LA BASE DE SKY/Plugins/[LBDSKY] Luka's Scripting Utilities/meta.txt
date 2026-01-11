@@ -3,5 +3,6 @@ Version      = 4.1.0
 Essentials   = 21.1
 First        = True
 Priority     = 3
+Optional     = Marin's Scripting Utilities,1.7
 Website      = https://luka-sj.com/res/luts
 Credits      = Luka S.J.
