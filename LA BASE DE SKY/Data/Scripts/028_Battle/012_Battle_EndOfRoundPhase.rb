@@ -314,7 +314,7 @@ class Battle
     :BIND        => "Bind",
     :CLAMP       => "Clamp",
     :FIRESPIN    => "FireSpin",
-    :INFESTATION => "Infestation"
+    :INFESTATION => "Infestation",
     :MAGMASTORM  => "MagmaStorm",
     :SANDTOMB    => "SandTomb",
     :WRAP        => "Wrap"
