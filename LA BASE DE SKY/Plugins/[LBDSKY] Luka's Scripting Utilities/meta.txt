@@ -1,5 +1,7 @@
 Name         = Luka's Scripting Utilities
 Version      = 4.1.0
 Essentials   = 21.1
+First        = True
+Priority     = 3
 Website      = https://luka-sj.com/res/luts
 Credits      = Luka S.J.
