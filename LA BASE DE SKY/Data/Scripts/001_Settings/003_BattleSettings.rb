@@ -166,6 +166,10 @@ module Settings
 
     # Muestra los peligros de entrada (púas, trampa rocas, tela de araña) en la pantalla de batalla.
     SHOW_HAZARDS_IN_BATTLE = false
+
+    # Si es true, al finalizar una batalla se actualizará el orden del equipo del jugador
+    # para que el primer Pokémon del equipo sea el que terminó la batalla (si no está debilitado).
+    UPDATE_PARTY_LEAD_BATTLE_END = false
     
 end
   
