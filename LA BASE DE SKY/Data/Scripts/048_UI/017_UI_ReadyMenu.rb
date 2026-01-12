@@ -6,6 +6,23 @@ class ReadyMenuButton < Sprite
   attr_reader :selected
   attr_reader :side
 
+  # Constantes para posicionamiento y tamaños usados en el Ready Menu
+  BUTTON_HALF = 2
+  BUTTON_VERTICAL_GAP = 4
+  POKEMON_X_SELECTED = 0
+  POKEMON_X_UNSELECTED = -16
+  POKEMON_ICON_X_OFFSET = 52
+  POKEMON_ICON_Y_OFFSET = 32
+  ITEM_X_UNSELECTED_OFFSET = 16
+  ITEM_ICON_X_OFFSET = 32
+  ITEM_ICON_Y_DIVISOR = 4
+  TEXT_Y = 24
+  TEXTX_DEFAULT = 164
+  TEXTX_IMPORTANT = 146
+  TEXTX_ITEM = 124
+  QTY_X = 230
+  QTY_THRESHOLD = 99
+
   def initialize(index, command, selected, side, viewport = nil)
     super(viewport)
     @index = index
@@ -56,33 +73,33 @@ class ReadyMenuButton < Sprite
 
   def refresh
     sel = (@selected == @index && (@side == 0) == @command[2])
-    self.y = ((Graphics.height - (@button.height / 2)) / 2) - ((@selected - @index) * ((@button.height / 2) + 4))
+    self.y = ((Graphics.height - (@button.height / BUTTON_HALF)) / BUTTON_HALF) - ((@selected - @index) * ((@button.height / BUTTON_HALF) + BUTTON_VERTICAL_GAP))
     if @command[2]   # Pokémon
-      self.x = (sel) ? 0 : -16
-      @icon.x = self.x + 52
-      @icon.y = self.y + 32
+      self.x = (sel) ? POKEMON_X_SELECTED : POKEMON_X_UNSELECTED
+      @icon.x = self.x + POKEMON_ICON_X_OFFSET
+      @icon.y = self.y + POKEMON_ICON_Y_OFFSET
     else   # Item
-      self.x = (sel) ? Graphics.width - @button.width : Graphics.width + 16 - @button.width
-      @icon.x = self.x + 32
-      @icon.y = self.y + (@button.height / 4)
+      self.x = (sel) ? Graphics.width - @button.width : Graphics.width + ITEM_X_UNSELECTED_OFFSET - @button.width
+      @icon.x = self.x + ITEM_ICON_X_OFFSET
+      @icon.y = self.y + (@button.height / ITEM_ICON_Y_DIVISOR)
     end
     self.bitmap.clear
     rect = Rect.new(0, (sel) ? @button.height / 2 : 0, @button.width, @button.height / 2)
     self.bitmap.blt(0, 0, @button.bitmap, rect)
-    textx = 164
+    textx = TEXTX_DEFAULT
     if !@command[2]
-      textx = (GameData::Item.get(@command[0]).is_important?) ? 146 : 124
+      textx = (GameData::Item.get(@command[0]).is_important?) ? TEXTX_IMPORTANT : TEXTX_ITEM
     end
     textpos = [
-      [@command[1], textx, 24, :center, Color.new(248, 248, 248), Color.new(40, 40, 40), :outline]
+      [@command[1], textx, TEXT_Y, :center, Color.new(248, 248, 248), Color.new(40, 40, 40), :outline]
     ]
     if !@command[2] && !GameData::Item.get(@command[0]).is_important?
       qty = $bag.quantity(@command[0])
-      if qty > 99
-        textpos.push([_INTL(">99"), 230, 24, :right,
+      if qty > QTY_THRESHOLD
+        textpos.push([_INTL(">99"), QTY_X, TEXT_Y, :right,
                       Color.new(248, 248, 248), Color.new(40, 40, 40), :outline])
       else
-        textpos.push([_INTL("x{1}", qty), 230, 24, :right,
+        textpos.push([_INTL("x{1}", qty), QTY_X, TEXT_Y, :right,
                       Color.new(248, 248, 248), Color.new(40, 40, 40), :outline])
       end
     end
@@ -100,6 +117,8 @@ end
 #===============================================================================
 class PokemonReadyMenu_Scene
   attr_reader :sprites
+
+  READY_MENU_HEIGHT = 192
 
   def pbStartScene(commands)
     @commands = commands
@@ -127,7 +146,7 @@ class PokemonReadyMenu_Scene
     @viewport.z = 99999
     @sprites = {}
     @sprites["cmdwindow"] = Window_CommandPokemon.new((@index[2] == 0) ? @movecommands : @itemcommands)
-    @sprites["cmdwindow"].height = 192
+    @sprites["cmdwindow"].height = READY_MENU_HEIGHT
     @sprites["cmdwindow"].visible = false
     @sprites["cmdwindow"].viewport = @viewport
     @commands[0].length.times do |i|

@@ -199,6 +199,15 @@ end
 # Pokémon Mart
 #===============================================================================
 class Window_PokemonMart < Window_DrawableCommand
+
+  CANCEL_TEXT_X_OFFSET    = 0
+  CANCEL_TEXT_Y_OFFSET    = 2
+  ITEM_NAME_X_OFFSET      = 0
+  ITEM_NAME_Y_OFFSET      = 2
+  ITEM_QUANTITY_X_OFFSET  = -18
+  ITEM_QUANTITY_Y_OFFSET  = 2
+
+
   def initialize(stock, adapter, x, y, width, height, viewport = nil)
     @stock       = stock
     @adapter     = adapter
@@ -222,15 +231,15 @@ class Window_PokemonMart < Window_DrawableCommand
     rect = drawCursor(index, rect)
     ypos = rect.y
     if index == count - 1
-      textpos.push([_INTL("CANCELAR"), rect.x, ypos + 2, :left, self.baseColor, self.shadowColor])
+      textpos.push([_INTL("CANCELAR"), rect.x + CANCEL_TEXT_X_OFFSET, ypos + CANCEL_TEXT_Y_OFFSET, :left, self.baseColor, self.shadowColor])
     else
       item = @stock[index]
       itemname = @adapter.getDisplayName(item)
       qty = @adapter.getDisplayPrice(item)
       sizeQty = self.contents.text_size(qty).width
-      xQty = rect.x + rect.width - sizeQty - 2 - 16
-      textpos.push([itemname, rect.x, ypos + 2, :left, self.baseColor, self.shadowColor])
-      textpos.push([qty, xQty, ypos + 2, :left, self.baseColor, self.shadowColor])
+      xQty = rect.x + rect.width - sizeQty + ITEM_QUANTITY_X_OFFSET
+      textpos.push([itemname, rect.x + ITEM_NAME_X_OFFSET, ypos + ITEM_NAME_Y_OFFSET, :left, self.baseColor, self.shadowColor])
+      textpos.push([qty, xQty, ypos + ITEM_QUANTITY_Y_OFFSET, :left, self.baseColor, self.shadowColor])
     end
     pbDrawTextPositions(self.contents, textpos)
   end
@@ -240,6 +249,39 @@ end
 #
 #===============================================================================
 class PokemonMart_Scene
+
+  QUANTITY_WINDOW_Y_OFFSET      = -102
+  SCROLL_MAP_START_DIRECTION    = 6   # Scroll right when opening mart
+  SCROLL_MAP_START_DISTANCE     = 5
+  SCROLL_MAP_START_SPEED        = 5
+  ICON_X                        = 36
+  ICON_Y_OFFSET                 = -50
+  ITEM_WINDOW_X_OFFSET          = -332
+  ITEM_WINDOW_Y                 = 10
+  ITEM_WINDOW_WIDTH             = 346
+  ITEM_WINDOW_HEIGHT_OFFSET     = -124
+  ITEM_TEXT_WINDOW_X            = 64
+  ITEM_TEXT_WINDOW_Y_OFFSET     = -112
+  ITEM_TEXT_WINDOW_WIDTH_OFFSET = -64
+  ITEM_TEXT_WINDOW_HEIGHT       = 128
+  HELP_WINDOW_TEXT_LINES        = 1
+  MONEY_WINDOW_X                = 0
+  MONEY_WINDOW_Y                = 0
+  MONEY_WINDOW_WIDTH            = 190
+  MONEY_WINDOW_HEIGHT           = 96
+  QTY_WINDOW_X                  = 0
+  QTY_WINDOW_Y_OFFSET           = -102
+  QTY_WINDOW_WIDTH              = 190
+  QTY_WINDOW_HEIGHT             = 96
+  MONEY_WINDOW_SELL_WIDTH       = 190
+  MONEY_WINDOW_SELL_HEIGHT      = 96
+  SCROLL_MAP_END_DIRECTION      = 4   # Scroll right when opening mart, left when closing
+  SCROLL_MAP_END_DISTANCE       = 5
+  SCROLL_MAP_END_SPEED          = 5
+  DISPLAY_TEXT_LINES            = 2
+  CHOOSE_NUMBER_WINDOW_WIDTH    = 224
+  CHOOSE_NUMBER_WINDOW_HEIGHT   = 64
+  
   def update
     pbUpdateSpriteHash(@sprites)
     @subscene&.pbUpdate
@@ -255,7 +297,7 @@ class PokemonMart_Scene
         (itemwindow.item) ? @adapter.getDescription(itemwindow.item) : _INTL("Dejar de comprar.")
       @sprites["qtywindow"].visible = !itemwindow.item.nil?
       @sprites["qtywindow"].text    = _INTL("En Mochila:<r>{1}", @adapter.getQuantity(itemwindow.item))
-      @sprites["qtywindow"].y       = Graphics.height - 102 - @sprites["qtywindow"].height
+      @sprites["qtywindow"].y       = Graphics.height + QUANTITY_WINDOW_Y_OFFSET - @sprites["qtywindow"].height
       itemwindow.refresh
     end
     @sprites["moneywindow"].text = _INTL("Dinero:\n<r>{1}", @adapter.getMoneyString)
@@ -263,7 +305,7 @@ class PokemonMart_Scene
 
   def pbStartBuyOrSellScene(buying, stock, adapter)
     # Scroll right before showing screen
-    pbScrollMap(6, 5, 5)
+    pbScrollMap(SCROLL_MAP_START_DIRECTION, SCROLL_MAP_START_DISTANCE, SCROLL_MAP_START_SPEED)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 99999
     @stock = stock
@@ -271,16 +313,16 @@ class PokemonMart_Scene
     @sprites = {}
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["background"].setBitmap("Graphics/UI/Mart/bg")
-    @sprites["icon"] = ItemIconSprite.new(36, Graphics.height - 50, nil, @viewport)
+    @sprites["icon"] = ItemIconSprite.new(ICON_X, Graphics.height + ICON_Y_OFFSET, nil, @viewport)
     winAdapter = buying ? BuyAdapter.new(adapter) : SellAdapter.new(adapter)
     @sprites["itemwindow"] = Window_PokemonMart.new(
-      stock, winAdapter, Graphics.width - 316 - 16, 10, 330 + 16, Graphics.height - 124
+      stock, winAdapter, Graphics.width + ITEM_WINDOW_X_OFFSET, ITEM_WINDOW_Y, ITEM_WINDOW_WIDTH, Graphics.height + ITEM_WINDOW_HEIGHT_OFFSET
     )
     @sprites["itemwindow"].viewport = @viewport
     @sprites["itemwindow"].index = 0
     @sprites["itemwindow"].refresh
     @sprites["itemtextwindow"] = Window_UnformattedTextPokemon.newWithSize(
-      "", 64, Graphics.height - 96 - 16, Graphics.width - 64, 128, @viewport
+      "", ITEM_TEXT_WINDOW_X, Graphics.height + ITEM_TEXT_WINDOW_Y_OFFSET, Graphics.width + ITEM_TEXT_WINDOW_WIDTH_OFFSET, ITEM_TEXT_WINDOW_HEIGHT, @viewport
     )
     pbPrepareWindow(@sprites["itemtextwindow"])
     @sprites["itemtextwindow"].baseColor = Color.new(248, 248, 248)
@@ -290,28 +332,28 @@ class PokemonMart_Scene
     pbPrepareWindow(@sprites["helpwindow"])
     @sprites["helpwindow"].visible = false
     @sprites["helpwindow"].viewport = @viewport
-    pbBottomLeftLines(@sprites["helpwindow"], 1)
+    pbBottomLeftLines(@sprites["helpwindow"], HELP_WINDOW_TEXT_LINES)
     @sprites["moneywindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["moneywindow"])
     @sprites["moneywindow"].setSkin("Graphics/Windowskins/goldskin")
     @sprites["moneywindow"].visible = true
     @sprites["moneywindow"].viewport = @viewport
-    @sprites["moneywindow"].x = 0
-    @sprites["moneywindow"].y = 0
-    @sprites["moneywindow"].width = 190
-    @sprites["moneywindow"].height = 96
+    @sprites["moneywindow"].x = MONEY_WINDOW_X
+    @sprites["moneywindow"].y = MONEY_WINDOW_Y
+    @sprites["moneywindow"].width = MONEY_WINDOW_WIDTH
+    @sprites["moneywindow"].height = MONEY_WINDOW_HEIGHT
     @sprites["moneywindow"].baseColor = Color.new(88, 88, 80)
     @sprites["moneywindow"].shadowColor = Color.new(168, 184, 184)
     @sprites["qtywindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["qtywindow"])
     @sprites["qtywindow"].setSkin("Graphics/Windowskins/goldskin")
     @sprites["qtywindow"].viewport = @viewport
-    @sprites["qtywindow"].width = 190
-    @sprites["qtywindow"].height = 64
+    @sprites["qtywindow"].width = QTY_WINDOW_WIDTH
+    @sprites["qtywindow"].height = QTY_WINDOW_HEIGHT
     @sprites["qtywindow"].baseColor = Color.new(88, 88, 80)
     @sprites["qtywindow"].shadowColor = Color.new(168, 184, 184)
     @sprites["qtywindow"].text = _INTL("En Mochila:<r>{1}", @adapter.getQuantity(@sprites["itemwindow"].item))
-    @sprites["qtywindow"].y    = Graphics.height - 102 - @sprites["qtywindow"].height
+    @sprites["qtywindow"].y    = Graphics.height + QTY_WINDOW_Y_OFFSET - @sprites["qtywindow"].height
     pbDeactivateWindows(@sprites)
     @buying = buying
     pbRefresh
@@ -347,16 +389,16 @@ class PokemonMart_Scene
     pbPrepareWindow(@sprites["helpwindow"])
     @sprites["helpwindow"].visible = false
     @sprites["helpwindow"].viewport = @viewport
-    pbBottomLeftLines(@sprites["helpwindow"], 1)
+    pbBottomLeftLines(@sprites["helpwindow"], HELP_WINDOW_TEXT_LINES)
     @sprites["moneywindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["moneywindow"])
     @sprites["moneywindow"].setSkin("Graphics/Windowskins/goldskin")
     @sprites["moneywindow"].visible = false
     @sprites["moneywindow"].viewport = @viewport
-    @sprites["moneywindow"].x = 0
-    @sprites["moneywindow"].y = 0
-    @sprites["moneywindow"].width = 186
-    @sprites["moneywindow"].height = 96
+    @sprites["moneywindow"].x = MONEY_WINDOW_X
+    @sprites["moneywindow"].y = MONEY_WINDOW_Y
+    @sprites["moneywindow"].width = MONEY_WINDOW_SELL_WIDTH
+    @sprites["moneywindow"].height = MONEY_WINDOW_SELL_HEIGHT
     @sprites["moneywindow"].baseColor = Color.new(88, 88, 80)
     @sprites["moneywindow"].shadowColor = Color.new(168, 184, 184)
     pbDeactivateWindows(@sprites)
@@ -368,7 +410,7 @@ class PokemonMart_Scene
     pbDisposeSpriteHash(@sprites)
     @viewport.dispose
     # Scroll left after showing screen
-    pbScrollMap(4, 5, 5)
+    pbScrollMap(SCROLL_MAP_END_DIRECTION, SCROLL_MAP_END_DISTANCE, SCROLL_MAP_END_SPEED)
   end
 
   def pbEndSellScene
@@ -381,7 +423,7 @@ class PokemonMart_Scene
       @viewport2.dispose
     end
     @viewport.dispose
-    pbScrollMap(4, 5, 5) if !@subscene
+    pbScrollMap(SCROLL_MAP_END_DIRECTION, SCROLL_MAP_END_DISTANCE, SCROLL_MAP_END_SPEED) if !@subscene
   end
 
   def pbPrepareWindow(window)
@@ -413,7 +455,7 @@ class PokemonMart_Scene
     cw = @sprites["helpwindow"]
     cw.letterbyletter = true
     cw.text = msg
-    pbBottomLeftLines(cw, 2)
+    pbBottomLeftLines(cw, DISPLAY_TEXT_LINES)
     cw.visible = true
     pbPlayDecisionSE
     refreshed_after_busy = false
@@ -441,7 +483,7 @@ class PokemonMart_Scene
     cw = @sprites["helpwindow"]
     cw.letterbyletter = true
     cw.text = msg
-    pbBottomLeftLines(cw, 2)
+    pbBottomLeftLines(cw, DISPLAY_TEXT_LINES)
     cw.visible = true
     yielded = false
     pbPlayDecisionSE
@@ -469,7 +511,7 @@ class PokemonMart_Scene
     dw.letterbyletter = true
     dw.text = msg
     dw.visible = true
-    pbBottomLeftLines(dw, 2)
+    pbBottomLeftLines(dw, DISPLAY_TEXT_LINES)
     commands = [_INTL("Sí"), _INTL("No")]
     cw = Window_CommandPokemon.new(commands)
     cw.viewport = @viewport
@@ -505,8 +547,8 @@ class PokemonMart_Scene
     using(numwindow = Window_AdvancedTextPokemon.new("")) do   # Showing number of items
       pbPrepareWindow(numwindow)
       numwindow.viewport = @viewport
-      numwindow.width = 224
-      numwindow.height = 64
+      numwindow.width = CHOOSE_NUMBER_WINDOW_WIDTH
+      numwindow.height = CHOOSE_NUMBER_WINDOW_HEIGHT
       numwindow.baseColor = Color.new(88, 88, 80)
       numwindow.shadowColor = Color.new(168, 184, 184)
       numwindow.text = _INTL("x{1}<r>$ {2}", curnumber, (curnumber * itemprice).to_s_formatted)
