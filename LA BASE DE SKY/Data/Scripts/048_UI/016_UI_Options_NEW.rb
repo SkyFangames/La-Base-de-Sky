@@ -119,7 +119,7 @@ class PokemonSystem
         end
         sleep(0.1) # Give the thread some time to execute
       else
-        pbMessage("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente")
+        pbMessage(_INTL("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente"))
       end
 
       Kernel.exit!
@@ -241,6 +241,29 @@ class UI::OptionsVisualsList < Window_DrawableCommand
   attr_accessor :unsetColor, :unsetShadowColor
   attr_reader   :value_changed
 
+  ARRAY_SPACING = 32
+
+  # Offset vertical al dibujar el icono de entrada (input) dentro del rect
+  OPTION_ICON_BLT_Y_OFFSET = 2
+  # Espacio adicional entre icono de entrada y el texto del nombre de la opción
+  OPTION_ICON_TEXT_GAP = 6
+  # Separación entre los valores cuando hay exactamente 2 elementos en un array
+  ARRAY_SPACING = 32
+  # Espacio entre el slider y el número mostrado a su derecha
+  SLIDER_NUMBER_GAP = 6
+  # Alto de la barra del slider (en píxeles)
+  SLIDER_BAR_HEIGHT = 4
+  # Ancho del indicador (notch) del slider
+  SLIDER_NOTCH_WIDTH = 8
+  # Alto del indicador (notch) del slider
+  SLIDER_NOTCH_HEIGHT = 16
+  # Padding en pbDrawShadowText para texto del número del slider
+  SLIDER_NUMBER_TEXT_PADDING = 2
+  # Espaciado al dibujar corchetes de selección (izquierda)
+  SELECTION_BRACKET_LEFT_PADDING = 2
+  # Espaciado al dibujar corchetes de selección (derecha)
+  SELECTION_BRACKET_RIGHT_PADDING = 0
+
   def initialize(x, y, width, height, viewport)
     @input_icons_bitmap = AnimatedBitmap.new(UI::OptionsVisuals::UI_FOLDER + "input_icons")
     super(x, y, width, height, viewport)
@@ -268,7 +291,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
       text_width = self.contents.text_size(option[:parameters][0]).width
       @array_second_value_x = text_width if @array_second_value_x < text_width
     end
-    @array_second_value_x += 32
+    @array_second_value_x += ARRAY_SPACING
     refresh
   end
 
@@ -419,10 +442,10 @@ class UI::OptionsVisualsList < Window_DrawableCommand
       # Draw icon
       input_index = UI::BaseVisuals::INPUT_ICONS_ORDER.index(option[:parameters]) || 0
       src_rect = Rect.new(input_index * @input_icons_bitmap.height, 0,
-                          @input_icons_bitmap.height, @input_icons_bitmap.height)
-      self.contents.blt(rect.x, rect.y + 2, @input_icons_bitmap.bitmap, src_rect)
+              @input_icons_bitmap.height, @input_icons_bitmap.height)
+      self.contents.blt(rect.x, rect.y + OPTION_ICON_BLT_Y_OFFSET, @input_icons_bitmap.bitmap, src_rect)
       # Adjust text position
-      option_name_x += @input_icons_bitmap.height + 6
+      option_name_x += @input_icons_bitmap.height + OPTION_ICON_TEXT_GAP
     when :use
       option_colors = [self.baseColor, self.shadowColor]
     end
@@ -461,21 +484,21 @@ class UI::OptionsVisualsList < Window_DrawableCommand
     when :number_slider
       lowest = lowest_value(option)
       highest = highest_value(option)
-      spacing = 6   # Gap between slider and number
+      spacing = SLIDER_NUMBER_GAP   # Gap between slider and number
       # Draw slider bar
       slider_length = option_width - rect.x - self.contents.text_size(highest.to_s).width - spacing
       x_pos = option_start_x
-      self.contents.fill_rect(x_pos, rect.y + (rect.height / 2) - 2, slider_length, 4, self.baseColor)
+      self.contents.fill_rect(x_pos, rect.y + (rect.height / 2) - (SLIDER_BAR_HEIGHT / 2), slider_length, SLIDER_BAR_HEIGHT, self.baseColor)
       # Draw slider notch
       self.contents.fill_rect(
-        x_pos + ((slider_length - 8) * (@values[this_index] - lowest) / (highest - lowest)),
-        rect.y + (rect.height / 2) - 8,
-        8, 16, self.selectedColor
+        x_pos + ((slider_length - SLIDER_NOTCH_WIDTH) * (@values[this_index] - lowest) / (highest - lowest)),
+        rect.y + (rect.height / 2) - (SLIDER_NOTCH_HEIGHT / 2),
+        SLIDER_NOTCH_WIDTH, SLIDER_NOTCH_HEIGHT, self.selectedColor
       )
       # Draw text
       value = (lowest + @values[this_index]).to_s
       pbDrawShadowText(self.contents, x_pos - rect.x, rect.y, option_width, rect.height,
-                       value, self.selectedColor, self.selectedShadowColor, 2)
+                       value, self.selectedColor, self.selectedShadowColor, SLIDER_NUMBER_TEXT_PADDING)
     when :control
       x_pos = option_start_x
       spacing = option_width / 2
@@ -502,9 +525,9 @@ class UI::OptionsVisualsList < Window_DrawableCommand
 
   def draw_selection_brackets(text_x, text_y, text, rect, option_width)
     pbDrawShadowText(self.contents, text_x - option_width, text_y, option_width, rect.height,
-                     "[", self.selectedColor, self.selectedShadowColor, 2)
+                     "[", self.selectedColor, self.selectedShadowColor, SELECTION_BRACKET_LEFT_PADDING)
     pbDrawShadowText(self.contents, text_x + self.contents.text_size(text).width, text_y, option_width, rect.height,
-                     "]", self.selectedColor, self.selectedShadowColor, 0)
+                     "]", self.selectedColor, self.selectedShadowColor, SELECTION_BRACKET_RIGHT_PADDING)
   end
 
   #-----------------------------------------------------------------------------

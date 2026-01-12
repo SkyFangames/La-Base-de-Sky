@@ -4,12 +4,18 @@
 class Window_PhoneList < Window_CommandPokemon
   attr_accessor :switching
 
+  CURSOR_Y_OFFSET = 2
+  RECT_X_OFFSET = 28
+  RECT_Y_OFFSET = 8
+  RECT_WIDTH_OFFSET = -16
+  RECT_HEIGHT_OFFSET = 0
+
   def drawCursor(index, rect)
     if self.index == index
       selarrow = AnimatedBitmap.new("Graphics/UI/Phone/cursor")
-      pbCopyBitmap(self.contents, selarrow.bitmap, rect.x, rect.y + 2)
+      pbCopyBitmap(self.contents, selarrow.bitmap, rect.x, rect.y + CURSOR_Y_OFFSET)
     end
-    return Rect.new(rect.x + 28, rect.y + 8, rect.width - 16, rect.height)
+    return Rect.new(rect.x + RECT_X_OFFSET, rect.y + RECT_Y_OFFSET, rect.width + RECT_WIDTH_OFFSET, rect.height + RECT_HEIGHT_OFFSET)
   end
 
   def drawItem(index, count, rect)
@@ -29,6 +35,52 @@ end
 #
 #===============================================================================
 class PokemonPhone_Scene
+  # Posición X de la lista de contactos en la pantalla
+  LIST_X                    = 152
+  # Posición Y de la lista de contactos en la pantalla
+  LIST_Y                    = 32
+  # Ajuste del ancho de la lista respecto a Graphics.width (valor sumado)
+  LIST_WIDTH_OFFSET         = -142
+  # Ajuste de la altura de la lista respecto a Graphics.height (valor sumado)
+  LIST_HEIGHT_OFFSET        = -80
+  # Posición X base para los iconos de revancha (rematch)
+  REMATCH_ICON_X            = 468
+  # Posición Y base para los iconos de revancha (se incrementa por fila)
+  REMATCH_ICON_Y            = 62
+  # Espacio vertical entre iconos de revancha (pixels)
+  REMATCH_ICON_SPACING      = 32
+  # Offset X para colocar el icono de señal relativo a Graphics.width
+  SIGNAL_ICON_X_OFFSET      = -32
+  # Posición Y del icono de señal
+  SIGNAL_ICON_Y             = 0
+  # Posición X de la ventana de encabezado (título)
+  HEADER_TEXT_WINDOW_X      = 2
+  # Posición Y de la ventana de encabezado (título)
+  HEADER_TEXT_WINDOW_Y      = -18
+  # Ancho de la ventana de encabezado (título)
+  HEADER_TEXT_WINDOW_WIDTH  = 128
+  # Alto de la ventana de encabezado (título)
+  HEADER_TEXT_WINDOW_HEIGHT = 64
+  # Posición X de la ventana de información sobre contactos
+  INFO_TEXT_WINDOW_X        = -8
+  # Posición Y de la ventana de información sobre contactos
+  INFO_TEXT_WINDOW_Y        = 224
+  # Ancho de la ventana de información sobre contactos
+  INFO_TEXT_WINDOW_WIDTH    = 180
+  # Alto de la ventana de información sobre contactos
+  INFO_TEXT_WINDOW_HEIGHT   = 160
+  # Posición X de la ventana inferior (ubicación del contacto)
+  BOTTOM_TEXT_WINDOW_X      = 162
+  # Posición Y de la ventana inferior; se basa en la altura de la pantalla
+  BOTTOM_TEXT_WINDOW_Y      = Graphics.height - 64
+  # Ancho de la ventana inferior; se adapta a la anchura de la pantalla
+  BOTTOM_TEXT_WINDOW_WIDTH  = Graphics.width - 158
+  # Alto de la ventana inferior
+  BOTTOM_TEXT_WINDOW_HEIGHT = 64
+  # Posición X del retrato/ícono del contacto
+  ICON_X                    = 86
+  # Posición Y del retrato/ícono del contacto
+  ICON_Y                    = 134
   def pbStartScene
     @sprites = {}
     # Create viewport
@@ -37,16 +89,16 @@ class PokemonPhone_Scene
     # Background
     addBackgroundPlane(@sprites, "bg", "Phone/bg", @viewport)
     # List of contacts
-    @sprites["list"] = Window_PhoneList.newEmpty(152, 32, Graphics.width - 142, Graphics.height - 80, @viewport)
+    @sprites["list"] = Window_PhoneList.newEmpty(LIST_X, LIST_Y, Graphics.width + LIST_WIDTH_OFFSET, Graphics.height + LIST_HEIGHT_OFFSET, @viewport)
     @sprites["list"].windowskin = nil
     # Rematch readiness icons
     if Phone.rematches_enabled
       @sprites["list"].page_item_max.times do |i|
-        @sprites["rematch_#{i}"] = IconSprite.new(468, 62 + (i * 32), @viewport)
+        @sprites["rematch_#{i}"] = IconSprite.new(REMATCH_ICON_X, REMATCH_ICON_Y + (i * REMATCH_ICON_SPACING), @viewport)
       end
     end
     # Phone signal icon
-    @sprites["signal"] = IconSprite.new(Graphics.width - 32, 0, @viewport)
+    @sprites["signal"] = IconSprite.new(Graphics.width + SIGNAL_ICON_X_OFFSET, SIGNAL_ICON_Y, @viewport)
     if Phone::Call.can_make?
       @sprites["signal"].setBitmap("Graphics/UI/Phone/icon_signal")
     else
@@ -54,19 +106,19 @@ class PokemonPhone_Scene
     end
     # Title text
     @sprites["header"] = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("Teléfono"), 2, -18, 128, 64, @viewport
+      _INTL("Teléfono"), HEADER_TEXT_WINDOW_X, HEADER_TEXT_WINDOW_Y, HEADER_TEXT_WINDOW_WIDTH, HEADER_TEXT_WINDOW_HEIGHT, @viewport
     )
     @sprites["header"].baseColor   = Color.new(248, 248, 248)
     @sprites["header"].shadowColor = Color.black
     @sprites["header"].windowskin = nil
     # Info text about all contacts
-    @sprites["info"] = Window_AdvancedTextPokemon.newWithSize("", -8, 224, 180, 160, @viewport)
+    @sprites["info"] = Window_AdvancedTextPokemon.newWithSize("", INFO_TEXT_WINDOW_X, INFO_TEXT_WINDOW_Y, INFO_TEXT_WINDOW_WIDTH, INFO_TEXT_WINDOW_HEIGHT, @viewport)
     @sprites["info"].windowskin = nil
     # Portrait of contact
     @sprites["icon"] = IconSprite.new(70, 102, @viewport)
     # Contact's location text
     @sprites["bottom"] = Window_AdvancedTextPokemon.newWithSize(
-      "", 162, Graphics.height - 64, Graphics.width - 158, 64, @viewport
+      "", BOTTOM_TEXT_WINDOW_X, BOTTOM_TEXT_WINDOW_Y, BOTTOM_TEXT_WINDOW_WIDTH, BOTTOM_TEXT_WINDOW_HEIGHT, @viewport
     )
     @sprites["bottom"].windowskin = nil
     # Start scene
@@ -124,8 +176,8 @@ class PokemonPhone_Scene
       @sprites["icon"].setBitmap(filename)
       charwidth  = @sprites["icon"].bitmap.width
       charheight = @sprites["icon"].bitmap.height
-      @sprites["icon"].x        = 86 - (charwidth / 8)
-      @sprites["icon"].y        = 134 - (charheight / 8)
+      @sprites["icon"].x        = ICON_X - (charwidth / 8)
+      @sprites["icon"].y        = ICON_Y - (charheight / 8)
       @sprites["icon"].src_rect = Rect.new(0, 0, charwidth / 4, charheight / 4)
       # Redraw contact's location text
       map_name = (contact.map_id > 0) ? pbGetMapNameFromId(contact.map_id) : ""
