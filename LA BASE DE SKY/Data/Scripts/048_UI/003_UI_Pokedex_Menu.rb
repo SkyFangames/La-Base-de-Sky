@@ -5,6 +5,13 @@
 #   Settings::USE_CURRENT_REGION_DEX is false.
 #===============================================================================
 class Window_DexesList < Window_CommandPokemon
+
+  ICON_SEEN_X_OFFSET    = 236
+  ICON_OWNED_X_OFFSET   = 332
+  ICON_Y_OFFSET         = 6
+  SEEN_NUMBER_X_OFFSET  = 254
+  OWNED_NUMBER_X_OFFSET = 350
+
   def initialize(commands, commands2, width)
     @commands2 = commands2
     super(commands, width)
@@ -17,16 +24,18 @@ class Window_DexesList < Window_CommandPokemon
   def drawItem(index, count, rect)
     super(index, count, rect)
     if index >= 0 && index < @commands2.length
-      pbDrawShadowText(self.contents, rect.x + 254, rect.y + (self.contents.text_offset_y || 0),
+      echoln "@commands2[index][0].to_s = #{@commands2[index][0].to_s}"
+      echoln "@commands2[index][1].to_s = #{@commands2[index][1].to_s}"
+      pbDrawShadowText(self.contents, rect.x + SEEN_NUMBER_X_OFFSET, rect.y + (self.contents.text_offset_y || 0),
                        64, rect.height, @commands2[index][0].to_s, self.baseColor, self.shadowColor, 1)
-      pbDrawShadowText(self.contents, rect.x + 350, rect.y + (self.contents.text_offset_y || 0),
+      pbDrawShadowText(self.contents, rect.x + OWNED_NUMBER_X_OFFSET, rect.y + (self.contents.text_offset_y || 0),
                        64, rect.height, @commands2[index][1].to_s, self.baseColor, self.shadowColor, 1)
       allseen = (@commands2[index][0] >= @commands2[index][2])
       allown  = (@commands2[index][1] >= @commands2[index][2])
       pbDrawImagePositions(
         self.contents,
-        [["Graphics/UI/Pokedex/icon_menuseenown", rect.x + 236, rect.y + 6, (allseen) ? 24 : 0, 0, 24, 24],
-         ["Graphics/UI/Pokedex/icon_menuseenown", rect.x + 332, rect.y + 6, (allown) ? 24 : 0, 24, 24, 24]]
+        [["Graphics/UI/Pokedex/icon_menuseenown", rect.x + ICON_SEEN_X_OFFSET, rect.y + ICON_Y_OFFSET, (allseen) ? 24 : 0, 0, 24, 24],
+         ["Graphics/UI/Pokedex/icon_menuseenown", rect.x + ICON_OWNED_X_OFFSET, rect.y + ICON_Y_OFFSET, (allown) ? 24 : 0, 24, 24, 24]]
       )
     end
   end
@@ -38,6 +47,14 @@ end
 class PokemonPokedexMenu_Scene
   SEEN_OBTAINED_TEXT_BASE   = Color.new(248, 248, 248)
   SEEN_OBTAINED_TEXT_SHADOW = Color.new(192, 32, 40)
+  TEXT_HEADING_X            = 247 
+  TEXT_HEADING_Y            = 136
+  TEXT_HEADING_WIDTH        = 250
+  TEXT_HEADING_HEIGHT       = 64
+  COMMAND_BOX_X             = 40
+  COMMAND_BOX_Y             = 192
+  COMMAND_BOX_WIDTH         = Graphics.width - 84
+  COMMAND_BOX_HEIGHT        = 192
 
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
@@ -52,13 +69,13 @@ class PokemonPokedexMenu_Scene
     @sprites["background"].setBitmap(_INTL("Graphics/UI/Pokedex/bg_menu"))
     text_tag = shadowc3tag(SEEN_OBTAINED_TEXT_BASE, SEEN_OBTAINED_TEXT_SHADOW)
     @sprites["headings"] = Window_AdvancedTextPokemon.newWithSize(
-      text_tag + _INTL("VISTOS") + "     " + _INTL("OBTENIDOS") + "</c3>", 247, 136, 250, 64, @viewport
+      text_tag + _INTL("VISTOS") + "     " + _INTL("OBTENIDOS") + "</c3>", TEXT_HEADING_X, TEXT_HEADING_Y, TEXT_HEADING_WIDTH, TEXT_HEADING_HEIGHT, @viewport
     )
     @sprites["headings"].windowskin = nil
-    @sprites["commands"] = Window_DexesList.new(commands, commands2, Graphics.width - 84)
-    @sprites["commands"].x      = 40
-    @sprites["commands"].y      = 192
-    @sprites["commands"].height = 192
+    @sprites["commands"] = Window_DexesList.new(commands, commands2, COMMAND_BOX_WIDTH)
+    @sprites["commands"].x      = COMMAND_BOX_X
+    @sprites["commands"].y      = COMMAND_BOX_Y
+    @sprites["commands"].height = COMMAND_BOX_HEIGHT
     @sprites["commands"].viewport = @viewport
     pbFadeInAndShow(@sprites) { pbUpdate }
   end
