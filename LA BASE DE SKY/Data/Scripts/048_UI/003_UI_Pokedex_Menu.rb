@@ -24,8 +24,6 @@ class Window_DexesList < Window_CommandPokemon
   def drawItem(index, count, rect)
     super(index, count, rect)
     if index >= 0 && index < @commands2.length
-      echoln "@commands2[index][0].to_s = #{@commands2[index][0].to_s}"
-      echoln "@commands2[index][1].to_s = #{@commands2[index][1].to_s}"
       pbDrawShadowText(self.contents, rect.x + SEEN_NUMBER_X_OFFSET, rect.y + (self.contents.text_offset_y || 0),
                        64, rect.height, @commands2[index][0].to_s, self.baseColor, self.shadowColor, 1)
       pbDrawShadowText(self.contents, rect.x + OWNED_NUMBER_X_OFFSET, rect.y + (self.contents.text_offset_y || 0),
