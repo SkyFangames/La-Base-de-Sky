@@ -54,6 +54,9 @@ class PokemonSummary_Scene
   SPEED_VALUE_X   = 400
   SPEED_VALUE_Y   = 286
   SPEED_IV_X      = 440
+  SPEED_IV_Y      = 286
+  SPEED_EV_X      = 480
+  SPEED_EV_Y      = 286
   TOTAL_EVS_LABEL_X = 224
   TOTAL_EVS_LABEL_Y = 324
   TOTAL_EVS_VALUE_X = 435
