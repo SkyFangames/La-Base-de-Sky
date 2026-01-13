@@ -46,6 +46,7 @@ class MostrarPokemonAnimado
     [:AAAA, 0, -0],
   ]
 
+  BASE_Y_CORRECTION = -10
   
   def initialize(pokemon, bg = false, ox = 0, oy = 0, zoom_x = 1, zoom_y = 1)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
@@ -89,7 +90,7 @@ class MostrarPokemonAnimado
     @sprites["poke_sprite"].setOffset(PictureOrigin::CENTER)
     @sprites["poke_sprite"].z = 99999
     @sprites["poke_sprite"].x = @ox + x_corr
-    @sprites["poke_sprite"].y = @oy + y_corr - 10
+    @sprites["poke_sprite"].y = @oy + y_corr + BASE_Y_CORRECTION
     @sprites["poke_sprite"].zoom_x = @zoom_x
     @sprites["poke_sprite"].zoom_y = @zoom_y
     @sprites["poke_sprite"].opacity = 0
