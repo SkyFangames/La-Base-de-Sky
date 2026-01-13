@@ -11,6 +11,11 @@
 #===============================================================================
 
 class PokemonEggHatch_Scene
+ 
+  POKEMON_X_OFFSET = 0
+  POKEMON_Y = 264
+  EGG_HATCH_OFFSET_Y = 56
+
   def pbStartScene(pokemon)
     @sprites = {}
     @pokemon = pokemon
@@ -23,8 +28,8 @@ class PokemonEggHatch_Scene
     # Create egg sprite/Pokémon sprite
     @sprites["pokemon"] = PokemonSprite.new(@viewport)
     @sprites["pokemon"].setOffset(PictureOrigin::BOTTOM)
-    @sprites["pokemon"].x = Graphics.width / 2
-    @sprites["pokemon"].y = 264 + 56   # 56 to offset the egg sprite
+    @sprites["pokemon"].x = Graphics.width / 2 + POKEMON_X_OFFSET
+    @sprites["pokemon"].y = POKEMON_Y + EGG_HATCH_OFFSET_Y
     @sprites["pokemon"].setSpeciesBitmap(@pokemon.species, @pokemon.gender,
                                          @pokemon.form, @pokemon.shiny?,
                                          false, false, true)   # Egg sprite
@@ -83,8 +88,8 @@ class PokemonEggHatch_Scene
     end
     updateScene(0.75)
     @sprites["pokemon"].setPokemonBitmap(@pokemon) # Pokémon sprite
-    @sprites["pokemon"].x = Graphics.width / 2
-    @sprites["pokemon"].y = 264
+    @sprites["pokemon"].x = Graphics.width / 2 + POKEMON_X_OFFSET
+    @sprites["pokemon"].y = POKEMON_Y
     @pokemon.species_data.apply_metrics_to_sprite(@sprites["pokemon"], 1)
     @sprites["hatch"].visible = false
     timer_start = System.uptime
@@ -225,7 +230,7 @@ def pbHatch(pokemon)
     pbMessage(_INTL("¿Y esto?") + "\1")
     pbMessage(_INTL("...") + "\1")
     pbMessage(_INTL("... .... .....") + "\1")
-    pbMessage(_INTL("¡{1} ncaió del Huevo!", speciesname))
+    pbMessage(_INTL("¡{1} nació del Huevo!", speciesname))
     was_owned = $player.owned?(pokemon.species)
     $player.pokedex.register(pokemon)
     $player.pokedex.set_owned(pokemon.species)

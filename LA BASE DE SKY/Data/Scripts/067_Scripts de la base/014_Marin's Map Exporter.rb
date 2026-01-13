@@ -15,7 +15,7 @@
 
 # This is where the map will be exported to once it has been created.
 # If this file already exists, it is overwritten.
-ExportedMapBaseName = "MapExporter/MAPA_EXPORTADO_"
+EXPORTEDMAPBASENAME = "MapExporter/MAPA_EXPORTADO_"
 
 
 
@@ -143,7 +143,7 @@ class MarinMapExporter
       @result.blt($game_player.x * 32 + 16 - bmp.width / 8, ($game_player.y + 1) * 32 - bmp.height / 4,
           bmp, Rect.new(0, bmp.height / 4 * (dir / 2 - 1), bmp.width / 4, bmp.height / 4))
     end
-    @exported_file = "#{ExportedMapBaseName}#{Time.now.strftime('%d_%m_%YT%H_%M_%S')}.png"  
+    @exported_file = "#{EXPORTEDMAPBASENAME}#{Time.now.strftime('%d_%m_%YT%H_%M_%S')}.png"  
     Dir.mkdir("MapExporter") if !Dir.exists?("MapExporter")
     @result.save_to_png(@exported_file)
     Input.update

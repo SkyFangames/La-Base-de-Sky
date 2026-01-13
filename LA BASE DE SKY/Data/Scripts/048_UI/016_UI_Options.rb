@@ -125,7 +125,7 @@ class PokemonSystem
         end
         sleep(0.1) # Give the thread some time to execute
       else
-        pbMessage("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente")
+        pbMessage(_INTL("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente"))
       end
 
       Kernel.exit!
@@ -286,6 +286,17 @@ class Window_PokemonOption < Window_DrawableCommand
   SEL_VALUE_BASE_COLOR   = Color.new(248, 48, 24)
   SEL_VALUE_SHADOW_COLOR = Color.new(248, 136, 128)
 
+  # Porcentaje del ancho del rect usado para el nombre de la opción (9/20)
+  OPTION_NAME_WIDTH_RATIO = 9.0 / 20.0
+  # Multiplicador para desplazar X en opciones numéricas (rect.x * MULTIPLIER)
+  NUMBER_X_OFFSET_MULTIPLIER = 2
+  # Parámetros del deslizador: desplazamientos y tamaño de la barra/knob
+  SLIDER_BAR_Y_OFFSET   = -2
+  SLIDER_BAR_HEIGHT     = 4
+  SLIDER_KNOB_WIDTH     = 8
+  SLIDER_KNOB_HEIGHT    = 16
+  SLIDER_KNOB_Y_OFFSET  = -8
+
   def initialize(options, x, y, width, height, is_sub_menu = false)
     @options = options
     @values = []
@@ -317,7 +328,7 @@ class Window_PokemonOption < Window_DrawableCommand
     sel_index = self.index
     # Draw option's name
     optionname = (index == @options.length) ? (@is_sub_menu ? _INTL("Volver") : _INTL("Cerrar")) : @options[index].name
-    optionwidth = rect.width * 9 / 20
+    optionwidth = rect.width * OPTION_NAME_WIDTH_RATIO
     pbDrawShadowText(self.contents, rect.x, rect.y, optionwidth, rect.height, optionname,
                      (index == sel_index) ? SEL_NAME_BASE_COLOR : self.baseColor,
                      (index == sel_index) ? SEL_NAME_SHADOW_COLOR : self.shadowColor)
@@ -349,18 +360,18 @@ class Window_PokemonOption < Window_DrawableCommand
     when NumberOption
       value = _INTL("Tipo {1}/{2}", @options[index].lowest_value + self[index],
                     @options[index].highest_value - @options[index].lowest_value + 1)
-      xpos = optionwidth + (rect.x * 2)
+      xpos = optionwidth + (rect.x * NUMBER_X_OFFSET_MULTIPLIER)
       pbDrawShadowText(self.contents, xpos, rect.y, optionwidth, rect.height, value,
                        SEL_VALUE_BASE_COLOR, SEL_VALUE_SHADOW_COLOR, 1)
     when SliderOption
       value = sprintf(" %d", @options[index].highest_value)
       sliderlength = rect.width - rect.x - optionwidth - self.contents.text_size(value).width
       xpos = optionwidth + rect.x
-      self.contents.fill_rect(xpos, rect.y - 2 + (rect.height / 2), sliderlength, 4, self.baseColor)
+      self.contents.fill_rect(xpos, rect.y + SLIDER_BAR_Y_OFFSET + (rect.height / 2), sliderlength, SLIDER_BAR_HEIGHT, self.baseColor)
       self.contents.fill_rect(
-        xpos + ((sliderlength - 8) * (@options[index].lowest_value + self[index]) / @options[index].highest_value),
-        rect.y - 8 + (rect.height / 2),
-        8, 16, SEL_VALUE_BASE_COLOR
+        xpos + ((sliderlength - SLIDER_KNOB_WIDTH) * (@options[index].lowest_value + self[index]) / @options[index].highest_value),
+        rect.y + SLIDER_KNOB_Y_OFFSET + (rect.height / 2),
+        SLIDER_KNOB_WIDTH, SLIDER_KNOB_HEIGHT, SEL_VALUE_BASE_COLOR
       )
       value = (@options[index].lowest_value + self[index]).to_s
       xpos += (rect.width - rect.x - optionwidth) - self.contents.text_size(value).width
