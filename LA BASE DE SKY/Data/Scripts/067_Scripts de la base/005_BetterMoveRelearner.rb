@@ -190,11 +190,14 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     draw_text(move_name, x + MOVE_NAME_X_OFFSET, y + MOVE_NAME_Y_OFFSET)
 
     # Draw move learn level or TM/HM
-    draw_text(move[1], x + LEVEL_OR_TM_X_OFFSET, y + LEVEL_OR_TM_Y_OFFSET) if move[1]
+    if move[1]
+      tm_hm = move[1] == :TM ? _INTL("MT") : move[1] == :HM ? _INTL("MO") : move[1]
+      draw_text(tm_hm, x + LEVEL_OR_TM_X_OFFSET, y + LEVEL_OR_TM_Y_OFFSET)
+    end
 
     # Draw PP text
     if move_data.total_pp > 0
-      draw_text(_INTL("PP"), x + PP_TEXT_X_OFFSET, y + PP_TEXT_Y_OFFSET, theme: :black)
+      draw_text(_INTL("PP"), x + PP_LABEL_X_OFFSET, y + PP_LABEL_Y_OFFSET, theme: :black)
       draw_text(sprintf("%d/%d", move_data.total_pp, move_data.total_pp), x + PP_VALUE_X_OFFSET, y + PP_VALUE_Y_OFFSET, align: :right, theme: :black)
     end
   end
@@ -320,23 +323,44 @@ end
 #===============================================================================
 class UI::MoveReminder < UI::BaseScreen
   attr_reader :pokemon
+  
 
   ACTIONS = HandlerHash.new
 
   SCREEN_ID = :move_reminder_screen
 
   # mode is either :normal or :single.
-  def initialize(pokemon, mode: :normal)
+  def initialize(pokemon, mode: :normal, required_item: nil)
     @pokemon = pokemon
     @mode = mode
+    @required_item = required_item
     @moves = []
     @result = nil
+    @consumed_items = 0
     generate_move_list
     super()
   end
 
   def initialize_visuals
     @visuals = UI::MoveReminderVisuals.new(@pokemon, @moves)
+  end
+
+  def required_item
+    return @required_item
+  end
+
+  def consumed_items
+    return @consumed_items
+  end
+
+  def consumed_items=(value)
+    @consumed_items = value
+  end
+
+  def show_consumed_items_message
+    return if @required_item.nil? || @consumed_items <= 0
+    item_name = GameData::Item.get(@required_item).name_plural
+    pbMessage(_INTL("\\PN entregó {1} {2} a cambio.", @consumed_items, item_name))
   end
 
   #-----------------------------------------------------------------------------
@@ -395,13 +419,35 @@ class UI::MoveReminder < UI::BaseScreen
       # [:MOVE_ID, "HM"]
       move = screen.move
       next if !screen.show_confirm_message(_INTL("¿Enseñar {1}?", GameData::Move.get(move[0]).name))
-      is_machine = ["TM", "HM"].include?(move[1]) ? true : false
+
+      is_machine = [:TM, :HM].include?(move[1]) ? true : false
+      
+      # Check if player has required item (only for non-machine moves)
+      if !is_machine && screen.required_item && !$bag.has?(screen.required_item)
+        screen.show_message(_INTL("No tienes más {1}.", GameData::Item.get(screen.required_item).name_plural))
+        screen.end_screen
+        next
+      end
+      
       relearn = is_machine ? false : true
       next if !pbLearnMove(screen.pokemon, move[0], false, is_machine, relearn)
+      
+      # Remove required item if specified (only for non-machine moves)
+      if !is_machine && screen.required_item
+        $bag.remove(screen.required_item)
+        screen.consumed_items = screen.consumed_items + 1
+      end
+      
       $stats.moves_taught_by_reminder += 1 if !is_machine
       $stats.moves_taught_by_item     += 1 if is_machine
+      
       if screen.mode == :normal
         screen.refresh_move_list
+        # Check if player still has items (only for non-machine moves)
+        if !is_machine && screen.required_item && !$bag.has?(screen.required_item)
+          screen.show_message(_INTL("No tienes más {1}.", GameData::Item.get(screen.required_item).name_plural))
+          screen.end_screen
+        end
       else
         screen.end_screen
       end
@@ -438,11 +484,13 @@ end
 #===============================================================================
 #
 #===============================================================================
-def pbRelearnMoveScreen(pkmn)
+def pbRelearnMoveScreen(pkmn, required_item = nil)
   ret = true
   pbFadeOutIn do
     mode = Settings::CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE ? :single : :normal
-    ret = UI::MoveReminder.new(pkmn, mode: mode).main
+    move_reminder = UI::MoveReminder.new(pkmn, mode: mode, required_item: required_item)
+    ret = move_reminder.main
+    move_reminder.show_consumed_items_message
   end
   return ret
 end
@@ -453,7 +501,7 @@ def pbGetTMMoves(pokemon)
     item = GameData::Item.get(item_aux[0])
     if item.is_machine?
       machine = item.move
-      tmorhm = item.is_HM? ? "MO" : "MT"
+      tmorhm = item.is_HM? ? :HM : :TM
       if pokemon.compatible_with_move?(machine) && !pokemon.hasMove?(machine)
         tmmoves.push([machine, tmorhm])
       end
