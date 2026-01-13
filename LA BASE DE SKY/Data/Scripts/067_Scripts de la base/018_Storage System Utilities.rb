@@ -649,9 +649,9 @@ class PokemonStorageScene
   #===============================================================================
   def pbSwapBoxes(newbox)
     return if @storage.currentBox == newbox
-	@storage.swap(newbox, @storage.currentBox)
-	@sprites["box"].update
-	refresh_box_sprites
+	  @storage.swap(newbox, @storage.currentBox)
+	  @sprites["box"].update
+	  refresh_box_sprites
   end
   
   #===============================================================================
@@ -906,12 +906,9 @@ class PokemonStorageScreen
           pokemon = @storage[selected[0], selected[1]]
           next if !pokemon
           commands_symbols = [:WITHDRAW, :SUMMARY, :MARK, :POKEDEX, :RELEASE, :CANCEL]
-          commands_text = [_INTL("Retirar"),
-                      _INTL("Datos"),
-                      _INTL("Marcas")]
-          commands_text.push(_INTL("Pokédex")) if $player.has_pokedex && !pokemon.egg? &&$player.pokedex.species_in_unlocked_dex?(pokemon.species)
-          commands_text.push(_INTL("Liberar"),
-                        _INTL("Cancelar"))
+          commands_text = [_INTL("Retirar"), _INTL("Datos"), _INTL("Marcas")]
+          commands_text.push(_INTL("Pokédex")) if $player.has_pokedex && !pokemon.egg? && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+          commands_text.push(_INTL("Liberar"), _INTL("Cancelar"))
 
           command_index = pbShowCommands(_INTL("{1} está seleccionado.", pokemon.name), commands_text)
           next if command_index < 0
@@ -1007,7 +1004,7 @@ class PokemonStorageScreen
       wpaper = pbShowCommands(_INTL("Elige el fondo."), papers[0], index)
       @scene.pbChangeBackground(papers[1][wpaper]) if wpaper >= 0
     when :NAME
-      @scene.pbBoxName(_INTL("¿Nombre de la Caja?"), 0, 12)
+      @scene.pbBoxName(_INTL("¿Nombre de la Caja?"), BOX_NAME_MIN_CHARS, BOX_NAME_MAX_CHARS)
     when :RELEASE
       pbReleaseBox(@storage.currentBox)
     # when :SORT
