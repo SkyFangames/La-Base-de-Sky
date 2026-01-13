@@ -19,16 +19,19 @@ class PokemonSummary_Scene
       @sprites["pokemon"] = PokemonSprite.new(@viewport)
       @sprites["pokemon"].setOffset(PictureOrigin::CENTER)
       @sprites["pokemon"].make_grey_if_fainted = @pokemon.fainted?
-      @sprites["pokemon"].x = 104
-      @sprites["pokemon"].y = 206
+      # Uso de constantes
+      @sprites["pokemon"].x = UI_POKEMON_SPRITE_X
+      @sprites["pokemon"].y = UI_POKEMON_SPRITE_Y
       @sprites["pokemon"].setPokemonBitmap(@pokemon)
       @sprites["pokeicon"] = PokemonIconSprite.new(@pokemon, @viewport)
       @sprites["pokeicon"].setOffset(PictureOrigin::CENTER)
       @sprites["pokeicon"].make_grey_if_fainted = @pokemon.fainted?
-      @sprites["pokeicon"].x       = 46
-      @sprites["pokeicon"].y       = 92
+      # Uso de constantes
+      @sprites["pokeicon"].x       = UI_POKEICON_X
+      @sprites["pokeicon"].y       = UI_POKEICON_Y
       @sprites["pokeicon"].visible = false
-      @sprites["itemicon"] = ItemIconSprite.new(30, 320, @pokemon.item_id, @viewport)
+      # Uso de constantes
+      @sprites["itemicon"] = ItemIconSprite.new(UI_ITEMICON_X, UI_ITEMICON_Y, @pokemon.item_id, @viewport)
       @sprites["itemicon"].blankzero = true
       @sprites["overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
       pbSetSystemFont(@sprites["overlay"].bitmap)
@@ -43,16 +46,19 @@ class PokemonSummary_Scene
       @sprites["ribbonsel"] = RibbonSelectionSprite.new(@viewport)
       @sprites["ribbonsel"].visible = false
       @sprites["uparrow"] = AnimatedSprite.new("Graphics/UI/up_arrow", 8, 28, 40, 2, @viewport)
-      @sprites["uparrow"].x = 350
-      @sprites["uparrow"].y = 56
+      # Uso de constantes
+      @sprites["uparrow"].x = UI_UP_ARROW_X
+      @sprites["uparrow"].y = UI_UP_ARROW_Y
       @sprites["uparrow"].play
       @sprites["uparrow"].visible = false
       @sprites["downarrow"] = AnimatedSprite.new("Graphics/UI/down_arrow", 8, 28, 40, 2, @viewport)
-      @sprites["downarrow"].x = 350
-      @sprites["downarrow"].y = 260
+      # Uso de constantes
+      @sprites["downarrow"].x = UI_DOWN_ARROW_X
+      @sprites["downarrow"].y = UI_DOWN_ARROW_Y
       @sprites["downarrow"].play
       @sprites["downarrow"].visible = false
-      @sprites["markingbg"] = IconSprite.new(260, 88, @viewport)
+      # Uso de constantes
+      @sprites["markingbg"] = IconSprite.new(UI_MARKING_BG_X, UI_MARKING_BG_Y, @viewport)
       @sprites["markingbg"].setBitmap("Graphics/UI/Summary/overlay_marking")
       @sprites["markingbg"].visible = false
       @sprites["markingoverlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
@@ -84,20 +90,23 @@ class PokemonSummary_Scene
       imagepos = []
       # Show the Poké Ball containing the Pokémon
       ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
-      imagepos.push([ballimage, 14, 60])
+      # Uso de constantes
+      imagepos.push([ballimage, IMG_BALL_X, IMG_BALL_Y])
       # Draw all images
       pbDrawImagePositions(overlay, imagepos)
       # Write various bits of text
       textpos = [
-      [_INTL("NOTAS ENTRENADOR"), 26, 22, :left, base, shadow],
-      [@pokemon.name, 46, 68, :left, base, shadow],
-      [_INTL("Objeto"), 66, 324, :left, base, shadow]
+      # Uso de constantes
+      [_INTL("NOTAS ENTRENADOR"), TEXT_PAGE_NAME_X, TEXT_PAGE_NAME_Y, :left, base, shadow],
+      [@pokemon.name, TEXT_NAME_X, TEXT_NAME_Y, :left, base, shadow],
+      [_INTL("Objeto"), TEXT_ITEM_LABEL_X, TEXT_ITEM_LABEL_Y, :left, base, shadow]
       ]
       # Write the held item's name
       if @pokemon.hasItem?
-          textpos.push([@pokemon.item.name, 16, 358, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+          # Uso de constantes
+          textpos.push([@pokemon.item.name, TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
       else
-          textpos.push([_INTL("Ninguno"), 16, 358, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
+          textpos.push([_INTL("Ninguno"), TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
       end
       # Draw all text
       pbDrawTextPositions(overlay, textpos)
@@ -132,10 +141,10 @@ class PokemonSummary_Scene
       else
           memo += black_text_tag + _INTL("Faltan {1} pasos para que el huevo eclosione.", @pokemon.steps_to_hatch)
       end
-      # Draw all text
-      drawFormattedTextEx(overlay, 232, 86, 268, memo)
-      # Draw the Pokémon's markings
-      drawMarkings(overlay, 84, 292)
+      # Draw all text - Uso de constantes
+      drawFormattedTextEx(overlay, EGG_DATE_X, EGG_DATE_Y, EGG_MEMO_WIDTH, memo)
+      # Draw the Pokémon's markings - Uso de constantes
+      drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
   end
 
   def drawPageFourSelecting(move_to_learn)
@@ -161,16 +170,18 @@ class PokemonSummary_Scene
       end
       # Write various bits of text
       textpos = [
-        [_INTL("MOVIMIENTOS"), 26, 22, :left, base, shadow],
-        [_INTL("CATEGORÍA"), 20, 128, :left, base, shadow],
-        [_INTL("POTENCIA"), 20, 160, :left, base, shadow],
-        [_INTL("PRECISIÓN"), 20, 192, :left, base, shadow],
+        # Uso de constantes
+        [_INTL("MOVIMIENTOS"), TEXT_PAGE_NAME_X, TEXT_PAGE_NAME_Y, :left, base, shadow],
+        [_INTL("CATEGORÍA"), P4_SEL_CATEGORY_LABEL_X, P4_SEL_CATEGORY_LABEL_Y, :left, base, shadow],
+        [_INTL("POTENCIA"), P4_SEL_POWER_LABEL_X, P4_SEL_POWER_LABEL_Y, :left, base, shadow],
+        [_INTL("PRECISIÓN"), P4_SEL_ACCURACY_LABEL_X, P4_SEL_ACCURACY_LABEL_Y, :left, base, shadow],
         
       ]
-      textpos.push([_INTL("DATOS"), 92, 81, :left, base, shadow]) if move_to_learn
+      # Uso de constantes para "DATOS"
+      textpos.push([_INTL("DATOS"), P4_LEARN_DATA_LABEL_X, P4_LEARN_DATA_LABEL_Y, :left, base, shadow]) if move_to_learn
       imagepos = []
       # Write move names, types and PP amounts for each known move
-      yPos = 104
+      yPos = P4_MOVE_LIST_Y
       yPos -= 76 if move_to_learn
       limit = (move_to_learn) ? Pokemon::MAX_MOVES + 1 : Pokemon::MAX_MOVES
       limit.times do |i|
@@ -181,10 +192,11 @@ class PokemonSummary_Scene
         end
         if move
           type_number = GameData::Type.get(move.display_type(@pokemon)).icon_position
-          imagepos.push([_INTL("Graphics/UI/types"), 248, yPos - 4, 0, type_number * 28, 64, 28])
-          textpos.push([move.name, 316, yPos, :left, moveBase, moveShadow])
+          # Uso de constantes
+          imagepos.push([_INTL("Graphics/UI/types"), P4_TYPE_ICON_X, yPos + P4_TYPE_ICON_OFFSET_Y, 0, type_number * 28, 64, 28])
+          textpos.push([move.name, P4_MOVE_NAME_X, yPos, :left, moveBase, moveShadow])
           if move.total_pp > 0
-            textpos.push([_INTL("PP"), 342, yPos + 32, :left, moveBase, moveShadow])
+            textpos.push([_INTL("PP"), P4_PP_LABEL_X, yPos + P4_PP_LABEL_OFFSET_Y, :left, moveBase, moveShadow])
             ppfraction = 0
             if move.pp == 0
               ppfraction = 3
@@ -193,16 +205,17 @@ class PokemonSummary_Scene
             elsif move.pp * 2 <= move.total_pp
               ppfraction = 1
             end
-            textpos.push([sprintf("%d/%d", move.pp, move.total_pp), 460, yPos + 32, :right,
+            textpos.push([sprintf("%d/%d", move.pp, move.total_pp), P4_PP_NUM_X, yPos + P4_PP_NUM_OFFSET_Y, :right,
                           ppBase[ppfraction], ppShadow[ppfraction]])
           end
         else
-          textpos.push(["-", 316, yPos, :left, moveBase, moveShadow])
-          textpos.push(["--", 442, yPos + 32, :right, moveBase, moveShadow])
+          textpos.push(["-", P4_MOVE_NAME_X, yPos, :left, moveBase, moveShadow])
+          textpos.push(["--", P4_PP_NUM_X - 18, yPos + P4_PP_NUM_OFFSET_Y, :right, moveBase, moveShadow])
         end
-        yPos += 64
-        imagepos.push([_INTL("Graphics/UI/BetterMoveSummary/recuadro"), 85, 76]) if move_to_learn
-        imagepos.push([_INTL("Graphics/UI/BetterMoveSummary/help_actionkey"), 165, 79]) if move_to_learn
+        yPos += P4_MOVE_OFFSET_Y
+        # Uso de constantes para BetterMoveSummary
+        imagepos.push([_INTL("Graphics/UI/BetterMoveSummary/recuadro"), P4_LEARN_BOX_X, P4_LEARN_BOX_Y]) if move_to_learn
+        imagepos.push([_INTL("Graphics/UI/BetterMoveSummary/help_actionkey"), P4_LEARN_ACTION_KEY_X, P4_LEARN_ACTION_KEY_Y]) if move_to_learn
         # Draw all text and images
         pbDrawImagePositions(overlay, imagepos)
         pbDrawTextPositions(overlay, textpos)

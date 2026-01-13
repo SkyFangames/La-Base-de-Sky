@@ -571,7 +571,7 @@ class PokemonStorageScene
         if !t && !@grabber.carrying
           pbPlayDecisionSE
           pbSetQuickSwap(!@quickswap)
-        elsif @grabber.carrying && CAN_MASS_RELEASE
+        elsif @grabber.carrying && CAN_MASS_RELEASE && @multi
           pbMassRelease
         end
       elsif Input.trigger?(Input::BACK)
