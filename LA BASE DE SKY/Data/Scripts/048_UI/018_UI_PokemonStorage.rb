@@ -297,6 +297,9 @@ class PokemonBoxArrow < Sprite
     heldpkmn = heldPokemon
     heldpkmn&.update
     @handsprite.update
+    if @handsprite && !@handsprite.disposed?
+      @handsprite.update 
+    end
     @holding = false if !heldpkmn
     if @grabbing_timer_start
       if System.uptime - @grabbing_timer_start <= GRAB_TIME / 2
