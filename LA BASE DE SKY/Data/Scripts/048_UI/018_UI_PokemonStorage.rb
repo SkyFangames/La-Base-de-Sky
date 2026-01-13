@@ -696,6 +696,8 @@ class PokemonStorageScene
   EXIT_TEXT_X = 446
   EXIT_TEXT_Y = 334
 
+  POKENAME_TEXT_X = 10
+  POKENAME_TEXT_Y = 14
   GENDER_ICON_TEXT_X = 148
   GENDER_ICON_TEXT_Y = 14
   LEVEL_ICON_X = 6
@@ -1683,7 +1685,7 @@ class PokemonStorageScene
     nonshadow = Color.new(224, 224, 224)
     pokename = pokemon.name
     textstrings = [
-      [pokename, 10, 14, :left, base, shadow]
+      [pokename, POKENAME_TEXT_X, POKENAME_TEXT_Y, :left, base, shadow]
     ]
     if !pokemon.egg?
       imagepos = []
