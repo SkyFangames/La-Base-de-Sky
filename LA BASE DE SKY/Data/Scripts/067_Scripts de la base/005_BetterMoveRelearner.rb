@@ -78,6 +78,33 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   BUTTON_UP_HEIGHT   = 32
   BUTTON_UP_X        = 135
   BUTTON_UP_Y        = 350
+  MOVE_NAME_X_OFFSET = 76
+  MOVE_NAME_Y_OFFSET = 6
+  LEVEL_OR_TM_X_OFFSET = 12
+  LEVEL_OR_TM_Y_OFFSET = 36
+  PP_LABEL_X_OFFSET   = 150
+  PP_LABEL_Y_OFFSET   = 38
+  PP_VALUE_X_OFFSET   = 240
+  PP_VALUE_Y_OFFSET   = 38
+  POWER_LABEL_X       = 278
+  POWER_LABEL_Y       = 120
+  POWER_VALUE_X       = 480
+  POWER_VALUE_Y       = 120
+  ACCURACY_LABEL_X    = 278
+  ACCURACY_LABEL_Y    = 152
+  ACCURACY_VALUE_X    = 480
+  ACCURACY_VALUE_Y    = 152
+  CATEGORY_LABEL_X    = 278
+  CATEGORY_LABEL_Y    = 184
+  CATEGORY_ICON_X     = 436
+  CATEGORY_ICON_Y     = 178
+  DESCRIPTION_X       = 275
+  DESCRIPTION_Y       = 215
+  DESCRIPTION_WIDTH   = 235
+  DESCRIPTION_LINES   = 5
+  TYPE_ICON_X_OFFSET  = 8
+  TYPE_ICON_Y_OFFSET  = 1
+  MOVE_NAME_WIDTH     = 230
 
   def initialize(pokemon, moves)
     @pokemon   = pokemon
@@ -154,21 +181,21 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
 
     # Draw move type icon
     type_number = GameData::Type.get(move_data.display_type(@pokemon)).icon_position
-    draw_image(@bitmaps[:types], x + 8, y + 1,
+    draw_image(@bitmaps[:types], x + TYPE_ICON_X_OFFSET, y + TYPE_ICON_Y_OFFSET,
                 0, type_number * GameData::Type::ICON_SIZE[1], *GameData::Type::ICON_SIZE)
 
     # Draw move name
     move_name = move_data.name
-    move_name = crop_text(move_name, 230)
-    draw_text(move_name, x + 76, y + 6)
+    move_name = crop_text(move_name, MOVE_NAME_WIDTH)
+    draw_text(move_name, x + MOVE_NAME_X_OFFSET, y + MOVE_NAME_Y_OFFSET)
 
     # Draw move learn level or TM/HM
-    draw_text(move[1], x + 12, y + 36) if move[1]
+    draw_text(move[1], x + LEVEL_OR_TM_X_OFFSET, y + LEVEL_OR_TM_Y_OFFSET) if move[1]
 
     # Draw PP text
     if move_data.total_pp > 0
-      draw_text(_INTL("PP"), x + 150, y + 38, theme: :black)
-      draw_text(sprintf("%d/%d", move_data.total_pp, move_data.total_pp), x + 240, y + 38, align: :right, theme: :black)
+      draw_text(_INTL("PP"), x + PP_TEXT_X_OFFSET, y + PP_TEXT_Y_OFFSET, theme: :black)
+      draw_text(sprintf("%d/%d", move_data.total_pp, move_data.total_pp), x + PP_VALUE_X_OFFSET, y + PP_VALUE_Y_OFFSET, align: :right, theme: :black)
     end
   end
 
@@ -176,33 +203,31 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     move = @moves[@index]
     move_data = GameData::Move.get(move[0])
     # Power
-    draw_text(_INTL("POTENCIA"), 278, 120)
+    draw_text(_INTL("POTENCIA"), POWER_LABEL_X, POWER_LABEL_Y)
     power_text = move_data.display_power(@pokemon)
     power_text = "---" if power_text == 0   # Status move
     power_text = "???" if power_text == 1   # Variable power move
-    draw_text(power_text, 480, 120, align: :right, theme: :black)
+    draw_text(power_text, POWER_VALUE_X, POWER_VALUE_Y, align: :right, theme: :black)
     # Accuracy
-    draw_text(_INTL("PRECISIÓN"), 278, 152)
+    draw_text(_INTL("PRECISIÓN"), ACCURACY_LABEL_X, ACCURACY_LABEL_Y)
     accuracy = move_data.display_accuracy(@pokemon)
     if accuracy == 0
-      draw_text("---", 480, 152, align: :right, theme: :black)
+      draw_text("---", ACCURACY_VALUE_X, ACCURACY_VALUE_Y, align: :right, theme: :black)
     else
-      draw_text(accuracy, 480, 152, align: :right, theme: :black)
-      draw_text("%", 480, 152, theme: :black)
+      draw_text(accuracy, ACCURACY_VALUE_X, ACCURACY_VALUE_Y, align: :right, theme: :black)
+      draw_text("%", ACCURACY_VALUE_X, ACCURACY_VALUE_Y, theme: :black)
     end
 
     # Draw move category
-    draw_text(_INTL("CATEGORÍA"), 278, 184)
-    draw_image(UI_FOLDER + "category", 436, 178,
+    draw_text(_INTL("CATEGORÍA"), CATEGORY_LABEL_X, CATEGORY_LABEL_Y)
+    draw_image(UI_FOLDER + "category", CATEGORY_ICON_X, CATEGORY_ICON_Y,
                0, move_data.display_category(@pokemon) * GameData::Move::CATEGORY_ICON_SIZE[1], *GameData::Move::CATEGORY_ICON_SIZE)
 
     # Description
-    draw_paragraph_text(move_data.description, 275, 215, 235, 5, theme: :black)
+    draw_paragraph_text(move_data.description, DESCRIPTION_X, DESCRIPTION_Y, DESCRIPTION_WIDTH, DESCRIPTION_LINES, theme: :black)
   end
 
   def draw_buttons
-    echoln "@top_index: #{@top_index}, moves length: #{@moves.length}"
-    echoln "@index: #{@index}"
     draw_image(@bitmaps[:buttons], BUTTON_DOWN_X, BUTTON_DOWN_Y, 0, 0, BUTTON_DOWN_WIDTH, BUTTON_DOWN_HEIGHT) if @index < @moves.length - 1 
     draw_image(@bitmaps[:buttons], BUTTON_UP_X, BUTTON_UP_Y, BUTTON_DOWN_WIDTH, 0, BUTTON_UP_WIDTH, BUTTON_UP_HEIGHT) if @top_index > 0
   end
@@ -323,12 +348,12 @@ class UI::MoveReminder < UI::BaseScreen
       next if move[0] > @pokemon.level || @pokemon.hasMove?(move[1])
       # @moves.push(move[1]) if !@moves.include?(move[1])
       move_to_add = move.is_a?(GameData::Move) ? move.id : move[1]
-      @moves << [move_to_add, "Nv. #{move[0].to_i.abs}"] if !@moves.include?(move_to_add)
+      @moves << [move_to_add, _INTL("Nv. #{move[0].to_i.abs}")] if !@moves.include?(move_to_add)
     end
     if Settings::MOVE_RELEARNER_CAN_TEACH_MORE_MOVES && @pokemon.first_moves
       first_moves = []
       @pokemon.first_moves.each do |move|
-        first_moves.push([move, "Nv. 1"]) if !@moves.any? { |m| m[0] == move } && !@pokemon.hasMove?(move)
+        first_moves.push([move, _INTL("Nv. 1")]) if !@moves.any? { |m| m[0] == move } && !@pokemon.hasMove?(move)
       end
       @moves = first_moves + @moves   # List first moves before level-up moves
     end

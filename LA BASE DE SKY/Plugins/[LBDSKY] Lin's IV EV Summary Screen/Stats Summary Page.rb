@@ -2,6 +2,69 @@
 # Adds/edits various Summary utilities.
 #===============================================================================
 class PokemonSummary_Scene
+
+  TOTAL_LABEL_X = 381
+  TOTAL_LABEL_Y = 94
+  IV_LABEL_X    = 428
+  IV_LABEL_Y    = 94
+  EV_LABEL_X    = 473
+  EV_LABEL_Y    = 94
+  HP_LABEL_X    = 240
+  HP_LABEL_Y    = 126
+  HP_VALUE_X    = 400
+  HP_VALUE_Y    = 126
+  HP_IV_X       = 440
+  HP_IV_Y       = 126
+  HP_EV_X       = 480
+  HP_EV_Y       = 126
+  ATK_LABEL_X   = 240
+  ATK_LABEL_Y   = 158
+  ATK_VALUE_X   = 400
+  ATK_VALUE_Y   = 158
+  ATK_IV_X      = 440
+  ATK_IV_Y      = 158
+  ATK_EV_X      = 480
+  ATK_EV_Y      = 158
+  DEF_LABEL_X   = 240
+  DEF_LABEL_Y   = 190
+  DEF_VALUE_X   = 400
+  DEF_VALUE_Y   = 190
+  DEF_IV_X      = 440
+  DEF_IV_Y      = 190
+  DEF_EV_X      = 480
+  DEF_EV_Y      = 190
+  SPA_LABEL_X   = 240
+  SPA_LABEL_Y   = 222
+  SPA_VALUE_X   = 400
+  SPA_VALUE_Y   = 222
+  SPA_IV_X      = 440
+  SPA_IV_Y      = 222
+  SPA_EV_X      = 480
+  SPA_EV_Y      = 222
+  SPDEF_LABEL_X  = 240
+  SPDEF_LABEL_Y  = 254
+  SPDEF_VALUE_X  = 400
+  SPDEF_VALUE_Y  = 254
+  SPDEF_IV_X     = 440
+  SPDEF_IV_Y     = 254
+  SPDEF_EV_X     = 480
+  SPDEF_EV_Y     = 254
+  SPEED_LABEL_X   = 240
+  SPEED_LABEL_Y   = 286
+  SPEED_VALUE_X   = 400
+  SPEED_VALUE_Y   = 286
+  SPEED_IV_X      = 440
+  TOTAL_EVS_LABEL_X = 224
+  TOTAL_EVS_LABEL_Y = 324
+  TOTAL_EVS_VALUE_X = 435
+  TOTAL_EVS_VALUE_Y = 324
+  HIDDEN_POWER_LABEL_X = 220
+  HIDDEN_POWER_LABEL_Y = 356
+  HIDDEN_POWER_ICON_X  = 405
+  HIDDEN_POWER_ICON_Y  = 351
+  TYPE_ICON_HEIGHT    = 28
+  TYPE_ICON_WIDTH     = 64
+
   def drawPageAllStats
     overlay = @sprites["overlay"].bitmap
     base   = Color.new(248, 248, 248)
@@ -18,48 +81,48 @@ class PokemonSummary_Scene
     end
     # Write various bits of text
     textpos = [
-      [_INTL("Total"), 381, 94, :center, base, shadow],
-      [_INTL("IV"), 428, 94, :center, base, shadow],
-      [_INTL("EV"), 473, 94, :center, base, shadow],
-      [_INTL("PS"), 240, 126, :left, base, statshadows[:HP]],
-      [@pokemon.totalhp.to_s, 400, 126, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("Total"), TOTAL_LABEL_X, TOTAL_LABEL_Y, :center, base, shadow],
+      [_INTL("IV"), IV_LABEL_X, IV_LABEL_Y, :center, base, shadow],
+      [_INTL("EV"), EV_LABEL_X, EV_LABEL_Y, :center, base, shadow],
+      [_INTL("PS"), HP_LABEL_X, HP_LABEL_Y, :left, base, statshadows[:HP]],
+      [@pokemon.totalhp.to_s, HP_VALUE_X, HP_VALUE_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
       #[sprintf("%d", @pokemon.baseStats[:HP]), 408, 126, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.iv[:HP]), 440, 126, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.ev[:HP]), 480, 126, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("Ataque"), 240, 158, :left, base, statshadows[:ATTACK]],
-      [@pokemon.attack.to_s, 400, 158, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.iv[:HP]), HP_IV_X, HP_IV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.ev[:HP]), HP_EV_X, HP_EV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("Ataque"), ATK_LABEL_X, ATK_LABEL_Y, :left, base, statshadows[:ATTACK]],
+      [@pokemon.attack.to_s, ATK_VALUE_X, ATK_VALUE_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
       #[sprintf("%d", @pokemon.baseStats[:ATTACK]), 408, 158, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.iv[:ATTACK]), 440, 158, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.ev[:ATTACK]), 480, 158, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("Defensa"), 240, 190, :left, base, statshadows[:DEFENSE]],
-      [@pokemon.defense.to_s, 400, 190, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.iv[:ATTACK]), ATK_IV_X, ATK_IV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.ev[:ATTACK]), ATK_EV_X, ATK_EV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("Defensa"), DEF_LABEL_X, DEF_LABEL_Y, :left, base, statshadows[:DEFENSE]],
+      [@pokemon.defense.to_s, DEF_VALUE_X, DEF_VALUE_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
       #[sprintf("%d", @pokemon.baseStats[:DEFENSE]), 408, 190, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.iv[:DEFENSE]), 440, 190, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.ev[:DEFENSE]), 480, 190, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("At. Esp."), 240, 222, :left, base, statshadows[:SPECIAL_ATTACK]],
-      [@pokemon.spatk.to_s, 400, 222, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.iv[:DEFENSE]), DEF_IV_X, DEF_IV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.ev[:DEFENSE]), DEF_EV_X, DEF_EV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("At. Esp."), SPA_LABEL_X, SPA_LABEL_Y, :left, base, statshadows[:SPECIAL_ATTACK]],
+      [@pokemon.spatk.to_s, SPA_VALUE_X, SPA_VALUE_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
       #[sprintf("%d", @pokemon.baseStats[:SPECIAL_ATTACK]), 408, 222, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.iv[:SPECIAL_ATTACK]), 440, 222, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.ev[:SPECIAL_ATTACK]), 480, 222, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("Def Esp."), 240, 254, :left, base, statshadows[:SPECIAL_DEFENSE]],
-      [@pokemon.spdef.to_s, 400, 254, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.iv[:SPECIAL_ATTACK]), SPA_IV_X, SPA_IV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.ev[:SPECIAL_ATTACK]), SPA_EV_X, SPA_EV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("Def Esp."), SPDEF_LABEL_X, SPDEF_LABEL_Y, :left, base, statshadows[:SPECIAL_DEFENSE]],
+      [@pokemon.spdef.to_s, SPDEF_VALUE_X, SPDEF_VALUE_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
       #[sprintf("%d", @pokemon.baseStats[:SPECIAL_DEFENSE]), 408, 254, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.iv[:SPECIAL_DEFENSE]), 440, 254, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.ev[:SPECIAL_DEFENSE]), 480, 254, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("Velocidad"), 240, 286, :left, base, statshadows[:SPEED]],
-      [@pokemon.speed.to_s, 400, 286, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.iv[:SPECIAL_DEFENSE]), SPDEF_IV_X, SPDEF_IV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.ev[:SPECIAL_DEFENSE]), SPDEF_EV_X, SPDEF_EV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("Velocidad"), SPEED_LABEL_X, SPEED_LABEL_Y, :left, base, statshadows[:SPEED]],
+      [@pokemon.speed.to_s, SPEED_VALUE_X, SPEED_VALUE_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
       #[sprintf("%d", @pokemon.baseStats[:SPEED]), 408, 286, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.iv[:SPEED]), 440, 286, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [sprintf("%d", @pokemon.ev[:SPEED]), 480, 286, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("EVs Totales"), 224, 324, :left, base, shadow],
-      [sprintf("%d/%d", ev_total, Pokemon::EV_LIMIT), 435, 324, :center, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-      [_INTL("Poder Oculto"), 220, 356, :left, base, shadow]
+      [sprintf("%d", @pokemon.iv[:SPEED]), SPEED_IV_X, SPEED_IV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [sprintf("%d", @pokemon.ev[:SPEED]), SPEED_EV_X, SPEED_EV_Y, :right, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("EVs Totales"), TOTAL_EVS_LABEL_X, TOTAL_EVS_LABEL_Y, :left, base, shadow],
+      [sprintf("%d/%d", ev_total, Pokemon::EV_LIMIT), TOTAL_EVS_VALUE_X, TOTAL_EVS_VALUE_Y, :center, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+      [_INTL("Poder Oculto"), HIDDEN_POWER_LABEL_X, HIDDEN_POWER_LABEL_Y, :left, base, shadow]
     ]
     # Draw all text
     pbDrawTextPositions(overlay, textpos)
     hiddenpower = pbHiddenPower(@pokemon)
     type_number = GameData::Type.get(hiddenpower[0]).icon_position
-    type_rect = Rect.new(0, type_number * 28, 64, 28)
-    overlay.blt(405, 351, @typebitmap.bitmap, type_rect)
+    type_rect = Rect.new(0, type_number * TYPE_ICON_HEIGHT, TYPE_ICON_WIDTH, TYPE_ICON_HEIGHT)
+    overlay.blt(HIDDEN_POWER_ICON_X, HIDDEN_POWER_ICON_Y, @typebitmap.bitmap, type_rect)
   end
 end
