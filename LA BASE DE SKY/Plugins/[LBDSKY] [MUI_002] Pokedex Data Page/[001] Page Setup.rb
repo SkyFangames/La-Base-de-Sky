@@ -53,6 +53,15 @@ class PokemonPokedexInfo_Scene
   ICONS_OFFSET_TRIPLE = 105
   ICONS_LEFT_TRIPLE   = ICONS_CENTER - ICONS_OFFSET_TRIPLE + 1
   ICONS_RIGHT_TRIPLE  = ICONS_CENTER + ICONS_OFFSET_TRIPLE - 1
+  ITEM_ICON_X         = 261
+  ITEM_ICON_Y         = 200
+  LEFT_ARROW_X        = -2
+  LEFT_ARROW_Y        = 46
+  RIGHT_ARROW_X       = 220
+  RIGHT_ARROW_Y       = 46
+  MOVE_CMDS_WIDTH     = 32
+  MOVE_CMDS_COUNT     = 5
+
   
   #-----------------------------------------------------------------------------
   # Sets the text color options for notes drawn on the Data page.
@@ -92,20 +101,20 @@ class PokemonPokedexInfo_Scene
       @sprites["familyicon#{i}"].y = ICONS_POS_Y
       @sprites["familyicon#{i}"].visible = false
     end
-    @sprites["itemicon"] = ItemIconSprite.new(261, 200, nil, @viewport)
+    @sprites["itemicon"] = ItemIconSprite.new(ITEM_ICON_X, ITEM_ICON_Y, nil, @viewport)
     @sprites["itemicon"].blankzero = true
     @sprites["leftarrow"] = AnimatedSprite.new("Graphics/UI/left_arrow", 8, 40, 28, 2, @viewport)
-    @sprites["leftarrow"].x       = -2
-    @sprites["leftarrow"].y       = 46
+    @sprites["leftarrow"].x       = LEFT_ARROW_X
+    @sprites["leftarrow"].y       = LEFT_ARROW_Y
     @sprites["leftarrow"].visible = false
     @sprites["leftarrow"].play
     @sprites["rightarrow"] = AnimatedSprite.new("Graphics/UI/right_arrow", 8, 40, 28, 2, @viewport)
-    @sprites["rightarrow"].x       = 220
-    @sprites["rightarrow"].y       = 46
+    @sprites["rightarrow"].x       = RIGHT_ARROW_X
+    @sprites["rightarrow"].y       = RIGHT_ARROW_Y
     @sprites["rightarrow"].visible = false
     @sprites["rightarrow"].play
-    @sprites["movecmds"] = Window_CommandPokemon.new(@moveCommands, 32)
-    @sprites["movecmds"].height = 32 * 5
+    @sprites["movecmds"] = Window_CommandPokemon.new(@moveCommands, MOVE_CMDS_WIDTH)
+    @sprites["movecmds"].height = MOVE_CMDS_WIDTH * MOVE_CMDS_COUNT
     @sprites["movecmds"].visible = false
     @sprites["data_overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     pbSetSystemFont(@sprites["data_overlay"].bitmap)
