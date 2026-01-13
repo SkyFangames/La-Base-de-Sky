@@ -10,8 +10,16 @@ class PokemonSummary_Scene
     enhanced_drawPage(page)
     return if !Settings::SUMMARY_SHINY_LEAF
     overlay = @sprites["overlay"].bitmap
-    coords = (PluginManager.installed?("BW Summary Screen")) ? [Graphics.width - 18, 114] : [182, 124]
-    pbDisplayShinyLeaf(@pokemon, overlay, coords[0], coords[1])
+    
+    if PluginManager.installed?("BW Summary Screen")
+      x_pos = SHINY_LEAF_BW_X
+      y_pos = SHINY_LEAF_BW_Y
+    else
+      x_pos = SHINY_LEAF_X
+      y_pos = SHINY_LEAF_Y
+    end
+    
+    pbDisplayShinyLeaf(@pokemon, overlay, x_pos, y_pos)
   end
   
   #-----------------------------------------------------------------------------
@@ -22,8 +30,7 @@ class PokemonSummary_Scene
     enhanced_drawPageOne
     return if !Settings::SUMMARY_HAPPINESS_METER
     overlay = @sprites["overlay"].bitmap
-    coords = [242, 346]
-    pbDisplayHappiness(@pokemon, overlay, coords[0], coords[1])
+    pbDisplayHappiness(@pokemon, overlay, HAPPY_METER_X, HAPPY_METER_Y)
   end
   
   #-----------------------------------------------------------------------------
@@ -34,8 +41,15 @@ class PokemonSummary_Scene
     (@statToggle) ? drawEnhancedStats : enhanced_drawPageThree
     return if !Settings::SUMMARY_IV_RATINGS
     overlay = @sprites["overlay"].bitmap
-    coords = (PluginManager.installed?("BW Summary Screen")) ? [110, 83] : [465, 83]
-    pbDisplayIVRating(@pokemon, overlay, coords[0], coords[1])
+    if PluginManager.installed?("BW Summary Screen")
+      x_pos = IV_RATINGS_BW_X
+      y_pos = IV_RATINGS_BW_Y
+    else
+      x_pos = IV_RATINGS_X
+      y_pos = IV_RATINGS_Y
+    end
+    
+    pbDisplayIVRating(@pokemon, overlay, x_pos, y_pos)
   end
 	
   def pbDisplayIVRating(*args)

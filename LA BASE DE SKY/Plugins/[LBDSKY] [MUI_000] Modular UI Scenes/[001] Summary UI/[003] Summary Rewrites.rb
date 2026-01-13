@@ -20,18 +20,19 @@ class PokemonSummary_Scene
     imagepos = []
     # Draws general page info.
     ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
-    imagepos.push([ballimage, 14, 60])
+    imagepos.push([ballimage, IMG_BALL_X, IMG_BALL_Y])
+    
     pagename = UIHandlers.get_info(:summary, @page_id, :name)
     textpos = [
-      [pagename, 26, 22, :left, base, shadow],
-      [@pokemon.name, 46, 68, :left, base, shadow],
-      [_INTL("Objeto"), 66, 324, :left, base, shadow]
-    ]
+      [pagename, TEXT_PAGE_NAME_X, TEXT_PAGE_NAME_Y, :left, base, shadow],
+      [@pokemon.name, TEXT_NAME_X, TEXT_NAME_Y, :left, base, shadow],
+      [_INTL("Objeto"), TEXT_ITEM_LABEL_X, TEXT_ITEM_LABEL_Y, :left, base, shadow]
+    ] 
     if @pokemon.hasItem?
-      textpos.push([@pokemon.item.name, 16, 358, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+      textpos.push([@pokemon.item.name, TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
     else
-      textpos.push([_INTL("Ninguno"), 16, 358, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
-    end
+      textpos.push([_INTL("Ninguno"), TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
+    end 
     # Draws additional info for non-Egg Pokemon.
     if !@pokemon.egg?
       status = -1
@@ -40,27 +41,29 @@ class PokemonSummary_Scene
       elsif @pokemon.status != :NONE
         status = GameData::Status.get(@pokemon.status).icon_position
       elsif @pokemon.pokerusStage == 1
-        status = GameData::Status.count
+        status = GameData::Status.count 
       end
       if status >= 0
-        imagepos.push(["Graphics/UI/statuses", 124, 100, 0, 16 * status, 44, 16])
+        imagepos.push(["Graphics/UI/statuses", IMG_STATUS_X, IMG_STATUS_Y, 0, 16 * status, 44, 16])
       end
       if @pokemon.pokerusStage == 2
-        imagepos.push(["Graphics/UI/Summary/icon_pokerus", 176, 100])
+        imagepos.push(["Graphics/UI/Summary/icon_pokerus", IMG_POKERUS_X, IMG_POKERUS_Y])
       end
-      imagepos.push(["Graphics/UI/shiny", 2, 134]) if @pokemon.shiny?
-      textpos.push([@pokemon.level.to_s, 46, 98, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+      imagepos.push(["Graphics/UI/shiny", IMG_SHINY_X, IMG_SHINY_Y]) if @pokemon.shiny?
+      
+      textpos.push([@pokemon.level.to_s, TEXT_LEVEL_X, TEXT_LEVEL_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+      
       if @pokemon.male?
-        textpos.push([_INTL("♂"), 178, 68, :left, Color.new(24, 146, 240), Color.new(13, 73, 119)])
+        textpos.push([_INTL("♂"), TEXT_GENDER_X, TEXT_GENDER_Y, :left, Color.new(24, 146, 240), Color.new(13, 73, 119)])
       elsif @pokemon.female?
-        textpos.push([_INTL("♀"), 178, 68, :left, Color.new(249, 93, 210), Color.new(128, 20, 90)])
+        textpos.push([_INTL("♀"), TEXT_GENDER_X, TEXT_GENDER_Y, :left, Color.new(249, 93, 210), Color.new(128, 20, 90)])
       end
-    end
+    end  
     # Draws the page.
     pbDrawImagePositions(overlay, imagepos)
     pbDrawTextPositions(overlay, textpos)
     UIHandlers.call(:summary, @page_id, "layout", @pokemon, self)
-    drawMarkings(overlay, 84, 292)
+    drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
   end
   
   #-----------------------------------------------------------------------------
@@ -85,8 +88,11 @@ class PokemonSummary_Scene
       memo += black_text_tag + _INTL("Un misterioso Huevo Pokémon.") + "\n"
     end
     memo += "\n"
-    if !MOSTRAR_PASOS_HUEVO
-      #memo += black_text_tag + _INTL("\"El huevo eclosionará...\"") + "\n"
+    
+    # Nota: Asumo que MOSTRAR_PASOS_HUEVO es una constante global o de otro script.
+    # Si da error, cámbialo por 'true' o 'false' según prefieras.
+    mostrar_pasos = defined?(MOSTRAR_PASOS_HUEVO) ? MOSTRAR_PASOS_HUEVO : false    
+    if !mostrar_pasos
       eggstate = _INTL("Parece que va a tardar un buen rato en eclosionar.")
       eggstate = _INTL("¿Qué eclosionará de esto? No parece estar cerca de eclosionar.") if @pokemon.steps_to_hatch < 10_200
       eggstate = _INTL("Parece moverse ocasionalmente. Puede estar cerca de eclosionar.") if @pokemon.steps_to_hatch < 2550
@@ -95,7 +101,7 @@ class PokemonSummary_Scene
     else
       memo += black_text_tag + _INTL("Faltan {1} pasos para que el huevo eclosione.", @pokemon.steps_to_hatch)
     end
-    drawFormattedTextEx(@sprites["overlay"].bitmap, 232, 86, 268, memo)
+    drawFormattedTextEx(@sprites["overlay"].bitmap, EGG_DATE_X, EGG_DATE_Y, EGG_MEMO_WIDTH, memo)
   end
   
   #-----------------------------------------------------------------------------
