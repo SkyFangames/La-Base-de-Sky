@@ -130,7 +130,10 @@ module Settings
     NEW_CAPTURE_CAN_REPLACE_PARTY_MEMBER = (MECHANICS_GENERATION >= 7)
   
     #=============================================================================
-  
+    # Si es true el comando de huir de un combate contra entrenadores permite al jugador terminar la
+    # batalla como su derrota (true) o no hace nada (false).
+    CAN_FORFEIT_TRAINER_BATTLES         = (MECHANICS_GENERATION >= 9)
+    
     # El switch de juego que, cuando está activado, evita que el jugador pierda 
     # dinero si pierde un combate (todavía puede ganar dinero de entrenadores por ganar).
     NO_MONEY_LOSS                       = 33
