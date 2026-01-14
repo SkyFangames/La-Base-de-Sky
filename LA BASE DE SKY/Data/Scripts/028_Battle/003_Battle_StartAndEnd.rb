@@ -304,6 +304,7 @@ class Battle
     # Terrain announcement
     terrain_data = GameData::BattleTerrain.try_get(@field.terrain)
     pbCommonAnimation(terrain_data.animation) if terrain_data
+    on_terrain_start
     case @field.terrain
     when :Electric
       pbDisplay(_INTL("¡Se ha formado un campo de corriente eléctrica en el terreno de combate!"))
