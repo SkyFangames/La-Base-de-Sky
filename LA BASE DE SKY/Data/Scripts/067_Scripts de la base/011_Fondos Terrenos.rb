@@ -3,9 +3,7 @@ class Battle::Scene
   
   def sceneWait(numframes)
     numframes.times do
-      pbGraphicsUpdate
-      pbFrameUpdate
-      Input.update
+      pbUpdate
     end
   end
   

@@ -304,7 +304,7 @@ class Battle
     # Terrain announcement
     terrain_data = GameData::BattleTerrain.try_get(@field.terrain)
     pbCommonAnimation(terrain_data.animation) if terrain_data
-    on_terrain_start
+    
     case @field.terrain
     when :Electric
       pbDisplay(_INTL("¡Se ha formado un campo de corriente eléctrica en el terreno de combate!"))
@@ -315,6 +315,7 @@ class Battle
     when :Psychic
       pbDisplay(_INTL("¡El terreno de combate se ha vuelto muy extraño!"))
     end
+    on_terrain_start
     # Abilities upon entering battle
     pbOnAllBattlersEnteringBattle
     # Main battle loop
