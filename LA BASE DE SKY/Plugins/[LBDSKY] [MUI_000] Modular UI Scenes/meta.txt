@@ -1,5 +1,5 @@
 ﻿Name       = Modular UI Scenes
-Version    = 2.0.8
+Version    = 2.0.9
 Essentials = 21.1
 Requires   = v21.1 Hotfixes,1.0.6
 Website    = https://reliccastle.com/resources/1325/

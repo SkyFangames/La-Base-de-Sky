@@ -3,13 +3,14 @@
 #===============================================================================
 # Main editor method for editing wild encounters. Lists all defined encounter
 # sets, and edits them.
+ENCOUNTERS_EDITOR_HEIGHT = 96
 def pbEncountersEditor
   map_infos = pbLoadMapInfos
   commands = []
   maps = []
   list = pbListWindow([])
   help_window = Window_UnformattedTextPokemon.newWithSize(
-    _INTL("Editar encuentros salvajes"), Graphics.width / 2, 0, Graphics.width / 2, 96
+    _INTL("Editar encuentros salvajes"), Graphics.width / 2, 0, Graphics.width / 2, ENCOUNTERS_EDITOR_HEIGHT
   )
   help_window.z = 99999
   ret = 0
@@ -131,7 +132,7 @@ def pbEncounterMapVersionEditor(enc_data)
   enc_types = []
   list = pbListWindow([])
   help_window = Window_UnformattedTextPokemon.newWithSize(
-    _INTL("Editar los encuentros del mapa"), Graphics.width / 2, 0, Graphics.width / 2, 96
+    _INTL("Editar los encuentros del mapa"), Graphics.width / 2, 0, Graphics.width / 2, ENCOUNTERS_EDITOR_HEIGHT
   )
   help_window.z = 99999
   ret = 0
@@ -257,7 +258,7 @@ def pbEncounterTypeEditor(enc_data, enc_type)
   commands = []
   list = pbListWindow([])
   help_window = Window_UnformattedTextPokemon.newWithSize(
-    _INTL("Editar slots de encuentro"), Graphics.width / 2, 0, Graphics.width / 2, 96
+    _INTL("Editar slots de encuentro"), Graphics.width / 2, 0, Graphics.width / 2, ENCOUNTERS_EDITOR_HEIGHT
   )
   help_window.z = 99999
   enc_type_name = ""
@@ -1101,6 +1102,7 @@ def pbRegionalDexEditor(dex)
   return ret
 end
 
+REGIONAL_DEX_EDITOR_HEIGHT = 64
 def pbRegionalDexEditorMain
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
   viewport.z = 99999
@@ -1108,12 +1110,12 @@ def pbRegionalDexEditorMain
   cmd_window.viewport = viewport
   cmd_window.z        = 2
   title = Window_UnformattedTextPokemon.newWithSize(
-    _INTL("Editor de Dexes Regionales"), Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
+    _INTL("Editor de Dexes Regionales"), Graphics.width / 2, 0, Graphics.width / 2, REGIONAL_DEX_EDITOR_HEIGHT, viewport
   )
   title.z = 2
   info = Window_AdvancedTextPokemon.newWithSize(
-    _INTL("Z+Arriba/Abajo: Reorganizar Dexes"), Graphics.width / 2, 64,
-    Graphics.width / 2, Graphics.height - 64, viewport
+    _INTL("Z+Arriba/Abajo: Reorganizar Dexes"), Graphics.width / 2, REGIONAL_DEX_EDITOR_HEIGHT,
+    Graphics.width / 2, Graphics.height - REGIONAL_DEX_EDITOR_HEIGHT, viewport
   )
   info.z = 2
   dex_lists = []
@@ -1252,6 +1254,7 @@ end
 #===============================================================================
 # Battle animations rearranger
 #===============================================================================
+ANIMATIONS_ORGANISER_HEIGHT = 64
 def pbAnimationsOrganiser
   list = pbLoadBattleAnimations
   if !list || !list[0]
@@ -1264,12 +1267,12 @@ def pbAnimationsOrganiser
   cmdwin.viewport = viewport
   cmdwin.z        = 2
   title = Window_UnformattedTextPokemon.newWithSize(
-    _INTL("Organizador de Animaciones"), Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
+    _INTL("Organizador de Animaciones"), Graphics.width / 2, 0, Graphics.width / 2, ANIMATIONS_ORGANISER_HEIGHT, viewport
   )
   title.z = 2
   info = Window_AdvancedTextPokemon.newWithSize(
     _INTL("Z+Arriba/Abajo: Intercambiar\nZ+Izda: Eliminar\nZ+Derecha: Insertar"),
-    Graphics.width / 2, 64, Graphics.width / 2, Graphics.height - 64, viewport
+    Graphics.width / 2, ANIMATIONS_ORGANISER_HEIGHT, Graphics.width / 2, Graphics.height - ANIMATIONS_ORGANISER_HEIGHT, viewport
   )
   info.z = 2
   commands = []

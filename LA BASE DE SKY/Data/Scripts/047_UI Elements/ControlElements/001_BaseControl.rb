@@ -106,9 +106,9 @@ class UIControls::BaseControl < BitmapSprite
 
   #-----------------------------------------------------------------------------
 
-  def draw_text(this_bitmap, text_x, text_y, this_text)
+  def draw_text(this_bitmap, text_x, text_y, this_text, align = 0)
     text_size = this_bitmap.text_size(this_text.to_s)
-    this_bitmap.draw_text(text_x, text_y, text_size.width, text_size.height, this_text.to_s, 0)
+    this_bitmap.draw_text(text_x, text_y, text_size.width, text_size.height, this_text.to_s, align)
   end
 
   def draw_text_centered(this_bitmap, text_x, text_y, wid, this_text)

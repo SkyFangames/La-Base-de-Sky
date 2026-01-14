@@ -1349,11 +1349,13 @@ ItemHandlers::UseOnPokemon.add(:ABILITYPATCH, proc { |item, qty, pkmn, scene|
     end
     next false
 })
+
 ItemHandlers::UsableOnPokemon.add(:SUPERCAPSULE, proc { |item, pkmn|
   oldabil=pkmn.ability_index
   abils = pkmn.getAbilityList
   next abils.any? { |i| i[1] != oldabil }
 })
+
 ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
     oldabil=pkmn.ability_index
     abils = pkmn.getAbilityList
@@ -1377,11 +1379,11 @@ ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:GRACIDEA, proc { |item, pkmn|
-  next pkmn.isSpecies?(:SHAYMIN) && pkmn.able? && pkmn.form == 0 && pkmn.status != :FROZEN && !PBDayNight.isNight?
+  next pkmn.isSpecies?(:SHAYMIN) && pkmn.able? && pkmn.form == 0 && ![:FROZEN, :FROSTBITE].include?(pkmn.status) && !PBDayNight.isNight?
 })
 ItemHandlers::UseOnPokemon.add(:GRACIDEA, proc { |item, qty, pkmn, scene|
   if !pkmn.isSpecies?(:SHAYMIN) || pkmn.form != 0 ||
-     [:FROZEN, :FROSTBITE].include?(pkmn.status)|| PBDayNight.isNight?
+     [:FROZEN, :FROSTBITE].include?(pkmn.status) || PBDayNight.isNight?
     scene.pbDisplay(_INTL("No tendría efecto."))
     next false
   elsif pkmn.fainted?

@@ -33,6 +33,18 @@ class Battle::Scene
   COMMAND_BOX                   = 2
   FIGHT_BOX                     = 3
   TARGET_BOX                    = 4
+  # Battler positioning offsets for side sizes 2 and 3
+  BATTLER_OFFSET_2_X = [-48, 48, 32, -32]
+  BATTLER_OFFSET_2_Y = [0, 0, 16, -16]
+  BATTLER_OFFSET_3_X = [-80, 80, 0, 0, 80, -80]
+  BATTLER_OFFSET_3_Y = [0, 0, 8, -8, 16, -16]
+  # Trainer positioning offsets
+  TRAINER_PLAYER_OFFSET_Y = 16
+  TRAINER_FOE_OFFSET_Y    = 6
+  TRAINER_OFFSET_2_X      = [-48, 48, 32, -32]
+  TRAINER_OFFSET_2_Y      = [0, 0, 0, -16]
+  TRAINER_OFFSET_3_X      = [-80, 80, 0, 0, 80, -80]
+  TRAINER_OFFSET_3_Y      = [0, 0, 0, -8, 0, -16]
 
   # Returns where the centre bottom of a battler's sprite should be, given its
   # index and the number of battlers on its side, assuming the battler has
@@ -47,11 +59,11 @@ class Battle::Scene
     # Shift depending on index (no shifting needed for sideSize of 1)
     case sideSize
     when 2
-      ret[0] += [-48, 48, 32, -32][index]
-      ret[1] += [  0,  0, 16, -16][index]
+      ret[0] += BATTLER_OFFSET_2_X[index]
+      ret[1] += BATTLER_OFFSET_2_Y[index]
     when 3
-      ret[0] += [-80, 80,  0,  0, 80, -80][index]
-      ret[1] += [  0,  0,  8, -8, 16, -16][index]
+      ret[0] += BATTLER_OFFSET_3_X[index]
+      ret[1] += BATTLER_OFFSET_3_Y[index]
     end
     return ret
   end
@@ -61,18 +73,18 @@ class Battle::Scene
   def self.pbTrainerPosition(side, index = 0, sideSize = 1)
     # Start at the centre of the base for the appropriate side
     if side == 0
-      ret = [PLAYER_BASE_X, PLAYER_BASE_Y - 16]
+      ret = [PLAYER_BASE_X, PLAYER_BASE_Y - TRAINER_PLAYER_OFFSET_Y]
     else
-      ret = [FOE_BASE_X, FOE_BASE_Y + 6]
+      ret = [FOE_BASE_X, FOE_BASE_Y + TRAINER_FOE_OFFSET_Y]
     end
     # Shift depending on index (no shifting needed for sideSize of 1)
     case sideSize
     when 2
-      ret[0] += [-48, 48, 32, -32][(2 * index) + side]
-      ret[1] += [  0,  0,  0, -16][(2 * index) + side]
+      ret[0] += TRAINER_OFFSET_2_X[(2 * index) + side]
+      ret[1] += TRAINER_OFFSET_2_Y[(2 * index) + side]
     when 3
-      ret[0] += [-80, 80,  0,  0, 80, -80][(2 * index) + side]
-      ret[1] += [  0,  0,  0, -8,  0, -16][(2 * index) + side]
+      ret[0] += TRAINER_OFFSET_3_X[(2 * index) + side]
+      ret[1] += TRAINER_OFFSET_3_Y[(2 * index) + side]
     end
     return ret
   end

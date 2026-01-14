@@ -37,9 +37,13 @@ class PokemonSave_Scene
   OTHER_TEXT_BASE      = Color.new(0, 112, 248)   # Blue
   OTHER_TEXT_SHADOW    = Color.new(120, 184, 232)
 
+  # Misc constants
+  DEFAULT_VIEWPORT_Z        = 99999
+  LOCWINDOW_MIN_WIDTH       = 228
+
   def pbStartScreen
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = DEFAULT_VIEWPORT_Z
     @sprites = {}
     totalsec = $stats.play_time.to_i
     hour = totalsec / 60 / 60
@@ -68,7 +72,7 @@ class PokemonSave_Scene
     @sprites["locwindow"].viewport = @viewport
     @sprites["locwindow"].x = 0
     @sprites["locwindow"].y = 0
-    @sprites["locwindow"].width = 228 if @sprites["locwindow"].width < 228
+    @sprites["locwindow"].width = LOCWINDOW_MIN_WIDTH if @sprites["locwindow"].width < LOCWINDOW_MIN_WIDTH
     @sprites["locwindow"].visible = true
   end
 

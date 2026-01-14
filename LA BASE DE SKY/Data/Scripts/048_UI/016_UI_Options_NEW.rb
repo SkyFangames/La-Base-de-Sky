@@ -2,10 +2,24 @@
 #
 #===============================================================================
 class PokemonSystem
+  attr_accessor :textspeed
+  attr_accessor :battlescene
   attr_accessor :battlestyle
   attr_accessor :runstyle
   attr_accessor :sendtoboxes
   attr_accessor :givenicknames
+  attr_accessor :skip_move_learning
+  attr_accessor :frame
+  attr_accessor :textskin
+  attr_accessor :screensize
+  attr_accessor :language
+  attr_accessor :runstyle
+  
+  attr_accessor :main_volume
+  attr_accessor :bgmvolume
+  attr_accessor :sevolume
+  attr_accessor :pokemon_cry_volume
+  
   attr_accessor :textinput
   attr_reader   :bgmvolume
   attr_reader   :sevolume
@@ -17,12 +31,15 @@ class PokemonSystem
   attr_reader   :screensize
   attr_reader   :language
   attr_writer   :controls
+  attr_accessor :vsync
+  attr_accessor :autotile_animations
 
   def initialize
     @battlestyle        = 0     # Battle style (0=switch, 1=set)
     @runstyle           = 0     # Default movement speed (0=walk, 1=run)
     @sendtoboxes        = 0     # Send to Boxes (0=manual, 1=automatic)
     @givenicknames      = 0     # Give nicknames (0=give, 1=don't give)
+    @skip_move_learning = 1  # Skip move learning (0=Sí, 1=No)
     @textinput          = 0     # Text input mode (0=cursor, 1=keyboard)
     @language           = 0     # Language (see also Settings::LANGUAGES)
     @main_volume        = 100
@@ -34,6 +51,79 @@ class PokemonSystem
     @textskin           = 0     # Speech frame
     @frame              = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
     @screensize         = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
+    @vsync               = vsync_initial_value?
+    @autotile_animations = 0
+  end
+
+  def vsync_initial_value?
+    return 1 if !File.exist?("mkxp.json") || $joiplay
+    file_content = File.read("mkxp.json")
+    clean_json_string = json_remove_comments(file_content)
+    # Parse JSON content
+    begin
+      config = HTTPLite::JSON.parse(clean_json_string)
+
+      # Check the vsync value
+      vsync_value = config['vsync']
+      return vsync_value == true ? 0 : 1
+    rescue HTTPLite::JSON::ParserError => e
+      echoln "Error parsing JSON: #{e.message}"
+    end
+  end
+
+  def update_vsync(vsync_value)
+    file_path = "mkxp.json"
+    vsync_value = vsync_value == 1 ? false : true
+    vsync_str = vsync_value ? 'true' : 'false'
+    sync_to_refresh_str = vsync_str
+
+    # Read the file line-by-line to preserve comments and order
+    lines = File.readlines(file_path)
+    
+    updated_lines = lines.map do |line|
+      # Update the "vsync" value
+      if line.match?(/"vsync":\s*(true|false)/)
+        line.sub(/"vsync":\s*(true|false)/, "\"vsync\": #{vsync_str}")
+      # Update the "syncToRefreshrate" value
+      elsif line.match?(/"syncToRefreshrate":\s*(true|false)/)
+        if vsync_value
+          # Set to true with a trailing comma
+          line.sub(/"syncToRefreshrate":\s*(true|false),?/, "\"syncToRefreshrate\": #{sync_to_refresh_str}")
+        else
+          # Set to false without a trailing comma
+          line.sub(/"syncToRefreshrate":\s*(true|false)/, "\"syncToRefreshrate\": #{sync_to_refresh_str},")
+        end
+      # Comment out "fixedFramerate" if vsync is true
+      elsif vsync_value && line.match?(/"fixedFramerate":\s*\d+/)
+        "//#{line.strip}" # Comment out the line
+      # Uncomment "fixedFramerate" if vsync is false
+      elsif !vsync_value && line.match?(/\/\/\s*"fixedFramerate":\s*\d+/)
+        line.sub(/\/\/\s*/, '') # Uncomment the line
+      else
+        line # Return the line unchanged
+      end
+    end
+    
+    # Write the updated lines back to the file
+    File.open(file_path, 'w') do |file|
+      file.puts(updated_lines)
+    end
+    # Handle game restart after vsync value change
+    message = $player ? _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\nPodrás guardar antes de reiniciar.\n¿Deseas reiniciar ahora?") : _INTL("Cambiar el valor del vsync requiere reiniciar el juego.\n¿Deseas reiniciar ahora?")
+    if Kernel.pbConfirmMessageSerious(message)
+      pbSaveScreen if $player
+      if System.is_really_windows?
+        # Launch Game.exe and immediately exit the current process
+        Thread.new do
+          system('start "" "Game.exe"')
+        end
+        sleep(0.1) # Give the thread some time to execute
+      else
+        pbMessage(_INTL("Al no estar en Windows el juego no puede reiniciarse automáticamente.\nSe cerrará y deberás abrirlo manualmente"))
+      end
+
+      Kernel.exit!
+    end
   end
 
   def language=(value)
@@ -52,16 +142,15 @@ class PokemonSystem
     return if @main_volume == value && !@force_set_options
     @main_volume = value
     return if !$game_system
-    if $game_system.playing_bgm.nil?
-      playingBGM = $game_system.getPlayingBGM
+    if $game_system.playing_bgm
+      playing_bgm = $game_system.getPlayingBGM
       $game_system.bgm_pause
-      $game_system.bgm_resume(playingBGM)
+      $game_system.bgm_resume(playing_bgm)
     end
     if $game_system.playing_bgs
-      $game_system.playing_bgs.volume = @sevolume
-      playingBGS = $game_system.getPlayingBGS
+      playing_bgs = $game_system.getPlayingBGS
       $game_system.bgs_pause
-      $game_system.bgs_resume(playingBGS)
+      $game_system.bgs_resume(playing_bgs)
     end
   end
 
@@ -69,19 +158,18 @@ class PokemonSystem
     return if @bgmvolume == value && !@force_set_options
     @bgmvolume = value
     return if !$game_system || $game_system.playing_bgm.nil?
-    playingBGM = $game_system.getPlayingBGM
+    playing_bgm = $game_system.getPlayingBGM
     $game_system.bgm_pause
-    $game_system.bgm_resume(playingBGM)
+    $game_system.bgm_resume(playing_bgm)
   end
 
   def sevolume=(value)
     return if @sevolume == value && !@force_set_options
     @sevolume = value
     return if !$game_system || $game_system.playing_bgs.nil?
-    $game_system.playing_bgs.volume = @sevolume
-    playingBGS = $game_system.getPlayingBGS
+    playing_bgs = $game_system.getPlayingBGS
     $game_system.bgs_pause
-    $game_system.bgs_resume(playingBGS)
+    $game_system.bgs_resume(playing_bgs)
   end
 
   def pokemon_cry_volume
@@ -153,6 +241,29 @@ class UI::OptionsVisualsList < Window_DrawableCommand
   attr_accessor :unsetColor, :unsetShadowColor
   attr_reader   :value_changed
 
+  ARRAY_SPACING = 32
+
+  # Offset vertical al dibujar el icono de entrada (input) dentro del rect
+  OPTION_ICON_BLT_Y_OFFSET = 2
+  # Espacio adicional entre icono de entrada y el texto del nombre de la opción
+  OPTION_ICON_TEXT_GAP = 6
+  # Separación entre los valores cuando hay exactamente 2 elementos en un array
+  ARRAY_SPACING = 32
+  # Espacio entre el slider y el número mostrado a su derecha
+  SLIDER_NUMBER_GAP = 6
+  # Alto de la barra del slider (en píxeles)
+  SLIDER_BAR_HEIGHT = 4
+  # Ancho del indicador (notch) del slider
+  SLIDER_NOTCH_WIDTH = 8
+  # Alto del indicador (notch) del slider
+  SLIDER_NOTCH_HEIGHT = 16
+  # Padding en pbDrawShadowText para texto del número del slider
+  SLIDER_NUMBER_TEXT_PADDING = 2
+  # Espaciado al dibujar corchetes de selección (izquierda)
+  SELECTION_BRACKET_LEFT_PADDING = 2
+  # Espaciado al dibujar corchetes de selección (derecha)
+  SELECTION_BRACKET_RIGHT_PADDING = 0
+
   def initialize(x, y, width, height, viewport)
     @input_icons_bitmap = AnimatedBitmap.new(UI::OptionsVisuals::UI_FOLDER + "input_icons")
     super(x, y, width, height, viewport)
@@ -180,7 +291,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
       text_width = self.contents.text_size(option[:parameters][0]).width
       @array_second_value_x = text_width if @array_second_value_x < text_width
     end
-    @array_second_value_x += 32
+    @array_second_value_x += ARRAY_SPACING
     refresh
   end
 
@@ -331,10 +442,10 @@ class UI::OptionsVisualsList < Window_DrawableCommand
       # Draw icon
       input_index = UI::BaseVisuals::INPUT_ICONS_ORDER.index(option[:parameters]) || 0
       src_rect = Rect.new(input_index * @input_icons_bitmap.height, 0,
-                          @input_icons_bitmap.height, @input_icons_bitmap.height)
-      self.contents.blt(rect.x, rect.y + 2, @input_icons_bitmap.bitmap, src_rect)
+              @input_icons_bitmap.height, @input_icons_bitmap.height)
+      self.contents.blt(rect.x, rect.y + OPTION_ICON_BLT_Y_OFFSET, @input_icons_bitmap.bitmap, src_rect)
       # Adjust text position
-      option_name_x += @input_icons_bitmap.height + 6
+      option_name_x += @input_icons_bitmap.height + OPTION_ICON_TEXT_GAP
     when :use
       option_colors = [self.baseColor, self.shadowColor]
     end
@@ -357,7 +468,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
                          value,
                          (i == @values[this_index]) ? self.selectedColor : self.baseColor,
                          (i == @values[this_index]) ? self.selectedShadowColor : self.shadowColor)
-        draw_selection_brackets(x_pos, rect.y, value, rect, option_width) if i == @values[this_index]
+        # draw_selection_brackets(x_pos, rect.y, value, rect, option_width) if i == @values[this_index]
         if option[:parameters].length == 2
           x_pos += @array_second_value_x
         else
@@ -373,21 +484,21 @@ class UI::OptionsVisualsList < Window_DrawableCommand
     when :number_slider
       lowest = lowest_value(option)
       highest = highest_value(option)
-      spacing = 6   # Gap between slider and number
+      spacing = SLIDER_NUMBER_GAP   # Gap between slider and number
       # Draw slider bar
       slider_length = option_width - rect.x - self.contents.text_size(highest.to_s).width - spacing
       x_pos = option_start_x
-      self.contents.fill_rect(x_pos, rect.y + (rect.height / 2) - 2, slider_length, 4, self.baseColor)
+      self.contents.fill_rect(x_pos, rect.y + (rect.height / 2) - (SLIDER_BAR_HEIGHT / 2), slider_length, SLIDER_BAR_HEIGHT, self.baseColor)
       # Draw slider notch
       self.contents.fill_rect(
-        x_pos + ((slider_length - 8) * (@values[this_index] - lowest) / (highest - lowest)),
-        rect.y + (rect.height / 2) - 8,
-        8, 16, self.selectedColor
+        x_pos + ((slider_length - SLIDER_NOTCH_WIDTH) * (@values[this_index] - lowest) / (highest - lowest)),
+        rect.y + (rect.height / 2) - (SLIDER_NOTCH_HEIGHT / 2),
+        SLIDER_NOTCH_WIDTH, SLIDER_NOTCH_HEIGHT, self.selectedColor
       )
       # Draw text
       value = (lowest + @values[this_index]).to_s
       pbDrawShadowText(self.contents, x_pos - rect.x, rect.y, option_width, rect.height,
-                       value, self.selectedColor, self.selectedShadowColor, 2)
+                       value, self.selectedColor, self.selectedShadowColor, SLIDER_NUMBER_TEXT_PADDING)
     when :control
       x_pos = option_start_x
       spacing = option_width / 2
@@ -414,9 +525,9 @@ class UI::OptionsVisualsList < Window_DrawableCommand
 
   def draw_selection_brackets(text_x, text_y, text, rect, option_width)
     pbDrawShadowText(self.contents, text_x - option_width, text_y, option_width, rect.height,
-                     "[", self.selectedColor, self.selectedShadowColor, 2)
+                     "[", self.selectedColor, self.selectedShadowColor, SELECTION_BRACKET_LEFT_PADDING)
     pbDrawShadowText(self.contents, text_x + self.contents.text_size(text).width, text_y, option_width, rect.height,
-                     "]", self.selectedColor, self.selectedShadowColor, 0)
+                     "]", self.selectedColor, self.selectedShadowColor, SELECTION_BRACKET_RIGHT_PADDING)
   end
 
   #-----------------------------------------------------------------------------
@@ -462,37 +573,16 @@ class UI::OptionsVisuals < UI::BaseVisuals
   }
   OPTIONS_VISIBLE  = 6
   PAGE_TAB_SPACING = 4
+  MAX_VISIBLE_TABS = 4   # Maximum number of tabs visible per page
 
   #-----------------------------------------------------------------------------
 
-  PAGE_HANDLERS = HandlerHash.new
-  PAGE_HANDLERS.add(:gameplay, {
-    :name  => proc { next _INTL("Jugabilidad") },
-    :order => 10,
-    :description => proc { next _INTL("Cambia cómo se comporta el juego.") }
-  })
-  PAGE_HANDLERS.add(:audio, {
-    :name  => proc { next _INTL("Audio") },
-    :order => 20,
-    :description => proc { next _INTL("Cambia el volumen del juego.") }
-  })
-  PAGE_HANDLERS.add(:graphics, {
-    :name  => proc { next _INTL("Gráficos") },
-    :order => 30,
-    :description => proc { next _INTL("Cambia cómo se ve el juego.") }
-  })
-  PAGE_HANDLERS.add(:controls, {
-    :name  => proc { next _INTL("Controles") },
-    :order => 40,
-    :description => proc { next _INTL("Edita los controles del juego.") }
-  })
-
-  #-----------------------------------------------------------------------------
-
-  def initialize(options, in_load_screen = false)
+  def initialize(options, in_load_screen = false, menu = :options_menu)
     @options        = options
     @in_load_screen = in_load_screen
+    @menu           = menu
     @page           = all_pages.first
+    @tab_scroll     = 0   # Track which tab is the leftmost visible
     super()
   end
 
@@ -514,10 +604,13 @@ class UI::OptionsVisuals < UI::BaseVisuals
   end
 
   def initialize_page_tabs
+    # Use max visible tabs or actual tab count, whichever is smaller
+    visible_tabs = [all_pages.length, MAX_VISIBLE_TABS].min
     add_overlay(:page_icons,
-                all_pages.length * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING),
-                @bitmaps[:page_icons].height)
-    @sprites[:page_icons].x = Graphics.width - @sprites[:page_icons].width
+                visible_tabs * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING),
+                @bitmaps[:page_icons].height + 16)  # Extra height for page dots
+    # @sprites[:page_icons].x = Graphics.width - @sprites[:page_icons].width
+    @sprites[:page_icons].x = 57
     @sprites[:page_icons].y = 4
   end
 
@@ -544,7 +637,9 @@ class UI::OptionsVisuals < UI::BaseVisuals
 
   def all_pages
     ret = []
-    PAGE_HANDLERS.each { |key, hash| ret.push([key, hash[:order] || 0]) }
+    PageHandlers.each_available(@menu) do |page, hash, name|
+      ret.push([page, hash[:order] || 0])
+    end
     ret.sort_by! { |val| val[1] }
     ret.map! { |val| val[0] }
     return ret
@@ -553,8 +648,32 @@ class UI::OptionsVisuals < UI::BaseVisuals
   def set_page(value)
     return if @page == value
     @page = value
+    update_tab_page
     @sprites[:options_list].options = options_for_page(@page)
     refresh
+  end
+
+  def update_tab_page
+    page_index = all_pages.index(@page)
+    return if !page_index
+    
+    pages_length = all_pages.length
+    return if pages_length <= MAX_VISIBLE_TABS
+    
+    # Calculate which "page" of tabs this belongs to
+    # If we're navigating to a tab outside the current page, switch pages
+    current_page_start = @tab_scroll
+    current_page_end = @tab_scroll + MAX_VISIBLE_TABS
+    
+    if page_index < current_page_start || page_index >= current_page_end
+      # Calculate which page this tab is on
+      tab_page_number = page_index / MAX_VISIBLE_TABS
+      @tab_scroll = tab_page_number * MAX_VISIBLE_TABS
+      
+      # Make sure we don't scroll past the last complete page
+      max_scroll = ((pages_length - 1) / MAX_VISIBLE_TABS) * MAX_VISIBLE_TABS
+      @tab_scroll = [@tab_scroll, max_scroll].min
+    end
   end
 
   def go_to_next_page
@@ -613,13 +732,36 @@ class UI::OptionsVisuals < UI::BaseVisuals
 
   def refresh_page_tabs
     @sprites[:page_icons].bitmap.clear
-    all_pages.each_with_index do |this_page, i|
-      tab_x = i * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
+    pages = all_pages
+    visible_start = @tab_scroll
+    visible_end = [@tab_scroll + MAX_VISIBLE_TABS, pages.length].min
+    
+    # Draw only visible tabs
+    (visible_start...visible_end).each do |i|
+      this_page = pages[i]
+      tab_x = (i - @tab_scroll) * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
       draw_image(@bitmaps[:page_icons], tab_x, 0,
                  (this_page == @page) ? @bitmaps[:page_icons].width / 2 : 0, 0,
                  @bitmaps[:page_icons].width / 2, @bitmaps[:page_icons].height, overlay: :page_icons)
-      page_name = PAGE_HANDLERS[this_page][:name].call
+      page_handler = PageHandlers.call(@menu, this_page)
+      page_name = page_handler[:name].call
       draw_text(page_name, tab_x + (@bitmaps[:page_icons].width / 4), 14,
+                align: :center, theme: :page_name, overlay: :page_icons)
+    end
+    
+    # Draw page indicators if there are multiple pages of tabs
+    total_pages = (pages.length.to_f / MAX_VISIBLE_TABS).ceil
+    if total_pages > 1
+      current_page = (@tab_scroll / MAX_VISIBLE_TABS) + 1
+      # Draw page dots at the bottom of the tab area
+      dots_text = ""
+      (1..total_pages).each do |page_num|
+        dots_text += (page_num == current_page) ? "●" : "○"
+        dots_text += " " if page_num < total_pages
+      end
+      # Center the dots below the tabs
+      dots_x = @sprites[:page_icons].bitmap.width - 50
+      draw_text(dots_text, dots_x, @bitmaps[:page_icons].height + 2,
                 align: :center, theme: :page_name, overlay: :page_icons)
     end
   end
@@ -627,7 +769,10 @@ class UI::OptionsVisuals < UI::BaseVisuals
   def refresh_page_cursor
     @sprites[:page_cursor].visible = (index < 0)
     @sprites[:page_cursor].x = @sprites[:page_icons].x - 2
-    @sprites[:page_cursor].x += all_pages.index(@page) * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
+    page_index = all_pages.index(@page)
+    # Calculate position relative to scroll
+    visible_position = page_index - @tab_scroll
+    @sprites[:page_cursor].x += visible_position * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING)
   end
 
   def refresh_options_list
@@ -641,10 +786,19 @@ class UI::OptionsVisuals < UI::BaseVisuals
     description = ""
     option = selected_option
     if index < 0   # Selecting a tab
-      if PAGE_HANDLERS[@page][:description].is_a?(Proc)
-        description = PAGE_HANDLERS[@page][:description].call
-      elsif !PAGE_HANDLERS[@page][:description].nil?
-        description = _INTL(PAGE_HANDLERS[@page][:description])
+      page_handler = PageHandlers.call(@menu, @page)
+      if page_handler && page_handler[:description].is_a?(Proc)
+        # If the description proc expects arguments, pass the page and visuals
+        desc_proc = page_handler[:description]
+        description = if desc_proc.arity == 0
+                        desc_proc.call
+                      elsif desc_proc.arity == 1
+                        desc_proc.call(@page)
+                      else
+                        desc_proc.call(@page, self)
+                      end
+      elsif page_handler && !page_handler[:description].nil?
+        description = _INTL(page_handler[:description])
       end
     elsif option
       option[:on_select]&.call(self)   # Can change speech box's letterbyletter
@@ -657,6 +811,10 @@ class UI::OptionsVisuals < UI::BaseVisuals
       description = _INTL("Atrás.")
     end
     @sprites[:speech_box].text = description
+  end
+
+  def description=(value)
+    @sprites[:speech_box].text = value
   end
 
   #-----------------------------------------------------------------------------
@@ -759,39 +917,96 @@ end
 class UI::Options < UI::BaseScreen
   ACTIONS = HandlerHash.new
 
-  def initialize(in_load_screen = false)
+  def initialize(in_load_screen = false, menu = :options_menu)
     @in_load_screen = in_load_screen
-    @options = get_all_options
+    @menu = menu
+    @options = get_all_options(menu)
     super()
   end
 
   def initialize_visuals
-    @visuals = UI::OptionsVisuals.new(@options, @in_load_screen)
+    @visuals = UI::OptionsVisuals.new(@options, @in_load_screen, @menu)
   end
 
-  def get_all_options
+  def get_all_options(menu = :options_menu)
     ret = []
-    MenuHandlers.each_available(:options_menu) do |option, hash, name|
+    seen_options = {}
+    
+    # First pass: collect all options and track which format they use
+    MenuHandlers.each_available(menu) do |option, hash, name|
+      has_explicit_page = !hash["page"].nil?
+      
+      # If this option was already seen with an explicit page, skip old format versions
+      next if seen_options[option] && !has_explicit_page
+      
       if hash["description"].is_a?(Proc)
         description = hash["description"].call
       elsif !hash["description"].nil?
         description = _INTL(hash["description"])
       end
-      ret.push({
+      
+      # Auto-assign page for options without one (backward compatibility)
+      page = hash["page"] || auto_detect_page(hash["type"], hash["name"] || name)
+      # Convert old option types to new format
+      type = convert_option_type(hash["type"])
+      
+      option_data = {
         :option      => option,
-        :page        => hash["page"],
+        :page        => page,
         :name        => name,
         :description => description,
-        :type        => hash["type"],
+        :type        => type,
         :parameters  => hash["parameters"],
         :on_select   => hash["on_select"],
         :get_proc    => hash["get_proc"],
         :set_proc    => hash["set_proc"],
         :use_proc    => hash["use_proc"]
-      })
-      ret.last[:parameters].map! { |val| _INTL(val) } if ret.last[:type] == :array
+      }
+      option_data[:parameters].map! { |val| _INTL(val) } if option_data[:type] == :array
+      
+      # Remove old version if it exists and this is a new format version
+      if has_explicit_page && seen_options[option]
+        ret.delete_if { |opt| opt[:option] == option }
+      end
+      
+      ret.push(option_data)
+      seen_options[option] = has_explicit_page
     end
+    
     return ret
+  end
+
+  # Auto-detect appropriate page based on option type and name
+  def auto_detect_page(type, name)
+    name_lower = name.to_s.downcase
+    # Check by name keywords
+    return :audio if name_lower.include?("volumen") || name_lower.include?("volume") || 
+                     name_lower.include?("bgm") || name_lower.include?("sound") || 
+                     name_lower.include?("música") || name_lower.include?("music")
+    return :graphics if name_lower.include?("frame") || name_lower.include?("marco") ||
+                        name_lower.include?("screen") || name_lower.include?("pantalla") ||
+                        name_lower.include?("text") || name_lower.include?("texto") ||
+                        name_lower.include?("animation") || name_lower.include?("animación") ||
+                        name_lower.include?("vsync") || name_lower.include?("autotile")
+    # Default to gameplay for everything else
+    return :gameplay
+  end
+
+  # Convert old option type classes to new format symbols
+  def convert_option_type(type)
+    return type if type.is_a?(Symbol)
+    case type.to_s
+    when "SliderOption"
+      return :number_slider
+    when "EnumOption"
+      return :array
+    when "NumberOption"
+      return :number_type
+    when "ButtonOption"
+      return :use
+    else
+      return :array  # default fallback
+    end
   end
 
   ACTIONS.add(:use_option, {
@@ -805,6 +1020,31 @@ end
 #===============================================================================
 # Options Menu commands.
 #===============================================================================
+
+# Default page handlers for options menu
+PageHandlers.add(:options_menu, :gameplay, {
+  :name  => proc { next _INTL("Juego") },
+  :order => 10,
+  :description => proc { next _INTL("Cambia cómo se comporta el juego.") }
+})
+
+PageHandlers.add(:options_menu, :audio, {
+  :name  => proc { next _INTL("Audio") },
+  :order => 20,
+  :description => proc { next _INTL("Cambia el volumen del juego.") }
+})
+
+PageHandlers.add(:options_menu, :graphics, {
+  :name  => proc { next _INTL("Gráficos") },
+  :order => 30,
+  :description => proc { next _INTL("Cambia cómo se ve el juego.") }
+})
+
+PageHandlers.add(:options_menu, :controls, {
+  :name  => proc { next _INTL("Controles") },
+  :order => 40,
+  :description => proc { next _INTL("Edita los controles del juego.") }
+})
 
 MenuHandlers.add(:options_menu, :battle_style, {
   "page"        => :gameplay,
@@ -879,7 +1119,7 @@ MenuHandlers.add(:options_menu, :language, {
 
 MenuHandlers.add(:options_menu, :main_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Main Volume"),
+  "name"        => _INTL("Volumen General"),
   "order"       => 10,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -914,20 +1154,20 @@ MenuHandlers.add(:options_menu, :se_volume, {
   }
 })
 
-# MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
-#   "page"        => :audio,
-#   "name"        => _INTL("Pokémon Cries"),
-#   "order"       => 40,
-#   "type"        => :number_slider,
-#   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
-#   "description" => _INTL("Adjust the volume of Pokémon cries."),
-#   "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
-#   "set_proc"    => proc { |value, _screen|
-#     next if $PokemonSystem.pokemon_cry_volume == value
-#     $PokemonSystem.pokemon_cry_volume = value
-#     pbPlayCursorSE
-#   }
-# })
+MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
+  "page"        => :audio,
+  "name"        => _INTL("Volumen Gritos Pkmn"),
+  "order"       => 40,
+  "type"        => :number_slider,
+  "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
+  "description" => _INTL("Ajusta el volumen de los gritos de los Pokémon."),
+  "get_proc"    => proc { next $PokemonSystem.pokemon_cry_volume },
+  "set_proc"    => proc { |value, _screen|
+    next if $PokemonSystem.pokemon_cry_volume == value
+    $PokemonSystem.pokemon_cry_volume = value
+    pbPlayCursorSE
+  }
+})
 
 #-------------------------------------------------------------------------------
 

@@ -6,6 +6,8 @@ Conflicts  = v19.1 Updates
 Conflicts  = v20 Hotfixes
 Conflicts  = v20.1 Hotfixes
 Conflicts  = v21 Hotfixes
+First      = True
+Priority   = 4
 Website    = https://github.com/Maruno17/pokemon-essentials
 Credits    = Maruno
 #=====================================================================

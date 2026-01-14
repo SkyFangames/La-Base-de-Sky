@@ -3,7 +3,7 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
   # Item Find
   # v2.0
   # By Boonzeet
-  # Website      = https://reliccastle.com/resources/371/
+  # Website      = https://eeveexpo.com/resources/371/
   #-------------------------------------------------------------------------------
   # A script to show a helpful message with item name, icon and description
   # when an item is found for the first time.
@@ -25,6 +25,18 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
   #-------------------------------------------------------------------------------
   
   class PokemonItemFind_Scene
+    
+    ITEM_ICON_X = 42
+    ITEM_ICON_Y_OFFSET = -48
+    DESC_WINDOW_X = 64
+    DESC_WINDOW_Y = 0
+    DESC_WINDOW_WIDTH_OFFSET = -64
+    DESC_WINDOW_HEIGHT = 64
+    TITLE_WINDOW_X = 0
+    TITLE_WINDOW_Y = 0
+    TITLE_WINDOW_WIDTH = 128
+    TITLE_WINDOW_HEIGHT = 16
+
     def pbStartScene(item)
       @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
       @viewport.z = 99999
@@ -41,19 +53,19 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
       
       colors = getDefaultTextColors(@sprites["background"].windowskin)
   
-      @sprites["itemicon"] = ItemIconSprite.new(42, Graphics.height - 48, item.id, @viewport)
+      @sprites["itemicon"] = ItemIconSprite.new(ITEM_ICON_X, Graphics.height + ITEM_ICON_Y_OFFSET, item.id, @viewport)
       @sprites["itemicon"].visible = false
       @sprites["itemicon"].z = @viewport.z + 2
       
       
-      @sprites["descwindow"] = Window_UnformattedTextPokemon.newWithSize("", 64, 0, Graphics.width - 64, 64, @viewport)
+      @sprites["descwindow"] = Window_UnformattedTextPokemon.newWithSize("", DESC_WINDOW_X, DESC_WINDOW_Y, Graphics.width + DESC_WINDOW_WIDTH_OFFSET, DESC_WINDOW_HEIGHT, @viewport)
       @sprites["descwindow"].windowskin = nil
       @sprites["descwindow"].z = @viewport.z
       @sprites["descwindow"].visible = false
       @sprites["descwindow"].baseColor = colors[0]
       @sprites["descwindow"].shadowColor = colors[1]
   
-      @sprites["titlewindow"] = Window_UnformattedTextPokemon.newWithSize("", 0, 0, 128, 16, @viewport)
+      @sprites["titlewindow"] = Window_UnformattedTextPokemon.newWithSize("", TITLE_WINDOW_X, TITLE_WINDOW_Y, TITLE_WINDOW_WIDTH, TITLE_WINDOW_HEIGHT, @viewport)
       @sprites["titlewindow"].visible = false
       @sprites["titlewindow"].z = @viewport.z + 1
       @sprites["titlewindow"].windowskin = nil
@@ -72,7 +84,7 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
       description = item_object.description
   
       descwindow = @sprites["descwindow"]
-      descwindow.resizeToFit(description, Graphics.width - 64)
+      descwindow.resizeToFit(description, Graphics.width + DESC_WINDOW_WIDTH_OFFSET)
       descwindow.text = description
       descwindow.y = Graphics.height - descwindow.height
       descwindow.visible = true
@@ -80,11 +92,11 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
       titlewindow = @sprites["titlewindow"]
       titlewindow.resizeToFit(name, Graphics.height)
       titlewindow.text = name
-      titlewindow.y = Graphics.height - descwindow.height - 32
+      titlewindow.y = Graphics.height - descwindow.height - TITLE_WINDOW_HEIGHT * 2
       titlewindow.visible = true
   
       background = @sprites["background"]
-      background.height = descwindow.height + 32
+      background.height = descwindow.height + DESC_WINDOW_HEIGHT / 2
       background.y = Graphics.height - background.height
       background.visible = true
   
@@ -101,7 +113,7 @@ if Settings::SHOW_ITEM_DESCRIPTIONS_ON_RECEIVE
         Graphics.update
         Input.update
         pbUpdateSceneMap
-        if Input.trigger?(Input::B) || Input.trigger?(Input::C)
+        if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
           pbEndScene
           break
         end

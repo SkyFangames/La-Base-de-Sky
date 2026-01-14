@@ -314,10 +314,10 @@ class Battle
     :BIND        => "Bind",
     :CLAMP       => "Clamp",
     :FIRESPIN    => "FireSpin",
+    :INFESTATION => "Infestation",
     :MAGMASTORM  => "MagmaStorm",
     :SANDTOMB    => "SandTomb",
-    :WRAP        => "Wrap",
-    :INFESTATION => "Infestation"
+    :WRAP        => "Wrap"
   }
 
   def pbEORTrappingDamage(battler)

@@ -8,6 +8,13 @@
 # If the graphic does not exist, you will get an error
 WINDOWSKIN = "base.png"
 
+# Constantes de layout y posiciones (ajustar si cambia la resolución)
+ICONS_PER_ROW = 7         # Número de iconos por fila
+ICON_SPACING = 64         # Espacio (px) entre iconos horizontal y verticalmente
+ICON_LEFT_OFFSET = 28     # Desplazamiento X desde el borde izquierdo del panel base para los iconos
+ICON_TOP_OFFSET = 100     # Desplazamiento Y desde el borde superior del panel base para los iconos
+ARROW_Y_DIVISOR = 16      # Divisor aplicado a la altura del sprite de flecha para posicionarlo verticalmente
+
 # This hash allows you to define the names of your encounter types if you want them to be more logical
 # E.g. "Surfing" instead of "Water"
 # If missing, the script will use the encounter type names in GameData::EncounterTypes
@@ -44,6 +51,9 @@ USER_DEFINED_NAMES = {
 #USER_DEFINED_NAMES = nil
 
 SHOW_SHADOWS_FOR_UNSEEN_POKEMON = true
+
+LOC_WINDOW_WIDTH = 512
+LOC_WINDOW_HEIGHT = 344
 
 # Method that returns whether a specific form has been seen (any gender)
 def seen_form_any_gender?(species, form)
@@ -112,8 +122,8 @@ class EncounterList_Scene
     @sprites["base"].opacity = 200
     @sprites["locwindow"] = Window_AdvancedTextPokemon.new('')
     @sprites["locwindow"].viewport = @viewport
-    @sprites["locwindow"].width = 512
-    @sprites["locwindow"].height = 344
+    @sprites["locwindow"].width = LOC_WINDOW_WIDTH
+    @sprites["locwindow"].height = LOC_WINDOW_HEIGHT
     @sprites["locwindow"].x = (Graphics.width - @sprites["locwindow"].width) / 2
     @sprites["locwindow"].y = (Graphics.height - @sprites["locwindow"].height) / 2
     @sprites["locwindow"].windowskin = nil
@@ -122,18 +132,18 @@ class EncounterList_Scene
     @max_enc&.times do |i|
       @sprites["icon_#{i}"] = PokemonSpeciesIconSprite.new(nil, @viewport)
       @default_color = Color.new(@sprites["icon_#{i}"].color.red, @sprites["icon_#{i}"].color.green, @sprites["icon_#{i}"].color.blue, @sprites["icon_#{i}"].color.alpha)
-      @sprites["icon_#{i}"].x = @w + 28 + 64 * (i % 7)
-      @sprites["icon_#{i}"].y = @h + 100 + (i / 7) * 64
+      @sprites["icon_#{i}"].x = @w + ICON_LEFT_OFFSET + ICON_SPACING * (i % ICONS_PER_ROW)
+      @sprites["icon_#{i}"].y = @h + ICON_TOP_OFFSET + (i / ICONS_PER_ROW) * ICON_SPACING
       @sprites["icon_#{i}"].visible = false
     end
     @sprites["rightarrow"] = AnimatedSprite.new('Graphics/UI/EncounterUI/right_arrow', 8, 40, 28, 2, @viewport)
     @sprites["rightarrow"].x = Graphics.width - @sprites["rightarrow"].bitmap.width
-    @sprites["rightarrow"].y = Graphics.height / 2 - @sprites["rightarrow"].bitmap.height / 16
+    @sprites["rightarrow"].y = Graphics.height / 2 - @sprites["rightarrow"].bitmap.height / ARROW_Y_DIVISOR
     @sprites["rightarrow"].visible = false
     @sprites["rightarrow"].play
     @sprites["leftarrow"] = AnimatedSprite.new("Graphics/UI/EncounterUI/left_arrow", 8, 40, 28, 2, @viewport)
     @sprites["leftarrow"].x = 0
-    @sprites["leftarrow"].y = Graphics.height / 2 - @sprites["rightarrow"].bitmap.height / 16
+    @sprites["leftarrow"].y = Graphics.height / 2 - @sprites["rightarrow"].bitmap.height / ARROW_Y_DIVISOR
     @sprites["leftarrow"].visible = false
     @sprites["leftarrow"].play
     @encounter_data ? drawPresent : drawAbsent

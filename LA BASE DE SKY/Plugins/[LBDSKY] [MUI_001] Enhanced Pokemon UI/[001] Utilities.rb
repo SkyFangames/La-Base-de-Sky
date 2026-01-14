@@ -13,11 +13,16 @@ def pbDisplayShinyLeaf(pokemon, overlay, xpos, ypos, vertical = false)
   return if !pokemon
   imagepos = []
   path = Settings::POKEMON_UI_GRAPHICS_PATH
+  crown_off_x = PokemonSummary_Scene::SHINY_CROWN_OFFSET_X
+  crown_off_y = PokemonSummary_Scene::SHINY_CROWN_OFFSET_Y
+  leaf_spc_x  = PokemonSummary_Scene::SHINY_LEAF_SPACING_X
+  leaf_spc_y  = PokemonSummary_Scene::SHINY_LEAF_SPACING_Y
+
   if pokemon.shiny_crown?
-    imagepos.push([sprintf(path + "leaf_crown"), xpos - 18, ypos - 3])
+    imagepos.push([sprintf(path + "leaf_crown"), xpos + crown_off_x, ypos + crown_off_y])
   elsif pokemon.shiny_leaf?
-    offset_x = (vertical) ? 0  : 10
-    offset_y = (vertical) ? 10 : 0
+    offset_x = (vertical) ? 0 : leaf_spc_x
+    offset_y = (vertical) ? leaf_spc_y : 0
     pokemon.shiny_leaf.times do |i|
       imagepos.push([path + "leaf", xpos - (i * offset_x), ypos + (i * offset_y)])
     end
@@ -34,8 +39,8 @@ def pbDisplayHappiness(pokemon, overlay, xpos, ypos)
   heartsBitmap = AnimatedBitmap.new(path + "happy_meter")
   w = heartsBitmap.width
   h = heartsBitmap.height / 2
-  pbDrawImagePositions(overlay, [[path + "happy_meter", xpos, ypos, 0, 0, w, h]])
-  w = pokemon.happiness * w / 254.0
+  pbDrawImagePositions(overlay, [[path + "happy_meter", xpos, ypos, 0, 0, w, h]]) 
+  w = pokemon.happiness * w / PokemonSummary_Scene::HAPPY_METER_WIDTH_MAX
   w = (w / 2).round * 2
   w = 1 if w < 1
   overlay.blt(xpos, ypos, heartsBitmap.bitmap, Rect.new(0, h, w, h))
@@ -54,8 +59,10 @@ def pbDisplayIVRatings(pokemon, overlay, xpos, ypos, horizontal = false)
   path  = Settings::POKEMON_UI_GRAPHICS_PATH
   style = (Settings::IV_DISPLAY_STYLE == 0) ? 0 : 16
   maxIV = Pokemon::IV_STAT_LIMIT
-  offset_x = (horizontal) ? 16 : 0
-  offset_y = (horizontal) ? 0  : 32
+  icon_size = PokemonSummary_Scene::IV_RATING_ICON_SIZE
+  offset_x  = (horizontal) ? PokemonSummary_Scene::IV_RATING_SPACING_X : 0
+  offset_y  = (horizontal) ? 0 : PokemonSummary_Scene::IV_RATING_SPACING_Y
+  
   i = 0
   GameData::Stat.each_main do |s|
     stat = pokemon.iv[s.id]
@@ -72,11 +79,13 @@ def pbDisplayIVRatings(pokemon, overlay, xpos, ypos, horizontal = false)
         icon = 1 #  1-15 IV
       end
     end
+    
     imagepos.push([
       path + "iv_ratings", xpos + (i * offset_x), ypos + (i * offset_y), icon * 16, style, 16, 16
     ])
     if s.id == :HP && !horizontal
-      ypos += (PluginManager.installed?("BW Summary Screen")) ? 18 : 12 
+      gap = (PluginManager.installed?("BW Summary Screen")) ? PokemonSummary_Scene::IV_RATING_HP_GAP_BW : PokemonSummary_Scene::IV_RATING_HP_GAP_STD
+      ypos += gap
     end
     i += 1
   end

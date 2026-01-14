@@ -482,7 +482,7 @@ class SafariBattle
         catchFactor  = [[catchFactor, 3].max, 20].min
         escapeFactor = [[escapeFactor, 2].max, 20].min
         # End of round
-        if @decision == 0
+        if !decided?
           if @ballCount <= 0
             pbSEPlay("Safari Zone end")
             pbDisplay(_INTL("Altavoz: ¡No te quedan Safari Ball! ¡Se acabó!"))
@@ -502,7 +502,7 @@ class SafariBattle
           weather_data = GameData::BattleWeather.try_get(@weather)
           @scene.pbCommonAnimation(weather_data.animation) if weather_data
         end
-        break if @decision > 0
+        break if decided?
       end
       @scene.pbEndBattle(@decision)
     rescue BattleAbortedException

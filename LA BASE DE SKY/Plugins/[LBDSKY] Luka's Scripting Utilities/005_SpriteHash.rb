@@ -9,6 +9,24 @@ class SpriteHash
   # @return [Viewport]
   attr_reader :viewport
 
+  attr_reader :x
+  attr_reader :y
+  attr_reader :z
+  attr_reader :visible
+  attr_reader :opacity
+
+  # @param viewport [Viewport]
+  def initialize(viewport = nil)
+    @viewport = viewport
+    @sprites  = {}
+    @hash     = SpriteCollection.new(@sprites)
+    @x = 0
+    @y = 0
+    @z = 0
+    @visible = true
+    @opacity = 255
+  end
+
   # Class method to get bitmap from path or other bitmapable object
   # @param path [String]
   def self.bitmap(path)
@@ -35,13 +53,6 @@ class SpriteHash
     File.delete(file_name)
 
     bitmap
-  end
-
-  # @param viewport [Viewport]
-  def initialize(viewport = nil)
-    @viewport = viewport
-    @sprites  = {}
-    @hash     = SpriteCollection.new(@sprites)
   end
 
   # Adds new sprite to sprite hash
@@ -93,11 +104,25 @@ class SpriteHash
   def [](key)
     @sprites[key]
   end
+  
+  # Sets an object in specified key to the specified value
+  def []=(key, value)
+  key = key.to_sym if key.respond_to?(:to_sym) && !key.is_a?(Numeric)
+    add(key, value)
+  end
+  
 
   # @return [Array<Symbol>] all available sprite keys
   def keys
     @sprites.keys
   end
+
+  def size
+    return @sprites.keys.size
+  end
+
+  def length; return self.size; end
+  def count;  return self.size; end
 
   # @param key [Symbol]
   # @return [Boolean]
@@ -195,6 +220,86 @@ class SpriteHash
         next unless @sprites[key].respond_to?(option)
 
         set_value(key, option, value)
+      end
+    end
+  end
+
+  # Changes x on all sprites
+  def x=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].x += value - @x
+    end
+    @x = value
+  end
+  
+  # Changes y on all sprites
+  def y=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].y += value - @y
+    end
+    @y = value
+  end
+  
+  # Changes z on all sprites
+  def z=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].z += value - @z
+    end
+    @z = value
+  end
+  
+  # Changes visibility on all sprites
+  def visible=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].visible = value
+    end
+  end
+  
+  # Changes opacity on all sprites
+  def opacity=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].opacity += value - @opacity
+    end
+    @opacity = [0,value,255].sort[1]
+  end
+  
+  # Fades out all sprites
+  def hide(frames = 16)
+    clear_disposed
+    frames.times do
+      Graphics.update
+      Input.update
+      for key in @sprites.keys
+        @sprites[key].opacity -= 255 / frames.to_f
+      end
+    end
+    @opacity = 0
+  end
+  
+  # Fades in all sprites
+  def show(frames = 16)
+    clear_disposed
+    frames.times do
+      Graphics.update
+      Input.update
+      for key in @sprites.keys
+        @sprites[key].opacity += 255 / frames.to_f
+      end
+    end
+    @opacity = 255
+  end
+
+  # Deletes all disposed sprites from the hash
+  def clear_disposed
+    for key in @sprites.keys
+      if (@sprites[key].disposed? rescue true)
+        @sprites[key] = nil
+        @sprites.delete(key)
       end
     end
   end
