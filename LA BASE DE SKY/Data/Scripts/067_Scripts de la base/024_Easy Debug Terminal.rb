@@ -58,7 +58,7 @@ if !$joiplay
 
   # Custom Message Input Box Stuff
   def pbFreeTextNoWindow(currenttext, passwordbox, maxlength, width = 240)
-    window = Window_TextEntry_Keyboard_Terminal.new(currenttext, 0, Graphics.height - 64, Graphics.width, 64)
+    window = Window_TextEntry_Keyboard_Terminal.new(currenttext, 0, 0, Graphics.width, 64)
     ret = ""
     window.maxlength = maxlength
     window.visible = true
@@ -104,7 +104,7 @@ if !$joiplay
       self.contents.fill_rect(0, 0, self.contents.width, self.contents.height, bg_color)
       prompt = "> "
       self.contents.font.color = Color.new(0, 255, 0)
-      self.contents.draw_text(0, 0, 30, 32, prompt)
+      self.contents.draw_text(1, (self.contents.height - 24) / 2 , 30, 32, prompt)
       self.contents.font.color = Color.new(255, 255, 255)
       text_x = 20 
       self.contents.draw_text(text_x, 0, self.contents.width - text_x, 32, self.text)
@@ -158,10 +158,10 @@ if !$joiplay
         if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
           word = self.text[0..@helper.cursor].split(/\s+/).last
           if word
-             word += " " if word != self.text
-             word.length.times { self.delete }
+            word += " " if word != self.text
+            word.length.times { self.delete }
           else
-             self.delete
+            self.delete
           end
         else
           self.delete if @helper.cursor > 0
