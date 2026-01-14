@@ -34,7 +34,7 @@ if Settings::USE_NEW_EXP_SHARE
     MenuHandlers.add(:options_menu, :expshareon, {
         "name"        => _INTL("Rep Exp al capturar"),
         "order"       => 40,
-        "type"        => EnumOption,
+        "type"        => Settings::USE_NEW_OPTIONS_UI ? :array : EnumOption,
         "condition"   => proc { next expshare_enabled? },
         "parameters"  => [_INTL("Sí"), _INTL("No")],
         "description" => _INTL("Si quieres que los Pokémon capturados tengan el repartir experiencia activado."),

@@ -11,7 +11,6 @@ class PokemonSystem
   attr_accessor :skip_move_learning
   attr_accessor :frame
   attr_accessor :textskin
-  attr_accessor :screensize
   attr_accessor :language
   attr_accessor :runstyle
   

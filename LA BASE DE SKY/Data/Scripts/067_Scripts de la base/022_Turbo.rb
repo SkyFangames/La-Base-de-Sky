@@ -108,7 +108,7 @@ if defined?(MenuHandlers)
   MenuHandlers.add(:options_menu, :turbo, {
     "name"        => _INTL("Modo turbo"),
     "order"       => 45,
-    "type"        => EnumOption,
+    "type"        => Settings::USE_NEW_OPTIONS_UI ? :array : EnumOption,
     "condition"   => proc { next $player },
     "parameters"  => [_INTL("Siempre"), _INTL("Combates")],
     "description" => _INTL("Define si el turbo se activa siempre o solo en combates."),
