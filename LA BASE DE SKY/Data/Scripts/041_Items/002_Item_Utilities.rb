@@ -945,7 +945,7 @@ def pbLearnMove(pkmn, move, ignore_if_known = false, by_machine = false, relearn
     pbMessage("\\se[]" + _INTL("¡{1} ha aprendido {2}!", pkmn_name, move_name) + "\\se[Pkmn move learnt]\\wtnp[30]", &block)
     return true
   end
-  relearn_text = (relearn) ? "recordar" : "aprender"
+  relearn_text = (relearn) ? _INTL("recordar") : _INTL("aprender")
   pbMessage(_INTL("{1} quiere {2} {3}, pero ya conoce {4} movimientos.",
                   pkmn_name, relearn_text, move_name, pkmn.numMoves.to_word) + "\1", &block)
   if pbConfirmMessage(_INTL("¿Quieres que {1} olvide un movimiento y aprenda {2}?", pkmn_name, move_name), &block)
