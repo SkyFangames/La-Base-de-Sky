@@ -22,10 +22,6 @@ if !$joiplay
   # Uses SDL scancodes, without the SDL_SCANCODE_ prefix.
   # https://github.com/mkxp-z/mkxp-z/wiki/Extensions-(RGSS,-Modules)#detecting-key-states
 
-
-
-
-
   ###########################
   #       Code Stuff        #
   ###########################
@@ -62,7 +58,7 @@ if !$joiplay
 
   # Custom Message Input Box Stuff
   def pbFreeTextNoWindow(currenttext, passwordbox, maxlength, width = 240)
-    window = Window_TextEntry_Keyboard_Terminal.new(currenttext, 0, 0, width, 64)
+    window = Window_TextEntry_Keyboard_Terminal.new(currenttext, 0, 0, Graphics.width, 64)
     ret = ""
     window.maxlength = maxlength
     window.visible = true
@@ -89,6 +85,36 @@ if !$joiplay
   end
 
   class Window_TextEntry_Keyboard_Terminal < Window_TextEntry
+    def initialize(text, x, y, width, height)
+      super(text, x, y, width, height)
+      self.opacity = 0
+      self.contents = Bitmap.new(width - 32, height - 32)
+      if self.contents.font.respond_to?(:name)
+        self.contents.font.name = ["Power Green", "Arial"]
+      end
+      self.contents.font.size = 20
+      self.contents.font.bold = true
+      
+      refresh
+    end
+
+    def refresh
+      self.contents.clear
+      bg_color = Color.new(0, 0, 0, 160)
+      self.contents.fill_rect(0, 0, self.contents.width, self.contents.height, bg_color)
+      prompt = "> "
+      self.contents.font.color = Color.new(0, 255, 0)
+      self.contents.draw_text(1, (self.contents.height - 24) / 2 , 30, 32, prompt)
+      self.contents.font.color = Color.new(255, 255, 255)
+      text_x = 20 
+      self.contents.draw_text(text_x, 0, self.contents.width - text_x, 32, self.text)
+      if @cursor_shown
+        subtext = self.text[0...@helper.cursor]
+        cursor_x = text_x + self.contents.text_size(subtext).width
+        self.contents.fill_rect(cursor_x, 4, 2, 24, Color.new(255, 255, 255))
+      end
+    end
+
     def update
       cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i % 2 == 0
       if cursor_to_show != @cursor_shown
@@ -96,13 +122,14 @@ if !$joiplay
         refresh
       end
       return if !self.active
+      
       # Moving cursor
       if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
         if @helper.cursor > 0
           if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
             @helper.cursor -= 1
             word = self.text[0..@helper.cursor].split(/\s+/).last
-            @helper.cursor -= word.length
+            @helper.cursor -= word.length if word
           else
             @helper.cursor -= 1
           end
@@ -117,7 +144,7 @@ if !$joiplay
             @helper.cursor += 1
             # Calculate distance to next word
             word = self.text[@helper.cursor..-1].split(/\s+/).first
-            @helper.cursor += word.length
+            @helper.cursor += word.length if word
           else
             @helper.cursor += 1
           end
@@ -130,22 +157,29 @@ if !$joiplay
         return unless @helper.cursor > 0
         if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
           word = self.text[0..@helper.cursor].split(/\s+/).last
-          word += " " if word != self.text
-          word.length.times { self.delete }
+          if word
+            word += " " if word != self.text
+            word.length.times { self.delete }
+          else
+            self.delete
+          end
         else
           self.delete if @helper.cursor > 0
         end
+        refresh 
         return
       elsif Input.triggerex?(:UP) && $InCommandLine && !$game_temp.lastcommand.empty?
         self.text = $game_temp.lastcommand.shift.to_s
         $game_temp.lastcommand.push(self.text)
         @helper.cursor = self.text.scan(/./m).length
+        refresh
         return
       elsif Input.triggerex?(:DOWN) && $InCommandLine && !$game_temp.lastcommand.empty?
         $game_temp.lastcommand.insert(0, $game_temp.lastcommand.pop)
         self.text = $game_temp.lastcommand.pop.to_s
         $game_temp.lastcommand.push(self.text)
         @helper.cursor = self.text.scan(/./m).length
+        refresh
         return
       elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
         return
@@ -155,14 +189,19 @@ if !$joiplay
         if Input.triggerex?(:V)
           self.text << Input.clipboard
           @helper.cursor = self.text.scan(/./m).length
+          refresh
         elsif Input.triggerex?(:X)
           Input.clipboard = self.text
           Console.echoln "Saved \"#{self.text}\" to clipboard."
           self.text = ""
           @helper.cursor = 0
+          refresh
         end
       end
+
+      old_text = self.text
       Input.gets.each_char { |c| insert(c) }
+      refresh if self.text != old_text
     end
   end
 

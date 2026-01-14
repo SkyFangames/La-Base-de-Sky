@@ -41,6 +41,17 @@ end
 
 #Box sprite of the hatcher
 class EggSprite < Sprite
+  
+  EGG_X_OFFSET = 2
+  EGG_Y_OFFSET = -5
+  STEPS_X = 35
+  STEPS_Y = 60
+  TEXT_ALIGNMENT = :center
+  SELECTION_RECT_X = 0
+  SELECTION_RECT_Y = 0
+  SELECTION_RECT_WIDTH = 68
+  SELECTION_RECT_HEIGHT = 100
+
   def initialize(viewport,selected,pokemon, x, y)
     super(viewport)
     @sprites = {}
@@ -63,18 +74,17 @@ class EggSprite < Sprite
       @frameskip = 10 if steps<2550
       @frameskip = 5 if steps<1275
       @sprites["egg"] = AnimatedSprite.create(sprite,2,@frameskip,self.viewport)
-      @sprites["egg"].x = self.x + 2
-      @sprites["egg"].y = self.y - 5
+      @sprites["egg"].x = self.x + EGG_X_OFFSET
+      @sprites["egg"].y = self.y + EGG_Y_OFFSET
       @sprites["egg"].play
       base = Color.new(6,35,52)
       shadow= Color.new(169,179,184)
       pbSetSystemFont(self.bitmap)
-      pbDrawTextPositions(self.bitmap,[[steps.to_s,35,
-      defined?(Settings::EGG_LEVEL) ? 60 : 65,2,base,shadow]])
+      pbDrawTextPositions(self.bitmap,[[steps.to_s, STEPS_X, STEPS_Y, TEXT_ALIGNMENT, base,shadow]])
     end
 
     if @selected
-      self.bitmap.blt(0,0,Bitmap.new("Graphics/Pictures/Egg Hatcher/selection"),Rect.new(0,0,68,100))
+      self.bitmap.blt(0,0,Bitmap.new("Graphics/Pictures/Egg Hatcher/selection"), Rect.new(SELECTION_RECT_X, SELECTION_RECT_Y, SELECTION_RECT_WIDTH, SELECTION_RECT_HEIGHT))
     end
   end
 
@@ -90,6 +100,17 @@ end
 
 #GlobalScene
 class Hatcher
+  TEXT_WIDTH = 183
+  TEXT_HEIGHT = 183
+  TEXT_X = 290
+  TEXT_Y = 80
+  EGG_START_X = 46
+  EGG_X_SPACING = 80
+  EGG_START_Y_FIRST = 46
+  EGG_START_Y_LAST = 158
+  TEXT_DESC_X = 0
+  TEXT_DESC_Y = 10
+  TEXT_DESC_WIDTH = 183
   def initialize
     if !$PokemonGlobal.eggs
       $PokemonGlobal.eggs ||= [nil,nil,nil,nil,nil,nil]
@@ -104,9 +125,9 @@ class Hatcher
     @sprites["bg"].bitmap = Bitmap.new("Graphics/Pictures/Egg Hatcher/hatcherbg")
 
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].bitmap = Bitmap.new(183,183)
-    @sprites["text"].x = 290 
-    @sprites["text"].y = 80
+    @sprites["text"].bitmap = Bitmap.new(TEXT_WIDTH,TEXT_HEIGHT)
+    @sprites["text"].x = TEXT_X
+    @sprites["text"].y = TEXT_Y
     pbSetSystemFont(@sprites["text"].bitmap)
     refresh
   end
@@ -117,11 +138,11 @@ class Hatcher
     eggs = $PokemonGlobal.eggs
     for index in 0..5
       if index < 3
-        x = 46 + 80*index
-        y = 46
+        x = EGG_START_X + EGG_X_SPACING * index
+        y = EGG_START_Y_FIRST
       else
-        x = 46 + 80*(index - 3)
-        y = 158
+        x = EGG_START_X + EGG_X_SPACING * (index - 3)
+        y = EGG_START_Y_LAST
       end
       selected = (index == @index)? true : false
       @eggs["#{index}"] = EggSprite.new(@viewport,selected,eggs[index], x, y)
@@ -134,10 +155,10 @@ class Hatcher
       eggstate = _INTL("¿Qué eclosionará de esto? No parece estar cerca de eclosionar.") if steps < 10_200
       eggstate = _INTL("Parece moverse ocasionalmente. Puede estar cerca de eclosionar.") if steps < 2550
       eggstate = _INTL("¡Se escuchan sonido desde dentro! ¡Eclosionará pronto!") if steps < 1275
-      drawFormattedTextEx(@sprites["text"].bitmap,0,10,183,eggstate)
+      drawFormattedTextEx(@sprites["text"].bitmap,TEXT_DESC_X,TEXT_DESC_Y,TEXT_DESC_WIDTH,eggstate)
     else
       eggstate = _INTL("Selecciona una incubadora para añadir un Huevo.")
-      drawFormattedTextEx(@sprites["text"].bitmap,0,10,183,eggstate)
+      drawFormattedTextEx(@sprites["text"].bitmap,TEXT_DESC_X,TEXT_DESC_Y,TEXT_DESC_WIDTH,eggstate)
     end
   end
   

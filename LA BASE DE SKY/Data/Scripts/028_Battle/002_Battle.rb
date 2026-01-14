@@ -941,6 +941,7 @@ class Battle
     @field.terrainDuration = duration
     terrain_data = GameData::BattleTerrain.try_get(@field.terrain)
     pbCommonAnimation(terrain_data.animation) if terrain_data
+    
     pbHideAbilitySplash(user) if user
     if message
       pbDisplay(message)
@@ -952,6 +953,7 @@ class Battle
       when :Psychic  then pbDisplay(_INTL("¡El terreno de combate se ha vuelto muy extraño!"))
       end
     end
+    on_terrain_start
     # Check for abilities/items that trigger upon the terrain changing
     allBattlers(true).each { |b| b.pbCheckFormOnTerrainChange }
     allBattlers(true).each { |b| b.pbAbilityOnTerrainChange(old_terrain) }

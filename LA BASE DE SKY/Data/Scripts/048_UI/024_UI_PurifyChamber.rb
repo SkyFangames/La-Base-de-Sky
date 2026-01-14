@@ -25,15 +25,34 @@ end
 #===============================================================================
 # General purpose utilities
 #===============================================================================
+GAUGE_X_OFFSET = 2
+GAUGE_Y_OFFSET = 2
+GAUGE_WIDTH_OFFSET = -4
+GAUGE_HEIGHT_OFFSET = -4
 def pbDrawGauge(bitmap, rect, color, value, maxValue)
   return if !bitmap
   bitmap.fill_rect(rect.x, rect.y, rect.width, rect.height, Color.black)
-  width = (maxValue <= 0) ? 0 : (rect.width - 4) * value / maxValue
+  width = (maxValue <= 0) ? 0 : (rect.width + GAUGE_WIDTH_OFFSET) * value / maxValue
   if rect.width >= 4 && rect.height >= 4
-    bitmap.fill_rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4, Color.new(248, 248, 248))
-    bitmap.fill_rect(rect.x + 2, rect.y + 2, width, rect.height - 4, color)
+    bitmap.fill_rect(rect.x + GAUGE_X_OFFSET, rect.y + GAUGE_Y_OFFSET, rect.width + GAUGE_WIDTH_OFFSET, rect.height + GAUGE_HEIGHT_OFFSET, Color.new(248, 248, 248))
+    bitmap.fill_rect(rect.x + GAUGE_X_OFFSET, rect.y + GAUGE_Y_OFFSET, width, rect.height + GAUGE_HEIGHT_OFFSET, color)
   end
 end
+
+# General layout constants used in Purify Chamber views/diagrams
+VIEW_SIZE = 64
+VIEW_INNER_OFFSET = 8
+VIEW_INNER_SIZE = 48
+VIEW_INNER2_OFFSET = 10
+VIEW_INNER2_SIZE = 44
+INFO_WIDTH_OFFSET = 112
+INFO_HEIGHT = 48
+POINT_SIZE = 8
+FLOW_CENTER_X = 306
+FLOW_CENTER_Y = 158
+FLOW_DISTANCE = 96
+DOT_STEP_WEAK = 32
+DOT_STEP_STRONG = 16
 
 # angle is in degrees.
 def calcPoint(x, y, distance, angle)
@@ -633,6 +652,14 @@ end
 class Window_PurifyChamberSets < Window_DrawableCommand
   attr_reader :switching
 
+  TEXT_X_OFFSET = 0
+  TEXT_Y_OFFSET = 0
+  GAUGE_X_OFFSET = 16
+  GAUGE_Y_OFFSET = 6
+  GAUGE_WIDTH = 48
+  GAUGE_HEIGHT = 8
+  GAUGE_SHADOW_Y_OFFSET = 18
+
   def initialize(chamber, x, y, width, height, viewport = nil)
     @chamber = chamber
     @switching = -1
@@ -657,11 +684,11 @@ class Window_PurifyChamberSets < Window_DrawableCommand
       textpos.push([(index + 1).to_s, rect.x, rect.y, :left, self.baseColor, self.shadowColor])
     end
     if @chamber.setCount(index) > 0
-      pbDrawGauge(self.contents, Rect.new(rect.x + 16, rect.y + 6, 48, 8),
+      pbDrawGauge(self.contents, Rect.new(rect.x + GAUGE_X_OFFSET, rect.y + GAUGE_Y_OFFSET, GAUGE_WIDTH, GAUGE_HEIGHT),
                   Color.new(0, 0, 256), @chamber[index].tempo, PurifyChamber.maximumTempo)
     end
     if @chamber.getShadow(index)
-      pbDrawGauge(self.contents, Rect.new(rect.x + 16, rect.y + 18, 48, 8),
+      pbDrawGauge(self.contents, Rect.new(rect.x + GAUGE_X_OFFSET, rect.y + GAUGE_SHADOW_Y_OFFSET, GAUGE_WIDTH, GAUGE_HEIGHT),
                   Color.new(192, 0, 256),
                   @chamber.getShadow(index).heart_gauge,
                   @chamber.getShadow(index).max_gauge_size)
@@ -676,6 +703,9 @@ end
 class DirectFlowDiagram
   # Distance travelled by a dot in 1 second.
   DOT_SPEED = 80
+  X = 306
+  Y = 158
+  DISTANCE = 96
 
   def initialize(viewport = nil)
     @points = []
@@ -683,9 +713,9 @@ class DirectFlowDiagram
     @viewport = viewport
     @strength = 0
     @offset = 0
-    @x = 306
-    @y = 158
-    @distance = 96
+    @x = X
+    @y = Y
+    @distance = DISTANCE
   end
 
   def dispose
@@ -711,8 +741,8 @@ class DirectFlowDiagram
 
   def ensurePoint(j)
     if !@points[j] || @points[j].disposed?
-      @points[j] = BitmapSprite.new(8, 8, @viewport)
-      @points[j].bitmap.fill_rect(0, 0, 8, 8, Color.black)
+      @points[j] = BitmapSprite.new(POINT_SIZE, POINT_SIZE, @viewport)
+      @points[j].bitmap.fill_rect(0, 0, POINT_SIZE, POINT_SIZE, Color.black)
     end
     @points[j].tone = (@strength == 2) ? Tone.new(232, 232, 248) : Tone.new(16, 16, 232)
     @points[j].visible = (@strength != 0)
@@ -734,7 +764,7 @@ class DirectFlowDiagram
         @points[j].y = pt[1]
         j += 1
       end
-      i += (@strength == 2) ? 16 : 32
+      i += (@strength == 2) ? DOT_STEP_STRONG : DOT_STEP_WEAK
     end
     offset_delta = System.uptime * DOT_SPEED
     offset_delta *= 1.5 if @strength == 2
@@ -748,6 +778,9 @@ end
 class FlowDiagram
   # Distance travelled by a dot in 1 second.
   DOT_SPEED = 80
+  X = 306
+  Y = 158
+  DISTANCE = 96
 
   def initialize(viewport = nil)
     @points = []
@@ -755,9 +788,9 @@ class FlowDiagram
     @viewport = viewport
     @strength = 0
     @offset = 0
-    @x = 306
-    @y = 158
-    @distance = 96
+    @x = X
+    @y = Y
+    @distance = DISTANCE
   end
 
   def dispose
@@ -779,8 +812,8 @@ class FlowDiagram
 
   def ensurePoint(j)
     if !@points[j] || @points[j].disposed?
-      @points[j] = BitmapSprite.new(8, 8, @viewport)
-      @points[j].bitmap.fill_rect(0, 0, 8, 8, Color.black)
+      @points[j] = BitmapSprite.new(POINT_SIZE, POINT_SIZE, @viewport)
+      @points[j].bitmap.fill_rect(0, 0, POINT_SIZE, POINT_SIZE, Color.black)
     end
     @points[j].tone = (@strength == 2) ? Tone.new(232, 232, 248) : Tone.new(16, 16, 232)
     @points[j].visible = (@strength != 0)
@@ -841,10 +874,10 @@ class PurifyChamberSetView < Sprite
     @set = set
     @heldpkmn = nil
     @cursor = -1
-    @view = BitmapSprite.new(64, 64, viewport)
-    @view.bitmap.fill_rect(8, 8, 48, 48, Color.white)
-    @view.bitmap.fill_rect(10, 10, 44, 44, Color.new(255, 255, 255, 128))
-    @info = BitmapSprite.new(Graphics.width - 112, 48, viewport)
+    @view = BitmapSprite.new(VIEW_SIZE, VIEW_SIZE, viewport)
+    @view.bitmap.fill_rect(VIEW_INNER_OFFSET, VIEW_INNER_OFFSET, VIEW_INNER_SIZE, VIEW_INNER_SIZE, Color.white)
+    @view.bitmap.fill_rect(VIEW_INNER2_OFFSET, VIEW_INNER2_OFFSET, VIEW_INNER2_SIZE, VIEW_INNER2_SIZE, Color.new(255, 255, 255, 128))
+    @info = BitmapSprite.new(Graphics.width - INFO_WIDTH_OFFSET, INFO_HEIGHT, viewport)
     @flows = []
     @directflow = DirectFlowDiagram.new(viewport)
     @directflow.setAngle(0)
@@ -962,8 +995,8 @@ class PurifyChamberSetView < Sprite
     @info.x = Graphics.width - @info.bitmap.width
     @info.y = Graphics.height - @info.bitmap.height
     @__sprites[0].pokemon = pkmn
-    @__sprites[0].x = 306
-    @__sprites[0].y = 158
+    @__sprites[0].x = FLOW_CENTER_X
+    @__sprites[0].y = FLOW_CENTER_Y
     @__sprites[0].z = 2
     @directflow.setAngle(angle)
     @directflow.setFlowStrength(0)
@@ -979,7 +1012,7 @@ class PurifyChamberSetView < Sprite
         @directflow.setAngle(angle)
         @directflow.setFlowStrength(@chamber[@set].shadowAffinity)
       end
-      point = calcPoint(306, 158, 96, angle)
+      point = calcPoint(FLOW_CENTER_X, FLOW_CENTER_Y, FLOW_DISTANCE, angle)
       @__sprites[i + 1].x = point[0]
       @__sprites[i + 1].y = point[1]
       @__sprites[i + 1].z = 2

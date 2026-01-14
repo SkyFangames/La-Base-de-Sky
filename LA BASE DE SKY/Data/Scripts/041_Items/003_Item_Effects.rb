@@ -1349,11 +1349,13 @@ ItemHandlers::UseOnPokemon.add(:ABILITYPATCH, proc { |item, qty, pkmn, scene|
     end
     next false
 })
+
 ItemHandlers::UsableOnPokemon.add(:SUPERCAPSULE, proc { |item, pkmn|
   oldabil=pkmn.ability_index
   abils = pkmn.getAbilityList
   next abils.any? { |i| i[1] != oldabil }
 })
+
 ItemHandlers::UseOnPokemon.add(:SUPERCAPSULE, proc { |item, qty, pkmn, scene|
     oldabil=pkmn.ability_index
     abils = pkmn.getAbilityList

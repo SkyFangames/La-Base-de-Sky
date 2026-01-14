@@ -7,6 +7,16 @@ class Object
   def inspect
     return "#<#{self.class}>"
   end
+
+  def get_variables
+    return self.instance_variables.map { |v| [v,self.method(v.to_s.gsub(/@/, "").to_sym).call] }
+  end
+  
+  def set_variables(vars)
+    vars.each do |v|
+      self.method((v[0].to_s.gsub(/@/, "") + "=").to_sym).call(v[1])
+    end
+  end
 end
 
 #===============================================================================
@@ -31,6 +41,7 @@ class String
   def last(n = 1); return self[-n..-1] || self; end
 
   def blank?; return self.strip.empty?; end
+  def empty?; return (self.size == 0); end
 
   def cut(bitmap, width)
     string = self
@@ -66,6 +77,26 @@ class String
       return str[0] + dec_separator + str[1]
     end
     return str[0]
+  end
+
+  # Converts to bits
+  def to_b
+    return self.unpack('b*')[0]
+  end
+  
+  # Converts to bits and replaces itself
+  def to_b!
+    self.replace(to_b)
+  end
+  
+  # Converts from bits
+  def from_b
+    return [self].pack('b*')
+  end
+  
+  # Convert from bits and replaces itself
+  def from_b!
+    self.replace(from_b)
   end
 end
 
@@ -116,6 +147,63 @@ class Numeric
       ret += "th"
     end
     return ret
+  end
+
+  # Formats the number nicely (e.g. 1234567890 -> format() -> 1,234,567,890)
+  def format(separator = ',')
+    a = self.to_s.split('').reverse.breakup(3)
+    return a.map { |e| e.join('') }.join(separator).reverse
+  end
+
+    # Makes sure the returned string is at least n characters long
+  # (e.g. 4   -> to_digits -> "004")
+  # (e.g. 19  -> to_digits -> "019")
+  # (e.g. 123 -> to_digits -> "123")
+  def to_digits(n = 3)
+    str = self.to_s
+    return str if str.size >= n
+    ret = ""
+    (n - str.size).times { ret += "0" }
+    return ret + str
+  end
+  
+  # n root of self. Defaults to 2 => square root.
+  def root(n = 2)
+    return (self ** (1.0 / n))
+  end
+  
+  # Factorial
+  # 4 -> fact -> (4 * 3 * 2 * 1) -> 24
+  def fact
+    raise ArgumentError, "Cannot execute factorial on negative numerics" if self < 0
+    tot = 1
+    for i in 2..self
+      tot *= i
+    end
+    return tot
+  end
+  
+  # Combinations
+  def ncr(k)
+    return (self.fact / (k.fact * (self - k).fact))
+  end
+  
+  # k permutations of n (self)
+  def npr(k)
+    return (self.fact / (self - k).fact)
+  end
+  
+  # Converts number to binary number (returns as string)
+  def to_b
+    return self.to_s(2)
+  end
+  
+  def empty?
+    return false
+  end
+  
+  def numeric?
+    return true
   end
 end
 
@@ -209,6 +297,80 @@ class File
   def self.move(source, destination)
     File.copy(source, destination)
     File.delete(source)
+  end
+
+  def self.rename(old, new)
+    File.move(old, new)
+  end
+
+    # Note: This is VERY basic compression and should NOT serve as encryption.
+  # Compresses all specified files into one, big package
+  def self.compress(outfile, files, delete_files = true)
+    start = Time.now
+    files = [files] unless files.is_a?(Array)
+    for i in 0...files.size
+      if !File.file?(files[i])
+        raise "Could not find part of the path `#{files[i]}`"
+      end
+    end
+    files.breakup(500) # 500 files per compressed file
+    full = ""
+    t = Time.now
+    for i in 0...files.size
+      if Time.now - t > 1
+        Graphics.update
+        t = Time.now
+      end
+      data = ""
+      File.open(files[i], 'rb') do |f|
+        while r = f.read(4096)
+          if Time.now - t > 1
+            Graphics.update
+            t = Time.now
+          end
+          data += r
+        end
+      end
+      File.delete(files[i]) if delete_files
+      full += "#{data.size}|#{files[i]}|#{data}"
+      full += "|" if i != files.size - 1
+    end
+    File.delete(outfile) if File.file?(outfile)
+    f = File.new(outfile, 'wb')
+    f.write full.deflate
+    f.close
+    return Time.now - start
+  end
+
+  # Decompresses files compressed with File.compress
+  def self.decompress(filename, delete_package = true)
+    start = Time.now
+    data = ""
+    t = Time.now
+    File.open(filename, 'rb') do |f|
+      while r = f.read(4096)
+        if Time.now - t > 1
+          Graphics.update
+          t = Time.now
+        end
+        data += r
+      end
+    end
+    data.inflate!
+    loop do
+      size, name = data.split('|')
+      data = data.split(size + "|" + name + "|")[1..-1].join(size + "|" + name + "|")
+      size = size.to_i
+      content = data[0...size]
+      data = data[(size + 1)..-1]
+      File.delete(name) if File.file?(name)
+      f = File.new(name, 'wb')
+      f.write content
+      f.close
+      break if !data || data.size == 0 || data.split('|').size <= 1
+    end
+    File.delete(filename) if delete_package
+    return Time.now - start
   end
 end
 

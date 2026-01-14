@@ -2,6 +2,12 @@
 #
 #===============================================================================
 class PokemonJukebox_Scene
+
+  COMMAND_WINDOW_X      = 94
+  COMMAND_WINDOW_Y      = 92
+  COMMAND_WINDOW_WIDTH  = 324
+  COMMAND_WINDOW_HEIGHT = 224
+
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
   end
@@ -20,7 +26,7 @@ class PokemonJukebox_Scene
     @sprites["header"].shadowColor = Color.black
     @sprites["header"].windowskin  = nil
     @sprites["commands"] = Window_CommandPokemon.newWithSize(
-      @commands, 94, 92, 324, 224, @viewport
+      @commands, COMMAND_WINDOW_X, COMMAND_WINDOW_Y, COMMAND_WINDOW_WIDTH, COMMAND_WINDOW_HEIGHT, @viewport
     )
     @sprites["commands"].windowskin = nil
     pbFadeInAndShow(@sprites) { pbUpdate }

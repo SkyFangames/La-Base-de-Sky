@@ -46,17 +46,51 @@ class HallOfFame_Scene
   TEXT_BASE_COLOR   = Color.new(248, 248, 248)
   TEXT_SHADOW_COLOR = Color.new(0, 0, 0)
 
+  VIEWPORT_Z = 99999
+  OVERLAY_Z = 10
+
+  # Constantes de diseño / posiciones
+  # Multiplicador X y base usados cuando los Pokémon están en una sola fila
+  POINT_SINGLE_MULT = 60
+  POINT_SINGLE_BASE = 48
+  # Factor y base X para columnas cuando hay varias filas
+  POINT_X_FACTOR = 160
+  POINT_X_BASE = 96
+
+  # Coordenadas Y base y pasos para filas en modo single/normal
+  Y_SINGLE_BASE = 180
+  Y_SINGLE_STEP = 32
+  Y_BASE = 96
+  Y_ROW_STEP = 64
+
+  # Posición del sprite del entrenador según layout
+  TRAINER_Y_SINGLE = 208
+  TRAINER_X_RIGHT_OFFSET = 96
+  TRAINER_Y = 160
+
+  # Posiciones y offsets para la información del pokémon en pantalla
+  DEX_X = 32
+  INFO_RIGHT_OFFSET = 192
+  INFO_LINE1_OFFSET = 74
+  LV_X = 64
+  INFO_LINE2_OFFSET = 42
+  # Offset desde el centro para el número del Hall en la cabecera
+  CENTER_HALF_OFFSET = 104
+  HALL_LABEL_Y = 6
+  # Desplazamiento vertical para el mensaje de bienvenida
+  WELCOME_Y_OFFSET = 68
+
   # Placement for pokemon icons
   def pbStartScene
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = VIEWPORT_Z
     # Comment the below line to doesn't use a background
     addBackgroundPlane(@sprites, "bg", "Hall of Fame/bg", @viewport)
     @sprites["hallbars"] = IconSprite.new(@viewport)
     @sprites["hallbars"].setBitmap("Graphics/UI/Hall of Fame/bars")
     @sprites["overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
-    @sprites["overlay"].z = 10
+    @sprites["overlay"].z = OVERLAY_Z
     pbSetSystemFont(@sprites["overlay"].bitmap)
     @alreadyFadedInEnd = false
     @useMusic = false
@@ -136,15 +170,15 @@ class HallOfFame_Scene
   # Don't use odd numbers!
   def xpointformula(battlernumber)
     if SINGLE_ROW_OF_POKEMON
-      ret = ((60 * (battlernumber / 2)) + 48) * (xpositionformula(battlernumber) - 1)   # -48, 48, -108, 108, -168, 168
-      return ret + (Graphics.width / 2)                   # 208, 304, 148, 364, 88, 424
+      ret = ((POINT_SINGLE_MULT * (battlernumber / 2)) + POINT_SINGLE_BASE) * (xpositionformula(battlernumber) - 1)
+      return ret + (Graphics.width / 2)
     end
-    return 96 + (160 * xpositionformula(battlernumber))   # 256, 96, 456, 256, 456, 96
+    return POINT_X_BASE + (POINT_X_FACTOR * xpositionformula(battlernumber))
   end
 
   def ypointformula(battlernumber)
-    return 180 - (32 * (battlernumber / 2)) if SINGLE_ROW_OF_POKEMON   # 180, 180, 148, 148, 116, 116
-    return 96 + (64 * ypositionformula(battlernumber))                 # 90, 90, 90, 160, 160, 160
+    return Y_SINGLE_BASE - (Y_SINGLE_STEP * (battlernumber / 2)) if SINGLE_ROW_OF_POKEMON
+    return Y_BASE + (Y_ROW_STEP * ypositionformula(battlernumber))
   end
 
   # Returns 0, 1 or 2 as the x position value (left, middle, right column)
@@ -217,10 +251,10 @@ class HallOfFame_Scene
     @sprites["trainer"].setBitmap(GameData::TrainerType.player_front_sprite_filename($player.trainer_type))
     if SINGLE_ROW_OF_POKEMON
       @sprites["trainer"].x = Graphics.width / 2
-      @sprites["trainer"].y = 208
+      @sprites["trainer"].y = TRAINER_Y_SINGLE
     else
-      @sprites["trainer"].x = Graphics.width - 96
-      @sprites["trainer"].y = 160
+      @sprites["trainer"].x = Graphics.width - TRAINER_X_RIGHT_OFFSET
+      @sprites["trainer"].y = TRAINER_Y
     end
     @movements.push([Graphics.width / 2, @sprites["trainer"].x, @sprites["trainer"].y, @sprites["trainer"].y])
     @sprites["trainer"].z = 9
@@ -288,16 +322,16 @@ class HallOfFame_Scene
       dexnumber = _ISPRINTF("No. {1:03d}", number)
     end
     textPositions = [
-      [dexnumber, 32, Graphics.height - 74, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR],
-      [pokename, Graphics.width - 192, Graphics.height - 74, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR],
+      [dexnumber, DEX_X, Graphics.height - INFO_LINE1_OFFSET, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR],
+      [pokename, Graphics.width - INFO_RIGHT_OFFSET, Graphics.height - INFO_LINE1_OFFSET, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR],
       [_INTL("Nv. {1}", pokemon.egg? ? "?" : pokemon.level),
-       64, Graphics.height - 42, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR],
+       LV_X, Graphics.height - INFO_LINE2_OFFSET, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR],
       [_INTL("No. ID {1}", pokemon.egg? ? "?????" : idno),
-       Graphics.width - 192, Graphics.height - 42, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]
+       Graphics.width - INFO_RIGHT_OFFSET, Graphics.height - INFO_LINE2_OFFSET, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]
     ]
     if hallNumber > -1
-      textPositions.push([_INTL("Hall de la Fama No."), (Graphics.width / 2) - 104, 6, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR])
-      textPositions.push([hallNumber.to_s, (Graphics.width / 2) + 104, 6, :right, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR])
+      textPositions.push([_INTL("Hall de la Fama No."), (Graphics.width / 2) - CENTER_HALF_OFFSET, HALL_LABEL_Y, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR])
+      textPositions.push([hallNumber.to_s, (Graphics.width / 2) + CENTER_HALF_OFFSET, HALL_LABEL_Y, :right, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR])
     end
     pbDrawTextPositions(overlay, textPositions)
   end
@@ -306,7 +340,7 @@ class HallOfFame_Scene
     overlay = @sprites["overlay"].bitmap
     overlay.clear
     pbDrawTextPositions(overlay, [[_INTL("¡Bienvenido al Hall de la Fama!"),
-                                   Graphics.width / 2, Graphics.height - 68, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
+                                   Graphics.width / 2, Graphics.height - WELCOME_Y_OFFSET, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
   end
 
   def pbAnimationLoop

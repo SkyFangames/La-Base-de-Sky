@@ -270,9 +270,18 @@ module PluginManager
         end
       when :disabled # Requerido para que no tire error.
       when :last  # Requerido para que no tire error.
+        options[:last] = value
+      when :first  # Requerido para que no tire error.
+        options[:first] = value
+      when :priority  # Requerido para que no tire error.
+        options[:priority] = value.to_i
       else
         self.error("Clave de registro de plugin no válida '#{key}'.")
       end
+    end
+    # Verificar que no sea first y last al mismo tiempo
+    if options[:first] && options[:last]
+      self.error("El plugin '#{name}' no puede ser tanto 'First' como 'Last' al mismo tiempo.")
     end
     @@Plugins.each_value do |plugin|
       if plugin[:incompatibilities]&.include?(name)
@@ -287,7 +296,10 @@ module PluginManager
       :link              => link,
       :dependencies      => dependencies,
       :incompatibilities => incompats,
-      :credits           => credits
+      :credits           => credits,
+      :first             => options[:first],
+      :last              => options[:last],
+      :priority          => options[:priority] || 0
     }
   end
 
@@ -480,6 +492,10 @@ module PluginManager
         meta[:disabled] = data[0] if data[0]
       when "LAST"
         meta[:last] = data[0] if data[0]
+      when "FIRST"
+        meta[:first] = data[0] if data[0]
+      when "PRIORITY"
+        meta[:priority] = data[0].to_i if data[0]
       else
         meta[property.downcase.to_sym] = data[0]
       end
@@ -512,6 +528,11 @@ module PluginManager
   def self.isLastPlugin?(plugin_meta)
     return false if !plugin_meta || !plugin_meta[:last]
     return [true, 'true', 'verdadero', 'si', 'x'].include?(plugin_meta[:last].to_s.downcase)
+  end
+
+  def self.isFirstPlugin?(plugin_meta)
+    return false if !plugin_meta || !plugin_meta[:first]
+    return [true, 'true', 'verdadero', 'si', 'x'].include?(plugin_meta[:first].to_s.downcase)
   end
 
   # Captura cualquier posible bucle con dependencias y genera un error
@@ -564,21 +585,40 @@ module PluginManager
       next if !self.isLastPlugin?(plugins[o])
       last_plugins.push(o)
     end
-    # Ordenar los plugins :last entre sí según sus dependencias
-    # (mantener el orden relativo que ya tienen de la ordenación por dependencias)
-    last_plugins_ordered = []
-    last_plugins.each do |lp|
+    last_plugins_ordered = self.sortSpecialPlugins(last_plugins, plugins, false)
+    last_plugins_ordered.each do |lp|
+      order.delete(lp)
+      order.unshift(lp)
+    end
+    # Mover los plugins con :first => true al final (después del reverse, estarán al principio)
+    first_plugins = []
+    order.each do |o|
+      next if !self.isFirstPlugin?(plugins[o])
+      first_plugins.push(o)
+    end
+    first_plugins_ordered = self.sortSpecialPlugins(first_plugins, plugins, true)
+    first_plugins_ordered.each do |fp|
+      order.delete(fp)
+      order.push(fp)
+    end
+    return order
+  end
+
+  # Ordena una lista de plugins especiales (First o Last) basándose en sus dependencias
+  def self.sortSpecialPlugins(plugin_list, plugins_meta, reverse_order)
+    ordered = []
+    plugin_list.each do |p|
       inserted = false
       # Buscar la posición correcta basada en dependencias
-      last_plugins_ordered.each_with_index do |existing, idx|
+      ordered.each_with_index do |existing, idx|
         # Si el plugin existente depende del nuevo, insertar antes
-        if plugins[existing][:dependencies]
-          plugins[existing][:dependencies].each do |dname|
+        if plugins_meta[existing][:dependencies]
+          plugins_meta[existing][:dependencies].each do |dname|
             dep_name = dname
             dep_name = dname[0] if dname.is_a?(Array) && dname.length == 2
             dep_name = dname[1] if dname.is_a?(Array) && dname.length == 3
-            if dep_name == lp
-              last_plugins_ordered.insert(idx, lp)
+            if dep_name == p
+              ordered.insert(idx, p)
               inserted = true
               break
             end
@@ -586,14 +626,15 @@ module PluginManager
         end
         break if inserted
       end
-      last_plugins_ordered.push(lp) if !inserted
+      ordered.push(p) if !inserted
     end
-    # Remover los plugins :last de su posición original y agregarlos al principio
-    last_plugins_ordered.each do |lp|
-      order.delete(lp)
-      order.unshift(lp)
+    # Ordenar por prioridad después de las dependencias
+    if reverse_order  # Para First plugins, prioridad más alta primero
+      ordered.sort_by! { |p| -(plugins_meta[p][:priority] || 0) }
+    else  # Para Last plugins, prioridad más alta al final
+      ordered.sort_by! { |p| plugins_meta[p][:priority] || 0 }
     end
-    return order
+    reverse_order ? ordered.reverse : ordered
   end
 
   # Obtener el orden en el que se cargarán los plugins

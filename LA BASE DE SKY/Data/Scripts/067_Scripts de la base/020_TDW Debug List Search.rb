@@ -1,99 +1,134 @@
 #===============================================================================
-# CREDITOS
-# wrigty12, KRLW890
+# SISTEMA DE BÚSQUEDA AVANZADA
+# Créditos: wrigty12, KRLW890, Zik
 #===============================================================================
+
 #-------------------------------------------------------------------------------
-# Funciones de búsqueda rápida para listas
+# 1. Utilidades de Búsqueda.
 #-------------------------------------------------------------------------------
-# Based on KRLW890's Better Battle Animation Editor https://reliccastle.com/resources/1314/
-def pbOpenGenericListSearch(commands, type = 0)
+
+# Removedor de acentos
+def pbRemoveAccents(text)
+  return "" if text.nil?
+  text = text.to_s
+  return text.tr(
+    "ÀÁÂÃÄÅàáâãäåÈÉÊËèéêëÌÍÎÏìíîïÒÓÔÕÖØòóôõöøÙÚÛÜùúûüÑñÇç",
+    "AAAAAAaaaaaaEEEEeeeeIIIIiiiiOOOOOOooooooUUUUuuuuNnCc"
+  )
+end
+
+# Algoritmo de Levenshtein
+def pbLevenshtein(first, second)
+  matrix = [(0..first.length).to_a]
+  (1..second.length).each do |j|
+    matrix << [j] + [0] * first.length
+  end
+
+  (1..second.length).each do |i|
+    (1..first.length).each do |j|
+      if first[j-1] == second[i-1]
+        matrix[i][j] = matrix[i-1][j-1]
+      else
+        matrix[i][j] = [
+          matrix[i-1][j],    # Borrado
+          matrix[i][j-1],    # Inserción
+          matrix[i-1][j-1],  # Sustitución
+        ].min + 1
+      end
+    end
+  end
+  return matrix.last.last
+end
+
+# Lógica de coincidencia por si se escribe mal una palabra
+def pbSmartMatch?(text, search_term)
+  # Limpieza básica
+  text_clean = pbRemoveAccents(text.to_s).downcase
+  term_clean = pbRemoveAccents(search_term.to_s).downcase
+  
+  # Coincidencia exacta parcial
+  return true if text_clean.include?(term_clean)
+  
+  # Si el término es muy corto, exigimos coincidencia exacta
+  return false if term_clean.length <= 2
+  
+  # Tolerancia de errores
+  tolerance = (term_clean.length >= 6) ? 2 : 1
+
+  # Dividimos el nombre del objeto en palabras para buscar similitudes
+  words = text_clean.split(" ")
+  words.each do |word|
+     if (word.length - term_clean.length).abs <= tolerance
+       dist = pbLevenshtein(word, term_clean)
+       return true if dist <= tolerance
+     end
+  end
+  
+  # Busqueda de frases completas si las longitudes son similares
+  if (text_clean.length - term_clean.length).abs <= tolerance + 2
+      dist_full = pbLevenshtein(text_clean, term_clean)
+      return true if dist_full <= tolerance
+  end
+  
+  return false
+end
+
+def pbOpenGenericListSearch
     term = pbMessageFreeText(_INTL("¿Qué desea buscar?"), "", false, 32)
-    return false if term == "" || term == nil
-    newSearch = []
-    commands.length.times do |i|
-        if commands[i].downcase.include?(term.downcase)
-          newSearch[newSearch.length] = (type == 0 ? i : commands[i]) # 0 = index, 1 = string
-        end
-    end
-    if newSearch.length < 1
-      pbMessage(_INTL("No hay resultados."))
-      return []
-    else
-      return newSearch
-    end
-    return []
+    return nil if term.nil? || term.empty?
+    return term
 end
 
 #-------------------------------------------------------------------------------
-# Override pbChooseFromGameDataList to pass list type for sprite display
+# 2. pbChooseList
 #-------------------------------------------------------------------------------
-module TDWDebugListSearch
-  @current_list_type = nil
-  
-  def self.current_list_type
-    @current_list_type
-  end
-  
-  def self.current_list_type=(value)
-    @current_list_type = value
-  end
-end
-
-alias tdw_debug_search_pbChooseFromGameDataList pbChooseFromGameDataList
-def pbChooseFromGameDataList(game_data, default = nil, &block)
-  # Set the list type for sprite display
-  TDWDebugListSearch.current_list_type = (game_data == :Species || game_data == :Item) ? game_data : nil
-  result = tdw_debug_search_pbChooseFromGameDataList(game_data, default, &block)
-  TDWDebugListSearch.current_list_type = nil
-  return result
-end
-
-#-------------------------------------------------------------------------------
-# Listado Básico
-#-------------------------------------------------------------------------------
-alias tdw_debug_search_pbChooseList pbChooseList
-def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1, listType = nil)
-    # Use module variable if listType not explicitly passed
-    listType ||= TDWDebugListSearch.current_list_type
-    
+def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1)
     cmdwin = pbListWindow([])
     itemID = default
     itemIndex = 0
-    sortMode = (sortType >= 0) ? sortType : 0   # 0=ID, 1=alphabetical
+    sortMode = (sortType >= 0) ? sortType : 0
     sorting = true
-    # Create sprite for preview based on list type
-    sprite = nil
-    viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
-    case listType
-    when :Species
-      sprite = PokemonSprite.new(viewport)
-      sprite.setOffset(PictureOrigin::CENTER)
-      sprite.x = Graphics.width * 3 / 4
-      sprite.y = (Graphics.height / 2) - 48
-      sprite.z = 2
-    when :Item
-      sprite = ItemIconSprite.new(Graphics.width * 3 / 4, (Graphics.height / 2) - 48, nil, viewport)
-      sprite.z = 2
-    end
-    # Add search hint text at top
-    searchHint = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("Buscar (F)"), Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
-    )
-    searchHint.z = 2
+    
+    full_list_original = commands.clone
+    current_search_term = nil
+
     loop do
       if sorting
-        case sortMode
-        when 0
-          commands.sort! { |a, b| a[0] <=> b[0] }
-        when 1
-          commands.sort! { |a, b| a[1] <=> b[1] }
+        temp_commands = full_list_original.clone
+        
+        if current_search_term
+          # Filtramos en una variable temporal
+          filtered = full_list_original.select do |cmd|
+            pbSmartMatch?(cmd[1], current_search_term)
+          end
+          
+          if filtered.empty?
+            pbMessage(_INTL("No se han encontrado resultados para '{1}'.", current_search_term))
+            current_search_term = nil
+            temp_commands = full_list_original.clone # Volvemos a mostrar todo
+          else
+            temp_commands = filtered
+          end
         end
+        
+        commands = temp_commands
+
+        # Ordenamiento
+        case sortMode
+        when 0 then commands.sort! { |a, b| a[0] <=> b[0] }
+        when 1 then commands.sort! { |a, b| a[1] <=> b[1] }
+        end
+
+        # Posición
         if itemID.is_a?(Symbol)
           commands.each_with_index { |command, i| itemIndex = i if command[2] == itemID }
         elsif itemID && itemID > 0
           commands.each_with_index { |command, i| itemIndex = i if command[0] == itemID }
         end
+        
+        itemIndex = 0 if itemIndex >= commands.length
+
+        # Generar
         realcommands = []
         commands.each do |command|
           if sortType <= 0
@@ -104,33 +139,38 @@ def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1, listType
         end
         sorting = false
       end
-      cmd = pbCommandsSortable(cmdwin, realcommands, -1, itemIndex, (sortType < 0), sprite, commands, listType)
+
+      cmd = pbCommandsSortable(cmdwin, realcommands, -1, itemIndex, (sortType < 0))
+      
       case cmd[0]
-      when 0   # Eligió una acción o canceló
-        itemID = (cmd[1] < 0) ? cancelValue : (commands[cmd[1]][2] || commands[cmd[1]][0])
+      when 0
+        if cmd[1] < 0
+          itemID = cancelValue
+        else
+          itemID = (commands[cmd[1]][2] || commands[cmd[1]][0])
+        end
         break
-      when 1   # Habilita/Deshabilita el ordenamiento
-        itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
+      when 1
+        if commands.length > 0
+            itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
+        end
         sortMode = (sortMode + 1) % 2
         sorting = true
-      when 2 # Agregado para búsqueda rápida
-        old_commands ||= commands.clone
-        commands = []
-        cmd[1].each { |val| commands.push(old_commands[val]) }
+      when 2
+        current_search_term = cmd[1]
         sorting = true
         itemIndex = 0
       end
     end
     cmdwin.dispose
-    sprite&.dispose
-    searchHint&.dispose
-    viewport&.dispose
     return itemID
 end
   
-def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sortable = false, sprite = nil, dataCommands = nil, listType = nil)
+def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sortable = false)
     cmdwindow.commands = commands
     cmdwindow.index    = defaultindex if defaultindex >= 0
+    cmdwindow.index    = 0 if cmdwindow.index >= commands.length 
+    
     cmdwindow.x        = 0
     cmdwindow.y        = 0
     cmdwindow.width    = Graphics.width / 2 if cmdwindow.width < Graphics.width / 2
@@ -138,39 +178,22 @@ def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sort
     cmdwindow.z        = 99999
     cmdwindow.active   = true
     command = 0
-    lastIndex = -1
+    
     loop do
       Graphics.update
       Input.update
       cmdwindow.update
-      # Update sprite preview when selection changes
-      if sprite && dataCommands && cmdwindow.index != lastIndex
-        lastIndex = cmdwindow.index
-        if lastIndex >= 0 && lastIndex < dataCommands.length
-          id = dataCommands[lastIndex][2]
-          case listType
-          when :Species
-            if id.is_a?(Symbol)
-              sprite.setSpeciesBitmap(id)
-            else
-              sprite.clearBitmap
-            end
-          when :Item
-            sprite.item = id.is_a?(Symbol) ? id : nil
-          end
-        end
-      end
-      sprite&.update
+      
       if Input.trigger?(Input::ACTION) && sortable
         command = [1, cmdwindow.index]
         break
       elsif Input.trigger?(Input::BACK)
         command = [0, (cmdIfCancel > 0) ? cmdIfCancel - 1 : cmdIfCancel]
         break
-      elsif Input.triggerex?(:F) #Added for quick search
-          newSearch = pbOpenGenericListSearch(commands)
-          if newSearch != false && newSearch != nil && newSearch.length > 0
-            command = [2, newSearch]
+      elsif Input.triggerex?(:F)
+          searchTerm = pbOpenGenericListSearch
+          if searchTerm
+            command = [2, searchTerm]
             break
           end
       elsif Input.trigger?(Input::USE)
@@ -184,39 +207,36 @@ def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sort
 end
 
 #-------------------------------------------------------------------------------
-# Pantalla de Listas (usado por MapLister, etc.)
+# 3. pbListScreen
 #-------------------------------------------------------------------------------
-alias tdw_debug_search_pbListScreen pbListScreen
 def pbListScreen(title, lister)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
   viewport.z = 99999
   list = pbListWindow([])
   list.viewport = viewport
   list.z        = 2
-  titleWindow = Window_UnformattedTextPokemon.newWithSize(
+  title = Window_UnformattedTextPokemon.newWithSize(
     title, Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
   )
-  titleWindow.z = 2
-  # Add search hint below title
-  searchHint = Window_UnformattedTextPokemon.newWithSize(
-    _INTL("Buscar (F)"), Graphics.width / 2, 64, Graphics.width / 2, 64, viewport
-  )
-  searchHint.z = 2
+  title.z = 2
   lister.setViewport(viewport)
   selectedmap = -1
+  
+  full_original_list = lister.commands.clone
+  
   commands = lister.commands
   selindex = lister.startIndex
   if commands.length == 0
     value = lister.value(-1)
     lister.dispose
-    titleWindow.dispose
-    searchHint.dispose
+    title.dispose
     list.dispose
     viewport.dispose
     return value
   end
   list.commands = commands
   list.index    = selindex
+  
   loop do
     Graphics.update
     Input.update
@@ -225,25 +245,35 @@ def pbListScreen(title, lister)
       lister.refresh(list.index)
       selectedmap = list.index
     end
+    
     if Input.trigger?(Input::BACK)
       selectedmap = -1
       break
-    elsif Input.triggerex?(:F) # Agregado para búsqueda rápida
-      newSearch = pbOpenGenericListSearch(list.commands, 1)
-      if newSearch != false && newSearch != nil && newSearch.length > 0
-        lister.commands_override = newSearch
-        list.commands = lister.commands
-        list.index = 0
-        lister.refresh(0)
-      end
+    elsif Input.triggerex?(:F)
+        searchTerm = pbOpenGenericListSearch
+        if searchTerm
+            newSearch = full_original_list.select do |cmd|
+                pbSmartMatch?(cmd.to_s, searchTerm)
+            end
+            
+            if newSearch.length > 0
+                lister.commands_override = newSearch
+                list.commands = lister.commands
+                list.index = 0
+                lister.refresh(0)
+                selectedmap = -1
+            else
+                pbMessage(_INTL("No se han encontrado resultados."))
+            end
+        end
     elsif Input.trigger?(Input::USE)
       break
     end
   end
+  
   value = lister.value(selectedmap)
   lister.dispose
-  titleWindow.dispose
-  searchHint.dispose
+  title.dispose
   list.dispose
   viewport.dispose
   Input.update
@@ -251,247 +281,156 @@ def pbListScreen(title, lister)
 end
 
 #-------------------------------------------------------------------------------
-# Bloque de Listas
+# 4. pbListScreenBlock
 #-------------------------------------------------------------------------------
 def pbListScreenBlock(title, lister)
-    viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
-    list = pbListWindow([], Graphics.width / 2)
-    list.viewport = viewport
-    list.z        = 2
-    title = Window_UnformattedTextPokemon.newWithSize(
-      title, Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
-    )
-    title.z = 2
-    lister.setViewport(viewport)
-    selectedmap = -1
-    commands = lister.commands
-    selindex = lister.startIndex
-    if commands.length == 0
-      value = lister.value(-1)
-      lister.dispose
-      title.dispose
-      list.dispose
-      viewport.dispose
-      return value
-    end
-    list.commands = commands
-    list.index = selindex
-    loop do
-      Graphics.update
-      Input.update
-      list.update
-      if list.index != selectedmap
-        lister.refresh(list.index)
-        selectedmap = list.index
-      end
-      if Input.trigger?(Input::ACTION)
-        yield(Input::ACTION, lister.value(selectedmap))
-        list.commands = lister.commands
-        list.index = list.commands.length if list.index == list.commands.length
-        lister.refresh(list.index)
-      elsif Input.trigger?(Input::BACK)
-        break
-      elsif Input.triggerex?(:F) # Agregado para búsqueda rápida
-        newSearch = pbOpenGenericListSearch(list.commands, 1)
-        if newSearch != false && newSearch != nil && newSearch.length > 0
-            lister.commands_override = newSearch
-            list.commands = lister.commands
-            lister.refresh(0)
-        end
-      elsif Input.trigger?(Input::USE)
-        yield(Input::USE, lister.value(selectedmap))
-        list.commands = lister.commands
-        list.index = list.commands.length if list.index == list.commands.length
-        lister.refresh(list.index)
-      end
-    end
+  viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+  viewport.z = 99999
+  list = pbListWindow([], Graphics.width / 2)
+  list.viewport = viewport
+  list.z        = 2
+  title = Window_UnformattedTextPokemon.newWithSize(
+    title, Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
+  )
+  title.z = 2
+  lister.setViewport(viewport)
+  selectedmap = -1
+  
+  # Lista Maestra
+  full_original_list = lister.commands.clone
+  
+  commands = lister.commands
+  selindex = lister.startIndex
+  if commands.length == 0
+    value = lister.value(-1)
     lister.dispose
     title.dispose
     list.dispose
     viewport.dispose
+    return value
+  end
+  list.commands = commands
+  list.index = selindex
+  
+  loop do
+    Graphics.update
     Input.update
+    list.update
+    if list.index != selectedmap
+      lister.refresh(list.index)
+      selectedmap = list.index
+    end
+    
+    if Input.trigger?(Input::ACTION)
+      yield(Input::ACTION, lister.value(selectedmap))
+      list.commands = lister.commands
+      list.index = list.commands.length if list.index == list.commands.length
+      lister.refresh(list.index)
+    elsif Input.trigger?(Input::BACK)
+      break
+    elsif Input.triggerex?(:F) # BÚSQUEDA AÑADIDA AQUÍ
+        searchTerm = pbOpenGenericListSearch
+        if searchTerm
+            clean_term = pbRemoveAccents(searchTerm).downcase
+            newSearch = full_original_list.select do |cmd|
+                pbSmartMatch?(cmd.to_s, searchTerm)
+            end
+            
+            if newSearch.length > 0
+                lister.commands_override = newSearch
+                list.commands = lister.commands
+                list.index = 0
+                lister.refresh(0)
+                selectedmap = -1
+            else
+                pbMessage(_INTL("No hay resultados."))
+            end
+        end
+    elsif Input.trigger?(Input::USE)
+      yield(Input::USE, lister.value(selectedmap))
+      list.commands = lister.commands
+      list.index = list.commands.length if list.index == list.commands.length
+      lister.refresh(list.index)
+    end
+  end
+  lister.dispose
+  title.dispose
+  list.dispose
+  viewport.dispose
+  Input.update
 end
 
-# Setting command overwrites for listers
-class SpeciesLister
+#-------------------------------------------------------------------------------
+# 5. Inyección automática de búsqueda en los Listers
+#-------------------------------------------------------------------------------
 
+# Para no repetir código, y agregar facilmente futuros listers si se requiere
+TARGET_LISTERS = [
+  :SpeciesLister,
+  :ItemLister,
+  :MoveLister,
+  :AbilityLister,
+  :TrainerTypeLister,
+  :TrainerBattleLister,
+  :MapLister,
+  :GraphicsLister,
+  :MusicFileLister
+]
+
+TARGET_LISTERS.each do |klass_name|
+  next unless Object.const_defined?(klass_name)
+  klass = Object.const_get(klass_name)
+  
+  klass.class_eval do
     def commands_override=(value)
         @commands_override = value
         @needs_id_refresh = true
     end
 
-    alias tdw_debug_search_commands_s commands
+    # Alias del método original
+    unless method_defined?(:commands_original_for_search)
+      alias_method :commands_original_for_search, :commands
+    end
+
     def commands
         if @commands_override
             if @needs_id_refresh
                 new_ids = []
-                @commands_override.each { |cmd| new_ids.push(@ids[@commands.index(cmd)]) }
-                @ids = new_ids
-                @needs_id_refresh = false
-            end
-            return @commands_override 
-        end
-        return tdw_debug_search_commands_s
-    end
-
-    # Add Pokemon sprite display
-    alias tdw_debug_search_initialize_s initialize
-    def initialize(selection = 0, includeNew = false)
-        tdw_debug_search_initialize_s(selection, includeNew)
-        @sprite = PokemonSprite.new
-        @sprite.setOffset(PictureOrigin::CENTER)
-        @sprite.x = Graphics.width * 3 / 4
-        @sprite.y = (Graphics.height / 2) - 48
-        @sprite.z = 2
-        @searchHint = nil
-    end
-
-    alias tdw_debug_search_dispose_s dispose
-    def dispose
-        tdw_debug_search_dispose_s
-        @sprite.bitmap&.dispose
-        @sprite.dispose
-        @searchHint&.dispose
-    end
-
-    alias tdw_debug_search_setViewport_s setViewport
-    def setViewport(viewport)
-        tdw_debug_search_setViewport_s(viewport)
-        @sprite.viewport = viewport
-        # Add search hint below title (title is at y=0, height=64)
-        @searchHint = Window_UnformattedTextPokemon.newWithSize(
-          _INTL("Buscar (F)"), Graphics.width / 2, 64, Graphics.width / 2, 64, viewport
-        )
-        @searchHint.z = 2
-    end
-
-    alias tdw_debug_search_refresh_s refresh
-    def refresh(index)
-        tdw_debug_search_refresh_s(index)
-        return if !@sprite || index < 0 || index >= @ids.length
-        species = @ids[index]
-        if species.is_a?(Symbol)
-            @sprite.setSpeciesBitmap(species)
-            @sprite.update
-        else
-            @sprite.clearBitmap
-        end
-    end
-end
-class ItemLister
-
-    def commands_override=(value)
-        @commands_override = value
-        @needs_id_refresh = true
-    end
-
-    alias tdw_debug_search_commands_i commands
-    def commands
-        if @commands_override
-            if @needs_id_refresh
-                new_ids = []
-                @commands_override.each { |cmd| new_ids.push(@ids[@commands.index(cmd)]) }
-                @ids = new_ids
-                @needs_id_refresh = false
-            end
-            return @commands_override 
-        end
-        return tdw_debug_search_commands_i
-    end
-
-    # Move sprite up and add search hint
-    alias tdw_debug_search_initialize_i initialize
-    def initialize(selection = 0, includeNew = false)
-        tdw_debug_search_initialize_i(selection, includeNew)
-        @sprite.y = (Graphics.height / 2) - 40
-        @searchHint = nil
-    end
-
-    alias tdw_debug_search_dispose_i dispose
-    def dispose
-        tdw_debug_search_dispose_i
-        @searchHint&.dispose
-    end
-
-    alias tdw_debug_search_setViewport_i setViewport
-    def setViewport(viewport)
-        tdw_debug_search_setViewport_i(viewport)
-        # Add search hint below title (title is at y=0, height=64)
-        @searchHint = Window_UnformattedTextPokemon.newWithSize(
-          _INTL("Buscar (F)"), Graphics.width / 2, 64, Graphics.width / 2, 64, viewport
-        )
-        @searchHint.z = 2
-    end
-end
-class TrainerTypeLister
-
-    def commands_override=(value)
-        @commands_override = value
-        @needs_id_refresh = true
-    end
-
-    alias tdw_debug_search_commands_tt commands
-    def commands
-        if @commands_override
-            if @needs_id_refresh
-                new_ids = []
-                @commands_override.each { |cmd| new_ids.push(@ids[@commands.index(cmd)]) }
-                @ids = new_ids
-                @needs_id_refresh = false
-            end
-            return @commands_override 
-        end
-        return tdw_debug_search_commands_tt
-    end
-end
-class TrainerBattleLister
-
-    def commands_override=(value)
-        @commands_override = value
-        @needs_id_refresh = true
-    end
-
-    alias tdw_debug_search_commands_tb commands
-    def commands
-        if @commands_override
-            if @needs_id_refresh
-                new_ids = []
-                @commands_override.each { |cmd| new_ids.push(@ids[@commands.index(cmd)]) }
-                @ids = new_ids
-                @needs_id_refresh = false
-            end
-            return @commands_override 
-        end
-        return tdw_debug_search_commands_tb
-    end
-end
-
-class MapLister
-
-    def commands_override=(value)
-        @commands_override = value
-        @needs_maps_refresh = true
-    end
-
-    alias tdw_debug_search_commands_m commands
-    def commands
-        if @commands_override
-            if @needs_maps_refresh
-                # Find the map indices that match the filtered commands
                 new_maps = []
-                original_commands = tdw_debug_search_commands_m
-                @commands_override.each do |cmd|
-                    idx = original_commands.index(cmd)
-                    if idx && idx >= @addGlobalOffset
-                        new_maps.push(@maps[idx - @addGlobalOffset])
+
+                # Obtenemos la lista completa original
+                original_cmds = commands_original_for_search
+                original_offset = (defined?(@addGlobalOffset)) ? @addGlobalOffset : 0
+                
+                # Reconstruimos los IDs basándonos en el índice original
+                @commands_override.each do |cmd| 
+                  original_index = original_cmds.index(cmd)
+                  if original_index
+                    if defined?(@ids) && @ids
+                        new_ids.push(@ids[original_index]) 
                     end
+                  if defined?(@maps) && @maps
+                      # Calculamos el índice real en el array @maps original
+                      map_real_index = original_index - original_offset
+                      if map_real_index >= 0 && map_real_index < @maps.length
+                        new_maps.push(@maps[map_real_index])
+                      end
+                    end
+                  end
                 end
-                @maps = new_maps
-                @needs_maps_refresh = false
+                
+                if defined?(@ids) && @ids
+                    @ids = new_ids
+                end
+                if defined?(@maps) && @maps
+                  @maps = new_maps
+                  @addGlobalOffset = 0 if defined?(@addGlobalOffset)
+                end
+                @needs_id_refresh = false
             end
             return @commands_override 
         end
-        return tdw_debug_search_commands_m
+        return commands_original_for_search
     end
+  end
 end

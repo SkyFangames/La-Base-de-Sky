@@ -3,6 +3,39 @@
 #===============================================================================
 class PokemonTrade_Scene
   TRADE_BGM = "Evolution"
+  SPRITE_1_Y = 264
+  SPRITE_1_Z = 10
+  SPRITE_2_Y = 264
+  SPRITE_2_Z = 10
+  PICTURE_BALL_Y = 48
+
+  # Layout / timing constants
+  VIEWPORT_Z = 99999
+  SRC_W = 32
+  SRC_H = 64
+  COLOR_MOVE_DELAY = 2
+  COLOR_MOVE_DUR = 5
+  ZOOM_TIME_SHORT = 8
+  MOVE_TO_BALL_Y = 48
+  SE_JUMP_OFFSET = 5
+  VISIBLE_FADE_OFFSET = 8
+  DELAY_AFTER_RECALL_SMALL = 1
+  DELAY_AFTER_RECALL_LARGE = 10
+  MOVE_OFF_TOP_TIME = 6
+  BALL_OFFSCREEN_Y = -32
+  BALL_END_OFFSET = 128
+  DELAY_OFFSET_2 = 2
+  BOUNCE_TIMES = [4, 4, 3, 2]
+  BOUNCE_DIVS = [1, 2, 4, 8]
+  BASE_ZOOM = 100
+  ZOOM_VARIATION = 5
+  SQUISH_TIME = 2
+  OPEN_DELAY = 15
+  VISIBLE_OFF_DELAY = 5
+  FPS_MULT = 20
+  VISIBLE_AFTER_CRY_OFFSET = 4
+  MSG_WAIT_INPUT = 50
+
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
   end
@@ -28,7 +61,7 @@ class PokemonTrade_Scene
   def pbStartScreen(pokemon, pokemon2, trader1, trader2)
     @sprites = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = VIEWPORT_Z
     @pokemon  = pokemon
     @pokemon2 = pokemon2
     @trader1  = trader1
@@ -39,15 +72,15 @@ class PokemonTrade_Scene
     @sprites["rsprite1"].setPokemonBitmap(@pokemon, false)
     @sprites["rsprite1"].setOffset(PictureOrigin::BOTTOM)
     @sprites["rsprite1"].x = Graphics.width / 2
-    @sprites["rsprite1"].y = 264
-    @sprites["rsprite1"].z = 10
+    @sprites["rsprite1"].y = SPRITE_1_Y
+    @sprites["rsprite1"].z = SPRITE_1_Z
     @pokemon.species_data.apply_metrics_to_sprite(@sprites["rsprite1"], 1)
     @sprites["rsprite2"] = PokemonSprite.new(@viewport)
     @sprites["rsprite2"].setPokemonBitmap(@pokemon2, false)
     @sprites["rsprite2"].setOffset(PictureOrigin::BOTTOM)
     @sprites["rsprite2"].x = Graphics.width / 2
-    @sprites["rsprite2"].y = 264
-    @sprites["rsprite2"].z = 10
+    @sprites["rsprite2"].y = SPRITE_2_Y
+    @sprites["rsprite2"].z = SPRITE_2_Z
     @pokemon2.species_data.apply_metrics_to_sprite(@sprites["rsprite2"], 1)
     @sprites["rsprite2"].visible = false
     @sprites["msgwindow"] = pbCreateMessageWindow(@viewport)
@@ -61,9 +94,9 @@ class PokemonTrade_Scene
     ballimage = sprintf("Graphics/Battle animations/ball_%s", @pokemon.poke_ball)
     ballopenimage = sprintf("Graphics/Battle animations/ball_%s_open", @pokemon.poke_ball)
     # Starting position of ball
-    pictureBall.setXY(0, Graphics.width / 2, 48)
+    pictureBall.setXY(0, Graphics.width / 2, PICTURE_BALL_Y)
     pictureBall.setName(0, ballimage)
-    pictureBall.setSrcSize(0, 32, 64)
+    pictureBall.setSrcSize(0, SRC_W, SRC_H)
     pictureBall.setOrigin(0, PictureOrigin::CENTER)
     pictureBall.setVisible(0, true)
     # Starting position of sprite
@@ -71,7 +104,7 @@ class PokemonTrade_Scene
     picturePoke.setOrigin(0, PictureOrigin::BOTTOM)
     picturePoke.setVisible(0, true)
     # Change Pokémon color
-    picturePoke.moveColor(2, 5, Color.new(248, 176, 140))
+    picturePoke.moveColor(COLOR_MOVE_DELAY, COLOR_MOVE_DUR, Color.new(248, 176, 140))
     # Recall
     delay = picturePoke.totalDuration
     picturePoke.setSE(delay, "Battle recall")
@@ -80,14 +113,14 @@ class PokemonTrade_Scene
     # Move sprite to ball
     picturePoke.moveZoom(delay, 8, 0)
     picturePoke.moveXY(delay, 8, Graphics.width / 2, 48)
-    picturePoke.setSE(delay + 5, "Battle jump to ball")
-    picturePoke.setVisible(delay + 8, false)
-    delay = picturePoke.totalDuration + 1
+    picturePoke.setSE(delay + SE_JUMP_OFFSET, "Battle jump to ball")
+    picturePoke.setVisible(delay + VISIBLE_FADE_OFFSET, false)
+    delay = picturePoke.totalDuration + DELAY_AFTER_RECALL_SMALL
     pictureBall.setName(delay, ballimage)
-    pictureBall.setSrcSize(delay, 32, 64)
+    pictureBall.setSrcSize(delay, SRC_W, SRC_H)
     # Make Poké Ball go off the top of the screen
-    delay = picturePoke.totalDuration + 10
-    pictureBall.moveXY(delay, 6, Graphics.width / 2, -32)
+    delay = picturePoke.totalDuration + DELAY_AFTER_RECALL_LARGE
+    pictureBall.moveXY(delay, MOVE_OFF_TOP_TIME, Graphics.width / 2, BALL_OFFSCREEN_Y)
     # Play animation
     pbRunPictures(
       [picturePoke, pictureBall],
@@ -103,9 +136,9 @@ class PokemonTrade_Scene
     ballimage = sprintf("Graphics/Battle animations/ball_%s", @pokemon2.poke_ball)
     ballopenimage = sprintf("Graphics/Battle animations/ball_%s_open", @pokemon2.poke_ball)
     # Starting position of ball
-    pictureBall.setXY(0, Graphics.width / 2, -32)
+    pictureBall.setXY(0, Graphics.width / 2, BALL_OFFSCREEN_Y)
     pictureBall.setName(0, ballimage)
-    pictureBall.setSrcSize(0, 32, 64)
+    pictureBall.setSrcSize(0, SRC_W, SRC_H)
     pictureBall.setOrigin(0, PictureOrigin::CENTER)
     pictureBall.setVisible(0, true)
     # Starting position of sprite
@@ -114,16 +147,16 @@ class PokemonTrade_Scene
     picturePoke.setColor(0, Color.new(248, 176, 240))
     picturePoke.setVisible(0, false)
     # Dropping ball
-    y = Graphics.height - 96 - 16 - 16   # end point of Poké Ball
-    delay = picturePoke.totalDuration + 2
+    y = Graphics.height - BALL_END_OFFSET   # end point of Poké Ball
+    delay = picturePoke.totalDuration + DELAY_OFFSET_2
     4.times do |i|
-      t = [4, 4, 3, 2][i]   # Time taken to rise or fall for each bounce
-      d = [1, 2, 4, 8][i]   # Fraction of the starting height each bounce rises to
+      t = BOUNCE_TIMES[i]   # Time taken to rise or fall for each bounce
+      d = BOUNCE_DIVS[i]    # Fraction of the starting height each bounce rises to
       delay -= t if i == 0
       if i > 0
-        pictureBall.setZoomXY(delay, 100 + (5 * (5 - i)), 100 - (5 * (5 - i)))   # Squish
-        pictureBall.moveZoom(delay, 2, 100)                      # Unsquish
-        pictureBall.moveXY(delay, t, Graphics.width / 2, y - (100 / d))
+        pictureBall.setZoomXY(delay, BASE_ZOOM + (ZOOM_VARIATION * (5 - i)), BASE_ZOOM - (ZOOM_VARIATION * (5 - i)))   # Squish
+        pictureBall.moveZoom(delay, SQUISH_TIME, BASE_ZOOM)                      # Unsquish
+        pictureBall.moveXY(delay, t, Graphics.width / 2, y - (BASE_ZOOM / d))
       end
       pictureBall.moveXY(delay + t, t, Graphics.width / 2, y)
       pictureBall.setSE(delay + (2 * t), "Battle ball drop")
@@ -131,22 +164,22 @@ class PokemonTrade_Scene
     end
     picturePoke.setXY(delay, Graphics.width / 2, y)
     # Open Poké Ball
-    delay = pictureBall.totalDuration + 15
+    delay = pictureBall.totalDuration + OPEN_DELAY
     pictureBall.setSE(delay, "Battle recall")
     pictureBall.setName(delay, ballopenimage)
-    pictureBall.setSrcSize(delay, 32, 64)
-    pictureBall.setVisible(delay + 5, false)
+    pictureBall.setSrcSize(delay, SRC_W, SRC_H)
+    pictureBall.setVisible(delay + VISIBLE_OFF_DELAY, false)
     # Pokémon appears and enlarges
     picturePoke.setVisible(delay, true)
-    picturePoke.moveZoom(delay, 8, 100)
-    picturePoke.moveXY(delay, 8, Graphics.width / 2, @sprites["rsprite2"].y)
+    picturePoke.moveZoom(delay, ZOOM_TIME_SHORT, BASE_ZOOM)
+    picturePoke.moveXY(delay, ZOOM_TIME_SHORT, Graphics.width / 2, @sprites["rsprite2"].y)
     # Return Pokémon's color to normal and play cry
     delay = picturePoke.totalDuration
-    picturePoke.moveColor(delay, 5, Color.new(248, 176, 240, 0))
+    picturePoke.moveColor(delay, COLOR_MOVE_DUR, Color.new(248, 176, 240, 0))
     cry = GameData::Species.cry_filename_from_pokemon(@pokemon2)
     picturePoke.setSE(delay, cry) if cry
-    cry_length = (GameData::Species.cry_length(@pokemon2) * 20).ceil
-    picturePoke.setVisible(delay + cry_length + 4, true)   # Time for the cry to play
+    cry_length = (GameData::Species.cry_length(@pokemon2) * FPS_MULT).ceil
+    picturePoke.setVisible(delay + cry_length + VISIBLE_AFTER_CRY_OFFSET, true)   # Time for the cry to play
     # Play animation
     pbRunPictures(
       [picturePoke, pictureBall],

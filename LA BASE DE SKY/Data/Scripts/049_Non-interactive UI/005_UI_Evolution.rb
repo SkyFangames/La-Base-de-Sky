@@ -3,6 +3,29 @@
 #===============================================================================
 class PokemonEvolutionScene
   EVOLUTION_BGM = "Evolution"
+
+  SPRITE_1_Y_OFFSET = -64
+
+  # Layout and timing constants
+  VIEWPORT_Z = 99999
+  BG_BUFFER = 80
+  NARROW_BG_BASE = 64
+  NARROW_Y_DELAY = 0.2
+  LERP_FAST = 0.7
+  LERP_SLOW = 0.5
+  LERP_MED = 0.4
+
+  EVOLUTION_ANIM_SECONDS = 9
+  ANIM_FPS = 20
+  ZOOM_START = 25
+  ZOOM_EXTRA = 15
+  ZOOM_DEFAULT = 12
+
+  DELAY_SHORT = 1
+  FLASH_WAIT = 0.25
+  TONE_MAX = 255
+  MESSAGE_WAIT = 80
+
   def self.pbDuplicatePokemon(pkmn, new_species)
     new_pkmn = pkmn.clone
     new_pkmn.species   = new_species
@@ -25,18 +48,18 @@ class PokemonEvolutionScene
     @newspecies = newspecies
     @sprites = {}
     @bgviewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @bgviewport.z = 99999
+    @bgviewport.z = VIEWPORT_Z
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = VIEWPORT_Z
     @msgviewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @msgviewport.z = 99999
+    @msgviewport.z = VIEWPORT_Z
     addBackgroundOrColoredPlane(@sprites, "background", "evolution_bg",
                                 Color.new(248, 248, 248), @bgviewport)
     rsprite1 = PokemonSprite.new(@viewport)
     rsprite1.setOffset(PictureOrigin::CENTER)
     rsprite1.setPokemonBitmap(@pokemon, false)
-    rsprite1.x = Graphics.width / 2
-    rsprite1.y = (Graphics.height - 64) / 2
+    rsprite1.x = Graphics.width / 2 
+    rsprite1.y = (Graphics.height + SPRITE_1_Y_OFFSET) / 2 
     rsprite2 = PokemonSprite.new(@viewport)
     rsprite2.setOffset(PictureOrigin::CENTER)
     rsprite2.setPokemonBitmapSpecies(@pokemon, @newspecies, false)
@@ -60,9 +83,9 @@ class PokemonEvolutionScene
     sprite2.setColor(0, Color.new(255, 255, 255, 255))
     # Make sprite turn white
     sprite.moveColor(0, 25, Color.new(255, 255, 255, 255))
-    total_duration = 9 * 20   # 9 seconds
-    duration = 25 + 15
-    zoom_duration = 12
+    total_duration = EVOLUTION_ANIM_SECONDS * ANIM_FPS   # seconds * fps
+    duration = ZOOM_START + ZOOM_EXTRA
+    zoom_duration = ZOOM_DEFAULT
     loop do
       # Shrink prevo sprite, enlarge evo sprite
       sprite.moveZoom(duration, zoom_duration, 0)
@@ -93,7 +116,7 @@ class PokemonEvolutionScene
       Graphics.update
       Input.update
       pbUpdate
-      break if System.uptime - timer_start >= 1
+      break if System.uptime - timer_start >= DELAY_SHORT
     end
     pbMEPlay("Evolution start")
     pbBGMPlay(EVOLUTION_BGM)
@@ -135,18 +158,18 @@ class PokemonEvolutionScene
   end
 
   def pbUpdateNarrowScreen(timer_start)
-    return if @bgviewport.rect.y >= 80
-    buffer = 80
-    @bgviewport.rect.height = Graphics.height - lerp(0, 64 + (buffer * 2), 0.7, timer_start, System.uptime).to_i
-    @bgviewport.rect.y = lerp(0, buffer, 0.5, timer_start + 0.2, System.uptime).to_i
+    return if @bgviewport.rect.y >= BG_BUFFER
+    buffer = BG_BUFFER
+    @bgviewport.rect.height = Graphics.height - lerp(0, NARROW_BG_BASE + (buffer * 2), LERP_FAST, timer_start, System.uptime).to_i
+    @bgviewport.rect.y = lerp(0, buffer, LERP_SLOW, timer_start + NARROW_Y_DELAY, System.uptime).to_i
     @sprites["background"].oy = @bgviewport.rect.y
   end
 
   def pbUpdateExpandScreen(timer_start)
     return if @bgviewport.rect.height >= Graphics.height
-    buffer = 80
-    @bgviewport.rect.height = Graphics.height - lerp(64 + (buffer * 2), 0, 0.7, timer_start, System.uptime).to_i
-    @bgviewport.rect.y = lerp(buffer, 0, 0.5, timer_start, System.uptime).to_i
+    buffer = BG_BUFFER
+    @bgviewport.rect.height = Graphics.height - lerp(NARROW_BG_BASE + (buffer * 2), 0, LERP_FAST, timer_start, System.uptime).to_i
+    @bgviewport.rect.y = lerp(buffer, 0, LERP_SLOW, timer_start, System.uptime).to_i
     @sprites["background"].oy = @bgviewport.rect.y
   end
 
@@ -156,9 +179,9 @@ class PokemonEvolutionScene
       Graphics.update
       pbUpdate(true)
       pbUpdateExpandScreen(timer_start)
-      tone = lerp(0, 255, 0.7, timer_start, System.uptime)
+      tone = lerp(0, TONE_MAX, LERP_FAST, timer_start, System.uptime)
       @viewport.tone.set(tone, tone, tone, 0)
-      break if tone >= 255
+      break if tone >= TONE_MAX
     end
     @bgviewport.rect.y      = 0
     @bgviewport.rect.height = Graphics.height
@@ -180,14 +203,14 @@ class PokemonEvolutionScene
     loop do
       Graphics.update
       pbUpdate(true)
-      break if System.uptime - timer_start >= 0.25
+      break if System.uptime - timer_start >= FLASH_WAIT
     end
     timer_start = System.uptime
     loop do
       Graphics.update
       pbUpdate
       pbUpdateExpandScreen(timer_start)
-      tone = lerp(255, 0, 0.4, timer_start, System.uptime)
+      tone = lerp(TONE_MAX, 0, LERP_MED, timer_start, System.uptime)
       @viewport.tone.set(tone, tone, tone, 0)
       break if tone <= 0
     end

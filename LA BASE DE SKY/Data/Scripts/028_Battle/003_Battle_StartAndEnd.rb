@@ -304,6 +304,7 @@ class Battle
     # Terrain announcement
     terrain_data = GameData::BattleTerrain.try_get(@field.terrain)
     pbCommonAnimation(terrain_data.animation) if terrain_data
+    
     case @field.terrain
     when :Electric
       pbDisplay(_INTL("¡Se ha formado un campo de corriente eléctrica en el terreno de combate!"))
@@ -314,6 +315,7 @@ class Battle
     when :Psychic
       pbDisplay(_INTL("¡El terreno de combate se ha vuelto muy extraño!"))
     end
+    on_terrain_start
     # Abilities upon entering battle
     pbOnAllBattlersEnteringBattle
     # Main battle loop
@@ -552,6 +554,16 @@ class Battle
         @peer.pbOnLeavingBattle(self, pkmn, @usedInBattle[side][i], true)
       end
     end
+    
+    if Settings::UPDATE_PARTY_LEAD_BATTLE_END && decided? && @battlers[0] && !@battlers[0].fainted?
+      new_lead_index = @battlers[0].pokemonIndex
+      if new_lead_index && new_lead_index > 0 && new_lead_index < $player.party.length
+        # Intercambiamos el líder actual (0) con el Pokémon que terminó la batalla
+        $player.party[0], $player.party[new_lead_index] = $player.party[new_lead_index], $player.party[0]
+      end
+    end
+    
+
     return @decision
   end
 

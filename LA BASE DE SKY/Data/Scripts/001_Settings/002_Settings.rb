@@ -480,6 +480,10 @@ module Settings
   # está en el mimso mapa (solo para nuevas mecánicas de crecimiento).
   PLANT_SPARKLE_ANIMATION_ID   = 7
 
+  # Animación que aparece cuando el jugador termina de dar un paso sobre agua
+  # quieta (muestra una ondulación de agua).
+  WATER_RIPPLE_ANIMATION_ID    = 8
+
   #=============================================================================
 
   # El ANCHO por defecto de la pantalla en píxeles (en escala 1.0).
@@ -603,6 +607,10 @@ module Settings
   # Limite de cuantas totales puede haber si STORAGE_EXTEND_ON_FULL
   # Este numero deberia ser mayor a NUM_STORAGE_BOXES
   MAX_STORAGE_BOXES_EXTEND = 70
+
+  
+  # Si quieres usar la nueva interfaz de opciones (true) o la clásica (false).
+  USE_NEW_OPTIONS_UI = true
 
   #=============================================================================
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 

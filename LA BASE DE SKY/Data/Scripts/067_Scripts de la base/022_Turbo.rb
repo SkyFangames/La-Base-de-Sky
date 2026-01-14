@@ -7,7 +7,7 @@
 #===============================================================================
 module TurboConfig
   # Velocidades: [Normal, x1.5, x2.0]
-  SPEED_STAGES = [1.0, 2.0, 3.0]
+  SPEED_STAGES = [1.0, 1.5, 2.0]
   
   # Teclas para activar
   TOGGLE_KEYS = [Input::ALT, Input::AUX1]

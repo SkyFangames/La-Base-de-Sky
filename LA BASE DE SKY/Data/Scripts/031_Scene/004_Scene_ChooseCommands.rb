@@ -302,7 +302,7 @@ class Battle::Scene
       cmdSelect  = -1
       commands = []
       commands[cmdSwitch  = commands.length] = _INTL("Cambiar") if mode == 0 && modParty[idxParty].able? &&
-                                                                     (@battle.canSwitch || !canCancel)
+                                                                     (!@battle.rules[:cannot_switch] || !canCancel)
       commands[cmdBoxes   = commands.length] = _INTL("Enviar al PC") if mode == 1
       commands[cmdSelect  = commands.length] = _INTL("Seleccionar") if mode == 2 && modParty[idxParty].fainted?
       commands[cmdSummary = commands.length] = _INTL("Datos")

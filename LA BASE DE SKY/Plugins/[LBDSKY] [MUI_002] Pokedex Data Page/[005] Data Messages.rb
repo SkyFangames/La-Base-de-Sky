@@ -183,7 +183,7 @@ class PokemonPokedexInfo_Scene
       ]) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
       pbDrawTextPositions(overlay, [
         [_INTL("[C]: Similares"), Graphics.width - 34, 292, :right, Color.new(0, 112, 248), Color.new(120, 184, 232)]
-      ]) if !s2 && !@data_hash[:stats].empty
+      ]) if !s2 && !@data_hash[:stats].empty?
     else
       text << "\nDesconocido."
     end

@@ -295,7 +295,7 @@ module Battle::CatchAndStoreMixin
     pkmn.forced_form = nil if MultipleForms.hasFunction?(pkmn.species, "getForm")
     @peer.pbOnLeavingBattle(self, pkmn, true, true)
     # Make the Poké Ball and data box disappear
-    @scene.pbHideCaptureBall(idxBattler)
+    @scene.pbHideCaptureBall(battler.index)
     # Save the Pokémon for storage at the end of battle
     @caughtPokemon.push(pkmn)
   end

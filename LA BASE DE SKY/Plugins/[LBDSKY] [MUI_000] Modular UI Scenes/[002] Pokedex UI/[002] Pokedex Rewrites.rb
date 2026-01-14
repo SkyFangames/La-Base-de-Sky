@@ -2,6 +2,17 @@
 # Pokedex scene edits and additions to both visuals and function.
 #===============================================================================
 class PokemonPokedexInfo_Scene
+  # Constants to avoid magic numbers in drawPageIcons
+  PAGE_ICONS_ALIGNMENT_MARGIN = 42
+  ICON_SPACING = 4
+  PAGE_ARROW_LEFT_X_ADJUST = -22
+  PAGE_ARROW_Y_ADJUST = 2
+  PAGE_ARROWS_SRC_LEFT_X = 0
+  PAGE_ARROWS_SRC_RIGHT_X = 20
+  ARROW_FRAME_Y_OFFSET = 24
+  PAGE_ARROWS_WIDTH = 18
+  PAGE_ARROWS_HEIGHT = 24
+
   #-----------------------------------------------------------------------------
   # Used to set up all of the available pages to a species.
   #-----------------------------------------------------------------------------
@@ -35,21 +46,21 @@ class PokemonPokedexInfo_Scene
     endPage    = [startPage + size, @page_list.length - 1].min
     case PAGE_ICONS_ALIGNMENT
     when :left   then offset = 0
-    when :right  then offset = ((Graphics.width - xpos - 42) - (w * range.min)).round
-    when :center then offset = ((Graphics.width - xpos - 42) / 2 - (range.min * (w / 2))).round
+    when :right  then offset = ((Graphics.width - xpos - PAGE_ICONS_ALIGNMENT_MARGIN) - (w * range.min)).round
+    when :center then offset = ((Graphics.width - xpos - PAGE_ICONS_ALIGNMENT_MARGIN) / 2 - (range.min * (w / 2))).round
     end
     for i in startPage..endPage
       suffix = UIHandlers.get_info(:pokedex, @page_list[i], :suffix)
       path = "Graphics/UI/Pokedex/page_#{suffix}"
       iconRectY = (page == i) ? h : 0
-      imagepos.push([path, xpos + offset + iconPos * (w + 4), ypos, 0, iconRectY, w, h])
+      imagepos.push([path, xpos + offset + iconPos * (w + ICON_SPACING), ypos, 0, iconRectY, w, h])
       iconPos += 1
     end
     if PAGE_ICONS_SHOW_ARROWS
       path = "Graphics/UI/Pokedex/page_arrows"
       imagepos.push(
-        [path, xpos + offset - 22, ypos + 2, 0, (page == 0) ? 0 : 24, 18, 24],
-        [path, xpos + offset + iconPos * (w + 4), ypos + 2, 20, (page == @page_list.length - 1) ? 0 : 24, 18, 24]
+        [path, xpos + offset + PAGE_ARROW_LEFT_X_ADJUST, ypos + PAGE_ARROW_Y_ADJUST, PAGE_ARROWS_SRC_LEFT_X, (page == 0) ? 0 : ARROW_FRAME_Y_OFFSET, PAGE_ARROWS_WIDTH, PAGE_ARROWS_HEIGHT],
+        [path, xpos + offset + iconPos * (w + ICON_SPACING), ypos + PAGE_ARROW_Y_ADJUST, PAGE_ARROWS_SRC_RIGHT_X, (page == @page_list.length - 1) ? 0 : ARROW_FRAME_Y_OFFSET, PAGE_ARROWS_WIDTH, PAGE_ARROWS_HEIGHT]
       )
     end
     pbDrawImagePositions(@sprites["overlay"].bitmap, imagepos)

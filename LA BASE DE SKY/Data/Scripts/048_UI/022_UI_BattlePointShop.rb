@@ -92,6 +92,14 @@ end
 # Battle Point Shop
 #===============================================================================
 class Window_BattlePointShop < Window_DrawableCommand
+
+  CANCEL_TEXT_X_OFFSET = 0
+  CANCEL_TEXT_Y_OFFSET = 2
+  ITEM_QTY_X_OFFSET    = -18
+  ITEM_QTY_Y_OFFSET    = 2
+  ITEM_NAME_X_OFFSET   = 0
+  ITEM_NAME_Y_OFFSET   = 2
+
   def initialize(stock, adapter, x, y, width, height, viewport = nil)
     @stock       = stock
     @adapter     = adapter
@@ -115,15 +123,15 @@ class Window_BattlePointShop < Window_DrawableCommand
     rect = drawCursor(index, rect)
     ypos = rect.y
     if index == count - 1
-      textpos.push([_INTL("CANCELAR"), rect.x, ypos + 2, :left, self.baseColor, self.shadowColor])
+      textpos.push([_INTL("CANCELAR"), rect.x + CANCEL_TEXT_X_OFFSET, ypos + CANCEL_TEXT_Y_OFFSET, :left, self.baseColor, self.shadowColor])
     else
       item = @stock[index]
       itemname = @adapter.getDisplayName(item)
       qty = @adapter.getDisplayPrice(item)
       sizeQty = self.contents.text_size(qty).width
-      xQty = rect.x + rect.width - sizeQty - 2 - 16
-      textpos.push([itemname, rect.x, ypos + 2, :left, self.baseColor, self.shadowColor])
-      textpos.push([qty, xQty, ypos + 2, :left, self.baseColor, self.shadowColor])
+      xQty = rect.x + rect.width - sizeQty + ITEM_QTY_X_OFFSET
+      textpos.push([itemname, rect.x + ITEM_NAME_X_OFFSET, ypos + ITEM_NAME_Y_OFFSET, :left, self.baseColor, self.shadowColor])
+      textpos.push([qty, xQty, ypos + ITEM_QTY_Y_OFFSET, :left, self.baseColor, self.shadowColor])
     end
     pbDrawTextPositions(self.contents, textpos)
   end
@@ -133,6 +141,36 @@ end
 #
 #===============================================================================
 class BattlePointShop_Scene
+
+  QTY_WINDOW_Y_OFFSET= -102
+  SCROLL_MAP_START_DIRECTION    = 6   # Scroll right when opening mart
+  SCROLL_MAP_START_DISTANCE     = 5
+  SCROLL_MAP_START_SPEED        = 5
+  ICON_X                        = 36
+  ICON_Y_OFFSET                 = -50
+  ITEM_WINDOW_X_OFFSET          = -332
+  ITEM_WINDOW_Y                 = 10
+  ITEM_WINDOW_WIDTH             = 346
+  ITEM_WINDOW_HEIGHT_OFFSET     = -124
+  ITEM_TEXT_WINDOW_X            = 64
+  ITEM_TEXT_WINDOW_Y_OFFSET     = -112
+  ITEM_TEXT_WINDOW_WIDTH_OFFSET = -64
+  ITEM_TEXT_WINDOW_HEIGHT       = 128
+  HELP_WINDOW_TEXT_LINES        = 1
+  BATTLE_POINT_WINDOW_X         = 0
+  BATTLE_POINT_WINDOW_Y         = 0
+  BATTLE_POINT_WINDOW_WIDTH     = 190
+  BATTLE_POINT_WINDOW_HEIGHT    = 96
+  QTY_WINDOW_WIDTH              = 190
+  QTY_WINDOW_HEIGHT             = 64
+  QTY_WINDOW_Y_OFFSET           = -102
+  SCROLL_MAP_END_DIRECTION      = 4   # Scroll left when closing mart
+  SCROLL_MAP_END_DISTANCE       = 5
+  SCROLL_MAP_END_SPEED          = 5
+  DISPLAY_TEXT_LINES            = 2
+  CHOOSE_NUMBER_WINDOW_WIDTH    = 224
+  CHOOSE_NUMBER_WINDOW_HEIGHT   = 64
+
   def update
     pbUpdateSpriteHash(@sprites)
     @subscene&.pbUpdate
@@ -148,7 +186,7 @@ class BattlePointShop_Scene
         (itemwindow.item) ? @adapter.getDescription(itemwindow.item) : _INTL("Dejar de comprar.")
       @sprites["qtywindow"].visible = !itemwindow.item.nil?
       @sprites["qtywindow"].text    = _INTL("En Mochila:<r>{1}", @adapter.getQuantity(itemwindow.item))
-      @sprites["qtywindow"].y       = Graphics.height - 102 - @sprites["qtywindow"].height
+      @sprites["qtywindow"].y       = Graphics.height + QTY_WINDOW_Y_OFFSET - @sprites["qtywindow"].height
       itemwindow.refresh
     end
     @sprites["battlepointwindow"].text = _INTL("Puntos de\nBatalla: {1}", $player.battle_points.to_s_formatted)
@@ -156,7 +194,7 @@ class BattlePointShop_Scene
 
   def pbStartScene(stock, adapter)
     # Scroll right before showing screen
-    pbScrollMap(6, 5, 5)
+    pbScrollMap(SCROLL_MAP_START_DIRECTION, SCROLL_MAP_START_DISTANCE, SCROLL_MAP_START_SPEED)
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 99999
     @stock = stock
@@ -164,16 +202,16 @@ class BattlePointShop_Scene
     @sprites = {}
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["background"].setBitmap("Graphics/UI/Mart/bg")
-    @sprites["icon"] = ItemIconSprite.new(36, Graphics.height - 50, nil, @viewport)
+    @sprites["icon"] = ItemIconSprite.new(ICON_X, Graphics.height + ICON_Y_OFFSET, nil, @viewport)
     winAdapter = BattlePointShopAdapter.new
     @sprites["itemwindow"] = Window_BattlePointShop.new(
-      stock, winAdapter, Graphics.width - 316 - 16, 10, 330 + 16, Graphics.height - 124
+      stock, winAdapter, Graphics.width + ITEM_WINDOW_X_OFFSET, ITEM_WINDOW_Y, ITEM_WINDOW_WIDTH, Graphics.height + ITEM_WINDOW_HEIGHT_OFFSET
     )
     @sprites["itemwindow"].viewport = @viewport
     @sprites["itemwindow"].index = 0
     @sprites["itemwindow"].refresh
     @sprites["itemtextwindow"] = Window_UnformattedTextPokemon.newWithSize(
-      "", 64, Graphics.height - 96 - 16, Graphics.width - 64, 128, @viewport
+      "", ITEM_TEXT_WINDOW_X, Graphics.height + ITEM_TEXT_WINDOW_Y_OFFSET, Graphics.width + ITEM_TEXT_WINDOW_WIDTH_OFFSET, ITEM_TEXT_WINDOW_HEIGHT, @viewport
     )
     pbPrepareWindow(@sprites["itemtextwindow"])
     @sprites["itemtextwindow"].baseColor = Color.new(248, 248, 248)
@@ -183,28 +221,28 @@ class BattlePointShop_Scene
     pbPrepareWindow(@sprites["helpwindow"])
     @sprites["helpwindow"].visible = false
     @sprites["helpwindow"].viewport = @viewport
-    pbBottomLeftLines(@sprites["helpwindow"], 1)
+    pbBottomLeftLines(@sprites["helpwindow"], HELP_WINDOW_TEXT_LINES)
     @sprites["battlepointwindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["battlepointwindow"])
     @sprites["battlepointwindow"].setSkin("Graphics/Windowskins/goldskin")
     @sprites["battlepointwindow"].visible = true
     @sprites["battlepointwindow"].viewport = @viewport
-    @sprites["battlepointwindow"].x = 0
-    @sprites["battlepointwindow"].y = 0
-    @sprites["battlepointwindow"].width = 190
-    @sprites["battlepointwindow"].height = 96
+    @sprites["battlepointwindow"].x = BATTLE_POINT_WINDOW_X
+    @sprites["battlepointwindow"].y = BATTLE_POINT_WINDOW_Y
+    @sprites["battlepointwindow"].width = BATTLE_POINT_WINDOW_WIDTH
+    @sprites["battlepointwindow"].height = BATTLE_POINT_WINDOW_HEIGHT
     @sprites["battlepointwindow"].baseColor = Color.new(88, 88, 80)
     @sprites["battlepointwindow"].shadowColor = Color.new(168, 184, 184)
     @sprites["qtywindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["qtywindow"])
     @sprites["qtywindow"].setSkin("Graphics/Windowskins/goldskin")
     @sprites["qtywindow"].viewport = @viewport
-    @sprites["qtywindow"].width = 190
-    @sprites["qtywindow"].height = 64
+    @sprites["qtywindow"].width = QTY_WINDOW_WIDTH
+    @sprites["qtywindow"].height = QTY_WINDOW_HEIGHT
     @sprites["qtywindow"].baseColor = Color.new(88, 88, 80)
     @sprites["qtywindow"].shadowColor = Color.new(168, 184, 184)
     @sprites["qtywindow"].text = _INTL("En Mochila:<r>{1}", @adapter.getQuantity(@sprites["itemwindow"].item))
-    @sprites["qtywindow"].y = Graphics.height - 102 - @sprites["qtywindow"].height
+    @sprites["qtywindow"].y = Graphics.height + QTY_WINDOW_Y_OFFSET - @sprites["qtywindow"].height
     pbDeactivateWindows(@sprites)
     pbRefresh
     Graphics.frame_reset
@@ -214,7 +252,7 @@ class BattlePointShop_Scene
     pbDisposeSpriteHash(@sprites)
     @viewport.dispose
     # Scroll left after showing screen
-    pbScrollMap(4, 5, 5)
+    pbScrollMap(SCROLL_MAP_END_DIRECTION, SCROLL_MAP_END_DISTANCE, SCROLL_MAP_END_SPEED)
   end
 
   def pbPrepareWindow(window)
@@ -246,7 +284,7 @@ class BattlePointShop_Scene
     cw = @sprites["helpwindow"]
     cw.letterbyletter = true
     cw.text = msg
-    pbBottomLeftLines(cw, 2)
+    pbBottomLeftLines(cw, DISPLAY_TEXT_LINES)
     cw.visible = true
     pbPlayDecisionSE
     refreshed_after_busy = false
@@ -274,7 +312,7 @@ class BattlePointShop_Scene
     cw = @sprites["helpwindow"]
     cw.letterbyletter = true
     cw.text = msg
-    pbBottomLeftLines(cw, 2)
+    pbBottomLeftLines(cw, DISPLAY_TEXT_LINES)
     cw.visible = true
     yielded = false
     pbPlayDecisionSE
@@ -302,7 +340,7 @@ class BattlePointShop_Scene
     dw.letterbyletter = true
     dw.text = msg
     dw.visible = true
-    pbBottomLeftLines(dw, 2)
+    pbBottomLeftLines(dw, DISPLAY_TEXT_LINES)
     commands = [_INTL("Sí"), _INTL("No")]
     cw = Window_CommandPokemon.new(commands)
     cw.viewport = @viewport
@@ -339,8 +377,8 @@ class BattlePointShop_Scene
     using(numwindow = Window_AdvancedTextPokemon.new("")) do   # Showing number of items
       pbPrepareWindow(numwindow)
       numwindow.viewport = @viewport
-      numwindow.width = 224
-      numwindow.height = 64
+      numwindow.width = CHOOSE_NUMBER_WINDOW_WIDTH
+      numwindow.height = CHOOSE_NUMBER_WINDOW_HEIGHT
       numwindow.baseColor = Color.new(88, 88, 80)
       numwindow.shadowColor = Color.new(168, 184, 184)
       numwindow.text = _INTL("x{1}<r>{2} PB", curnumber, (curnumber * itemprice).to_s_formatted)

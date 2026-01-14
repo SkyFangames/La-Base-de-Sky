@@ -6,6 +6,12 @@ class MapBottomSprite < Sprite
 
   TEXT_MAIN_COLOR   = Color.new(248, 248, 248)
   TEXT_SHADOW_COLOR = Color.new(0, 0, 0)
+  MAP_NAME_X        = 18
+  MAP_NAME_Y        = 4
+  MAP_LOCATION_X    = 18
+  MAP_LOCATION_Y    = 360
+  MAP_DATAILS_X     = Graphics.width - 16
+  MAP_DATAILS_Y     = 360
 
   def initialize(viewport = nil)
     super(viewport)
@@ -39,9 +45,9 @@ class MapBottomSprite < Sprite
   def refresh
     bitmap.clear
     textpos = [
-      [@mapname,                     18,   4, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
-      [@maplocation,                 18, 360, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
-      [@mapdetails, Graphics.width - 16, 360, :right, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR]
+      [@mapname, MAP_NAME_X, MAP_NAME_Y, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
+      [@maplocation, MAP_LOCATION_X, MAP_LOCATION_Y, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
+      [@mapdetails, MAP_DATAILS_X, MAP_DATAILS_Y, :right, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR]
     ]
     pbDrawTextPositions(bitmap, textpos)
   end
@@ -51,12 +57,17 @@ end
 #
 #===============================================================================
 class PokemonRegionMap_Scene
-  LEFT          = 0
-  TOP           = 0
-  RIGHT         = 29
-  BOTTOM        = 19
-  SQUARE_WIDTH  = 16
-  SQUARE_HEIGHT = 16
+  LEFT               = 0
+  TOP                = 0
+  RIGHT              = 29
+  BOTTOM             = 19
+  SQUARE_WIDTH       = 16
+  SQUARE_HEIGHT      = 16
+  MAP2_WIDTH         = 480
+  MAP2_HEIGHT        = 320
+  HELP_SPRITE_HEIGHT = 32
+  HELP_SPRITE_X       = Graphics.width - 16
+  HELP_SPRITE_Y       = 4
 
   def initialize(region = - 1, wallmap = true)
     @region  = region
@@ -111,7 +122,7 @@ class PokemonRegionMap_Scene
     Settings::REGION_MAP_EXTRAS.each do |graphic|
       next if graphic[0] != mapindex || !location_shown?(graphic)
       if !@sprites["map2"]
-        @sprites["map2"] = BitmapSprite.new(480, 320, @viewport)
+        @sprites["map2"] = BitmapSprite.new(MAP2_WIDTH, MAP2_HEIGHT, @viewport)
         @sprites["map2"].x = @sprites["map"].x
         @sprites["map2"].y = @sprites["map"].y
       end
@@ -149,7 +160,7 @@ class PokemonRegionMap_Scene
     @sprites["cursor"].x        = point_x_to_screen_x(@map_x)
     @sprites["cursor"].y        = point_y_to_screen_y(@map_y)
     @sprites["cursor"].play
-    @sprites["help"] = BitmapSprite.new(Graphics.width, 32, @viewport)
+    @sprites["help"] = BitmapSprite.new(Graphics.width, HELP_SPRITE_HEIGHT, @viewport)
     pbSetSystemFont(@sprites["help"].bitmap)
     refresh_fly_screen
     @changed = false
@@ -236,7 +247,7 @@ class PokemonRegionMap_Scene
     text = (@mode == 0) ? _INTL("ACCIÓN: Vuelo") : _INTL("ACCIÓN: Cancelar Vuelo")
     pbDrawTextPositions(
       @sprites["help"].bitmap,
-      [[text, Graphics.width - 16, 4, :right, Color.new(248, 248, 248), Color.black]]
+      [[text, HELP_SPRITE_X, HELP_SPRITE_Y, :right, Color.new(248, 248, 248), Color.black]]
     )
     @sprites.each do |key, sprite|
       next if !key.include?("point")
