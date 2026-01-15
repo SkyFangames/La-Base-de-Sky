@@ -145,6 +145,14 @@ class Window_TextEntry < SpriteWindow_Base
     return false
   end
 
+  def delete_at_cursor
+    original_cursor = @helper.cursor
+    @helper.cursor += 1
+    result = delete
+    @helper.cursor = original_cursor
+    return result
+  end
+
   def update
     cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i.even?
     if cursor_to_show != @cursor_shown

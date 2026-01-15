@@ -153,6 +153,33 @@ if !$joiplay
           self.refresh
         end
         return
+      elsif Input.triggerex?(:HOME)
+        @helper.cursor = 0
+        @cursor_timer_start = System.uptime
+        @cursor_shown = true
+        self.refresh
+        return
+      elsif Input.triggerex?(:END)
+        @helper.cursor = self.text.scan(/./m).length
+        @cursor_timer_start = System.uptime
+        @cursor_shown = true
+        self.refresh
+        return
+      elsif Input.triggerex?(:DELETE) || Input.repeatex?(:DELETE)
+        return if @helper.cursor >= self.text.scan(/./m).length
+        if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+          word = self.text[@helper.cursor..-1].split(/\s+/).first
+          if word
+            word += " " if word != self.text
+            word.length.times { self.delete_at_cursor }
+          else
+            self.delete_at_cursor
+          end
+        else
+          self.delete_at_cursor if @helper.cursor < self.text.scan(/./m).length
+        end
+        refresh
+        return
       elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
         return unless @helper.cursor > 0
         if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
