@@ -84,7 +84,7 @@ if !$joiplay
     return ret
   end
 
-  class Window_TextEntry_Keyboard_Terminal < Window_TextEntry
+  class Window_TextEntry_Keyboard_Terminal < Window_TextEntry_Keyboard
     def initialize(text, x, y, width, height)
       super(text, x, y, width, height)
       self.opacity = 0
@@ -113,89 +113,11 @@ if !$joiplay
         cursor_x = text_x + self.contents.text_size(subtext).width
         self.contents.fill_rect(cursor_x, 4, 2, 24, Color.new(255, 255, 255))
       end
-    end
+   end
 
-    def update
-      cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i % 2 == 0
-      if cursor_to_show != @cursor_shown
-        @cursor_shown = cursor_to_show
-        refresh
-      end
-      return if !self.active
-      
-      # Moving cursor
-      if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-        if @helper.cursor > 0
-          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-            @helper.cursor -= 1
-            word = self.text[0..@helper.cursor].split(/\s+/).last
-            @helper.cursor -= word.length if word
-          else
-            @helper.cursor -= 1
-          end
-          @cursor_timer_start = System.uptime
-          @cursor_shown = true
-          self.refresh
-        end
-        return
-      elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-        if @helper.cursor < self.text.scan(/./m).length
-          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-            @helper.cursor += 1
-            # Calculate distance to next word
-            word = self.text[@helper.cursor..-1].split(/\s+/).first
-            @helper.cursor += word.length if word
-          else
-            @helper.cursor += 1
-          end
-          @cursor_timer_start = System.uptime
-          @cursor_shown = true
-          self.refresh
-        end
-        return
-      elsif Input.triggerex?(:HOME)
-        @helper.cursor = 0
-        @cursor_timer_start = System.uptime
-        @cursor_shown = true
-        self.refresh
-        return
-      elsif Input.triggerex?(:END)
-        @helper.cursor = self.text.scan(/./m).length
-        @cursor_timer_start = System.uptime
-        @cursor_shown = true
-        self.refresh
-        return
-      elsif Input.triggerex?(:DELETE) || Input.repeatex?(:DELETE)
-        return if @helper.cursor >= self.text.scan(/./m).length
-        if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-          word = self.text[@helper.cursor..-1].split(/\s+/).first
-          if word
-            word += " " if word != self.text
-            word.length.times { self.delete_at_cursor }
-          else
-            self.delete_at_cursor
-          end
-        else
-          self.delete_at_cursor if @helper.cursor < self.text.scan(/./m).length
-        end
-        refresh
-        return
-      elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
-        return unless @helper.cursor > 0
-        if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-          word = self.text[0..@helper.cursor].split(/\s+/).last
-          if word
-            word += " " if word != self.text
-            word.length.times { self.delete }
-          else
-            self.delete
-          end
-        else
-          self.delete if @helper.cursor > 0
-        end
-        refresh 
-        return
-      elsif Input.triggerex?(:UP) && $InCommandLine && !$game_temp.lastcommand.empty?
+   def handle_input
+    super
+    if Input.triggerex?(:UP) && $InCommandLine && !$game_temp.lastcommand.empty?
         self.text = $game_temp.lastcommand.shift.to_s
         $game_temp.lastcommand.push(self.text)
         @helper.cursor = self.text.scan(/./m).length
@@ -212,25 +134,23 @@ if !$joiplay
         return
       elsif Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
         Input.clipboard = self.text if Input.triggerex?(:C)
-        Console.echoln "Saved \"#{self.text}\" to clipboard." if Input.triggerex?(:C)
+        Console.echoln "\"#{self.text}\" copiado al portapapeles." if Input.triggerex?(:C)
         if Input.triggerex?(:V)
           self.text << Input.clipboard
           @helper.cursor = self.text.scan(/./m).length
           refresh
         elsif Input.triggerex?(:X)
           Input.clipboard = self.text
-          Console.echoln "Saved \"#{self.text}\" to clipboard."
+          Console.echoln "\"#{self.text}\" copiado al portapapeles."
           self.text = ""
           @helper.cursor = 0
           refresh
         end
       end
-
-      old_text = self.text
-      Input.gets.each_char { |c| insert(c) }
-      refresh if self.text != old_text
     end
   end
+
+   
 
   # Saving the last executed command
   class Game_Temp
