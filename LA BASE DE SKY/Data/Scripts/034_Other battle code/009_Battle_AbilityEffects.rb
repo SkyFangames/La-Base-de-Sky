@@ -3713,13 +3713,18 @@ Battle::AbilityEffects::OnTerrainChange.add(:QUARKDRIVE,
       best = nil
       [:ATTACK, :DEFENSE, :SPECIAL_ATTACK, :SPECIAL_DEFENSE, :SPEED].each do |stat|
         value = battler.stat_with_stages(stat)
-        best = [stat, value] if !value || value > stat[1]
+        if !best || value > best[1]
+          best = [stat, value]
+        end
       end
-      battler.effects[PBEffects::ProtosynthesisStat] = best[0]
-      battle.pbShowAbilitySplash(battler)
-      battle.pbDisplay(_INTL("¡El campo electrico activó la {1} de {2}!", GameData::Stat.get(best[0]).name, battler.pbThis(true)))
-      battle.pbDisplay(_INTL("¡La {1} de {2} aumentó!", GameData::Stat.get(best[0]).name, battler.pbThis))
-      battle.pbHideAbilitySplash(battler)
+      if best
+        battler.effects[PBEffects::ProtosynthesisStat] = best[0]
+        battle.pbShowAbilitySplash(battler)
+        battle.pbDisplay(_INTL("¡El campo eléctrico activó la {1} de {2}!", GameData::Stat.get(best[0]).name, battler.pbThis(true)))
+        battle.pbDisplay(_INTL("¡La {1} de {2} aumentó!", GameData::Stat.get(best[0]).name, battler.pbThis))
+        battle.pbHideAbilitySplash(battler)
+      end
+      
     elsif battler.effects[PBEffects::ProtosynthesisStat]
       battler.effects[PBEffects::ProtosynthesisStat] = nil
       battle.pbDisplay(_INTL("Los efectos de {1} han desaparecido...", battler.abilityName))
