@@ -22,9 +22,10 @@ end
 #===============================================================================
 # Parse choice images from event comments
 # Place comments before Show Choices command in the event:
-#   ChoiceImage: 1, species, PIKACHU, 0
-#   ChoiceImage: 2, species, CHARIZARD, 0
-#   ChoiceImage: 1, Graphics/Pokemon/Front/PIKACHU
+#   s:ChoiceImage: 1, species, PIKACHU, 0
+#   s:ChoiceImage: 2, species, CHARIZARD, 0
+#   s:ChoiceImage: 1, Graphics/Pokemon/Front/PIKACHU
+#   s:ChoiceImage: 2, item, POTION
 #===============================================================================
 def pbGetChoiceImages(commands)
   return nil unless pbMapInterpreterRunning?
@@ -46,10 +47,10 @@ def pbGetChoiceImages(commands)
     break if [102, 402, 404].include?(item.code)
     # Skip non-comment commands but continue searching
     next unless [108, 408].include?(item.code)
-    next unless item.parameters[0].start_with?("ChoiceImage:")
+    next unless item.parameters[0].start_with?("s:ChoiceImage:")
     
     # Parse: "ChoiceImage: INDEX, TYPE, ..."
-    parts = item.parameters[0].sub("ChoiceImage:", "").split(",").map(&:strip)
+    parts = item.parameters[0].sub("s:ChoiceImage:", "").split(",").map(&:strip)
     next if parts.length < 2
     
     index = parts[0].to_i - 1  # Convert to 0-based index
@@ -60,6 +61,9 @@ def pbGetChoiceImages(commands)
       species = parts[2].to_sym
       form = parts[3] ? parts[3].to_i : 0
       bitmap = GameData::Species.sprite_bitmap(species, form) if GameData::Species.exists?(species)
+    elsif parts[1] == "item" && parts.length >= 2
+      item_id = parts[2].to_sym
+      bitmap = GameData::Item.icon_bitmap(item_id) if GameData::Item.exists?(item_id)
     else
       # Direct file path - join all parts after index in case path contains commas
       file_path = parts[1..-1].join(",").strip
