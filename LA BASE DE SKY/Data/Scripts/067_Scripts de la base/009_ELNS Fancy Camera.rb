@@ -198,30 +198,57 @@ class Game_Player < Game_Character
   alias old_update_screen_position update_screen_position
 
   def update_screen_position(_last_real_x, _last_real_y)
-    if !($game_switches && $game_switches[CAMERA_FANCY])
-      old_update_screen_position(_last_real_x, _last_real_y)
+    # Si el mapa está haciendo scroll estándar, abortamos.
+    return if self.map.scrolling?
+    target = [@real_x - SCREEN_CENTER_X, @real_y - SCREEN_CENTER_Y]
+    is_controlled = false
+
+    # Comprobamos overrides
+    if $game_temp.camera_pos && ($game_temp.camera_pos[0] != 0 || $game_temp.camera_pos[1] != 0)
+      target = $game_temp.camera_pos
+      is_controlled = true
+    end
+
+    if $game_temp.camera_target_event && $game_temp.camera_target_event != 0
+      event = $game_map.events[$game_temp.camera_target_event]
+      if event
+        target = [event.real_x - SCREEN_CENTER_X, event.real_y - SCREEN_CENTER_Y]
+        is_controlled = true
+      end
+    end
+
+    if $game_temp.camera_shake > 0
+      power = $game_temp.camera_shake * 25
+      target = [target[0] + rand(-power..power), target[1] + rand(-power..power)]
+      is_controlled = true
+    end
+
+    if $game_temp.camera_offset && $game_temp.camera_offset != [0, 0]
+      target = [target[0] + ($game_temp.camera_offset[0] * Game_Map::REAL_RES_X), target[1] + ($game_temp.camera_offset[1] * Game_Map::REAL_RES_Y)]
+      is_controlled = true
+    end
+
+    distance_x = (target[0] - self.map.display_x).abs
+    distance_y = (target[1] - self.map.display_y).abs
+    distance = Math.sqrt(distance_x**2 + distance_y**2)
+    
+    speed = $game_temp.camera_speed * 0.2
+
+    # Modo Fancy
+    fancy_mode_active = $game_switches && $game_switches[CAMERA_FANCY]
+    if fancy_mode_active
+      snap_threshold = 1.0
     else
-      return if self.map.scrolling?
-      target = [@real_x - SCREEN_CENTER_X,@real_y - SCREEN_CENTER_Y]
-      if $game_temp.camera_pos && $game_temp.camera_pos[0] != 0 && $game_temp.camera_pos[1] != 0
-        target = $game_temp.camera_pos
-      end
-      if $game_temp.camera_target_event && $game_temp.camera_target_event != 0
-        event = $game_map.events[$game_temp.camera_target_event]
-        if event
-          target = [event.real_x - SCREEN_CENTER_X, event.real_y - SCREEN_CENTER_Y]
-        end
-      end
-      if $game_temp.camera_shake > 0
-        power = $game_temp.camera_shake * 25
-        target = [target[0] + rand(-power..power), target[1] + rand(-power..power)]
-      end
-      if $game_temp.camera_offset && $game_temp.camera_offset != [0, 0]
-        target = [target[0] + ($game_temp.camera_offset[0] * Game_Map::REAL_RES_X), target[1] + ($game_temp.camera_offset[1] * Game_Map::REAL_RES_Y)]
-      end
-      distance = Math.sqrt((target[0] - self.map.display_x)**2 + (target[1] - self.map.display_y)**2)
-      speed = $game_temp.camera_speed * 0.2
-      if distance < 0.75
+      snap_threshold = (self.moving? || self.jumping?) ? 64.0 : 8.0
+    end
+
+    should_snap = !is_controlled && distance < snap_threshold
+
+    if should_snap
+      self.map.display_x = target[0]
+      self.map.display_y = target[1]
+    else
+      if distance < 0.5
         self.map.display_x = target[0]
         self.map.display_y = target[1]
       else
@@ -234,53 +261,52 @@ class Game_Player < Game_Character
   alias old_set_movement_type set_movement_type
 
   def set_movement_type(type)
-    if !($game_switches && $game_switches[CAMERA_FANCY])
-      old_set_movement_type(type)
-    else
-      meta = GameData::PlayerMetadata.get($player&.character_ID || 1)
-      new_charset = nil
-      case type
-      when :fishing
-        new_charset = pbGetPlayerCharset(meta.fish_charset)
-      when :surf_fishing
-        new_charset = pbGetPlayerCharset(meta.surf_fish_charset)
-      when :diving, :diving_fast, :diving_jumping, :diving_stopped
-        self.move_speed = 3 if !@move_route_forcing
-        new_charset = pbGetPlayerCharset(meta.dive_charset)
-      when :surfing, :surfing_fast, :surfing_jumping, :surfing_stopped
-        if !@move_route_forcing
-          pbCameraSpeed(1.4) if FancyCamera::INCREASE_WHEN_RUNNING
-          self.move_speed = (type == :surfing_jumping) ? 3 : 4
-        end
-        new_charset = pbGetPlayerCharset(meta.surf_charset)
-      when :descending_waterfall, :ascending_waterfall
-        self.move_speed = 2 if !@move_route_forcing
-        new_charset = pbGetPlayerCharset(meta.surf_charset)
-      when :cycling, :cycling_fast, :cycling_jumping, :cycling_stopped
-        if !@move_route_forcing
-          pbCameraSpeed(1.7) if FancyCamera::INCREASE_WHEN_RUNNING
-          self.move_speed = (type == :cycling_jumping) ? 3 : 5
-        end
-        new_charset = pbGetPlayerCharset(meta.cycle_charset)
-      when :running
+    meta = GameData::PlayerMetadata.get($player&.character_ID || 1)
+    new_charset = nil
+    
+    case type
+    when :fishing
+      new_charset = pbGetPlayerCharset(meta.fish_charset)
+    when :surf_fishing
+      new_charset = pbGetPlayerCharset(meta.surf_fish_charset)
+    when :diving, :diving_fast, :diving_jumping, :diving_stopped
+      self.move_speed = 3 if !@move_route_forcing
+      new_charset = pbGetPlayerCharset(meta.dive_charset)
+    when :surfing, :surfing_fast, :surfing_jumping, :surfing_stopped
+      if !@move_route_forcing
         pbCameraSpeed(1.4) if FancyCamera::INCREASE_WHEN_RUNNING
-        self.move_speed = 4 if !@move_route_forcing
-        new_charset = pbGetPlayerCharset(meta.run_charset)
-      when :ice_sliding
-        pbCameraSpeed(1.4) if FancyCamera::INCREASE_WHEN_RUNNING
-        self.move_speed = 4 if !@move_route_forcing
-        new_charset = pbGetPlayerCharset(meta.walk_charset)
-      else   # :walking, :jumping, :walking_stopped
-        pbCameraSpeed(1) if FancyCamera::INCREASE_WHEN_RUNNING
-        self.move_speed = 3 if !@move_route_forcing
-        new_charset = pbGetPlayerCharset(meta.walk_charset)
+        self.move_speed = (type == :surfing_jumping) ? 3 : 4
       end
-      if @bumping
-        pbCameraSpeed(1) if FancyCamera::INCREASE_WHEN_RUNNING
-        self.move_speed = 3
+      new_charset = pbGetPlayerCharset(meta.surf_charset)
+    when :descending_waterfall, :ascending_waterfall
+      self.move_speed = 2 if !@move_route_forcing
+      new_charset = pbGetPlayerCharset(meta.surf_charset)
+    when :cycling, :cycling_fast, :cycling_jumping, :cycling_stopped
+      if !@move_route_forcing
+        pbCameraSpeed(1.7) if FancyCamera::INCREASE_WHEN_RUNNING
+        self.move_speed = (type == :cycling_jumping) ? 3 : 5
       end
-      @character_name = new_charset if new_charset
+      new_charset = pbGetPlayerCharset(meta.cycle_charset)
+    when :running
+      pbCameraSpeed(1.4) if FancyCamera::INCREASE_WHEN_RUNNING
+      self.move_speed = 4 if !@move_route_forcing
+      new_charset = pbGetPlayerCharset(meta.run_charset)
+    when :ice_sliding
+      pbCameraSpeed(1.4) if FancyCamera::INCREASE_WHEN_RUNNING
+      self.move_speed = 4 if !@move_route_forcing
+      new_charset = pbGetPlayerCharset(meta.walk_charset)
+    else   # :walking, :jumping, :walking_stopped
+      pbCameraSpeed(1) if FancyCamera::INCREASE_WHEN_RUNNING
+      self.move_speed = 3 if !@move_route_forcing
+      new_charset = pbGetPlayerCharset(meta.walk_charset)
     end
+    
+    if @bumping
+      pbCameraSpeed(1) if FancyCamera::INCREASE_WHEN_RUNNING
+      self.move_speed = 3
+    end
+    
+    @character_name = new_charset if new_charset
   end
 
   def moveto(x, y, center = false)
