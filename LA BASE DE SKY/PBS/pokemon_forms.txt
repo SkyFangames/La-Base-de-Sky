@@ -1792,6 +1792,7 @@ Color = Black
 Shape = BipedalTail
 Pokedex = Esta es la forma definitiva de Zygarde. Por la boca de su pecho emite una potente energía que arrasa con todo.
 Generation = 7
+Flags = Legendary
 #-------------------------------
 [ZYGARDE,3]
 PokedexForm = 2
@@ -1803,6 +1804,7 @@ Height = 4.5
 Weight = 610.0
 Color = Black
 Shape = BipedalTail
+Flags = Legendary
 #-------------------------------
 [DIANCIE,1]
 FormName = Mega Diancie
@@ -3184,7 +3186,7 @@ Abilities = POWERCONSTRUCT
 HiddenAbilities = POWERCONSTRUCT
 Height = 7.7
 Weight = 610.0
-#UnmegaForm = -2
+UnmegaForm = -2
 Pokedex = En crisis sin precedentes, megaevoluciona en respuesta a las emociones de la gente. Domina cualquier situación con su fuerza sin igual.
 Generation = 9
 Flags = Legendary
