@@ -236,7 +236,7 @@ module GameData
       @flags              = hash[:flags]              || []
       @mega_stone         = hash[:mega_stone]
       @mega_move          = hash[:mega_move]
-      @unmega_form        = hash[:unmega_form]        || 0
+      @unmega_form        = hash[:unmega_form]        || -2
       @mega_message       = hash[:mega_message]       || 0
       @pbs_file_suffix    = hash[:pbs_file_suffix]    || ""
     end
