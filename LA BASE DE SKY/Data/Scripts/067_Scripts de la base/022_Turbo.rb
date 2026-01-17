@@ -132,7 +132,8 @@ end
 EventHandlers.add(:on_start_battle, :start_speedup, proc {
   if $PokemonSystem&.only_speedup_battles == 1
     $CanToggle = true
-    $GameSpeed = $PokemonSystem.battle_speed
+    $GameSpeed = TurboConfig::SPEED_STAGES.size - 1
+    $RefreshEventsForTurbo = true
   end
 })
 
@@ -140,6 +141,7 @@ EventHandlers.add(:on_end_battle, :stop_speedup, proc {
   if $PokemonSystem&.only_speedup_battles == 1
     $GameSpeed = 0
     $CanToggle = false
+    $RefreshEventsForTurbo = true
   end
 })
 

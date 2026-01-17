@@ -164,6 +164,7 @@ class Battle::Scene
     else   # Partner trainer's sprite
       trainerFile = GameData::TrainerType.back_sprite_filename(trainerType)
     end
+    trainerFile = nil if !pbResolveBitmap(trainerFile)
     spriteX, spriteY = Battle::Scene.pbTrainerPosition(0, idxTrainer, numTrainers)
     trainer = pbAddSprite("player_#{idxTrainer + 1}", spriteX, spriteY, trainerFile, @viewport)
     return if !trainer.bitmap

@@ -46,7 +46,7 @@ class Battle::FakeBattler
     return (lowerCase) ? _INTL("el {1} salvaje", name) : _INTL("El {1} salvaje", name)
   end
 
-  def opposes?(i)
+  def opposes?(i = 0)
     i = i.index if i.is_a?(Battle::FakeBattler)
     return (@index & 1) != (i & 1)
   end
