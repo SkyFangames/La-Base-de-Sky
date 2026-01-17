@@ -466,9 +466,10 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
     @visibility["shiftButton"] = (@shiftMode > 0)
   end
 
-  def refresh
+  def refresh(refresh_button_names = false)
     return if !@battler
     refreshSelection
+    refreshButtonNames if refresh_button_names
     refreshMegaEvolutionButton
     refreshShiftButton
   end

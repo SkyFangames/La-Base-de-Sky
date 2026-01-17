@@ -145,6 +145,14 @@ class Window_TextEntry < SpriteWindow_Base
     return false
   end
 
+  def delete_at_cursor
+    original_cursor = @helper.cursor
+    @helper.cursor += 1
+    result = delete
+    @helper.cursor = original_cursor
+    return result
+  end
+
   def update
     cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i.even?
     if cursor_to_show != @cursor_shown
@@ -230,29 +238,86 @@ class Window_TextEntry_Keyboard < Window_TextEntry
     end
     return if !self.active
     # Moving cursor
+    handle_input
+    old_text = self.text
+    Input.gets.each_char { |c| insert(c) }
+    refresh if self.text != old_text
+    # Input.gets.each_char { |c| insert(c) }
+  end
+
+  def handle_input
     if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-      if @helper.cursor > 0
-        @helper.cursor -= 1
-        @cursor_timer_start = System.uptime
-        @cursor_shown = true
-        self.refresh
-      end
-      return
+        if @helper.cursor > 0
+          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+            @helper.cursor -= 1
+            word = self.text[0..@helper.cursor].split(/\s+/).last
+            @helper.cursor -= word.length if word
+          else
+            @helper.cursor -= 1
+          end
+          @cursor_timer_start = System.uptime
+          @cursor_shown = true
+          self.refresh
+        end
+        return
     elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-      if @helper.cursor < self.text.scan(/./m).length
-        @helper.cursor += 1
-        @cursor_timer_start = System.uptime
-        @cursor_shown = true
-        self.refresh
+        if @helper.cursor < self.text.scan(/./m).length
+          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+            @helper.cursor += 1
+            # Calculate distance to next word
+            word = self.text[@helper.cursor..-1].split(/\s+/).first
+            @helper.cursor += word.length if word
+          else
+            @helper.cursor += 1
+          end
+          @cursor_timer_start = System.uptime
+          @cursor_shown = true
+          self.refresh
+        end
+        return
+    elsif Input.triggerex?(:HOME)
+      @helper.cursor = 0
+      @cursor_timer_start = System.uptime
+      @cursor_shown = true
+      self.refresh
+      return
+    elsif Input.triggerex?(:END)
+      @helper.cursor = self.text.scan(/./m).length
+      @cursor_timer_start = System.uptime
+      @cursor_shown = true
+      self.refresh
+      return
+    elsif Input.triggerex?(:DELETE) || Input.repeatex?(:DELETE)
+      return if @helper.cursor >= self.text.scan(/./m).length
+      if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+        word = self.text[@helper.cursor..-1].split(/\s+/).first
+        if word
+          word += " " if word != self.text
+          word.length.times { self.delete_at_cursor }
+        else
+          self.delete_at_cursor
+        end
+      else
+        self.delete_at_cursor if @helper.cursor < self.text.scan(/./m).length
       end
+      refresh
       return
     elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
-      self.delete if @helper.cursor > 0
-      return
-    elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
+      return unless @helper.cursor > 0
+      if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+        word = self.text[0..@helper.cursor].split(/\s+/).last
+        if word
+          word += " " if word != self.text
+          word.length.times { self.delete }
+        else
+          self.delete
+        end
+      else
+        self.delete if @helper.cursor > 0
+      end
+      refresh 
       return
     end
-    Input.gets.each_char { |c| insert(c) }
   end
 end
 

@@ -127,7 +127,7 @@ if defined?(MenuHandlers)
   MenuHandlers.add(:options_menu, :turbo, {
     "name"        => _INTL("Modo turbo"),
     "order"       => 45,
-    "type"        => EnumOption,
+    "type"        => Settings::USE_NEW_OPTIONS_UI ? :array : EnumOption,
     "condition"   => proc { next $player },
     "parameters"  => [_INTL("Siempre"), _INTL("Combates")],
     "description" => _INTL("Define si el turbo se activa siempre o solo en combates."),
@@ -151,7 +151,8 @@ end
 EventHandlers.add(:on_start_battle, :start_speedup, proc {
   if $PokemonSystem&.only_speedup_battles == 1
     $CanToggle = true
-    $GameSpeed = $PokemonSystem.battle_speed
+    $GameSpeed = TurboConfig::SPEED_STAGES.size - 1
+    $RefreshEventsForTurbo = true
   end
 })
 
@@ -159,6 +160,7 @@ EventHandlers.add(:on_end_battle, :stop_speedup, proc {
   if $PokemonSystem&.only_speedup_battles == 1
     $GameSpeed = 0
     $CanToggle = false
+    $RefreshEventsForTurbo = true
   end
 })
 

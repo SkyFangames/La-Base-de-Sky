@@ -265,7 +265,7 @@ class VoltorbFlip
 
   def display_game_info
     loop do
-      case pbMessage(_INTL("¿Que información quieres ver?"), [_INTL("¿Cómo jugar?"), _INTL("¡Pista!"),_INTL("¿Sobre los Memos?"),_INTL("Atrás")], 4)
+      case pbMessage(_INTL("¿Qué información quieres ver?"), [_INTL("¿Cómo jugar?"), _INTL("¡Pista!"),_INTL("¿Sobre los Memos?"),_INTL("Atrás")], 4)
       when 0
         pbMessage(_INTL("Gira Voltorb es un juego en el que volteas cartas para encontrar números ocultos debajo de ellas."))
         pbMessage(_INTL("Las cartas esconden los números del 1 al 3... y también a Voltorb."))

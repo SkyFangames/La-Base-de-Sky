@@ -37,15 +37,15 @@ class PokemonPokedexInfo_Scene
   }
 
   PAGE_AREA_COORDS   = {
-    :area_none     => [108, 188],
-    :unknown_area  => [Graphics.width / 2, (Graphics.height / 2) + 6],
-    :map_name      => [414, 50],
-    :species_name  => [Graphics.width / 2, 358],
+    :area_none              => [108, 188],
+    :unknown_area_y_offset  => 6,
+    :map_name               => [414, 50],
+    :species_name_y         => 358,
    }
 
   PAGE_FORMS_COORDS  = {
-    :species_name  => [Graphics.width / 2, Graphics.height - 82],
-    :form_name     => [Graphics.width / 2, Graphics.height - 50],
+    :species_name_y_offset  => -82,
+    :form_name_y_offset     => -50,
   }
 
   def pbStartScene(dexlist, index, region, page = 1)
@@ -441,11 +441,11 @@ class PokemonPokedexInfo_Scene
         overlay,
         [["Graphics/UI/Pokedex/overlay_areanone", coords[:area_none][0], coords[:area_none][1]]]
       )
-      textpos.push([_INTL("Área desconocida"), coords[:unknown_area][0], coords[:unknown_area][1], :center, base, shadow])
+      textpos.push([_INTL("Área desconocida"), Graphics.width / 2, Graphics.height / 2 + coords[:unknown_area_y_offset], :center, base, shadow])
     end
     textpos.push([@mapdata.name, coords[:map_name][0], coords[:map_name][1], :center, base, shadow])
     textpos.push([_INTL("Área de {1}", GameData::Species.get(@species).name),
-                  coords[:species_name][0], coords[:species_name][1], :center, base, shadow])
+                  Graphics.width / 2, coords[:species_name_y], :center, base, shadow])
     pbDrawTextPositions(overlay, textpos)
   end
 
@@ -464,8 +464,8 @@ class PokemonPokedexInfo_Scene
       end
     end
     textpos = [
-      [GameData::Species.get(@species).name, coords[:species_name][0], coords[:species_name][1], :center, base, shadow],
-      [formname, coords[:form_name][0], coords[:form_name][1], :center, base, shadow]
+      [GameData::Species.get(@species).name, Graphics.width / 2, Graphics.height + coords[:species_name_y_offset], :center, base, shadow],
+      [formname, Graphics.width / 2, Graphics.height + coords[:form_name_y_offset], :center, base, shadow]
     ]
     # Draw all text
     pbDrawTextPositions(overlay, textpos)

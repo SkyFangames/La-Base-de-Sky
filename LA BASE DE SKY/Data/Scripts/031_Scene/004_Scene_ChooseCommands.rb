@@ -150,33 +150,19 @@ class Battle::Scene
     # After toggling, change Zygarde's move based on the NEW registration state
     if battler.isSpecies?(:ZYGARDE) && [2, 3].include?(battler.form)
       newMode = (@battle.pbRegisteredMegaEvolution?(idxBattler)) ? 2 : 1
-      battler.moves.each_with_index do |move, i|
+      battler.pokemon.moves.each_with_index do |move, i|
         new_move_id = nil
         if newMode == 2 && move.id == :COREENFORCER
-          new_move_id = :NIHILLIGHT
+          move.id = :NIHILLIGHT
         elsif newMode == 1 && move.id == :NIHILLIGHT
-          new_move_id = :COREENFORCER
-        end
-        
-        if new_move_id
-          # Store current PP values
-          current_pp = move.pp
-          
-          # Create a new Pokemon::Move with the new ID
-          pokemon_move = Pokemon::Move.new(new_move_id)
-          pokemon_move.pp = current_pp
-          # pokemon_move.total_pp = total_pp
-          
-          # Create a new Battle::Move from the Pokemon::Move
-          new_battle_move = Battle::Move.from_pokemon_move(@battle, pokemon_move)
-          
-          # Replace the move in the battler's moves array
-          battler.moves[i] = new_battle_move
+          move.id = :COREENFORCER
         end
       end
-      # Immediately refresh the UI to show the new move name
-      cw.refresh
+      battler.refresh_moves
+      cw.refresh(true) # Refresh button names too
+      return true
     end
+    return false
   end
 
   #=============================================================================
@@ -253,7 +239,7 @@ class Battle::Scene
         if megaEvoPossible
           pbPlayDecisionSE
           break if yield (-2)
-          update_zygarde_move(battler, idxBattler, cw)
+          needFullRefresh = update_zygarde_move(battler, idxBattler, cw)
           needRefresh = true
         end
       elsif Input.trigger?(Input::SPECIAL)   # Shift

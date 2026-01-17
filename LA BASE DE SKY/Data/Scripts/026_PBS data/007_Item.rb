@@ -98,6 +98,11 @@ module GameData
       return "Graphics/Items/000"
     end
 
+    def self.icon_bitmap(item)
+      filename = self.icon_filename(item)
+      AnimatedBitmap.new(filename)
+    end
+
     def self.held_icon_filename(item)
       item_data = self.try_get(item)
       return nil if !item_data

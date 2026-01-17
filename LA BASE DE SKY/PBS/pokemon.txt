@@ -18567,7 +18567,7 @@ Shape = Serpentine
 Category = Equilibrio
 Pokedex = Cuando el ecosistema de Kalos se encuentra en peligro, aparece y revela su poder secreto.
 Generation = 6
-Flags = Legendary
+Flags = Legendary,cantMegaEvolve
 #-------------------------------
 [DIANCIE]
 Name = Diancie
