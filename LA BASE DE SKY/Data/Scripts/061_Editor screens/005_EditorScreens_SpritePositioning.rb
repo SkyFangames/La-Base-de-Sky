@@ -414,8 +414,8 @@ class SpritePositioner
         searchTerm = pbOpenGenericListSearch
         if searchTerm
             # Usamos la función inteligente
-            new_list = @allspecies.select do |sp|
-                pbSmartMatch?(sp[3], searchTerm)
+            new_list = allspecies.select do |sp|
+              pbSmartMatch?(sp[3], searchTerm)
             end
             
             if new_list.length > 0
