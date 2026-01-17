@@ -3191,3 +3191,279 @@ Pokedex = En crisis sin precedentes, megaevoluciona en respuesta a las emociones
 Generation = 9
 Flags = Legendary
 #-------------------------------
+#-------------------------------
+[STARAPTOR,1]
+FormName = Mega Staraptor
+Types = FIGHTING,FLYING
+MegaStone = STARAPTITE
+BaseStats = 85,140,100,110,60,90
+BaseExp = 300
+#Abilities = INTIMIDATE
+#HiddenAbilities = INTIMIDATE
+Height = 1.9
+Weight = 50.0
+Pokedex = Su habilidad para volar es excepcional, siendo capaz de desplazarse sin el mínimo esfuerzo portando en sus potentes garras un Steelix de casi media tonelada.
+Generation = 9
+#-------------------------------
+[LUCARIO,2]
+FormName = Mega Lucario Z
+MegaStone = LUCARIONITEZ
+BaseStats = 70,100,70,151,164,70
+BaseExp = 219
+#Abilities = ADAPTABILITY
+#HiddenAbilities = ADAPTABILITY
+Height = 1.3
+Weight = 49.4
+pokedex = Al envolverse completamente en su aura, Mega Lucario Z puede desviar todo tipo de ataques, combatiendo como si danzara con gracia.
+Generation = 9
+#-------------------------------
+[CRABOMINABLE,1]
+FormName = Mega Crabominable
+MegaStone = CRABOMINITE
+BaseStats = 97,157,122,33,62,107
+BaseExp = 202
+#Abilities = HYPERCUTTER
+#HiddenAbilities =  HYPERCUTTER
+Height = 2.6
+Weight = 252.8
+Pokedex = Puede pulverizar el hormigón reforzado con un ligero movimiento de cada uno de sus puños, cubiertos por una gruesa capa de hielo.
+Generation = 9
+#-------------------------------
+[MAGEARNA,2]
+FormName = Mega Magearna
+MegaStone = MAGEARNITE
+BaseStats = 80,125,115,95,170,115
+BaseExp = 350
+#Abilities = SOULHEART
+#HiddenAbilities = SOULHEART
+Height = 1.3
+Weight = 248.1
+UnmegaForm = 0
+Pokedex = La megaevolución ha permitido activar un modo supresor que elimina sus sentimientos. Derrota a sus enemigos sin perdón alguno.
+Generation = 9
+#-------------------------------
+[MAGEARNA,3]
+FormName = Mega Magearna Forma Color Vetusta
+Color = Red
+MegaStone = MAGEARNITE
+BaseStats = 80,125,115,95,170,115
+BaseExp = 350
+#Abilities = SOULHEART
+#HiddenAbilities = SOULHEART
+Height = 1.3
+Weight = 248.1
+UnmegaForm = 1
+Pokedex = Un mecanismo para eliminar las limitaciones de Magearna ha permanecido oculto dentro de ella durante 500 años. Este mecanismo se activa mediante una Megapiedra.
+Generation = 9
+#------------------------------- 
+[ABSOL,2]
+FormName = Mega Absol Z
+MegaStone = ABSOLITEZ
+Types = DARK,GHOST
+BaseStats = 65,154,60,151,75,60
+BaseExp = 198
+#Abilities = MAGICBOUNCE
+#HiddenAbilities = MAGICBOUNCE
+Height = 1.2
+Weight = 49.0
+pokedex = Utilizando su pelaje, que ha moldeado en formas afiladas como garras, elimina a sus enemigos de un solo golpe. Lo hace como acto de compasión para evitarles el sufrimiento.
+Generation = 9
+#------------------------------- 
+[CHIMECHO,1]
+FormName = Mega Chimecho
+Types = PSYCHIC,STEEL
+MegaStone = CHIMECHITE
+BaseStats = 75,50,110,65,135,120
+BaseExp = 194
+#Abilities = LEVITATE
+#HiddenAbilities = LEVITATE
+Height = 1.2
+Weight = 8.0
+Pokedex = Hace vibrar todo su cuerpo para atacar en todas direcciones con ondas sonoras. Quienes escuchan las vibraciones quedan tan confundidos que olvidan quienes son.
+Generation = 9
+#------------------------------- 
+[GARCHOMP,2]
+FormName = Mega Garchomp Z
+MegaStone = GARCHOMPITEZ
+Types = DRAGON
+BaseStats = 108,130,85,151,141,85
+BaseExp = 350
+#Abilities = SANDFORCE
+#HiddenAbilities = SANDFORCE
+Height = 1.9
+Weight = 99.0
+Pokedex = Garchomp ha adquirido una nueva forma megaevolucionada. Vuela alrededor de sus enemigos a velocidad supersónica y los despedaza con sus siniestras garras aladas.
+Generation = 9
+#-------------------------------
+[GOLURK,1]
+FormName = Mega Golurk
+MegaStone = GOLURKITE
+BaseStats = 89,159,105,55,70,105
+BaseExp = 204
+#Abilities = IRONFIST
+#HiddenAbilities = IRONFIST
+Height = 4.0
+Weight = 330.0
+Pokedex = La energía dentro de Golurk ha sido estimulada por la megaevolución. Este Pokémon podría explotar en cualquier momento.
+Generation = 9
+#-------------------------------
+[TATSUGIRI, 3]
+FormName = Mega Tatsugiri Forma Curvada
+MegaStone = TATSUGIRINITE
+BaseStats = 68,65,90,92,135,125
+BaseExp = 201
+#Abilities = COMMANDER
+#HiddenAbilities = COMMANDER
+Height = 0.6
+Weight = 24.0
+UnmegaForm = 0
+Pokedex = La megaevolución ha estimulado su cerebro y lo ha vuelto aún más astuto. En combate, crea y controla réplicas de sí mismo.
+Generation = 9
+#-------------------------------
+[TATSUGIRI, 4]
+FormName = Mega Tatsugiri Forma Lánguida
+Color = Red 
+MegaStone = TATSUGIRINITE
+BaseStats = 68,65,90,92,135,125
+BaseExp = 201
+#Abilities = COMMANDER
+#HiddenAbilities = COMMANDER
+Height = 0.6
+Weight = 24.0
+UnmegaForm = 1
+Pokedex = La megaevolución le permite solidificar la energía de la transformación, liberando esferas que explotan al mínimo contacto.
+Generation = 9
+#-------------------------------
+[TATSUGIRI, 5]
+FormName = Mega Tatsugiri Forma Recta
+Color = Yellow
+MegaStone = TATSUGIRINITE
+BaseStats = 68,65,90,92,135,125
+BaseExp = 201
+#Abilities = COMMANDER
+#HiddenAbilities = COMMANDER
+Height = 0.6
+Weight = 24.0
+UnmegaForm = 2
+Pokedex = La megaevolución le proporciona el uso libre de la energía de la transformación para crear un medio de transporte, con el cual puede desplazarse por el aire libremente.
+Generation = 9
+#-------------------------------
+[MEOWSTIC,2]
+FormName = Mega Meowstic
+MegaStone = MEOWSTICITE
+BaseStats = 74,48,76,124,143,101
+BaseExp = 198
+#Abilities = KEENEYE
+#HiddenAbilities = KEENEYE
+UnmegaForm = -2
+Height = 0.8
+Weight = 10.1
+Pokedex = Mega Meowstic puede usar su poder psíquico para comprimir o expandir cualquier cosa. Abruma a sus enemigos distorsionando el espacio mismo.
+Generation = 9
+#-------------------------------
+[BAXCALIBUR,1]
+FormName = Mega Baxcalibur
+MegaStone = BAXCALIBRITE
+BaseStats = 115,175,117,87,105,101
+BaseExp = 350
+#Abilities = THERMALEXCHANGE
+#HiddenAbilities = THERMALEXCHANGE
+Height = 2.1
+Weight = 315.0
+Pokedex = La megaevolución ha impulsado el tamaño de la hoja que se encuentra en su placa dorsal. Su empuñadura es tan potente que puede disparar rayos de alta intensidad.
+Generation = 9
+#-------------------------------
+[SCOVILLAIN,1]
+FormName = Mega Scovillain
+MegaStone = SCOVILLAINITE
+BaseStats = 65,138,85,75,138,85
+BaseExp = 205
+#Abilities = CHLOROPHYLL
+#HiddenAbilities = CHLOROPHYLL
+Height = 1.2
+Weight = 22.0
+Pokedex = La megaevolución ha intensificado el picante de este Pokémon. Agita su 'corbata' para golpear a sus enemigos.
+Generation = 9
+#-------------------------------
+[GLIMMORA,1]
+FormName = Mega Glimmora
+MegaStone = GLIMMORANITE
+BaseStats = 83,90,105,101,150,96
+BaseExp = 219
+#Abilities = TOXICDEBRIS
+#HiddenAbilities = TOXICDEBRIS
+Height = 2.8
+Weight = 77.0
+Pokedex = Los pétalos de Glimmora ahora son más grandes y están separados de su cuerpo principal. Asimismo, giran a su alrededor para protegerlo mientras dispersan fragmentos venenosos.
+Generation = 9
+#-------------------------------
+[GOLISOPOD,1]
+FormName = Mega Golisopod
+Types = BUG,STEEL
+MegaStone = GOLISOPITE
+BaseStats = 75,150,175,40,70,120
+BaseExp = 221
+#Abilities = EMERGENCYEXIT
+#HiddenAbilities = EMERGENCYEXIT
+Height = 2.3
+Weight = 148.0
+Pokedex = Utiliza cuatro de sus brazos para atacar ferozmente a sus enemigos. Una vez que están al borde de la derrota, los remata con los brazos que mantenía ocultos.
+Generation = 9
+#-------------------------------
+[ZERAORA,1]
+FormName = Mega Zeraora
+MegaStone = ZERAORITE
+BaseStats = 88,157,75,153,147,80
+BaseExp = 350
+#Abilities = VOLTABSORB
+#HiddenAbilities = VOLTABSORB
+Height = 1.5
+Weight = 44.5
+Pokedex = Almacena en su cuerpo la energía eléctrica proveniente de los rayos más potentes. Al descargar dicha electricidad, lo convierte en uno de los Pokémon de tipo Eléctrico más fuertes.
+Generation = 9
+#-------------------------------
+[HEATRAN,1]
+FormName = Mega Heatran
+MegaStone = HEATRANITE
+BaseStats = 91,120,106,67,175,141
+BaseExp = 350
+#Abilities = FLASHFIRE
+#HiddenAbilities = FLASHFIRE
+Height = 2.8
+Weight = 570.0
+Pokedex = Se dice que, si se desata por completo, puede calentar su cuerpo a temperaturas superiores a 1.8 millones de grados Fahrenheit. Este calor mantiene alejados a los enemigos.
+Generation = 9
+#-------------------------------
+[DARKRAI,1]
+FormName = Mega Darkrai
+MegaStone = DARKRANITE
+BaseStats = 70,120,130,85,165,130
+BaseExp = 350
+#Abilities = BADDREAMS
+#HiddenAbilities = BADDREAMS
+Height = 3.0
+Weight = 240.0
+Pokedex = Su poder oscuro bloquea el sol, sumiendo el área circundante en la oscuridad. No hay escapatoria de su ojo maligno.
+Generation = 9
+#-------------------------------
+[RAICHU,2]
+FormName = Mega Raichu x
+MegaStone = RAICHUNITEX
+BaseStats = 60,135,95,110,90,95
+BaseExp = 300
+#Abilities = RECKLESS
+#HiddenAbilities = RECKLESS
+Height = 1.2
+Weight = 38.0
+Pokedex = Vuela manteniendo una pose en forma de X y suelta descargas eléctricas de 50 millones de voltios tanto por las orejas como por las dos colas.
+#-------------------------------
+[RAICHU,3]
+FormName = Mega Raichu Y
+MegaStone = RAICHUNITEY
+BaseStats = 60,100,55,130,160,80
+BaseExp = 300
+#Abilities = ADAPTABILITY
+#HiddenAbilities = ADAPTABILITY
+Height = 1.0
+Weight = 26.0
+Pokedex = Emite descargas eléctricas por los pelos de su cabeza dispuestos en zigzag tras haber confeccionado un circuito en forma de Y desde la punta de su cola.
