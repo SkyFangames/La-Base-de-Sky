@@ -612,6 +612,11 @@ module Settings
   # Si quieres usar la nueva interfaz de opciones (true) o la clásica (false).
   USE_NEW_OPTIONS_UI = true
 
+
+  # Si las capturas de pantalla se guardan en la carpeta "Saves" junto a las
+  # partidas guardadas (true) o en la carpeta "Screenshots" del juego (false).
+  STORE_SCREENSHOTS_IN_SAVE_FOLDER = true
+
   #=============================================================================
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 
   # dentro de un _INTL() para que sea fácil de traducirlas a otros idiomas.
