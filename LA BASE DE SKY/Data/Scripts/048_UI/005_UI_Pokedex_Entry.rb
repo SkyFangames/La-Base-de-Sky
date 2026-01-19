@@ -27,9 +27,9 @@ class PokemonPokedexInfo_Scene
     :height_num_us  => [460, 164],
     :weight_num_us  => [494, 196],
     :height_num     => [470, 164],
-    :weight_num     => [504, 196],
+    :weight_num     => [482, 196],
     # x, y, width, lines
-    :dex_entry_text => [40, 246, Graphics.width - 80, 4],
+    :dex_entry_text => [40, 246, Settings::SCREEN_WIDTH - 80, 4],
     :footprint      => [226, 138],
     :owned_icon     => [212, 44],
     # base_x, offset_x, y
@@ -673,4 +673,3 @@ class PokemonPokedexInfoScreen
     @scene.pbEndScene
   end
 end
-
