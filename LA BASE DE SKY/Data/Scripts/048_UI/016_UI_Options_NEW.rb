@@ -199,23 +199,23 @@ class PokemonSystem
     pbSetResizeFactor(@screensize)
   end
 
-  def controls
-    reset_controls if !@controls
-    return @controls
-  end
+  # def controls
+  #   reset_controls if !@controls
+  #   return @controls
+  # end
 
-  def reset_controls
-    @controls ||= {}
-    keys = Input::DEFAULT_INPUT_MAPPINGS.keys + Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE.keys
-    keys.uniq!
-    keys.each do |key|
-      @controls[key] = []
-      if Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE[key]
-        @controls[key][0] = Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE[key][0]
-        @controls[key][1] = Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE[key][1]
-      end
-    end
-  end
+  # def reset_controls
+  #   @controls ||= {}
+  #   keys = Input::DEFAULT_INPUT_MAPPINGS.keys + Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE.keys
+  #   keys.uniq!
+  #   keys.each do |key|
+  #     @controls[key] = []
+  #     if Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE[key]
+  #       @controls[key][0] = Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE[key][0]
+  #       @controls[key][1] = Input::DEFAULT_INPUT_MAPPINGS_REMAPPABLE[key][1]
+  #     end
+  #   end
+  # end
 
   #-----------------------------------------------------------------------------
 
@@ -882,56 +882,56 @@ class UI::OptionsVisuals < UI::BaseVisuals
     return nil
   end
 
-  def change_key_or_button
-    this_input = selected_option[:parameters]
-    @sprites[:speech_box].text = _INTL("Presiona una tecla o botón para asignarlo,\no presiona Esc para salir.")
-    pressed_key = nil
-    pressed_button = nil
-    # Detect key/button press
-    loop do
-      Graphics.update
-      Input.update
-      # Cancel
-      if Input::DEFAULT_INPUT_MAPPINGS[Input::BACK].flatten.any? { |key| Input.pressex?(key) }
-        pbPlayCancelSE
-        break
-      end
-      # Check for key/button press
-      Input::REMAP_KEYBOARD_KEYS.keys.each do |key|
-        pressed_key = key if Input.triggerex?(key)
-        break if pressed_key
-      end
-      break if pressed_key
-      Input::REMAP_GAMEPAD_BUTTONS.keys.each do |key|
-        pressed_button = key if Input::Controller.triggerex?(key)
-        break if pressed_button
-      end
-      break if pressed_button
-      Input::REMAP_GAMEPAD_AXIS.keys.each do |key|
-        pressed_button = key if Input.axis_triggerex?(key)
-        break if pressed_button
-      end
-      break if pressed_button
-    end
-    # Change input binding if key/button was pressed
-    if pressed_key || pressed_button
-      pbPlayDecisionSE
-      control_index = (pressed_key ? 0 : 1)
-      if $PokemonSystem.controls[this_input][control_index] == (pressed_key || pressed_button)
-        $PokemonSystem.controls[this_input][control_index] = nil
-      else
-        $PokemonSystem.controls[this_input][control_index] = pressed_key || pressed_button
-        $PokemonSystem.controls.each_pair do |ctrl_input, keys|
-          keys[0] = nil if ctrl_input != this_input && pressed_key && keys[0] == pressed_key
-          keys[1] = nil if ctrl_input != this_input && pressed_button && keys[1] == pressed_button
-        end
-      end
-    end
-    # Clean up
-    @sprites[:options_list].get_values
-    refresh
-    Input.update
-  end
+  # def change_key_or_button
+  #   this_input = selected_option[:parameters]
+  #   @sprites[:speech_box].text = _INTL("Presiona una tecla o botón para asignarlo,\no presiona Esc para salir.")
+  #   pressed_key = nil
+  #   pressed_button = nil
+  #   # Detect key/button press
+  #   loop do
+  #     Graphics.update
+  #     Input.update
+  #     # Cancel
+  #     if Input::DEFAULT_INPUT_MAPPINGS[Input::BACK].flatten.any? { |key| Input.pressex?(key) }
+  #       pbPlayCancelSE
+  #       break
+  #     end
+  #     # Check for key/button press
+  #     Input::REMAP_KEYBOARD_KEYS.keys.each do |key|
+  #       pressed_key = key if Input.triggerex?(key)
+  #       break if pressed_key
+  #     end
+  #     break if pressed_key
+  #     Input::REMAP_GAMEPAD_BUTTONS.keys.each do |key|
+  #       pressed_button = key if Input::Controller.triggerex?(key)
+  #       break if pressed_button
+  #     end
+  #     break if pressed_button
+  #     Input::REMAP_GAMEPAD_AXIS.keys.each do |key|
+  #       pressed_button = key if Input.axis_triggerex?(key)
+  #       break if pressed_button
+  #     end
+  #     break if pressed_button
+  #   end
+  #   # Change input binding if key/button was pressed
+  #   if pressed_key || pressed_button
+  #     pbPlayDecisionSE
+  #     control_index = (pressed_key ? 0 : 1)
+  #     if $PokemonSystem.controls[this_input][control_index] == (pressed_key || pressed_button)
+  #       $PokemonSystem.controls[this_input][control_index] = nil
+  #     else
+  #       $PokemonSystem.controls[this_input][control_index] = pressed_key || pressed_button
+  #       $PokemonSystem.controls.each_pair do |ctrl_input, keys|
+  #         keys[0] = nil if ctrl_input != this_input && pressed_key && keys[0] == pressed_key
+  #         keys[1] = nil if ctrl_input != this_input && pressed_button && keys[1] == pressed_button
+  #       end
+  #     end
+  #   end
+  #   # Clean up
+  #   @sprites[:options_list].get_values
+  #   refresh
+  #   Input.update
+  # end
 end
 
 #===============================================================================
@@ -1063,11 +1063,11 @@ PageHandlers.add(:options_menu, :graphics, {
   :description => proc { next _INTL("Cambia cómo se ve el juego.") }
 })
 
-PageHandlers.add(:options_menu, :controls, {
-  :name  => proc { next _INTL("Controles") },
-  :order => 40,
-  :description => proc { next _INTL("Edita los controles del juego.") }
-})
+# PageHandlers.add(:options_menu, :controls, {
+#   :name  => proc { next _INTL("Controles") },
+#   :order => 40,
+#   :description => proc { next _INTL("Edita los controles del juego.") }
+# })
 
 MenuHandlers.add(:options_menu, :text_speed, {
   "page"        => :gameplay,
@@ -1268,126 +1268,153 @@ MenuHandlers.add(:options_menu, :screen_size, {
   "set_proc"    => proc { |value, _screen| $PokemonSystem.screensize = value }
 })
 
-#-------------------------------------------------------------------------------
-
-MenuHandlers.add(:options_menu, :control_up, {
-  "page"        => :controls,
-  "name"        => _INTL("Arriba"),
-  "order"       => 10,
-  "type"        => :control,
-  "parameters"  => Input::UP,
-  "description" => _INTL("Movimiento hacia arriba del personaje o en menús. [Also: Arriba]"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::UP] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::UP] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_left, {
-  "page"        => :controls,
-  "name"        => _INTL("Izquierda"),
-  "order"       => 20,
-  "type"        => :control,
-  "parameters"  => Input::LEFT,
-  "description" => _INTL("Movimiento hacia la izquierda del personaje o en menús. [Also: Izquierda]"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::LEFT] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::LEFT] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_down, {
-  "page"        => :controls,
-  "name"        => _INTL("Abajo"),
-  "order"       => 30,
-  "type"        => :control,
-  "parameters"  => Input::DOWN,
-  "description" => _INTL("Movimiento hacia abajo del personaje o en menús. [Also: Abajo]"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::DOWN] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::DOWN] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_right, {
-  "page"        => :controls,
-  "name"        => _INTL("Derecha"),
-  "order"       => 40,
-  "type"        => :control,
-  "parameters"  => Input::RIGHT,
-  "description" => _INTL("Movimiento hacia la derecha del personaje o en menús. [También: Derecha]"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::RIGHT] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::RIGHT] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_use, {
-  "page"        => :controls,
-  "name"        => _INTL("Usar/Seleccionar"),
-  "order"       => 50,
-  "type"        => :control,
-  "parameters"  => Input::USE,
-  "description" => _INTL("Interactuar o Confirmar. [También: Enter, Espacio]"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::USE] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::USE] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_back, {
-  "page"        => :controls,
-  "name"        => _INTL("Atrás"),
+MenuHandlers.add(:options_menu, :vsync, {
+  "page"        => :graphics,
+  "name"        => _INTL("VSync"),
   "order"       => 60,
-  "type"        => :control,
-  "parameters"  => Input::BACK,
-  "description" => _INTL("Sale del menú y cancela interacciones. [También: X/Esc]"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::BACK] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::BACK] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_action, {
-  "page"        => :controls,
-  "name"        => _INTL("Acción"),
-  "order"       => 70,
-  "type"        => :control,
-  "parameters"  => Input::ACTION,
-  "description" => _INTL("Cambia el comportamiento de ciertas interacciones en el juego. (Default: Z)"),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::ACTION] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::ACTION] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_jump_up, {
-  "page"        => :controls,
-  "name"        => _INTL("Subir Rápido"),
-  "order"       => 80,
-  "type"        => :control,
-  "parameters"  => Input::QUICK_UP,
-  "description" => _INTL("Permite avanzar más rápidamente hacia arriba en los menús."),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::QUICK_UP] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::QUICK_UP] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :control_jump_down, {
-  "page"        => :controls,
-  "name"        => _INTL("Av. Página"),
-  "order"       => 90,
-  "type"        => :control,
-  "parameters"  => Input::QUICK_DOWN,
-  "description" => _INTL("Permite avanzar más rápidamente hacia abajo en los menús."),
-  "get_proc"    => proc { next $PokemonSystem.controls[Input::QUICK_DOWN] },
-  "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::QUICK_DOWN] = value },
-  "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
-})
-
-MenuHandlers.add(:options_menu, :reset_controls, {
-  "page"        => :controls,
-  "name"        => _INTL("Resetear Controles"),
-  "order"       => 900,
-  "type"        => :use,
-  "description" => _INTL("Restablece los controles a sus valores predeterminados."),
-  "use_proc"    => proc { |screen|
-    $PokemonSystem.reset_controls
-    screen.sprites[:options_list].get_values
-    screen.refresh
-    Input.update
+  "type"        => :array,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "condition"   => proc { next !$joiplay },
+  "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego"),
+  "get_proc"    => proc { next $PokemonSystem.vsync },
+  "set_proc"    => proc { |value, _scene|
+    next if $PokemonSystem.vsync == value
+    $PokemonSystem.vsync = value
+    $PokemonSystem.update_vsync($PokemonSystem.vsync)
   }
 })
+
+MenuHandlers.add(:options_menu, :autotile_animations, {
+  "page"        => :graphics,
+  "name"        => _INTL("Anim. de mapas"),
+  "order"       => 70,
+  "type"        => :array,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "description" => _INTL("Activa o desactiva las animaciones de los mapas."),
+  "get_proc"    => proc { next $PokemonSystem.autotile_animations || 0 },
+  "set_proc"    => proc { |value, _scene| $PokemonSystem.autotile_animations = value }
+})
+
+#-------------------------------------------------------------------------------
+
+# MenuHandlers.add(:options_menu, :control_up, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Arriba"),
+#   "order"       => 10,
+#   "type"        => :control,
+#   "parameters"  => Input::UP,
+#   "description" => _INTL("Movimiento hacia arriba del personaje o en menús. [Also: Arriba]"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::UP] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::UP] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_left, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Izquierda"),
+#   "order"       => 20,
+#   "type"        => :control,
+#   "parameters"  => Input::LEFT,
+#   "description" => _INTL("Movimiento hacia la izquierda del personaje o en menús. [Also: Izquierda]"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::LEFT] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::LEFT] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_down, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Abajo"),
+#   "order"       => 30,
+#   "type"        => :control,
+#   "parameters"  => Input::DOWN,
+#   "description" => _INTL("Movimiento hacia abajo del personaje o en menús. [Also: Abajo]"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::DOWN] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::DOWN] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_right, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Derecha"),
+#   "order"       => 40,
+#   "type"        => :control,
+#   "parameters"  => Input::RIGHT,
+#   "description" => _INTL("Movimiento hacia la derecha del personaje o en menús. [También: Derecha]"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::RIGHT] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::RIGHT] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_use, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Usar/Seleccionar"),
+#   "order"       => 50,
+#   "type"        => :control,
+#   "parameters"  => Input::USE,
+#   "description" => _INTL("Interactuar o Confirmar. [También: Enter, Espacio]"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::USE] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::USE] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_back, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Atrás"),
+#   "order"       => 60,
+#   "type"        => :control,
+#   "parameters"  => Input::BACK,
+#   "description" => _INTL("Sale del menú y cancela interacciones. [También: X/Esc]"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::BACK] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::BACK] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_action, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Acción"),
+#   "order"       => 70,
+#   "type"        => :control,
+#   "parameters"  => Input::ACTION,
+#   "description" => _INTL("Cambia el comportamiento de ciertas interacciones en el juego. (Default: Z)"),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::ACTION] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::ACTION] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_jump_up, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Subir Rápido"),
+#   "order"       => 80,
+#   "type"        => :control,
+#   "parameters"  => Input::QUICK_UP,
+#   "description" => _INTL("Permite avanzar más rápidamente hacia arriba en los menús."),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::QUICK_UP] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::QUICK_UP] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :control_jump_down, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Av. Página"),
+#   "order"       => 90,
+#   "type"        => :control,
+#   "parameters"  => Input::QUICK_DOWN,
+#   "description" => _INTL("Permite avanzar más rápidamente hacia abajo en los menús."),
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::QUICK_DOWN] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::QUICK_DOWN] = value },
+#   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
+# })
+
+# MenuHandlers.add(:options_menu, :reset_controls, {
+#   "page"        => :controls,
+#   "name"        => _INTL("Resetear Controles"),
+#   "order"       => 900,
+#   "type"        => :use,
+#   "description" => _INTL("Restablece los controles a sus valores predeterminados."),
+#   "use_proc"    => proc { |screen|
+#     $PokemonSystem.reset_controls
+#     screen.sprites[:options_list].get_values
+#     screen.refresh
+#     Input.update
+#   }
+# })
