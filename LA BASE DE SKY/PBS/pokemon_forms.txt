@@ -9,6 +9,7 @@ Abilities = THICKFAT
 HiddenAbilities = THICKFAT
 Height = 2.4
 Weight = 155.5
+Pokedex = Sus patas y lomo se fortalecieron para soportar el peso de la flor, que creció considerablemente tras la megaevolución.
 Generation = 6
 #-------------------------------
 [CHARIZARD,1]
@@ -21,6 +22,7 @@ Abilities = TOUGHCLAWS
 HiddenAbilities = TOUGHCLAWS
 Weight = 110.5
 Color = Black
+Pokedex = La extraordinaria energía que fluye por su cuerpo le oscureció la piel y provocó la aparición de intensas llamas azules.
 Generation = 6
 #-------------------------------
 [CHARIZARD,2]
@@ -31,6 +33,7 @@ BaseExp = 317
 Abilities = DROUGHT
 HiddenAbilities = DROUGHT
 Weight = 100.5
+Pokedex = El vínculo que lo une a su Entrenador es la fuente de su poder. Su capacidad de vuelo supera la de un avión de combate.
 Generation = 6
 #-------------------------------
 [BLASTOISE,1]
@@ -41,6 +44,7 @@ BaseExp = 315
 Abilities = MEGALAUNCHER
 HiddenAbilities = MEGALAUNCHER
 Weight = 101.1
+Pokedex = Sus fornidas patas y lomo le permiten aguantar el retroceso del cañón de su caparazón, cuya potencia es tan poderosa como la de un tanque.
 Generation = 6
 #-------------------------------
 [BEEDRILL,1]
@@ -52,6 +56,7 @@ Abilities = ADAPTABILITY
 HiddenAbilities = ADAPTABILITY
 Height = 1.4
 Weight = 40.5
+Pokedex = Al megaevolucionar, también le salen aguijones venenosos en las patas posteriores. Primero ataca con los de las patas y luego con el del abdomen.
 Generation = 6
 #-------------------------------
 [PIDGEOT,1]
@@ -63,6 +68,7 @@ Abilities = NOGUARD
 HiddenAbilities = NOGUARD
 Height = 2.2
 Weight = 50.5
+Pokedex = Su potencia muscular aumentó tanto que es capaz de mantener el vuelo sin descanso durante dos semanas.
 Generation = 6
 #-------------------------------
 [RATTATA,1]
@@ -325,6 +331,7 @@ BaseExp = 300
 Abilities = TRACE
 HiddenAbilities = TRACE
 Height = 1.2
+Pokedex = Sacrifica su musculatura a cambio de liberar su verdadero poder. Gracias a sus habilidades psíquicas, no hay nada que se le escape.
 Generation = 6
 #-------------------------------
 [GEODUDE,1]
@@ -435,6 +442,7 @@ HiddenAbilities = SHELLARMOR
 Height = 2.0
 Weight = 120.0
 Shape = HeadArms
+Pokedex = La energía de la megaevolución convirtió a Shellder en una armadura impenetrable. No hay ningún cambio aparente en Slowpoke.
 Generation = 6
 #-------------------------------
 [FARFETCHD,1]
@@ -490,6 +498,7 @@ BaseExp = 300
 Abilities = SHADOWTAG
 HiddenAbilities = SHADOWTAG
 Height = 1.4
+Pokedex =  Puede pasar de una dimensión a otra y aparecer donde quiera. Una vez causó gran revuelo al mostrar tan solo una pata a través de una pared.
 Generation = 6
 #-------------------------------
 [EXEGGUTOR,1]
@@ -541,6 +550,7 @@ BaseExp = 207
 Abilities = PARENTALBOND
 HiddenAbilities = PARENTALBOND
 Weight = 100.0
+Pokedex =  La energía de la megaevolución hace crecer de golpe a la cría, que coordina a la perfección sus movimientos con los de su madre.
 Generation = 6
 #-------------------------------
 [MRMIME,1]
@@ -572,6 +582,7 @@ HiddenAbilities = AERILATE
 Height = 1.7
 Weight = 59.0
 Shape = MultiWinged
+Pokedex = Gracias a la megaevolución, ahora puede volar. Tal vez su alegría es la razón por la cual apenas se posa en tierra firme.
 Generation = 6
 #-------------------------------
 [GYARADOS,1]
@@ -583,6 +594,7 @@ BaseExp = 224
 Abilities = MOLDBREAKER
 HiddenAbilities = MOLDBREAKER
 Weight = 305.0
+Pokedex =  Expulsa agua a presión por las agallas de sus costados para así poder volar sobre la superficie del agua a una velocidad supersónica.
 Generation = 6
 #-------------------------------
 [AERODACTYL,1]
@@ -594,6 +606,7 @@ Abilities = TOUGHCLAWS
 HiddenAbilities = TOUGHCLAWS
 Height = 2.1
 Weight = 79.0
+Pokedex = Parte de su cuerpo quedó petrificada. Algunos estudiosos afirman que esta es la verdadera forma de Aerodactyl.
 Generation = 6
 #-------------------------------
 [ARTICUNO,1]
@@ -650,6 +663,7 @@ Abilities = STEADFAST
 HiddenAbilities = STEADFAST
 Height = 2.3
 Weight = 127.0
+Pokedex = Su poder psíquico aumentó su masa muscular. Posee una fuerza de agarre de una tonelada y puede correr 100 m en dos segundos.
 Generation = 6
 #-------------------------------
 [MEWTWO,2]
@@ -661,6 +675,7 @@ Abilities = INSOMNIA
 HiddenAbilities = INSOMNIA
 Height = 1.5
 Weight = 33.0
+Pokedex = Aunque su cuerpo se encogió, su extraordinario poder le permite reducir un rascacielos a escombros con tan solo pensarlo.
 Generation = 6
 #-------------------------------
 [PICHU,2]
@@ -676,6 +691,7 @@ BaseStats = 90,95,105,45,165,110
 BaseExp = 305
 Abilities = MOLDBREAKER
 HiddenAbilities = MOLDBREAKER
+Pokedex = La descomunal energía de la megaevolución lo afecta a nivel celular, lo que hace resurgir la sangre de dragón que late en su interior.
 Generation = 6
 #-------------------------------
 [SLOWKING,1]
@@ -783,6 +799,7 @@ Abilities = SANDFORCE
 HiddenAbilities = SANDFORCE
 Height = 10.5
 Weight = 740.0
+Pokedex = Controla mediante el magnetismo las placas que se desprendieron de su duro cuerpo y las usa para protegerse de los ataques enemigos.
 Generation = 6
 #-------------------------------
 [SCIZOR,1]
@@ -794,6 +811,7 @@ Abilities = TECHNICIAN
 HiddenAbilities = TECHNICIAN
 Height = 2.0
 Weight = 125.0
+Pokedex = La megaevolución convirtió sus pinzas en instrumentos atroces, capaces de hacer trizas todo lo que cae en ellas.
 Generation = 6
 #-------------------------------
 [HERACROSS,1]
@@ -805,6 +823,7 @@ Abilities = SKILLLINK
 HiddenAbilities = SKILLLINK
 Height = 1.7
 Weight = 62.5
+Pokedex =  Es capaz de encajar entre sus dos cuernos objetos que superen su peso 500 veces y levantarlos sin problema.
 Generation = 6
 #-------------------------------
 [CORSOLA,1]
@@ -832,6 +851,7 @@ Abilities = SOLARPOWER
 HiddenAbilities = SOLARPOWER
 Height = 1.9
 Weight = 49.5
+Pokedex = La energía de la megaevolución hace que su cuerpo desprenda un calor abrasador. Reduce a cenizas al oponente con su aliento de fuego.
 Generation = 6
 #-------------------------------
 [TYRANITAR,1]
@@ -842,6 +862,7 @@ BaseExp = 350
 HiddenAbilities = SANDSTREAM
 Height = 2.5
 Weight = 255.0
+Pokedex = La megaevolución lo vuelve aún más violento que de costumbre. Se desconoce si oye las órdenes de su Entrenador.
 Generation = 6
 #-------------------------------
 [SCEPTILE,1]
@@ -854,6 +875,7 @@ Abilities = LIGHTNINGROD
 HiddenAbilities = LIGHTNINGROD
 Height = 1.9
 Weight = 55.2
+Pokedex = Hace detonar las semillas del lomo, cargadas con la energía de la megaevolución, para disparar la punta de la cola como si fuera un proyectil.
 Generation = 6
 #-------------------------------
 [BLAZIKEN,1]
@@ -862,6 +884,7 @@ MegaStone = BLAZIKENITE
 BaseStats = 80,160,80,100,130,80
 BaseExp = 315
 Abilities = SPEEDBOOST
+Pokedex = La sangre en ebullición que le recorre todo el cuerpo duplica la destreza de sus movimientos. Somete a sus rivales en un abrir y cerrar de ojos.
 Generation = 6
 #-------------------------------
 [SWAMPERT,1]
@@ -873,6 +896,7 @@ Abilities = SWIFTSWIM
 HiddenAbilities = SWIFTSWIM
 Height = 1.9
 Weight = 102.0
+Pokedex = Siguiendo los principios de una bomba hidráulica, utiliza el agua de su cuerpo para fortalecer aún más sus ya de por sí desarrollados músculos.
 Generation = 6
 #-------------------------------
 [ZIGZAGOON,1]
@@ -903,6 +927,7 @@ BaseStats = 68,85,65,100,165,135
 BaseExp = 309
 Abilities = PIXILATE
 HiddenAbilities = PIXILATE
+Pokedex = Al desplegar las placas rojizas del pecho y abrir el corazón, es capaz de desatar toda la potencia de su poder psíquico.
 Generation = 6
 #-------------------------------
 [SABLEYE,1]
@@ -913,6 +938,7 @@ BaseExp = 168
 Abilities = MAGICBOUNCE
 HiddenAbilities = MAGICBOUNCE
 Weight = 161.0
+Pokedex = Tras la megaevolución, la gema de su pecho crece de forma impresionante, hasta el punto de que puede repeler cualquier ataque.
 Generation = 6
 #-------------------------------
 [MAWILE,1]
@@ -924,6 +950,7 @@ Abilities = HUGEPOWER
 HiddenAbilities = HUGEPOWER
 Height = 1.0
 Weight = 23.5
+Pokedex = Sus mandíbulas se agitan con violencia como si tuvieran voluntad propia. Pueden hacer pedazos una roca de un solo mordisco.
 Generation = 6
 #-------------------------------
 [AGGRON,1]
@@ -935,6 +962,7 @@ Abilities = FILTER
 HiddenAbilities = FILTER
 Height = 2.2
 Weight = 395.0
+Pokedex = La energía de la megaevolución hace que todo el hierro de su cuerpo se transforme en una coraza integral de acero.
 Generation = 6
 #-------------------------------
 [MEDICHAM,1]
@@ -943,6 +971,7 @@ MegaStone = MEDICHAMITE
 BaseStats = 60,100,85,100,80,85
 BaseExp = 179
 HiddenAbilities = PUREPOWER
+Pokedex = Le megaevolución le otorgó una fuerza espiritual ilimitada. Materializa con su mente unos brazos maléficos para derrotar a sus enemigos.
 Generation = 6
 #-------------------------------
 [MANECTRIC,1]
@@ -954,6 +983,7 @@ Abilities = INTIMIDATE
 HiddenAbilities = INTIMIDATE
 Height = 1.8
 Weight = 44.0
+Pokedex = La megaevolución hace que se acumule en su interior más electricidad de la que es capaz de utilizar.
 Generation = 6
 #-------------------------------
 [SHARPEDO,1]
@@ -965,6 +995,7 @@ Abilities = STRONGJAW
 HiddenAbilities = STRONGJAW
 Height = 2.5
 Weight = 130.3
+Pokedex = Si las filas de colmillos que le flanquean la cabeza se quiebran, se regenerarán cuantas veces sea necesario.
 Generation = 6
 #-------------------------------
 [CAMERUPT,1]
@@ -976,6 +1007,7 @@ Abilities = SHEERFORCE
 HiddenAbilities = SHEERFORCE
 Height = 2.5
 Weight = 320.5
+Pokedex = Cuando su ira alcanza un punto crítico, el gran volcán que tiene en el lomo entra en erupción y expulsa lava violentamente.
 Generation = 6
 #-------------------------------
 [ALTARIA,1]
@@ -987,6 +1019,7 @@ BaseExp = 207
 Abilities = PIXILATE
 HiddenAbilities = PIXILATE
 Height = 1.5
+Pokedex = Sus plumas, increíblemente suaves al tacto, son tan resistentes que solo unas pocas bastarían para sostener un camión en el aire.
 Generation = 6
 #-------------------------------
 [CASTFORM,1]
@@ -1016,6 +1049,7 @@ Abilities = PRANKSTER
 HiddenAbilities = PRANKSTER
 Height = 1.2
 Weight = 13.0
+Pokedex = La megaevolución alimentó su odio e hizo emerger por los cierres el poder maléfico que antes estaba contenido.
 Generation = 6
 #-------------------------------
 [ABSOL,1]
@@ -1026,6 +1060,7 @@ BaseExp = 198
 Abilities = MAGICBOUNCE
 HiddenAbilities = MAGICBOUNCE
 Weight = 49.0
+Pokedex = El pelaje erizado de su dorso se asemeja a un par de alas que, al agitarse, emiten una potente aura que intimida al rival.
 Generation = 6
 #-------------------------------
 [GLALIE,1]
@@ -1037,6 +1072,7 @@ Abilities = REFRIGERATE
 HiddenAbilities = REFRIGERATE
 Height = 2.1
 Weight = 350.2
+Pokedex = Por su boca desencajada exhala una ventisca helada que cubre de blanco sus alrededores.
 Generation = 6
 #-------------------------------
 [SALAMENCE,1]
@@ -1048,6 +1084,7 @@ Abilities = AERILATE
 HiddenAbilities = AERILATE
 Height = 1.8
 Weight = 112.6
+Pokedex = Introduce sus patas delanteras en la parte frontal de su coraza para surcar el aire a gran velocidad sin importar las características del terreno.
 Generation = 6
 #-------------------------------
 [METAGROSS,1]
@@ -1059,6 +1096,7 @@ Abilities = TOUGHCLAWS
 HiddenAbilities = TOUGHCLAWS
 Height = 2.5
 Weight = 942.9
+Pokedex = Este Pokémon es el resultado de la combinación entre un Metagross, un Metang y dos Beldum.
 Generation = 6
 #-------------------------------
 [LATIAS,1]
@@ -1069,6 +1107,7 @@ BaseExp = 350
 Height = 1.8
 Weight = 52.0
 Color = Purple
+Pokedex = Su habilidad para volar y su potencia de ataque se incrementaron. Confunde a sus rivales desperdigando plumas transparentes.
 Generation = 6
 #-------------------------------
 [LATIOS,1]
@@ -1079,6 +1118,7 @@ BaseExp = 350
 Height = 2.3
 Weight = 70.0
 Color = Purple
+Pokedex = Su velocidad de vuelo supera los 4 mach. Es de los Pokémon más hábiles en los combates aéreos.
 Generation = 6
 #-------------------------------
 [KYOGRE,1]
@@ -1088,6 +1128,7 @@ BaseExp = 385
 Abilities = PRIMORDIALSEA
 Height = 9.8
 Weight = 430.0
+Pokedex = Experimentó una regresión a causa de la energía primigenia que albergaba el Prisma Azul. Su cuerpo parece estar compuesto de agua marina.
 Generation = 6
 #-------------------------------
 [GROUDON,1]
@@ -1098,6 +1139,7 @@ BaseExp = 385
 Abilities = DESOLATELAND
 Height = 5.0
 Weight = 999.7
+Pokedex = Recuperó su forma original gracias al Prisma Rojo. Su cuerpo rebosa de energía en forma de magma incandescente.
 Generation = 6
 #-------------------------------
 [RAYQUAZA,1]
@@ -1110,6 +1152,7 @@ Abilities = DELTASTREAM
 HiddenAbilities = DELTASTREAM
 Height = 10.8
 Weight = 392.0
+Pokedex = A veces, lo que parece una estrella fugaz en el cielo nocturno podría ser Mega-Rayquaza volando tras un meteorito.
 Generation = 6
 #-------------------------------
 [DEOXYS,1]
@@ -1184,6 +1227,7 @@ Abilities = SCRAPPY
 HiddenAbilities = SCRAPPY
 Height = 1.3
 Weight = 28.3
+Pokedex = Utiliza las orejas como látigo para azotar al enemigo. Posee un temperamento violento y combativo.
 Generation = 6
 #-------------------------------
 [GARCHOMP,1]
@@ -1193,6 +1237,7 @@ BaseStats = 108,170,115,92,120,95
 BaseExp = 350
 Abilities = SANDFORCE
 HiddenAbilities = SANDFORCE
+Pokedex = La megaevolución exacerba su agresividad. Hace trizas al enemigo con sus extremidades en forma de guadañas.
 Generation = 6
 #-------------------------------
 [LUCARIO,1]
@@ -1204,6 +1249,7 @@ Abilities = ADAPTABILITY
 HiddenAbilities = ADAPTABILITY
 Height = 1.3
 Weight = 57.5
+Pokedex = La energía de la megaevolución se funde con su aura y recorre su cuerpo, lo que le deja unas profundas marcas negras en la piel.
 Generation = 6
 #-------------------------------
 [ABOMASNOW,1]
@@ -1214,6 +1260,7 @@ BaseExp = 208
 HiddenAbilities = SNOWWARNING
 Height = 2.7
 Weight = 185.0
+Pokedex = De los capullos de la espalda le brotaron unos imponentes carámbanos, los cuales usa para generar temibles ventiscas a −30 ºC.
 Generation = 6
 #-------------------------------
 [GALLADE,1]
@@ -1224,6 +1271,7 @@ BaseExp = 309
 Abilities = INNERFOCUS
 HiddenAbilities = INNERFOCUS
 Weight = 56.4
+Pokedex = Obtiene fuerza del vínculo con su Entrenador. Ahora posee dos cuchillas para atacar a sus enemigos y una capa que lo protege.
 Generation = 6
 #-------------------------------
 [ROTOM,1]
@@ -1366,6 +1414,7 @@ HiddenAbilities = HEALER
 Height = 1.5
 Weight = 32.0
 Color = White
+Pokedex = Se debe evitar tocar las antenas secundarias que le crecen en la base del cuello, porque quien lo haga puede caer en un profundo sueño.
 Generation = 6
 #-------------------------------
 [DARUMAKA,2]
@@ -1814,6 +1863,7 @@ BaseExp = 350
 Abilities = MAGICBOUNCE
 HiddenAbilities = MAGICBOUNCE
 Height = 1.1
+Pokedex = Se conoce como la Princesa Real Rosada. El lustroso diamante que tiene en la frente es de nada más y nada menos que 2,000 quilates.
 Weight = 27.8
 #-------------------------------
 [HOOPA,1]
