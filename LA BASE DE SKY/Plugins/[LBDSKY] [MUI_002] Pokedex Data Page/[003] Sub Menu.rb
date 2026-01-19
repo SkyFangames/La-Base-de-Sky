@@ -299,7 +299,7 @@ class PokemonPokedexInfo_Scene
           end
         end
       #-------------------------------------------------------------------------
-      elsif Input.repeat?(Input::QUICK_UP)
+      elsif Input.repeat?(Input::JUMPUP)
         if page > 0
           page -= 1
           index = 0
@@ -307,7 +307,7 @@ class PokemonPokedexInfo_Scene
           dorefresh = true
         end
       #-------------------------------------------------------------------------
-      elsif Input.repeat?(Input::QUICK_DOWN)
+      elsif Input.repeat?(Input::JUMPDOWN)
         if page < maxpage
           page += 1
           index = 0
@@ -632,14 +632,14 @@ class PokemonPokedexInfo_Scene
           pbPlayCursorSE
           pbDrawDataList(list, index, cursor)
         end
-      elsif Input.repeat?(Input::QUICK_UP)
+      elsif Input.repeat?(Input::JUMPUP)
         old_index = index
         index = 0
         if index != old_index
           pbPlayCursorSE
           pbDrawDataList(list, index, cursor)
         end
-      elsif Input.repeat?(Input::QUICK_DOWN)
+      elsif Input.repeat?(Input::JUMPDOWN)
         old_index = index
         index = maxidx
         if index != old_index

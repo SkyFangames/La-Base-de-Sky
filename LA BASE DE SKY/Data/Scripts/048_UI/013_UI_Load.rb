@@ -537,12 +537,12 @@ class UI::LoadVisuals < UI::BaseVisuals
         return :delete_save
       end
       return update_interaction(Input::USE)
-    elsif Input.trigger?(Input::QUICK_UP)
+    elsif Input.trigger?(Input::JUMPUP)
       if @index != @commands.keys[0]
         pbPlayCursorSE
         set_index(@commands.keys[0])
       end
-    elsif Input.trigger?(Input::QUICK_DOWN)
+    elsif Input.trigger?(Input::JUMPDOWN)
       if @index != @commands.keys[@commands.length - 1]
         pbPlayCursorSE
         set_index(@commands.keys[@commands.length - 1])

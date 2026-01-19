@@ -233,7 +233,7 @@ class Scene_Map
         $game_temp.menu_calling = true
         $game_temp.menu_beep = true
       end
-    elsif Input.trigger?(Input::SPECIAL) #Input.trigger?(Input::QUICK_UP) || Input.trigger?(Input::QUICK_DOWN)
+    elsif Input.trigger?(Input::SPECIAL)
       $game_temp.ready_menu_calling = true if !$game_player.moving?
       Input.update   # Prevents immediate moving of cursor in Ready Menu
     elsif Input.press?(Input::F9)

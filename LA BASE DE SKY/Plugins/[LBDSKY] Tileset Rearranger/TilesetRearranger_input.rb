@@ -127,9 +127,9 @@ class TilesetRearranger
       update_cursor_position(Input.press?(Input::CTRL) ? -2 : -1, 0)
     elsif Input.repeat?(Input::RIGHT) && [:swap, :cut_insert, :erase].include?(@mode)
       update_cursor_position(Input.press?(Input::CTRL) ? 2 : 1, 0)
-    elsif Input.repeat?(Input::QUICK_UP)
+    elsif Input.repeat?(Input::JUMPUP)
       update_cursor_position(0, -NUM_ROWS_VISIBLE / 2, true)
-    elsif Input.repeat?(Input::QUICK_DOWN)
+    elsif Input.repeat?(Input::JUMPDOWN)
       update_cursor_position(0, NUM_ROWS_VISIBLE / 2, true)
     # elsif Input.trigger?(Input::AUX1)   # Undo
     #   pop_from_history

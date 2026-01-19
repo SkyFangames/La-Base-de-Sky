@@ -1386,10 +1386,10 @@ MenuHandlers.add(:options_menu, :autotile_animations, {
 #   "name"        => _INTL("Subir Rápido"),
 #   "order"       => 80,
 #   "type"        => :control,
-#   "parameters"  => Input::QUICK_UP,
+#   "parameters"  => Input::JUMPUP,
 #   "description" => _INTL("Permite avanzar más rápidamente hacia arriba en los menús."),
-#   "get_proc"    => proc { next $PokemonSystem.controls[Input::QUICK_UP] },
-#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::QUICK_UP] = value },
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::JUMPUP] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::JUMPUP] = value },
 #   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
 # })
 
@@ -1398,10 +1398,10 @@ MenuHandlers.add(:options_menu, :autotile_animations, {
 #   "name"        => _INTL("Av. Página"),
 #   "order"       => 90,
 #   "type"        => :control,
-#   "parameters"  => Input::QUICK_DOWN,
+#   "parameters"  => Input::JUMPDOWN,
 #   "description" => _INTL("Permite avanzar más rápidamente hacia abajo en los menús."),
-#   "get_proc"    => proc { next $PokemonSystem.controls[Input::QUICK_DOWN] },
-#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::QUICK_DOWN] = value },
+#   "get_proc"    => proc { next $PokemonSystem.controls[Input::JUMPDOWN] },
+#   "set_proc"    => proc { |value, _screen| $PokemonSystem.controls[Input::JUMPDOWN] = value },
 #   "use_proc"    => proc { |screen| screen.visuals.change_key_or_button }
 # })
 
