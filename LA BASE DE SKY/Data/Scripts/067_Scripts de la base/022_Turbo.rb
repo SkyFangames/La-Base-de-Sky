@@ -58,7 +58,7 @@ module Input
     turbo_update
     
     # Detectar teclas de Turbo
-    if $CanToggle && TurboConfig::TOGGLE_KEYS.any? { |key| trigger?(key) } && !Input.text_input
+    if $CanToggle && TurboConfig::TOGGLE_KEYS.any? { |key| trigger?(key) } && ( !Input.text_input || !trigger?(Input::AUX1) )
       # Guardar tiempo actual antes del cambio
       real_now = System.unscaled_uptime
       virtual_now = System.uptime
