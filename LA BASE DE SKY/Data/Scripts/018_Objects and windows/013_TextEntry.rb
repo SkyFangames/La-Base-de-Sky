@@ -323,12 +323,21 @@ end
 
 # This class represents a window for text entry with a keyboard per key.
 #
-# It extends the `Window_TextEntry` class and adds functionality for handling keyboard input.
+# It extends the `Window_TextEntry_Keyboard` class and adds functionality for handling keyboard input.
 #
 # @author DPertierra
 # @version 1.0.0
 #
-class WindowTextEntryKeyboardPerKey < Window_TextEntry
+class WindowTextEntryKeyboardPerKey < Window_TextEntry_Keyboard
+  ##
+  # The callback to invoke when a key is pressed.
+  #
+  attr_accessor :on_input
+
+  ##
+  # The callback to invoke when the text changes.
+  #
+  attr_accessor :on_text_change
   # ...
 
   ##
@@ -375,50 +384,50 @@ class WindowTextEntryKeyboardPerKey < Window_TextEntry
     true
   end
 
-  def move_left
-    return unless @helper.cursor.positive?
+  # def move_left
+  #   return unless @helper.cursor.positive?
 
-    @helper.cursor -= 1
-    @cursor_timer_start = System.uptime
-    @cursor_shown = true
-    refresh
-  end
+  #   @helper.cursor -= 1
+  #   @cursor_timer_start = System.uptime
+  #   @cursor_shown = true
+  #   refresh
+  # end
 
-  def move_right
-    return unless @helper.cursor < text.scan(/./m).length
+  # def move_right
+  #   return unless @helper.cursor < text.scan(/./m).length
 
-    @helper.cursor += 1
-    @cursor_timer_start = System.uptime
-    @cursor_shown = true
-    refresh
-  end
+  #   @helper.cursor += 1
+  #   @cursor_timer_start = System.uptime
+  #   @cursor_shown = true
+  #   refresh
+  # end
 
-  def handle_input
-    # Moving cursor
-    if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-      move_left
-    elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-      move_right
-    elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
-      delete if @helper.cursor.positive?
-    elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
-      # return
-    else
-      Input.gets.each_char { |c| insert(c) }
-    end
-  end
+    # def handle_input
+    #   # Moving cursor
+    #   if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
+    #     move_left
+    #   elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
+    #     move_right
+    #   elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
+    #     delete if @helper.cursor.positive?
+    #   elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
+    #     # return
+    #   else
+    #     Input.gets.each_char { |c| insert(c) }
+    #   end
+    # end
 
-  def update
-    cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i.even?
-    if cursor_to_show != @cursor_shown
-      @cursor_shown = cursor_to_show
-      refresh
-    end
+  # def update
+  #   cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i.even?
+  #   if cursor_to_show != @cursor_shown
+  #     @cursor_shown = cursor_to_show
+  #     refresh
+  #   end
 
-    return unless active
+  #   return unless active
 
-    handle_input
-  end
+  #   handle_input
+  # end
 end
 
 #===============================================================================
