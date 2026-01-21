@@ -629,12 +629,12 @@ module Settings
       " PON AQUÍ TUS CRÉDITOS ",
       "",
       
-    
       "LA BASE DE SKY",
       _INTL("Creada por:"),
       "Skyflyer<s>DPertierra",
       "",
       _INTL("Colaboraciones:"),
+      "ZikSanchez",
       "DarmanInigo<s>Nieves1236",
       "deNombreTuri<s>Pokepachito",
       "Ebaru",
