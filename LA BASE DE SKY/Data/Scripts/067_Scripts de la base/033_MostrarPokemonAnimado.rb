@@ -39,11 +39,6 @@ class MostrarPokemonAnimado
     [:LECHONK, 0, -20],
     [:STARLY, 10, -0],
     [:ROLYCOLY, 10, -45],
-    [:AAAA, 0, -0],
-    [:AAAA, 0, -0],
-    [:AAAA, 0, -0],
-    [:AAAA, 0, -0],
-    [:AAAA, 0, -0],
   ]
 
   BASE_Y_CORRECTION = -10

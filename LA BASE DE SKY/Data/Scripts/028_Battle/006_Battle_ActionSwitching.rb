@@ -264,7 +264,7 @@ class Battle
       elsif opposing.hp >= opposing.totalhp / 4
         pbDisplayBrief(_INTL("¡Solo un poco más! ¡Aguanta, {1}!", newPkmnName))
       else
-        pbDisplayBrief(_INTL("¡Tu oponente está debil! ¡A por ellos, {1}!", newPkmnName))
+        pbDisplayBrief(_INTL("¡Tu oponente está débil! ¡A por ellos, {1}!", newPkmnName))
       end
     else
       owner = pbGetOwnerFromBattlerIndex(idxBattler)
