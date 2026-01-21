@@ -1270,10 +1270,25 @@ MenuHandlers.add(:debug_menu, :editors_menu, {
   "description" => _INTL("Editar animaciones de combate, tags de terreno, datos de mapas, etc.")
 })
 
-MenuHandlers.add(:debug_menu, :animation_editor, {
-  "name"        => _INTL("Editor de animaciones de combate"),
+MenuHandlers.add(:debug_menu, :new_battle_animation_editor, {
+  "name"        => _INTL("Nuevo editor de animaciones de combate"),
   "parent"      => :editors_menu,
-  "description" => _INTL("Editar the battle animations."),
+  "description" => _INTL("Editar las animaciones de combate."),
+  "effect"      => proc {
+    Graphics.resize_screen(AnimationEditor::WINDOW_WIDTH, AnimationEditor::WINDOW_HEIGHT)
+    pbSetResizeFactor(1)
+    screen = AnimationEditor::AnimationSelector.new
+    screen.run
+    Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
+    pbSetResizeFactor($PokemonSystem.screensize)
+    $game_map&.autoplay
+  }
+})
+
+MenuHandlers.add(:debug_menu, :animation_editor, {
+  "name"        => _INTL("Antiguo Editor de animaciones de combate"),
+  "parent"      => :editors_menu,
+  "description" => _INTL("Editar las animaciones de combate."),
   "effect"      => proc {
     pbFadeOutIn { pbAnimationEditor }
   }

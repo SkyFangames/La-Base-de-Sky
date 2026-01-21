@@ -1,0 +1,28 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[Common,Sun]
+Name = Example anim
+NoUser = true
+NoTarget = true
+<Particle 0>
+    Graphic = Examples/weather
+    Focus = Foreground
+    SetX = 0,64
+    SetY = 0,64
+    SetOpacity = 0,0
+    MoveX = 0,4,94
+    MoveY = 0,4,94
+    MoveOpacity = 0,5,255
+    SetX = 4,94
+    SetY = 4,94
+    SetOpacity = 5,255
+    SetOpacity = 10,255
+    MoveOpacity = 10,5,0
+    SetX = 11,94
+    SetY = 11,94
+    MoveX = 11,4,64
+    MoveY = 11,4,64
+    SetX = 15,64
+    SetY = 15,64
+    SetOpacity = 15,0
+<SE>

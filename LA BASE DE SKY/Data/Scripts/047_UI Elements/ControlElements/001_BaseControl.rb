@@ -5,7 +5,7 @@ class UIControls::BaseControl < BitmapSprite
   attr_reader   :value
   attr_accessor :disabled
 
-  TEXT_OFFSET_Y = 5
+  TEXT_OFFSET_Y = 4
 
   include UIControls::StyleMixin
 
@@ -39,8 +39,8 @@ class UIControls::BaseControl < BitmapSprite
   def mouse_pos
     mouse_coords = Mouse.getMousePos
     return nil, nil if !mouse_coords
-    ret_x = mouse_coords[0] - self.viewport.rect.x - self.x
-    ret_y = mouse_coords[1] - self.viewport.rect.y - self.y
+    ret_x = mouse_coords[0] - self.viewport.rect.x + self.viewport.ox - self.x
+    ret_y = mouse_coords[1] - self.viewport.rect.y + self.viewport.oy - self.y
     return ret_x, ret_y
   end
 
@@ -133,11 +133,11 @@ class UIControls::BaseControl < BitmapSprite
     if !@captured_area || @hover_area == @captured_area
       # Draw mouse hover over area highlight
       rect = @interactions[@hover_area]
-      self.bitmap.fill_rect(rect.x, rect.y, rect.width, rect.height, hover_color) if rect
+      self.bitmap.fill_rect(rect.x, rect.y, rect.width, rect.height, get_color_of(:hover)) if rect
     elsif @captured_area
       # Draw captured area highlight
       rect = @interactions[@captured_area]
-      self.bitmap.fill_rect(rect.x, rect.y, rect.width, rect.height, capture_color) if rect
+      self.bitmap.fill_rect(rect.x, rect.y, rect.width, rect.height, get_color_of(:capture)) if rect
     end
   end
 
