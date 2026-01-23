@@ -15,6 +15,11 @@ class IntroEventScene < EventScene
 
   def initialize(viewport = nil)
     super(viewport)
+     wd = Dir.getwd
+    if !File.directory?(wd) && [".zip", ".rar", ".7z", ".tar", ".gz"].include?(File.extname(wd).downcase)
+      pbMessage(_INTL("Parece que no has descomprimido el juego.\nPor favor, descomprímelo antes de jugar."))
+      exit
+    end
     @pic = addImage(0, 0, "")
     @pic.setOpacity(0, 0)        # set opacity to 0 after waiting 0 frames
     @pic2 = addImage(0, 0, "")   # flashing "Press Enter" picture

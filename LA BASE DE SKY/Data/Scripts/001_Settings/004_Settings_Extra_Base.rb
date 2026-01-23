@@ -76,6 +76,12 @@ module Settings
 ################################################################################
 #  POKÉDEX AVANZADA
 ################################################################################
+
+  # Si está en true hace que en las dexes verifique tambien si has visto formas alternativas
+  # esto es util si quieres hacer una dex solo de formas regionales o megas
+  REGIONAL_DEXES_INCLUDE_ALTERNATE_FORMS = true
+
+  #-----------------------------------------------------------------------------
   # Ruta de gráficos para la página de datos de la Pokédex.
   #-----------------------------------------------------------------------------
   # Almacena la ruta para los gráficos utilizados por este plugin.

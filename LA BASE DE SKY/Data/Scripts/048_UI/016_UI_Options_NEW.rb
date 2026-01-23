@@ -8,16 +8,16 @@ class PokemonSystem
   attr_accessor :runstyle
   attr_accessor :sendtoboxes
   attr_accessor :givenicknames
-  attr_accessor :skip_move_learning
   attr_accessor :frame
   attr_accessor :textskin
   attr_accessor :language
   attr_accessor :runstyle
   
-  attr_accessor :main_volume
-  attr_accessor :bgmvolume
-  attr_accessor :sevolume
-  attr_accessor :pokemon_cry_volume
+  attr_reader :skip_move_learning
+  attr_reader :main_volume
+  attr_reader :bgmvolume
+  attr_reader :sevolume
+  attr_reader :pokemon_cry_volume
   
   attr_accessor :textinput
   attr_reader   :bgmvolume
@@ -133,6 +133,15 @@ class PokemonSystem
     end
   end
 
+  def skip_move_learning
+    return @skip_move_learning || 1
+  end
+
+  def skip_move_learning=(value)
+    return if @skip_move_learning == value && !@force_set_options
+    @skip_move_learning = value
+  end
+
   def main_volume
     return @main_volume || 100
   end
@@ -152,6 +161,10 @@ class PokemonSystem
       $game_system.bgs_resume(playing_bgs)
     end
   end
+  
+  def bgmvolume
+    return @bgmvolume || 80
+  end
 
   def bgmvolume=(value)
     return if @bgmvolume == value && !@force_set_options
@@ -160,6 +173,10 @@ class PokemonSystem
     playing_bgm = $game_system.getPlayingBGM
     $game_system.bgm_pause
     $game_system.bgm_resume(playing_bgm)
+  end
+
+  def sevolume
+    return @sevolume || 100
   end
 
   def sevolume=(value)
@@ -173,6 +190,11 @@ class PokemonSystem
 
   def pokemon_cry_volume
     return @pokemon_cry_volume || 100
+  end
+
+  def pokemon_cry_volume=(value)
+    return if @pokemon_cry_volume == value && !@force_set_options
+    @pokemon_cry_volume = value
   end
 
   def textspeed=(value)

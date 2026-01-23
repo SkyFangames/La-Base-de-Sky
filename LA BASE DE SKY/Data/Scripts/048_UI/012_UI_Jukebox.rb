@@ -20,7 +20,7 @@ class PokemonJukebox_Scene
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["background"].setBitmap(_INTL("Graphics/UI/jukebox_bg"))
     @sprites["header"] = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("Reproductor"), 2, -18, 128, 64, @viewport
+      _INTL("Reproductor"), 2, -18, 160, 64, @viewport
     )
     @sprites["header"].baseColor   = Color.new(248, 248, 248)
     @sprites["header"].shadowColor = Color.black

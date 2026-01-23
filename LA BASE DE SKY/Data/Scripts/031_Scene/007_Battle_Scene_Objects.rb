@@ -65,10 +65,12 @@ class Battle::Scene::PokemonDataBox < Sprite
   SHINY_ICON_Y      = 36
   OWNED_ICON_X      = 8
   OWNED_ICON_Y      = 36
-  MEGA_ICON_X       = 8
-  MEGA_ICON_Y       = 34
-  PRIMAL_FOE_X      = 208
-  PRIMAL_PLYR_X     = -28
+  MEGA_ICON_FOE_X   = 212
+  MEGA_ICON_FOE_Y   = 8
+  MEGA_ICON_PLYR_X  = -28
+  MEGA_ICON_PLYR_Y  = 8
+  PRIMAL_FOE_X      = 210
+  PRIMAL_PLYR_X     = -30
   PRIMAL_ICON_Y     = 4
   # HP Number drawing
   HP_NUM_CURRENT_X  = 54
@@ -345,7 +347,9 @@ class Battle::Scene::PokemonDataBox < Sprite
   def draw_special_form_icon
     # Mega Evolution/Primal Reversion icon
     if @battler.mega?
-      pbDrawImagePositions(self.bitmap, [["Graphics/UI/Battle/icon_mega", @spriteBaseX + MEGA_ICON_X, MEGA_ICON_Y]])
+      mega_x = (@battler.opposes?(0)) ? MEGA_ICON_FOE_X : MEGA_ICON_PLYR_X
+      mega_y = (@battler.opposes?(0)) ? MEGA_ICON_FOE_Y  : MEGA_ICON_PLYR_Y
+      pbDrawImagePositions(self.bitmap, [["Graphics/UI/Battle/icon_mega", @spriteBaseX + mega_x, mega_y]])
     elsif @battler.primal?
       filename = nil
       if @battler.isSpecies?(:GROUDON)

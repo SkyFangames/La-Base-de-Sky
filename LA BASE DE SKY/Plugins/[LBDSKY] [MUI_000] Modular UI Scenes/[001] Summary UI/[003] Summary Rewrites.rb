@@ -289,6 +289,9 @@ class PokemonSummary_Scene
       elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_skills
         pbPlayDecisionSE
         showAbilityDescription(@pokemon)
+      elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_info
+        pbPlayDecisionSE
+        showShadowDescription(@pokemon)
       elsif Input.trigger?(Input::USE)
         dorefresh = pbPageCustomUse(@page_id)
         if !dorefresh

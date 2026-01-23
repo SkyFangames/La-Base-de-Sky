@@ -15,6 +15,17 @@ class Game_Player < Game_Character
   # surfing or diving.
   SURF_BOB_DURATION = 1.5
 
+  PLAYER_SPEEDS = {
+    :running => 4,
+    :walking => 3,
+    :ice_sliding => 4,
+    :biking => 5,
+    :waterfall => 2,
+    :surfing => 4,
+    :surfing_jumping => 3,
+    :diving => 3,
+  }
+
   def initialize(*arg)
     super(*arg)
     @lastdir = 0
@@ -50,7 +61,7 @@ class Game_Player < Game_Character
   #-----------------------------------------------------------------------------
 
   def can_run?
-    return @move_speed > 3 if @move_route_forcing
+    return @move_speed > PLAYER_SPEEDS[:walking] if @move_route_forcing
     return false if @bumping
     return false if $game_temp.in_menu || $game_temp.in_battle ||
                     $game_temp.message_window_showing || pbMapInterpreterRunning?
@@ -64,6 +75,7 @@ class Game_Player < Game_Character
   def set_movement_type(type)
     meta = GameData::PlayerMetadata.get($player&.character_ID || 1)
     new_charset = nil
+    speed = player_speed = PLAYER_SPEEDS[type] || 3
     case type
     when :fishing
       new_charset = pbGetPlayerCharset(meta.fish_charset)
@@ -82,17 +94,17 @@ class Game_Player < Game_Character
       new_charset = pbGetPlayerCharset(meta.surf_charset)
     when :cycling, :cycling_fast, :cycling_jumping, :cycling_stopped
       if !@move_route_forcing
-        self.move_speed = (type == :cycling_jumping) ? 3 : 5
+        self.move_speed = speed
       end
       new_charset = pbGetPlayerCharset(meta.cycle_charset)
     when :running
-      self.move_speed = 4 if !@move_route_forcing
+      self.move_speed = speed if !@move_route_forcing
       new_charset = pbGetPlayerCharset(meta.run_charset)
     when :ice_sliding
-      self.move_speed = 4 if !@move_route_forcing
+      self.move_speed = speed if !@move_route_forcing
       new_charset = pbGetPlayerCharset(meta.walk_charset)
     else   # :walking, :jumping, :walking_stopped
-      self.move_speed = 3 if !@move_route_forcing
+      self.move_speed = speed if !@move_route_forcing
       new_charset = pbGetPlayerCharset(meta.walk_charset)
     end
     self.move_speed = 3 if @bumping

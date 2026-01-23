@@ -97,6 +97,7 @@ class PokemonPokedexInfo_Scene
   
   alias modular_drawPageArea drawPageArea
   def drawPageArea
+    return unless @sprites["areamap"]
     @sprites["areamap"].visible       = true
     @sprites["areahighlight"].visible = true
     @sprites["areaoverlay"].visible   = true
