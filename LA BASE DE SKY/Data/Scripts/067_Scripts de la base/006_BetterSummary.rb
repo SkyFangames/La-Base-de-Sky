@@ -3,6 +3,24 @@
 # DPertierra
 #===============================================================================
 class PokemonSummary_Scene
+
+  BALL_IMAGE_X = 8
+  BALL_IMAGE_Y = 60
+  ABILITY_NAME_X = 336
+  ABILITY_NAME_Y = 22
+  ABILITY_NAME_WIDTH = 0
+  ABILITY_LABEL_X = 230
+  ABILITY_LABEL_Y = 22
+  ABILITY_DESC_X = 240
+  ABILITY_DESC_Y = 85
+  ABILITY_DESC_WIDTH = 230
+  ABILITY_DESC_HEIGHT = 10
+  SHADOW_DESCRIPTION_X = 270
+  SHADOW_DESCRIPTION_Y = 22
+  SHADOW_HEART_TEXT_X = 240
+  SHADOW_HEART_TEXT_Y = 85
+  SHADOW_HEART_TEXT_WIDTH = 264
+
   def pbStartScene(party, partyindex, inbattle = false, page=1, allow_learn_moves = true)
       @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
       @viewport.z = 99999
@@ -344,41 +362,41 @@ class PokemonSummary_Scene
         @sprites["background"].setBitmap("Graphics/UI/Summary/bgability_extender")
         imagepos=[]
         ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
-        imagepos.push([ballimage,14,60,0,0,-1,-1])
-        pbDrawImagePositions(overlay,imagepos)
-        base=Color.new(248,248,248)
-        shadow=Color.new(176,176,176)
-        shadow2=Color.new(104,104,104)
+        imagepos.push([ballimage, BALL_IMAGE_X, BALL_IMAGE_Y, 0, 0, -1, -1])
+        pbDrawImagePositions(overlay, imagepos)
+        base=Color.new(248, 248, 248)
+        shadow=Color.new(176, 176, 176)
+        shadow2=Color.new(104, 104, 104)
         # statshadows=[]
         pbSetSystemFont(overlay)
-        abilityname=pokemon.ability.name
-        abilitydesc=pokemon.ability.description
-        pokename=@pokemon.name
+        abilityname = pokemon.ability.name
+        abilitydesc = pokemon.ability.description
+        pokename = @pokemon.name
         #textos
         textpos=[
-           [_INTL("INFORMACIÓN"),26,22,0,base,shadow2],
-           [pokename,46,68,0,base,shadow2],
-           [pokemon.level.to_s,46, 98, 0, Color.new(64, 64, 64), Color.new(176, 176, 176)],
-           [_INTL("Habilidad:"),230,22,0,base,shadow2],
-           [abilityname,336,22,0,base,shadow2],
-           [_INTL("Objeto"), 66, 324, 0, base, shadow2]
+           [_INTL("INFORMACIÓN"),TEXT_PAGE_NAME_X, TEXT_PAGE_NAME_Y, :left, base, shadow2],
+           [pokename, TEXT_NAME_X, TEXT_NAME_Y, :left, base, shadow2],
+           [pokemon.level.to_s, TEXT_LEVEL_X, TEXT_LEVEL_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+           [_INTL("Habilidad:"),ABILITY_LABEL_X,ABILITY_LABEL_Y, :left , base, shadow2],
+           [abilityname, ABILITY_NAME_X, ABILITY_NAME_Y, :left, base,shadow2],
+           [_INTL("Objeto"), TEXT_ITEM_LABEL_X, TEXT_ITEM_LABEL_Y, :left, base, shadow2]
           ] 
         if @pokemon.hasItem?
-          textpos.push([@pokemon.item.name, 16, 358, 0, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+          textpos.push([@pokemon.item.name, TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
         else
-          textpos.push([_INTL("Ninguno"), 16, 358, 0, Color.new(192, 200, 208), Color.new(208, 216, 224)])
+          textpos.push([_INTL("Ninguno"), TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
         end
         if @pokemon.male?
-          textpos.push([_INTL("♂"), 178, 68, 0, Color.new(24, 112, 216), Color.new(136, 168, 208)])
+          textpos.push([_INTL("♂"), TEXT_GENDER_X, TEXT_GENDER_Y, :left, Color.new(24, 112, 216), Color.new(136, 168, 208)])
         elsif @pokemon.female?
-          textpos.push([_INTL("♀"), 178, 68, 0, Color.new(248, 56, 32), Color.new(224, 152, 144)])
+          textpos.push([_INTL("♀"), TEXT_GENDER_X, TEXT_GENDER_Y, :left, Color.new(248, 56, 32), Color.new(224, 152, 144)])
         end
         # Draw all text
         pbDrawTextPositions(overlay, textpos)
         # Draw the Pokémon's markings
-        drawMarkings(overlay, 84, 292)
-        pbDrawTextPositions(overlay,textpos)
-        drawTextEx(overlay,240,85,230,10,abilitydesc,Color.new(64,64,64),shadow)  
+        drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
+        pbDrawTextPositions(overlay, textpos)
+        drawTextEx(overlay, ABILITY_DESC_X, ABILITY_DESC_Y, ABILITY_DESC_WIDTH, ABILITY_DESC_HEIGHT, abilitydesc, Color.new(64, 64, 64), shadow)  
         loop do
           Graphics.update
           Input.update
@@ -397,6 +415,75 @@ class PokemonSummary_Scene
               drawPage(:page_skills) 
             else
               drawPage(3)
+            end
+            break
+          end
+        end
+      end
+
+      def showShadowDescription(pokemon)
+        overlay=@sprites["overlay"].bitmap
+        overlay.clear
+        @sprites["background"].setBitmap("Graphics/UI/Summary/bg_shadow")
+        imagepos=[]
+        ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
+        imagepos.push([ballimage, BALL_IMAGE_X, BALL_IMAGE_Y, 0, 0, -1, -1])
+        pbDrawImagePositions(overlay, imagepos)
+        base=Color.new(248, 248, 248)
+        shadow=Color.new(176, 176, 176)
+        shadow2=Color.new(104, 104, 104)
+        # statshadows=[]
+        pbSetSystemFont(overlay)
+        pokename=@pokemon.name
+        #textos
+        textpos=[
+           [_INTL("INFORMACIÓN"), TEXT_PAGE_NAME_X, TEXT_PAGE_NAME_Y, :left, base,shadow2],
+           [pokename, TEXT_NAME_X, TEXT_NAME_Y, :left, base,shadow2],
+           [pokemon.level.to_s, TEXT_LEVEL_X, TEXT_LEVEL_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)],
+           [_INTL("Puerta del Corazón"), SHADOW_DESCRIPTION_X + 28, SHADOW_DESCRIPTION_Y, :left, base,shadow2],
+           [_INTL("Objeto"), 66, 324, 0, base, shadow2]
+          ] 
+        if @pokemon.hasItem?
+          textpos.push([@pokemon.item.name, 16, 358, 0, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+        else
+          textpos.push([_INTL("Ninguno"), 16, 358, 0, Color.new(192, 200, 208), Color.new(208, 216, 224)])
+        end
+        if @pokemon.male?
+          textpos.push([_INTL("♂"), 178, 68, 0, Color.new(24, 146, 240), Color.new(13, 73, 119)])
+        elsif @pokemon.female?
+          textpos.push([_INTL("♀"), 178, 68, 0, Color.new(249, 93, 210), Color.new(128, 20, 90)])
+        end
+        # Draw all text
+        pbDrawTextPositions(overlay, textpos)
+        # Draw the Pokémon's markings
+        drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
+        black_text_tag = shadowc3tag(BLACK_TEXT_BASE, BLACK_TEXT_SHADOW)
+        heartmessage = [_INTL("¡La puerta de su corazón está abierta! ¡Deshaz el bloqueo final!"),
+                        _INTL("La puerta de su corazón está prácticamente abierta."),
+                        _INTL("La puerta de su corazón está cerca de abrirse."),
+                        _INTL("La puerta de su corazón se ha empezado a abrir."),
+                        _INTL("La puerta de su corazón está empezando a abrirse."),
+                        _INTL("La puerta de su corazón está fuertemente cerrada.")][@pokemon.heartStage]
+        memo = black_text_tag + heartmessage
+        drawFormattedTextEx(overlay, SHADOW_HEART_TEXT_X, SHADOW_HEART_TEXT_Y, SHADOW_HEART_TEXT_WIDTH  , memo)  
+        loop do
+          Graphics.update
+          Input.update
+          pbUpdate
+          if Input.trigger?(Input::BACK)
+            Input.update
+            if PluginManager.installed?("Modular UI Scenes")
+              drawPage(:page_info) 
+            else
+              drawPage(1)
+            end
+            break
+          elsif Input.trigger?(Input::SPECIAL)
+            Input.update
+            if PluginManager.installed?("Modular UI Scenes")
+              drawPage(:page_info) 
+            else
+              drawPage(1)
             end
             break
           end

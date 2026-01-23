@@ -143,7 +143,7 @@ class PokemonSummary_Scene
   # --- Posiciones de texto ---
   TEXT_PAGE_NAME_X    = 26
   TEXT_PAGE_NAME_Y    = 22
-  TEXT_NAME_X         = 46
+  TEXT_NAME_X         = 40
   TEXT_NAME_Y         = 68
   TEXT_LEVEL_X        = 46
   TEXT_LEVEL_Y        = 98
@@ -153,21 +153,29 @@ class PokemonSummary_Scene
   TEXT_ITEM_NAME_Y    = 358
   TEXT_GENDER_X       = 178
   TEXT_GENDER_Y       = 68
+  SHADOW_DESCRIPTION_X_MUI = 234
+  SHADOW_DESCRIPTION_Y_MUI = 308
+  SHADOW_DESCRIPTION_W_MUI = 264
+  SHADOW_DESCRIPTION_X_OFFSET = 10
+  SHADOW_DESCRIPTION_Y_OFFSET = -10
+  SHADOW_DESCRIPTION_H = 2
 
   # Modular UI Scenes
   EGG_DATE_X          = 232
   EGG_DATE_Y          = 86
-  EGG_MEMO_WIDTH      = 268
+  EGG_TEXT_X          = 232
+  EGG_TEXT_Y          = 118
+  EGG_TEXT_WIDTH      = 268
   
   # --- Imágenes ---
-  IMG_BALL_X          = 14
+  IMG_BALL_X          = 8
   IMG_BALL_Y          = 60
   IMG_STATUS_X        = 124
   IMG_STATUS_Y        = 100
   IMG_POKERUS_X       = 176
   IMG_POKERUS_Y       = 100
-  IMG_SHINY_X         = 2
-  IMG_SHINY_Y         = 134
+  IMG_SHINY_X         = 174
+  IMG_SHINY_Y         = 100
   IMG_MARKINGS_X      = 84
   IMG_MARKINGS_Y      = 292
 
@@ -176,7 +184,7 @@ class PokemonSummary_Scene
   P1_DEX_LABEL_Y      = 86
   P1_SPECIES_LABEL_X  = 238
   P1_SPECIES_LABEL_Y  = 118
-  P1_SPECIES_TEXT_X   = 435
+  P1_SPECIES_TEXT_X   = 433
   P1_SPECIES_TEXT_Y   = 118
   P1_TYPE_LABEL_X     = 238
   P1_TYPE_LABEL_Y     = 150
@@ -184,11 +192,11 @@ class PokemonSummary_Scene
   P1_OT_LABEL_Y       = 182
   P1_ID_LABEL_X       = 238
   P1_ID_LABEL_Y       = 214
-  P1_DEX_NUM_X        = 435
+  P1_DEX_NUM_X        = 433
   P1_DEX_NUM_Y        = 86
-  P1_OT_NAME_X        = 435
+  P1_OT_NAME_X        = 433
   P1_OT_NAME_Y        = 182
-  P1_ID_NUM_X         = 435
+  P1_ID_NUM_X         = 433
   P1_ID_NUM_Y         = 214
   P1_EXP_LABEL_X      = 238
   P1_EXP_LABEL_Y      = 246
@@ -200,7 +208,7 @@ class PokemonSummary_Scene
   P1_NEXTLV_NUM_Y     = 342
   P1_TYPE_ICON_Y      = 146
   P1_TYPE_1_ICON_X    = 402
-  P1_TYPE_2_ICON_X    = 370 
+  P1_TYPE_2_ICON_X    = 368
   P1_EXP_BAR_X        = 362
   P1_EXP_BAR_Y        = 372
 
@@ -239,7 +247,7 @@ class PokemonSummary_Scene
   SHINY_LEAF_SPACING_Y   = 10
   SHINY_LEAF_X           = 182
   SHINY_LEAF_Y           = 124 
-  SHINY_LEAF_BW_X        = Graphics.width - 18
+  SHINY_LEAF_BW_X        = -18
   SHINY_LEAF_BW_Y        = 114 
 
   # Medidor de Felicidad
@@ -665,15 +673,19 @@ class PokemonSummary_Scene
     # Write Exp text OR heart gauge message (if a Shadow Pokémon)
     if @pokemon.shadowPokemon?
       textpos.push([_INTL("Puerta del Corazón"), P1_EXP_LABEL_X, P1_EXP_LABEL_Y, :left, base, shadow])
-      black_text_tag = shadowc3tag(BLACK_TEXT_BASE, BLACK_TEXT_SHADOW)
-      heartmessage = [_INTL("¡La puerta de su corazón está abierta! ¡Deshaz el bloqueo final!"),
-                      _INTL("La puerta de su corazón está prácticamente abierta."),
-                      _INTL("La puerta de su corazón está cerca de abrirse."),
-                      _INTL("La puerta de su corazón se ha empezado a abrir."),
-                      _INTL("La puerta de su corazón está empezando a abrirse."),
-                      _INTL("La puerta de su corazón está fuertemente cerrada.")][@pokemon.heartStage]
-      memo = black_text_tag + heartmessage
-      drawFormattedTextEx(overlay, 234, 308, 264, memo)
+      if !PluginManager.installed?("Modular UI Scenes")
+        black_text_tag = shadowc3tag(BLACK_TEXT_BASE, BLACK_TEXT_SHADOW)
+        heartmessage = [_INTL("¡La puerta de su corazón está abierta! ¡Deshaz el bloqueo final!"),
+                        _INTL("La puerta de su corazón está prácticamente abierta."),
+                        _INTL("La puerta de su corazón está cerca de abrirse."),
+                        _INTL("La puerta de su corazón se ha empezado a abrir."),
+                        _INTL("La puerta de su corazón está empezando a abrirse."),
+                        _INTL("La puerta de su corazón está fuertemente cerrada.")][@pokemon.heartStage]
+        memo = black_text_tag + heartmessage
+        drawFormattedTextEx(overlay, SHADOW_DESCRIPTION_X, SHADOW_DESCRIPTION_Y, SHADOW_DESCRIPTION_W, memo)
+      else
+        drawTextEx(overlay, P3_ABILITY_DESC_X + SHADOW_DESCRIPTION_X_OFFSET, P3_ABILITY_DESC_Y + SHADOW_DESCRIPTION_Y_OFFSET, P3_ABILITY_DESC_W, SHADOW_DESCRIPTION_H, "[ESPECIAL]: Información", Color.new(64, 64, 64), Color.new(176, 176, 176))
+      end
     else
       endexp = @pokemon.growth_rate.minimum_exp_for_level(@pokemon.level + 1)
       textpos.push([_INTL("Puntos Exp."), P1_EXP_LABEL_X, P1_EXP_LABEL_Y, :left, base, shadow])
@@ -755,7 +767,7 @@ class PokemonSummary_Scene
     eggstate = _INTL("Está haciendo ruidos. ¡Está a punto de abrirse!") if @pokemon.steps_to_hatch < 1275
     memo += black_text_tag + eggstate
     # Draw all text
-    drawFormattedTextEx(overlay, 232, 86, 268, memo)
+    drawFormattedTextEx(overlay, EGG_TEXT_X, EGG_TEXT_Y, EGG_TEXT_WIDTH, memo)
     # Draw the Pokémon's markings
     drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
   end
