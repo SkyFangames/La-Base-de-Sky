@@ -798,7 +798,7 @@ class Battle
     return @field.weather
   end
 
-  def pbCanStartWeather?(newWeather, ignore_primal)
+  def pbCanStartWeather?(newWeather, ignore_primal = false)
     return false if @field.weather == newWeather
     primal_weathers = [:HarshSun, :HeavyRain, :StrongWinds]
     if !ignore_primal && primal_weathers.include?(@field.weather)
