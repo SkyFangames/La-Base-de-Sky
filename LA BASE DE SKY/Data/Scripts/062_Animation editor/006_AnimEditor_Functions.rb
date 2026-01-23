@@ -1163,10 +1163,10 @@ def pbAnimationEditor
     animation[0].graphic = ""
   end
   Graphics.resize_screen(Settings::SCREEN_WIDTH + 288, Settings::SCREEN_HEIGHT + 288)
-  pbSetResizeFactor(1)
+  pbSetResizeFactor(1, false)
   BattleAnimationEditor.animationEditorMain(animation)
   Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
-  pbSetResizeFactor($PokemonSystem.screensize)
+  pbSetResizeFactor($PokemonSystem.screensize, false)
   $game_map&.autoplay
 end
 

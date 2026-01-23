@@ -166,6 +166,10 @@ class PokemonSystem
     return @bgmvolume || 80
   end
 
+  def bgmvolume
+    return @bgmvolume || 80
+  end
+
   def bgmvolume=(value)
     return if @bgmvolume == value && !@force_set_options
     @bgmvolume = value

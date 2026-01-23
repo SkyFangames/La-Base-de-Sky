@@ -15,7 +15,7 @@ class IntroEventScene < EventScene
 
   def initialize(viewport = nil)
     super(viewport)
-     wd = Dir.getwd
+    wd = Dir.getwd
     if !File.directory?(wd) && [".zip", ".rar", ".7z", ".tar", ".gz"].include?(File.extname(wd).downcase)
       pbMessage(_INTL("Parece que no has descomprimido el juego.\nPor favor, descomprímelo antes de jugar."))
       exit
