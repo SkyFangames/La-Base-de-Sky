@@ -52,7 +52,7 @@ class Battle::Move::TargetTakesUserItem < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     @battle.swapHeldItems(user, target)
-    @battle.pbDisplay(_INTL("{1} recibió {2} de {3}!", target.pbThis, target.itemName, user.pbThis(true)))
+    @battle.pbDisplay(_INTL("¡{1} recibió {2} de {3}!", target.pbThis, target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggerCheck
   end
 end

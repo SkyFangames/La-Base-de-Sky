@@ -82,7 +82,7 @@ class Battle
       # Specify which Pokémon the item was used on (only for Pokémon in battle,
       # because the effects of items used on party Pokémon all mention the
       # Pokémon's name so it doesn't need specifying here too)
-      pbDisplayBrief(_INTL("{1} usó {2} on {3}.", trainer_name, item_name, battler.name))
+      pbDisplayBrief(_INTL("{1} usó {2} en {3}.", trainer_name, item_name, battler.name))
     else
       pbDisplayBrief(_INTL("{1} usó {2}.", trainer_name, item_name))
     end
