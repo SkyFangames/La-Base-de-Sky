@@ -663,6 +663,16 @@ SaveData.register_conversion(:v21_add_bump_stat) do
   end
 end
 
+SaveData.register_conversion(:lbdsky_define_version) do
+  lbds_version "1.2.0"
+  display_title 'Agregando version de LBDSKY a los datos de guardado'
+  to_all do |save_data|
+    unless save_data.has_key?(:lbdsky_version)
+      save_data[:lbdsky_version] = LBDSKY::VERSION
+    end
+  end
+end
+
 SaveData.register_conversion(:v22_add_new_options) do
   lbds_version "1.2.0"
   display_title "Configurando valores predeterminados para las nuevas opciones de audio"
