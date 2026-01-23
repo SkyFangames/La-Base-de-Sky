@@ -67,19 +67,21 @@ class PokemonPokedexInfo_Scene
     if @region < 0                                 # Use player's current region
       @region = (mappos) ? mappos[0] : 0                      # Region 0 default
     end
-    @mapdata = GameData::TownMap.get(@region)
-    @sprites["areamap"] = IconSprite.new(0, 0, @viewport)
-    @sprites["areamap"].setBitmap("Graphics/UI/Town Map/#{@mapdata.filename}")
-    @sprites["areamap"].x += (Graphics.width - @sprites["areamap"].bitmap.width) / 2
-    @sprites["areamap"].y += (Graphics.height + AREA_MAP_Y_OFFSET - @sprites["areamap"].bitmap.height) / 2
-    Settings::REGION_MAP_EXTRAS.each do |hidden|
-      next if hidden[0] != @region || hidden[1] <= 0 || !$game_switches[hidden[1]]
-      pbDrawImagePositions(
-        @sprites["areamap"].bitmap,
-        [["Graphics/UI/Town Map/#{hidden[4]}",
-          hidden[2] * PokemonRegionMap_Scene::SQUARE_WIDTH,
-          hidden[3] * PokemonRegionMap_Scene::SQUARE_HEIGHT]]
-      )
+    @mapdata = GameData::TownMap.try_get(@region)
+    if @mapdata
+      @sprites["areamap"] = IconSprite.new(0, 0, @viewport)
+      @sprites["areamap"].setBitmap("Graphics/UI/Town Map/#{@mapdata.filename}")
+      @sprites["areamap"].x += (Graphics.width - @sprites["areamap"].bitmap.width) / 2
+      @sprites["areamap"].y += (Graphics.height + AREA_MAP_Y_OFFSET - @sprites["areamap"].bitmap.height) / 2
+      Settings::REGION_MAP_EXTRAS.each do |hidden|
+        next if hidden[0] != @region || hidden[1] <= 0 || !$game_switches[hidden[1]]
+        pbDrawImagePositions(
+          @sprites["areamap"].bitmap,
+          [["Graphics/UI/Town Map/#{hidden[4]}",
+            hidden[2] * PokemonRegionMap_Scene::SQUARE_WIDTH,
+            hidden[3] * PokemonRegionMap_Scene::SQUARE_HEIGHT]]
+        )
+      end
     end
     @sprites["areahighlight"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     @sprites["areaoverlay"] = IconSprite.new(0, 0, @viewport)
@@ -363,7 +365,7 @@ class PokemonPokedexInfo_Scene
     # defined point in town_map.txt, and which either have no Self Switch
     # controlling their visibility or whose Self Switch is ON)
     visible_points = []
-    @mapdata.point.each do |loc|
+    @mapdata&.point&.each do |loc|
       next if loc[7] && !$game_switches[loc[7]]   # Point is not visible
       visible_points.push([loc[0], loc[1]])
     end
@@ -443,7 +445,9 @@ class PokemonPokedexInfo_Scene
       )
       textpos.push([_INTL("Área desconocida"), Graphics.width / 2, Graphics.height / 2 + coords[:unknown_area_y_offset], :center, base, shadow])
     end
-    textpos.push([@mapdata.name, coords[:map_name][0], coords[:map_name][1], :center, base, shadow])
+    if @mapdata
+      textpos.push([@mapdata&.name, coords[:map_name][0], coords[:map_name][1], :center, base, shadow])
+    end
     textpos.push([_INTL("Área de {1}", GameData::Species.get(@species).name),
                   Graphics.width / 2, coords[:species_name_y], :center, base, shadow])
     pbDrawTextPositions(overlay, textpos)
