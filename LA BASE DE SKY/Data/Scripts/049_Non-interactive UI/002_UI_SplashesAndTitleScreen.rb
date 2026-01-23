@@ -17,7 +17,7 @@ class IntroEventScene < EventScene
     super(viewport)
     wd = Dir.getwd
     if !File.directory?(wd) && File.extname(wd).downcase == ".zip"
-      pbMessage(_INTL("Parece que no has descomprido el juego.\nPor favor, descomprímelo antes de jugar."))
+      pbMessage(_INTL("Parece que no has descomprimido el juego.\nPor favor, descomprímelo antes de jugar."))
       exit
     end
     @pic = addImage(0, 0, "")
