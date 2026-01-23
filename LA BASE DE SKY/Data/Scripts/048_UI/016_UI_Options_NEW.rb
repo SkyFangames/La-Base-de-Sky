@@ -161,10 +161,6 @@ class PokemonSystem
       $game_system.bgs_resume(playing_bgs)
     end
   end
-  
-  def bgmvolume
-    return @bgmvolume || 80
-  end
 
   def bgmvolume
     return @bgmvolume || 80

@@ -153,11 +153,19 @@ class PokemonSummary_Scene
   TEXT_ITEM_NAME_Y    = 358
   TEXT_GENDER_X       = 178
   TEXT_GENDER_Y       = 68
+  SHADOW_DESCRIPTION_X_MUI = 234
+  SHADOW_DESCRIPTION_Y_MUI = 308
+  SHADOW_DESCRIPTION_W_MUI = 264
+  SHADOW_DESCRIPTION_X_OFFSET = 10
+  SHADOW_DESCRIPTION_Y_OFFSET = -10
+  SHADOW_DESCRIPTION_H = 2
 
   # Modular UI Scenes
   EGG_DATE_X          = 232
   EGG_DATE_Y          = 86
-  EGG_MEMO_WIDTH      = 268
+  EGG_TEXT_X          = 232
+  EGG_TEXT_Y          = 118
+  EGG_TEXT_WIDTH      = 268
   
   # --- Imágenes ---
   IMG_BALL_X          = 8
@@ -674,9 +682,9 @@ class PokemonSummary_Scene
                         _INTL("La puerta de su corazón está empezando a abrirse."),
                         _INTL("La puerta de su corazón está fuertemente cerrada.")][@pokemon.heartStage]
         memo = black_text_tag + heartmessage
-        drawFormattedTextEx(overlay, 234, 308, 264, memo)
+        drawFormattedTextEx(overlay, SHADOW_DESCRIPTION_X, SHADOW_DESCRIPTION_Y, SHADOW_DESCRIPTION_W, memo)
       else
-        drawTextEx(overlay, P3_ABILITY_DESC_X + 10, P3_ABILITY_DESC_Y - 10, P3_ABILITY_DESC_W, 2, "[ESPECIAL]: Iinformación", Color.new(64, 64, 64), Color.new(176, 176, 176))
+        drawTextEx(overlay, P3_ABILITY_DESC_X + SHADOW_DESCRIPTION_X_OFFSET, P3_ABILITY_DESC_Y + SHADOW_DESCRIPTION_Y_OFFSET, P3_ABILITY_DESC_W, SHADOW_DESCRIPTION_H, "[ESPECIAL]: Información", Color.new(64, 64, 64), Color.new(176, 176, 176))
       end
     else
       endexp = @pokemon.growth_rate.minimum_exp_for_level(@pokemon.level + 1)
@@ -759,7 +767,7 @@ class PokemonSummary_Scene
     eggstate = _INTL("Está haciendo ruidos. ¡Está a punto de abrirse!") if @pokemon.steps_to_hatch < 1275
     memo += black_text_tag + eggstate
     # Draw all text
-    drawFormattedTextEx(overlay, 232, 86, 268, memo)
+    drawFormattedTextEx(overlay, EGG_TEXT_X, EGG_TEXT_Y, EGG_TEXT_WIDTH, memo)
     # Draw the Pokémon's markings
     drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
   end

@@ -7,6 +7,10 @@ class PokemonJukebox_Scene
   COMMAND_WINDOW_Y      = 92
   COMMAND_WINDOW_WIDTH  = 324
   COMMAND_WINDOW_HEIGHT = 224
+  HEADER_TEXT_X        = 2
+  HEADER_TEXT_Y        = -18
+  HEADER_TEXT_WIDTH    = 160
+  HEADER_TEXT_HEIGHT   = 64
 
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
@@ -20,7 +24,7 @@ class PokemonJukebox_Scene
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["background"].setBitmap(_INTL("Graphics/UI/jukebox_bg"))
     @sprites["header"] = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("Reproductor"), 2, -18, 160, 64, @viewport
+      _INTL("Reproductor"), HEADER_TEXT_X, HEADER_TEXT_Y, HEADER_TEXT_WIDTH, HEADER_TEXT_HEIGHT, @viewport
     )
     @sprites["header"].baseColor   = Color.new(248, 248, 248)
     @sprites["header"].shadowColor = Color.black
