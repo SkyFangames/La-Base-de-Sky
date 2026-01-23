@@ -201,52 +201,7 @@ class Sprite_OWShadow
     
     # Get coordinates for the specific frame (Down or Up)
     sx, sy = get_frame_coordinates(row_direction)
-
-    # --- Scan Pixels ---
-    scan_y_start = [ch - 8, 0].max
-    scan_y_end   = ch
-    
-    min_x = cw
-    max_x = 0
-    found = false
-
-    # Scan Left
-    (0...cw).each do |x|
-      (scan_y_start...scan_y_end).each do |y|
-        next if (sx + x) >= bitmap.width || (sy + y) >= bitmap.height
-        if bitmap.get_pixel(sx + x, sy + y).alpha > 0
-          min_x = x
-          found = true
-          break
-        end
-      end
-      break if found
-    end
-
-    # Scan Right
-    if found
-      found = false
-      (0...cw).to_a.reverse.each do |x|
-        (scan_y_start...scan_y_end).each do |y|
-          next if (sx + x) >= bitmap.width || (sy + y) >= bitmap.height
-          if bitmap.get_pixel(sx + x, sy + y).alpha > 0
-            max_x = x
-            found = true
-            break
-          end
-        end
-        break if found
-      end
-      real_width = max_x - min_x + 1
-      
-      # Calculate Offset
-      feet_center = min_x + (real_width / 2.0)
-      frame_center = cw / 2.0
-      offset_x = feet_center - frame_center
-    else
-      real_width = cw
-      offset_x = 0
-    end
+    real_width, offset_x = analyze_footprint(bitmap, sx, sy, cw, ch)
 
     # --- Draw Bitmap ---
     logical_width = (real_width * 0.9 / 2).ceil + 4
@@ -262,14 +217,14 @@ class Sprite_OWShadow
       end
     end
     
-    logical_width = [logical_width, 4].max
+    logical_width = [logical_width, 8].max
     logical_width -= 1 if logical_width.odd?    
     logical_height = (logical_width * 0.5).ceil
     logical_height = [logical_height, 4].max
     logical_height += 1 if logical_height.odd?
     
     bmp = Bitmap.new(logical_width * 2, logical_height * 2)
-    color = Color.new(0, 0, 0, 128)
+    color = Color.new(0, 0, 0, 80)
     
     cx = logical_width / 2.0 - 0.5
     cy = logical_height / 2.0 - 0.5
