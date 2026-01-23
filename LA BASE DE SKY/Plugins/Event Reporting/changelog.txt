@@ -1,0 +1,11 @@
+===Change Log===
+2.0
+This change is a restructure of the plugin. 
+- Name change: This plugin is now called Event Reporting instead of Switch and Variable Usage Report, due to adding more report types. You must remove the existing Switch and Variable Usage Report plugin, otherwise you will get an error.
+- File change: All reports created by this plugin are now stored in the Event Reporting folder, which is created in your project folder.
+- Debug change: All Event Reporting commands are now located in the Event Reporting... section of the Debug menu.
+- New feature: Audio reports. You can now search events for specific audio files, audio files with a certain string in the name, or any use of audio files.
+- New feature: Comment reports. You can now search events for a certain string included in the event Name, Comment commands, or Script command comments (after #). This can be useful if you use phrases like "Todo" or "Delete me" in these.
+
+1.0 
+- Initial Release (As Switch and Variable Usage Report)
