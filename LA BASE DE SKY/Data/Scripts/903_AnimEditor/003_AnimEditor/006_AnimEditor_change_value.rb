@@ -110,29 +110,6 @@ class AnimationEditor
       @components[:timeline].swap_particles(idx1, idx2)
       @components[:timeline].particle_index = idx2
       refresh
-    when :cycle_interpolation
-      # NOTE: value is actually [particle index, [property, keyframe]].
-      #       Keyframe is the currently selected keyframe.
-      part_idx = value[0]
-      property = value[1][0]
-      clicked_keyframe = value[1][1]
-      # Get current interpolation type
-      this_keyframe = 0
-      interp_type = nil
-      @anim[:particles][part_idx][property].each do |cmd|
-        break if cmd[0] > clicked_keyframe
-        this_keyframe = cmd[0]
-        interp_type = cmd[3]
-      end
-      interp_type ||= :none
-      # Get the interpolation type to change to
-      interps = GameData::Animation::INTERPOLATION_TYPES.values
-      idx = (interps.index(interp_type) + 1) % interps.length
-      interp_type = interps[idx]
-      # Set the new interpolation type
-      AnimationEditor::ParticleDataHelper.set_interpolation(@anim[:particles][part_idx], property, this_keyframe, interp_type)
-      @components[:timeline].change_particle_commands(part_idx)
-      refresh_component(:canvas)
     when :main   # Particle properties
       if @anim[:particles][value[0]][:name] == "SE"
         # NOTE: value is actually [particle index, [button ID, index of SE]].
@@ -189,17 +166,32 @@ class AnimationEditor
         edit_particle_properties(value[0])
       end
     else
-      # NOTE: value is actually [particle_index, value].
-      particle = @anim[:particles][value[0]]
-      new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value[1])
-      if new_cmds
-        particle[property] = new_cmds
+      if GameData::Animation::INTERPOLATION_TYPES.any? { |name, id| id == property }
+        # Change interpolation
+        # NOTE: value is actually [particle index, [property, keyframe]].
+        part_idx = value[0]
+        prop = value[1][0]
+        clicked_keyframe = value[1][1]
+        interp_type = property
+        # Set the new interpolation type
+        AnimationEditor::ParticleDataHelper.set_interpolation(
+          @anim[:particles][part_idx], prop, clicked_keyframe, interp_type
+        )
+        @components[:timeline].change_particle_commands(part_idx)
+        refresh_component(:canvas)
       else
-        particle.delete(property)
+        # NOTE: value is actually [particle_index, value].
+        particle = @anim[:particles][value[0]]
+        new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value[1])
+        if new_cmds
+          particle[prop] = new_cmds
+        else
+          particle.delete(prop)
+        end
+        @components[:play_controls].duration = @components[:timeline].duration
+        @components[:timeline].change_particle_commands(value[0])
+        refresh_component(:canvas)
       end
-      @components[:play_controls].duration = @components[:timeline].duration
-      @components[:timeline].change_particle_commands(value[0])
-      refresh_component(:canvas)
     end
   end
 

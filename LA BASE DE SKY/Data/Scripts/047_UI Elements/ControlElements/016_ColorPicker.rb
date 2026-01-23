@@ -174,7 +174,8 @@ class UIControls::ColorPicker < UIControls::BaseControl
     # White background with black outline
     @picker_box_bg.bitmap.fill_rect(0, 0, @picker_box_bg.width, @picker_box_bg.height,
                                     get_color_of(:background))
-    @picker_box_bg.bitmap.outline_rect(0, 0, @picker_box_bg.width, @picker_box_bg.height, get_color_of(:line))
+    @picker_box_bg.bitmap.outline_rect(0, 0, @picker_box_bg.width, @picker_box_bg.height,
+                                       get_color_of(:line))
     # Checkerboard behind color preview
     checkerboard_colors = [get_color_of(:checkerboard_light), get_color_of(:checkerboard_dark)]
     PICKER_BOX_PREVIEW_WIDTH.times do |i|

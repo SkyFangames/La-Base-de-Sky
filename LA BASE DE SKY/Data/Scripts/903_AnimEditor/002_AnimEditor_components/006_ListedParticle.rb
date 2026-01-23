@@ -31,6 +31,11 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   INTERP_LINE_HEIGHT    = AnimationEditor::Timeline::KEYFRAME_SPACING - ((DIAMOND_SIZE * 2) + 3)
   INTERP_LINE_Y         = (ROW_HEIGHT / 2) - (INTERP_LINE_HEIGHT / 2)
 
+  INTERP_PICKER_SPACING     = 2
+  INTERP_PICKER_BUTTON_SIZE = 20   # Full size of button; bitmap in the button is 12
+  INTERP_PICKER_WIDTH       = ((INTERP_PICKER_BUTTON_SIZE + INTERP_PICKER_SPACING) * GameData::Animation::INTERPOLATION_TYPES.length) + INTERP_PICKER_SPACING + 2
+  INTERP_PICKER_HEIGHT      = INTERP_PICKER_BUTTON_SIZE + (INTERP_PICKER_SPACING * 2) + 2
+
   # NOTE: @rows[row] is an array of things (sprites, controls) with specific
   #       indices. These are the indices.
   LIST_SPRITE       = 0
@@ -39,8 +44,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   COMMAND_BG_SPRITE = 3
   COMMAND_SPRITE    = 4
 
-  def initialize(particle, list_viewport, timeline_viewport, timeline_bg_viewport)
+  def initialize(particle, main_viewport, list_viewport, timeline_viewport, timeline_bg_viewport)
     @particle             = particle
+    @main_viewport        = main_viewport
     @list_viewport        = list_viewport
     @timeline_viewport    = timeline_viewport
     @timeline_bg_viewport = timeline_bg_viewport
@@ -120,17 +126,34 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       next if properties_graphic[i] == "."
       @bitmaps[:properties].fill_rect(i % properties_bitmap_size, i / properties_bitmap_size, 1, 1, icon_color)
     end
+    initialize_interpolation_bitmaps
+  end
+
+  # These are for BitmapButtons that appear when right-clicking between two
+  # commands.
+  def initialize_interpolation_bitmaps
+    interp_bitmap_size = INTERP_PICKER_BUTTON_SIZE - (UIControls::Button::BUTTON_FRAME_THICKNESS * 2)   # 12
+    GameData::Animation::INTERPOLATION_TYPES.each_pair do |name, id|
+      @bitmaps[id] = Bitmap.new(interp_bitmap_size, interp_bitmap_size) if !@bitmaps[id]
+      @bitmaps[id].clear
+      next if id == :none
+      @bitmaps[id].draw_interpolation_line(0, 0, interp_bitmap_size, interp_bitmap_size,
+                                           true, id, get_color_of(:line))
+    end
   end
 
   def initialize_controls
     @clickable_area = UIControls::ClickableArea.new(
       @timeline_viewport.rect.width, @timeline_viewport.rect.height,
-      @timeline_viewport, false, true
+      @main_viewport, false, true
     )
+    @clickable_area.x = @timeline_viewport.rect.x
+    @clickable_area.y = @timeline_viewport.rect.y
     @clickable_area.set_interactive_rects
   end
 
   def dispose
+    remove_interpolation_picker
     @rows.each_value do |objs|
       objs.each { |obj| obj&.dispose }
       objs.clear
@@ -144,9 +167,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   def group_name(group)
     return {
-      :position_group       => _INTL("Position"),
-      :transformation_group => _INTL("Transformation"),
-      :appearance_group     => _INTL("Appearance")
+      :position_group       => _INTL("Posición"),
+      :transformation_group => _INTL("Transformación"),
+      :appearance_group     => _INTL("Apariencia")
     }[group] || group.to_s.capitalize
   end
 
@@ -328,6 +351,59 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   #-----------------------------------------------------------------------------
 
+  # TODO: Somehow highlight the area of the row that this is choosing an
+  #       interpolation for?
+  def make_interpolation_picker
+    return if @picker_box
+    # Viewport
+    mouse_coords = Mouse.getMousePos
+    view_x = mouse_coords[0] - (INTERP_PICKER_WIDTH / 2)
+    view_y = @rows[@interpolation_target[0]][COMMAND_SPRITE].y + ROW_HEIGHT + self.y + @timeline_viewport.rect.y - @timeline_viewport.oy
+    if view_x + (INTERP_PICKER_WIDTH / 2) > Graphics.width
+      view_x = Graphics.width - INTERP_PICKER_WIDTH
+    end
+    if view_y + INTERP_PICKER_HEIGHT >= Graphics.height
+      view_y -= ROW_HEIGHT + INTERP_PICKER_HEIGHT
+    end
+    @picker_box_viewport = Viewport.new(view_x, view_y, INTERP_PICKER_WIDTH, INTERP_PICKER_HEIGHT)
+    @picker_box_viewport.z = @timeline_viewport.z + 100
+    # Picker box's background (white box with outline)
+    @picker_box = BitmapSprite.new(INTERP_PICKER_WIDTH, INTERP_PICKER_HEIGHT, @picker_box_viewport)
+    @picker_box.z = -100
+    @picker_box.bitmap.fill_rect(0, 0, @picker_box.width, @picker_box.height,
+                                 get_color_of(:background))
+    @picker_box.bitmap.outline_rect(0, 0, @picker_box.width, @picker_box.height,
+                                    get_color_of(:line))
+    # Picker controls
+    @picker_controls ||= {}
+    control_x = INTERP_PICKER_SPACING + 1
+    GameData::Animation::INTERPOLATION_TYPES.each_pair do |name, id|
+      @picker_controls[id] = UIControls::BitmapButton.new(@picker_box_viewport, @bitmaps[id])
+      @picker_controls[id].x = control_x
+      @picker_controls[id].y = INTERP_PICKER_SPACING + 1
+      @picker_controls[id].color_scheme = @color_scheme
+      @picker_controls[id].set_interactive_rects
+      control_x += INTERP_PICKER_BUTTON_SIZE + INTERP_PICKER_SPACING
+    end
+  end
+
+  def remove_interpolation_picker
+    @picker_controls&.each_value { |ctrl| ctrl&.dispose }
+    @picker_controls = nil
+    @picker_box&.dispose
+    @picker_box = nil
+    @picker_box_viewport&.dispose
+    @picker_box_viewport = nil
+    @picker_captured = nil
+    @interpolation_target = nil
+  end
+
+  def choosing_interpolation?
+    return !@picker_box.nil? || @toggling_picker_box
+  end
+
+  #-----------------------------------------------------------------------------
+
   # Refreshes any controls that have changed.
   def repaint
     return if disposed?
@@ -399,12 +475,48 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   #-----------------------------------------------------------------------------
 
+  def update_interpolation_picker
+    close_picker = false
+    # Update controls
+    if @captured
+      @captured.update
+      @captured = nil if !@captured.busy?
+    else
+      @picker_controls.each_value do |ctrl|
+        ctrl&.update
+        @captured = ctrl if ctrl&.busy?
+      end
+      if !@captured && Input.trigger?(Input::MOUSELEFT)
+        mouse_coords = Mouse.getMousePos
+        if mouse_coords && !@picker_box_viewport.rect.contains?(*mouse_coords)
+          close_picker = true
+        end
+      end
+    end
+    # Check for updated controls
+    @picker_controls&.each_pair do |id, ctrl|
+      next if !ctrl.changed?
+      @values ||= {}
+      @values[id] = [LIST_CONTROL, @interpolation_target]
+      ctrl.clear_changed
+      close_picker = true
+    end
+    if close_picker
+      remove_interpolation_picker
+      @toggling_picker_box = true
+      refresh
+    end
+    # Redraw controls if needed
+    @picker_controls&.each_value { |ctrl| ctrl.repaint }
+  end
+
   # Area was newly clicked; decide what to do based on where and how it was
   # clicked
   def update_clickable_area
     mouse_x, mouse_y = @clickable_area.mouse_pos
     return if !mouse_x || !mouse_y
     mouse_x += @timeline_ox
+    mouse_y += @timeline_viewport.oy
     if @clickable_area.left_clicked?
       this_row, this_keyframe = row_and_keyframe_for_coords(mouse_x, mouse_y, true)
       # TODO: Maybe allow dragging commands in group rows/:main?
@@ -430,11 +542,8 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
             break
           end
           if has_earlier && cmds.length > this_keyframe + 1
-            # TODO: Open the interpolation pop-up and remember this_row/
-            #       this_keyframe (so they can be put into @values later if the
-            #       interpolation is changed).
-            @values ||= {}
-            @values[:cycle_interpolation] = [LIST_CONTROL, [this_row, this_keyframe]]
+            @interpolation_target = [this_row, this_keyframe]
+            make_interpolation_picker
           end
         end
       end
@@ -445,13 +554,14 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   def update
     return if disposed? || !@visible
+    @toggling_picker_box = false
     # Update controls
-    # TODO: If @captured is the interpolation pop_up, update it specially
-    #       because it won't be a single control (it's a set of buttons and a bg
-    #       sprite).
     # TODO: If @captured is whatever I end up doing for dragging commands,
     #       update that specially.
-    if @captured
+    if @picker_box
+      update_interpolation_picker
+      return
+    elsif @captured
       @captured.update
       @captured = nil if !@captured.busy?
     else
@@ -463,9 +573,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       end
       if !@captured
         @clickable_area.update
-        if @clickable_area.busy?
-          update_clickable_area
-        end
+        update_clickable_area if @clickable_area.busy?
       end
     end
     # Check for updated controls

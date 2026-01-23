@@ -261,7 +261,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
 
   def create_new_listed_particle(particle)
     ret = AnimationEditor::ListedParticle.new(
-      particle, @list_viewport, @timeline_viewport, @timeline_bg_viewport
+      particle, @viewport, @list_viewport, @timeline_viewport, @timeline_bg_viewport
     )
     ret.duration = @duration
     ret.timeline_ox = @timeline_ox
@@ -731,7 +731,10 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     return if disposed? || !@visible
     update_controls_and_particles
     update_changed_controls_and_particles
-    update_input if !@captured
+    if !@captured &&
+       (!@display_particles || @display_particles.none? { |ctrl| ctrl.choosing_interpolation? })
+      update_input
+    end
     # Refresh sprites if a scrollbar has been moved
     self.timeline_ox = get_control(:h_scrollbar).position
     self.timeline_oy = get_control(:v_scrollbar).position
