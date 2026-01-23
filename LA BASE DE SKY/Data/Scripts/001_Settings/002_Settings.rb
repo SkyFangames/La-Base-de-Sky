@@ -303,14 +303,6 @@ module Settings
   # en la que se encuentre el jugador.
   def self.pokedex_names
     return [
-      [_INTL("Pokédex de Kanto"), 0],
-      [_INTL("Pokédex de Johto"), 1],
-      _INTL("Pokédex Nacional")
-    ]
-  end
-  
-  def self.pokedex_names
-    return [
       [_INTL("Pokédex de Kanto"),   0],
       [_INTL("Pokédex de Johto"),   1],
       [_INTL("Pokédex de Hoenn"),   2],
@@ -452,6 +444,9 @@ module Settings
   # Número del interruptor que, si está en ON, desactiva el acceso a la caja de
   # almacenamiento de Pokémon (PC) a través de la pantalla de Equipo.
   DISABLE_BOX_LINK_SWITCH   = 35
+  # Número del interruptor que, si está en ON, todos los Pokémon salvajes 
+  # serán supervariocolor (super shiny).
+  SUPER_SHINY_WILD_POKEMON_SWITCH = 38
 
   #=============================================================================
   
