@@ -8,17 +8,17 @@ if !Settings::USE_NEW_OPTIONS_UI
     attr_accessor :battlestyle
     attr_accessor :sendtoboxes
     attr_accessor :givenicknames
-    attr_accessor :skip_move_learning
     attr_accessor :frame
     attr_accessor :textskin
     attr_accessor :screensize
     attr_accessor :language
     attr_accessor :runstyle
     
-    attr_accessor :main_volume
-    attr_accessor :bgmvolume
-    attr_accessor :sevolume
-    attr_accessor :pokemon_cry_volume
+    attr_reader   :skip_move_learning
+    attr_reader   :main_volume
+    attr_reader   :bgmvolume
+    attr_reader   :sevolume
+    attr_reader   :pokemon_cry_volume
     
     attr_accessor :textinput
     attr_accessor :vsync
