@@ -234,11 +234,17 @@ class Game_Player < Game_Character
     
     speed = $game_temp.camera_speed * 0.2
 
-    # Modo Fancy
-    fancy_mode_active = $game_switches && $game_switches[CAMERA_FANCY]
-    if fancy_mode_active
+    debug_active = defined?($passa_sprite) && $passa_sprite && !$passa_sprite.disposed?
+    fancy_switch = $game_switches && $game_switches[CAMERA_FANCY]
+
+    if debug_active
+      # Si el DebugPassability está activo
+      snap_threshold = Float::INFINITY
+    elsif fancy_switch 
+      # Modo Fancy (Switch ON)
       snap_threshold = 1.0
     else
+      # Modo Estándar (Switch OFF)
       snap_threshold = (self.moving? || self.jumping?) ? 64.0 : 8.0
     end
 
