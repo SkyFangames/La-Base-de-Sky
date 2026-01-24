@@ -160,76 +160,79 @@ class AnimationEditor
   #       not 20 as I'd prefer them to be.
   def set_editor_settings_contents
     editor_settings = @components[:editor_settings]
-    editor_settings.add_header_label(:header, _INTL("Editor settings"))
-    editor_settings.add_labelled_dropdown_list(:color_scheme, _INTL("Color scheme"), color_scheme_options, :light)
-    editor_settings.add_labelled_dropdown_list(:canvas_bg, _INTL("Background graphic"), {}, "")
-    editor_settings.add_labelled_dropdown_list(:user_sprite_name, _INTL("User graphic"), {}, "")
+    editor_settings.add_header_label(:header, _INTL("Configuración del editor"))
+    editor_settings.add_labelled_dropdown_list(:color_scheme, _INTL("Esquema de color"), color_scheme_options, :light)
+    editor_settings.add_labelled_dropdown_list(:canvas_bg, _INTL("Gráfico de fondo"), {}, "")
+    editor_settings.add_labelled_dropdown_list(:user_sprite_name, _INTL("Gráfico del usuario"), {}, "")
     ctrl = editor_settings.get_control(:user_sprite_name)
     ctrl.max_rows = 20
-    editor_settings.add_labelled_dropdown_list(:target_sprite_name, _INTL("Target graphic"), {}, "")
+    editor_settings.add_labelled_dropdown_list(:target_sprite_name, _INTL("Gráfico del objetivo"), {}, "")
     ctrl = editor_settings.get_control(:target_sprite_name)
     ctrl.max_rows = 20
-    editor_settings.add_fitted_button(:close, _INTL("Close"))
+    interps = {}
+    GameData::Animation::INTERPOLATION_TYPES.each_pair { |name, id| interps[id] = name }
+    editor_settings.add_labelled_dropdown_list(:default_interpolation, _INTL("Interpolación predeterminada"), interps, :linear)
+    editor_settings.add_fitted_button(:close, _INTL("Cerrar"))
     editor_settings.visible = false
   end
 
   def set_animation_properties_contents
     anim_properties = @components[:animation_properties]
-    anim_properties.add_header_label(:header, _INTL("Animation properties"))
-    anim_properties.add_labelled_checkbox(:usable, _INTL("Can be used in battle?"), true)
-    anim_properties.add_labelled_dropdown_list(:type, _INTL("Animation type"), {
-      :move   => _INTL("Move"),
-      :common => _INTL("Common")
+    anim_properties.add_header_label(:header, _INTL("Propiedades de la animación"))
+    anim_properties.add_labelled_checkbox(:usable, _INTL("¿Puede usarse en batalla?"), true)
+    anim_properties.add_labelled_dropdown_list(:type, _INTL("Tipo de animación"), {
+      :move   => _INTL("Movimiento"),
+      :common => _INTL("Común")
     }, :move)
-    anim_properties.add_labelled_checkbox(:opp_variant, _INTL("User is opposing?"), false)
+    anim_properties.add_labelled_checkbox(:opp_variant, _INTL("¿El usuario está en el lado opuesto?"), false)
     anim_properties.add_labelled_text_box_dropdown_list(:move, "", [], "")
     move_ctrl = anim_properties.get_control(:move)
     move_ctrl.max_rows = 20
-    anim_properties.add_labelled_number_text_box(:version, _INTL("Version"), 0, 99, 0)
-    anim_properties.add_labelled_text_box(:name, _INTL("Name"), "")
-    anim_properties.add_labelled_text_box(:pbs_path, _INTL("PBS filepath"), "")
-    anim_properties.add_labelled_checkbox(:has_user, _INTL("Involves a user?"), true)
-    anim_properties.add_labelled_checkbox(:has_target, _INTL("Involves a target?"), true)
-    anim_properties.add_fitted_button(:close, _INTL("Close"))
+    anim_properties.add_labelled_number_text_box(:version, _INTL("Versión"), 0, 99, 0)
+    anim_properties.add_labelled_text_box(:name, _INTL("Nombre"), "")
+    anim_properties.add_labelled_text_box(:pbs_path, _INTL("Ruta del archivo PBS"), "")
+    anim_properties.add_labelled_checkbox(:has_user, _INTL("¿Involucra a un usuario?"), true)
+    anim_properties.add_labelled_checkbox(:has_target, _INTL("¿Involucra a un objetivo?"), true)
+    anim_properties.add_fitted_button(:close, _INTL("Cerrar"))
     anim_properties.visible = false
   end
 
   def set_particle_properties_contents
     part_properties = @components[:particle_properties]
-    part_properties.add_header_label(:header, _INTL("Edit particle properties"))
-    part_properties.add_labelled_text_box(:name, _INTL("Name"), "")
+    part_properties.add_header_label(:header, _INTL("Editar propiedades de la partícula"))
+    part_properties.add_labelled_text_box(:name, _INTL("Nombre"), "")
     part_properties.get_control(:name).set_blacklist("", "User", "Target", "SE")
-    part_properties.add_labelled_label(:graphic_name, _INTL("Graphic"), "")
-    part_properties.add_labelled_fitted_button(:graphic, "", _INTL("Change"))
-    part_properties.add_labelled_dropdown_list(:focus, _INTL("Focus"), {}, :undefined)
-    part_properties.add_label(:opposing_label, _INTL("> If on opposing side..."))
-    part_properties.add_labelled_checkbox(:foe_invert_x, _INTL("Invert X"), false)
-    part_properties.add_labelled_checkbox(:foe_invert_y, _INTL("Invert Y"), false)
-    part_properties.add_labelled_checkbox(:foe_flip, _INTL("Flip sprite"), false)
-    part_properties.add_label(:property_override_label, _INTL("> Override properties..."))
-    part_properties.add_labelled_number_text_box(:random_frame_max, _INTL("Random frame (max)"), 0, 99, 0)
-    part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Smart angle"), {
-      :none                   => _INTL("None"),
-      :initial_angle_to_focus => _INTL("Initial angle to focus"),
-      :always_point_at_focus  => _INTL("Always point at focus")
+    part_properties.add_labelled_label(:graphic_name, _INTL("Gráfico"), "")
+    part_properties.add_labelled_fitted_button(:graphic, "", _INTL("Cambiar"))
+    part_properties.add_labelled_dropdown_list(:focus, _INTL("Enfoque"), {}, :undefined)
+    part_properties.add_label(:opposing_label, _INTL("> Si está en el lado opuesto..."))
+    part_properties.add_labelled_checkbox(:foe_invert_x, _INTL("Invertir X"), false)
+    part_properties.add_labelled_checkbox(:foe_invert_y, _INTL("Invertir Y"), false)
+    part_properties.add_labelled_checkbox(:foe_flip, _INTL("Voltear sprite"), false)
+    part_properties.add_label(:property_override_label, _INTL("> Anular propiedades..."))
+    part_properties.add_labelled_number_text_box(:random_frame_max, _INTL("Frame aleatorio (máx)"), 0, 99, 0)
+    part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Ángulo inteligente"), {
+      :none                   => _INTL("Ninguno"),
+      :initial_angle_to_focus => _INTL("Ángulo inicial al enfoque"),
+      :always_point_at_focus  => _INTL("Apuntar siempre al enfoque")
     }, :none)
-    part_properties.add_label(:emitter_label, _INTL("> Emitter properties..."))
-    part_properties.add_labelled_dropdown_list(:spawner, _INTL("Emitter type"), {
-      :none                        => _INTL("None"),
-      :random_direction            => _INTL("Random direction"),
-      :random_direction_gravity    => _INTL("Random dir. with gravity"),
-      :random_up_direction_gravity => _INTL("Random up dir. gravity")
+    part_properties.add_label(:emitter_label, _INTL("> Propiedades del emisor..."))
+    part_properties.add_labelled_dropdown_list(:spawner, _INTL("Tipo de emisor"), {
+      :none                        => _INTL("Ninguno"),
+      :random_direction            => _INTL("Dirección aleatoria"),
+      :random_direction_gravity    => _INTL("Dirección aleatoria con gravedad"),
+      :random_up_direction_gravity => _INTL("Dirección aleatoria hacia arriba con gravedad")
     }, :none)
-    part_properties.add_labelled_number_text_box(:spawn_quantity, _INTL("Emit amount"), 1, 99, 1)
-    part_properties.add_fitted_button(:duplicate, _INTL("Duplicate this particle"))
-    part_properties.add_fitted_button(:delete, _INTL("Delete this particle"))
-    part_properties.add_fitted_button(:close, _INTL("Close"))
+    part_properties.add_labelled_number_text_box(:spawn_quantity, _INTL("Cantidad emitida"), 1, 99, 1)
+    part_properties.add_fitted_button(:duplicate, _INTL("Duplicar esta partícula"))
+    part_properties.add_fitted_button(:delete, _INTL("Eliminar esta partícula"))
+    part_properties.add_fitted_button(:close, _INTL("Cerrar"))
     part_properties.visible = false
   end
 
   def set_graphic_chooser_contents
     graphic_chooser = @components[:graphic_chooser]
-    graphic_chooser.add_header_label(:header, _INTL("Choose a file"))
+    graphic_chooser.add_header_label(:header, _INTL("Elegir un archivo"))
     # List of files
     list = UIControls::List.new(CHOOSER_FILE_LIST_WIDTH, CHOOSER_FILE_LIST_HEIGHT, graphic_chooser.viewport, [])
     graphic_chooser.add_control_at(:list,
@@ -250,7 +253,7 @@ class AnimationEditor
 
   def set_audio_chooser_contents
     audio_chooser = @components[:audio_chooser]
-    audio_chooser.add_header_label(:header, _INTL("Choose a file"))
+    audio_chooser.add_header_label(:header, _INTL("Elegir un archivo"))
     # List of files
     list = UIControls::List.new(CHOOSER_FILE_LIST_WIDTH, CHOOSER_FILE_LIST_HEIGHT, audio_chooser.viewport, [])
     audio_chooser.add_control_at(:list,
@@ -266,7 +269,7 @@ class AnimationEditor
                                    btn)
     end
     # Volume and pitch sliders
-    [[:volume, _INTL("Volume"), 0, 100], [:pitch, _INTL("Pitch"), 0, 200]].each_with_index do |option, i|
+    [[:volume, _INTL("Volumen"), 0, 100], [:pitch, _INTL("Tono"), 0, 200]].each_with_index do |option, i|
       label = UIControls::Label.new(AUDIO_CHOOSER_LABEL_WIDTH, 28, audio_chooser.viewport, option[1])
       audio_chooser.add_control_at((option[0].to_s + "_label").to_sym,
                                    list.x + list.width + 6, list.y + (28 * i), label)
@@ -274,7 +277,7 @@ class AnimationEditor
       audio_chooser.add_control_at(option[0], label.x + label.width, label.y, slider)
     end
     # Playback buttons
-    [[:play, _INTL("Play")], [:stop, _INTL("Stop")]].each_with_index do |option, i|
+    [[:play, _INTL("Reproducir")], [:stop, _INTL("Detener")]].each_with_index do |option, i|
       btn = UIControls::Button.new(CHOOSER_BUTTON_WIDTH, MESSAGE_BOX_BUTTON_HEIGHT, audio_chooser.viewport, option[1])
       audio_chooser.add_control_at(option[0],
                                    list.x + list.width + 6 + (CHOOSER_BUTTON_WIDTH * i),

@@ -17,16 +17,17 @@ class AnimationEditor
         @settings = SaveData.get_data_from_file(DEBUG_SETTINGS_FILE_PATH)[:anim_editor]
       else
         @settings = {
-          :color_scheme       => :light,
-          :side_sizes         => [1, 1],   # Player's side, opposing side
-          :user_index         => 0,        # 0, 2, 4
-          :target_indices     => [1],      # There must be at least one valid target
-          :user_opposes       => false,
-          :canvas_bg          => "indoor1",
+          :side_sizes            => [1, 1],   # Player's side, opposing side
+          :user_index            => 0,        # 0, 2, 4
+          :target_indices        => [1],      # There must be at least one valid target
+          :user_opposes          => false,
+          :color_scheme          => :light,
+          :canvas_bg             => "indoor1",
           # NOTE: These sprite names are also used in Pokemon.play_cry and so
           #       should be a species ID (being a string is fine).
-          :user_sprite_name   => "DRAGONITE",
-          :target_sprite_name => "CHARIZARD"
+          :user_sprite_name      => "DRAGONITE",
+          :target_sprite_name    => "CHARIZARD",
+          :default_interpolation => :linear
         }
       end
     end

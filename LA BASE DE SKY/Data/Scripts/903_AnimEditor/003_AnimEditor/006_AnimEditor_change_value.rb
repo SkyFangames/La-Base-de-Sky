@@ -76,9 +76,22 @@ class AnimationEditor
       refresh
     when :x, :y
       particle = @anim[:particles][particle_index]
+      before_all = particle[property] && particle[property].none? { |cmd| cmd[0] <= keyframe }
+      after_all = particle[property] && particle[property].none? { |cmd| cmd[0] + cmd[1] >= keyframe }
       new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value)
       if new_cmds
         particle[property] = new_cmds
+        if GameData::Animation.property_can_interpolate?(property)
+          if before_all
+            AnimationEditor::ParticleDataHelper.set_interpolation(
+              particle, property, keyframe, @settings[:default_interpolation] || :linear
+            )
+          elsif after_all
+            AnimationEditor::ParticleDataHelper.set_interpolation(
+              particle, property, keyframe - 1, @settings[:default_interpolation] || :linear
+            )
+          end
+        end
       else
         particle.delete(property)
       end
@@ -182,11 +195,24 @@ class AnimationEditor
       else
         # NOTE: value is actually [particle_index, value].
         particle = @anim[:particles][value[0]]
+        before_all = particle[property] && particle[property].none? { |cmd| cmd[0] <= keyframe }
+        after_all = particle[property] && particle[property].none? { |cmd| cmd[0] + cmd[1] >= keyframe }
         new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value[1])
         if new_cmds
-          particle[prop] = new_cmds
+          particle[property] = new_cmds
+          if GameData::Animation.property_can_interpolate?(property)
+            if before_all
+              AnimationEditor::ParticleDataHelper.set_interpolation(
+                particle, property, keyframe, @settings[:default_interpolation] || :linear
+              )
+            elsif after_all
+              AnimationEditor::ParticleDataHelper.set_interpolation(
+                particle, property, keyframe - 1, @settings[:default_interpolation] || :linear
+              )
+            end
+          end
         else
-          particle.delete(prop)
+          particle.delete(property)
         end
         @components[:play_controls].duration = @components[:timeline].duration
         @components[:timeline].change_particle_commands(value[0])

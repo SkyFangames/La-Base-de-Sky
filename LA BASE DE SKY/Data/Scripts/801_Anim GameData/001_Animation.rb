@@ -40,8 +40,8 @@ module GameData
       "None"     => :none,
       "Linear"   => :linear,
       "EaseIn"   => :ease_in,
-      "EaseBoth" => :ease_both,
-      "EaseOut"  => :ease_out
+      "EaseOut"  => :ease_out,
+      "EaseBoth" => :ease_both
     }
     USER_AND_TARGET_SEPARATION = [200, -200, -100]   # x, y, z (from user to target)
     SPAWNER_TYPES = {

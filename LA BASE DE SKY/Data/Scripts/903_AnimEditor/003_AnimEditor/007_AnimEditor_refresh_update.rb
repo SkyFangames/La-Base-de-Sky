@@ -22,6 +22,8 @@ class AnimationEditor
     ctrls.get_control(:user_sprite_name).value = @settings[:user_sprite_name]
     ctrls.get_control(:target_sprite_name).values = files.to_h
     ctrls.get_control(:target_sprite_name).value = @settings[:target_sprite_name]
+    # Default interpolation
+    ctrls.get_control(:default_interpolation).value = @settings[:default_interpolation] || :linear
   end
 
   def refresh_animation_property_options
@@ -203,6 +205,9 @@ class AnimationEditor
         new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value)
         if new_cmds
           particle[property] = new_cmds
+          # NOTE: Intentionally not adding @settings[:default_interpolation]
+          #       here, because the inserted command will have the same value as
+          #       the one before it and won't need interpolating anyway.
         else
           particle.delete(property)
         end
