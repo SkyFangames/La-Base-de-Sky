@@ -55,6 +55,10 @@ module Settings
   # 2 => Show prompt, but hide after 2 seconds.
   #-----------------------------------------------------------------------------
   UI_PROMPT_DISPLAY = 2
+
+  # Cuando en el grafico Graphics/Plugins/Enhanced Battle UI/command_prompts.png
+  # ya están incluidos los textos de los prompts (A: , S: ), poner esta constante en true.
+  PROMPT_TEXT_INCLUDED_IN_GRAPHICS = true
   
 
   #-----------------------------------------------------------------------------
