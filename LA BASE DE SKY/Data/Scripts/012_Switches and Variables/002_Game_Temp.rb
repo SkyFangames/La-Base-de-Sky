@@ -47,6 +47,8 @@ class Game_Temp
   attr_accessor :darkness_sprite          # DarknessSprite or nil
   attr_accessor :mart_prices
   attr_accessor :bag_scene
+  attr_accessor :party_critical_hits_dealt
+  attr_accessor :party_direct_damage_taken
 
   
   #-----------------------------------------------------------------------------
@@ -89,6 +91,8 @@ class Game_Temp
     @menu_last_choice       = 0
     @mart_prices            = {}
     @bag_scene              = nil
+    @party_critical_hits_dealt ||= Array.new(6, 0)
+    @party_direct_damage_taken ||= Array.new(6, 0)
   end
 
   def clear_mart_prices

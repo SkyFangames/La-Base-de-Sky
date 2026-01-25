@@ -8,6 +8,14 @@ class Trainer
   attr_accessor :language
   attr_accessor :party
 
+  def initialize(name, trainer_type)
+    @trainer_type = GameData::TrainerType.get(trainer_type).id
+    @name         = name
+    @id           = rand(2**16) | (rand(2**16) << 16)
+    @language     = pbGetLanguage
+    @party        = []
+  end
+
   def inspect
     str = super.chop
     party_str = @party.map { |pkmn| pkmn.species_data.species }.inspect
@@ -295,14 +303,6 @@ class Trainer
   end
 
   #=============================================================================
-
-  def initialize(name, trainer_type)
-    @trainer_type = GameData::TrainerType.get(trainer_type).id
-    @name         = name
-    @id           = rand(2**16) | (rand(2**16) << 16)
-    @language     = pbGetLanguage
-    @party        = []
-  end
 end
 
 #===============================================================================

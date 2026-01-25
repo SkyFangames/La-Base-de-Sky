@@ -25,7 +25,8 @@ def pbSetWindowText(string)
   System.set_window_title(string || System.game_title)
 end
 
-def pbSetResizeFactor(factor)
+def pbSetResizeFactor(factor, refresh = true)
+  Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT) if refresh
   if factor < 0 || factor == 4
     Graphics.fullscreen = true if !Graphics.fullscreen
   else
@@ -33,8 +34,8 @@ def pbSetResizeFactor(factor)
     Graphics.scale = (factor + 1) * 0.5
     Graphics.center
   end
+  
   if !$ResizeInitialized
-    Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
     Graphics.center if !Graphics.fullscreen
     $ResizeInitialized = true
   end

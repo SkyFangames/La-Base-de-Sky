@@ -55,6 +55,10 @@ module Settings
   # 2 => Show prompt, but hide after 2 seconds.
   #-----------------------------------------------------------------------------
   UI_PROMPT_DISPLAY = 2
+
+  # Cuando en el grafico Graphics/Plugins/Enhanced Battle UI/command_prompts.png
+  # ya están incluidos los textos de los prompts (A: , S: ), poner esta constante en true.
+  PROMPT_TEXT_INCLUDED_IN_GRAPHICS = true
   
 
   #-----------------------------------------------------------------------------
@@ -76,6 +80,12 @@ module Settings
 ################################################################################
 #  POKÉDEX AVANZADA
 ################################################################################
+
+  # Si está en true hace que en las dexes verifique tambien si has visto formas alternativas
+  # esto es util si quieres hacer una dex solo de formas regionales o megas
+  REGIONAL_DEXES_INCLUDE_ALTERNATE_FORMS = true
+
+  #-----------------------------------------------------------------------------
   # Ruta de gráficos para la página de datos de la Pokédex.
   #-----------------------------------------------------------------------------
   # Almacena la ruta para los gráficos utilizados por este plugin.

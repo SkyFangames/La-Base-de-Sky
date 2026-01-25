@@ -176,6 +176,21 @@ module GameData
       return ret
     end
 
+    def self.get_all_base_forms(id_only = false)
+      ret = []
+      keys = DATA.keys
+      keys.each do |key|
+        species = DATA[key]
+        next if species.mega_form? || species.has_flag?("ExcludeFromBaseForms")
+        ret << (id_only ? species.id : species)
+      end
+      return ret
+    end
+
+    def self.base_species_count
+      return get_all_base_forms.count
+    end
+
     #---------------------------------------------------------------------------
 
     def initialize(hash)
@@ -221,7 +236,7 @@ module GameData
       @flags              = hash[:flags]              || []
       @mega_stone         = hash[:mega_stone]
       @mega_move          = hash[:mega_move]
-      @unmega_form        = hash[:unmega_form]        || 0
+      @unmega_form        = hash[:unmega_form]        || -2
       @mega_message       = hash[:mega_message]       || 0
       @pbs_file_suffix    = hash[:pbs_file_suffix]    || ""
     end
@@ -256,6 +271,10 @@ module GameData
     def base_form
       default = default_form
       return (default >= 0) ? default : @form
+    end
+
+    def mega_form?
+      return (@unmega_form == @form && @form != base_form) || @unmega_form == -2 || @mega_stone || @mega_move ? true : false 
     end
 
     def single_gendered?

@@ -8,17 +8,16 @@ class PokemonSystem
   attr_accessor :runstyle
   attr_accessor :sendtoboxes
   attr_accessor :givenicknames
-  attr_accessor :skip_move_learning
   attr_accessor :frame
   attr_accessor :textskin
-  attr_accessor :screensize
   attr_accessor :language
   attr_accessor :runstyle
   
-  attr_accessor :main_volume
-  attr_accessor :bgmvolume
-  attr_accessor :sevolume
-  attr_accessor :pokemon_cry_volume
+  attr_reader :skip_move_learning
+  attr_reader :main_volume
+  attr_reader :bgmvolume
+  attr_reader :sevolume
+  attr_reader :pokemon_cry_volume
   
   attr_accessor :textinput
   attr_reader   :bgmvolume
@@ -134,6 +133,15 @@ class PokemonSystem
     end
   end
 
+  def skip_move_learning
+    return @skip_move_learning || 1
+  end
+
+  def skip_move_learning=(value)
+    return if @skip_move_learning == value && !@force_set_options
+    @skip_move_learning = value
+  end
+
   def main_volume
     return @main_volume || 100
   end
@@ -154,6 +162,10 @@ class PokemonSystem
     end
   end
 
+  def bgmvolume
+    return @bgmvolume || 80
+  end
+
   def bgmvolume=(value)
     return if @bgmvolume == value && !@force_set_options
     @bgmvolume = value
@@ -161,6 +173,10 @@ class PokemonSystem
     playing_bgm = $game_system.getPlayingBGM
     $game_system.bgm_pause
     $game_system.bgm_resume(playing_bgm)
+  end
+
+  def sevolume
+    return @sevolume || 100
   end
 
   def sevolume=(value)
@@ -174,6 +190,11 @@ class PokemonSystem
 
   def pokemon_cry_volume
     return @pokemon_cry_volume || 100
+  end
+
+  def pokemon_cry_volume=(value)
+    return if @pokemon_cry_volume == value && !@force_set_options
+    @pokemon_cry_volume = value
   end
 
   def textspeed=(value)
@@ -276,6 +297,12 @@ class UI::OptionsVisualsList < Window_DrawableCommand
   end
 
   #-----------------------------------------------------------------------------
+
+  def drawCursor(index, rect)
+    # Hide cursor arrow when selecting tabs (self.index < 0)
+    return Rect.new(rect.x + 16, rect.y, rect.width - 16, rect.height) if self.index < 0
+    return super(index, rect)
+  end
 
   def itemCount
     return @options&.length || 0
@@ -442,7 +469,7 @@ class UI::OptionsVisualsList < Window_DrawableCommand
       # Draw icon
       input_index = UI::BaseVisuals::INPUT_ICONS_ORDER.index(option[:parameters]) || 0
       src_rect = Rect.new(input_index * @input_icons_bitmap.height, 0,
-              @input_icons_bitmap.height, @input_icons_bitmap.height)
+                          @input_icons_bitmap.height, @input_icons_bitmap.height)
       self.contents.blt(rect.x, rect.y + OPTION_ICON_BLT_Y_OFFSET, @input_icons_bitmap.bitmap, src_rect)
       # Adjust text position
       option_name_x += @input_icons_bitmap.height + OPTION_ICON_TEXT_GAP
@@ -533,10 +560,20 @@ class UI::OptionsVisualsList < Window_DrawableCommand
   #-----------------------------------------------------------------------------
 
   def update
-    return if @index < 0
+    if @index < 0
+      # Hide up/down arrows when in tab selection mode
+      @uparrow.visible = false if @uparrow
+      @downarrow.visible = false if @downarrow
+      return
+    end
     old_index = self.index
     @value_changed = false
     super
+    # Hide up/down arrows when in tab selection mode (also after super call)
+    if self.index < 0
+      @uparrow.visible = false if @uparrow
+      @downarrow.visible = false if @downarrow
+    end
     need_refresh = (self.index != old_index)
     if self.index < @options.length &&
        [:array, :array_one, :number_type, :number_slider].include?(@options[self.index][:type])
@@ -574,6 +611,11 @@ class UI::OptionsVisuals < UI::BaseVisuals
   OPTIONS_VISIBLE  = 6
   PAGE_TAB_SPACING = 4
   MAX_VISIBLE_TABS = 4   # Maximum number of tabs visible per page
+  START_Y = 64
+  OPTION_SPACING = 32
+  PAGE_DOTS_X = 57
+  PAGE_DOTS_Y = 4
+  PAGE_NAME_Y = 14
 
   #-----------------------------------------------------------------------------
 
@@ -610,8 +652,8 @@ class UI::OptionsVisuals < UI::BaseVisuals
                 visible_tabs * ((@bitmaps[:page_icons].width / 2) + PAGE_TAB_SPACING),
                 @bitmaps[:page_icons].height + 16)  # Extra height for page dots
     # @sprites[:page_icons].x = Graphics.width - @sprites[:page_icons].width
-    @sprites[:page_icons].x = 57
-    @sprites[:page_icons].y = 4
+    @sprites[:page_icons].x = PAGE_DOTS_X
+    @sprites[:page_icons].y = PAGE_DOTS_Y
   end
 
   def initialize_page_cursor
@@ -621,7 +663,7 @@ class UI::OptionsVisuals < UI::BaseVisuals
   end
 
   def initialize_options_list
-    @sprites[:options_list] = UI::OptionsVisualsList.new(0, 64, Graphics.width, (OPTIONS_VISIBLE * 32) + 32, @viewport)
+    @sprites[:options_list] = UI::OptionsVisualsList.new(0, START_Y, Graphics.width, (OPTIONS_VISIBLE * OPTION_SPACING) + OPTION_SPACING, @viewport)
     @sprites[:options_list].optionColor         = get_text_color_theme(:option_name)[0]
     @sprites[:options_list].optionShadowColor   = get_text_color_theme(:option_name)[1]
     @sprites[:options_list].baseColor           = get_text_color_theme(:unselected_value)[0]
@@ -727,6 +769,9 @@ class UI::OptionsVisuals < UI::BaseVisuals
     if (old_index < 0) != (index < 0)
       refresh_page_cursor
       refresh_options_list
+    elsif index < 0
+      # Also refresh when staying in tab selection to hide cursor arrows
+      refresh_options_list
     end
   end
 
@@ -745,7 +790,7 @@ class UI::OptionsVisuals < UI::BaseVisuals
                  @bitmaps[:page_icons].width / 2, @bitmaps[:page_icons].height, overlay: :page_icons)
       page_handler = PageHandlers.call(@menu, this_page)
       page_name = page_handler[:name].call
-      draw_text(page_name, tab_x + (@bitmaps[:page_icons].width / 4), 14,
+      draw_text(page_name, tab_x + (@bitmaps[:page_icons].width / 4), PAGE_NAME_Y,
                 align: :center, theme: :page_name, overlay: :page_icons)
     end
     
@@ -1046,10 +1091,30 @@ PageHandlers.add(:options_menu, :graphics, {
 #   :description => proc { next _INTL("Edita los controles del juego.") }
 # })
 
+MenuHandlers.add(:options_menu, :text_speed, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Vel. Texto"),
+  "order"       => 10,
+  "type"        => :array,
+  "parameters"  => [_INTL("Len."), _INTL("Med."), _INTL("Ráp."), _INTL("Inst.")],
+  "description" => _INTL("Elige la velocidad a la que aparece el texto."),
+  "on_select"   => proc { |screen| screen.sprites[:speech_box].letterbyletter = true },
+  "get_proc"    => proc { next $PokemonSystem.textspeed },
+  "set_proc"    => proc { |value, screen|
+    next if value == $PokemonSystem.textspeed
+    $PokemonSystem.textspeed = value
+    # Display the message with the selected text speed to gauge it better.
+    screen.sprites[:speech_box].textspeed      = MessageConfig.pbGetTextSpeed
+    screen.sprites[:speech_box].letterbyletter = true
+    screen.sprites[:speech_box].text           = screen.sprites[:speech_box].text
+  }
+})
+
+
 MenuHandlers.add(:options_menu, :battle_style, {
   "page"        => :gameplay,
   "name"        => _INTL("Estilo de combate"),
-  "order"       => 10,
+  "order"       => 20,
   "type"        => :array,
   "parameters"  => [_INTL("Cambios"), _INTL("Fijo")],
   "description" => _INTL("Elige si quieres que se te ofrezca la opcion de cambiar de Pokemon cuando se debilita un Pokémon del rival."),
@@ -1059,8 +1124,8 @@ MenuHandlers.add(:options_menu, :battle_style, {
 
 MenuHandlers.add(:options_menu, :movement_style, {
   "page"        => :gameplay,
-  "name"        => _INTL("Movimiento por Defecto"),
-  "order"       => 20,
+  "name"        => _INTL("Mov. por Defecto"),
+  "order"       => 30,
   "type"        => :array,
   "parameters"  => [_INTL("Andar"), _INTL("Correr")],
   "description" => _INTL("Elige tu velocidad de movimiento. Mantén Presionar hacia atrás mientras te mueves para moverte a la otra velocidad."),
@@ -1072,7 +1137,7 @@ MenuHandlers.add(:options_menu, :movement_style, {
 MenuHandlers.add(:options_menu, :send_to_boxes, {
   "page"        => :gameplay,
   "name"        => _INTL("Enviar a las Cajas"),
-  "order"       => 30,
+  "order"       => 40,
   "type"        => :array,
   "parameters"  => [_INTL("Manual"), _INTL("Automático")],
   "description" => _INTL("Elige si los Pokémon capturados se envían a tus Cajas cuando tu equipo está lleno."),
@@ -1084,7 +1149,7 @@ MenuHandlers.add(:options_menu, :send_to_boxes, {
 MenuHandlers.add(:options_menu, :give_nicknames, {
   "page"        => :gameplay,
   "name"        => _INTL("Dar Motes"),
-  "order"       => 40,
+  "order"       => 50,
   "type"        => :array,
   "parameters"  => [_INTL("Dar"), _INTL("No dar")],
   "description" => _INTL("Elige si puedes dar un mote a un Pokémon cuando lo obtienes."),
@@ -1095,7 +1160,7 @@ MenuHandlers.add(:options_menu, :give_nicknames, {
 MenuHandlers.add(:options_menu, :text_input_style, {
   "page"        => :gameplay,
   "name"        => _INTL("Escritura"),
-  "order"       => 50,
+  "order"       => 60,
   "type"        => :array,
   "parameters"  => [_INTL("Cursor"), _INTL("Teclado")],
   "description" => _INTL("Elige el método de escritura."),
@@ -1106,7 +1171,7 @@ MenuHandlers.add(:options_menu, :text_input_style, {
 MenuHandlers.add(:options_menu, :language, {
   "page"        => :gameplay,
   "name"        => _INTL("Idioma"),
-  "order"       => 60,
+  "order"       => 70,
   "type"        => (Settings::LANGUAGES.length == 2) ? :array : :array_one,
   "parameters"  => Settings::LANGUAGES.map { |lang| lang[0] },
   "description" => _INTL("Elige el idioma del juego."),
@@ -1170,25 +1235,6 @@ MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
 })
 
 #-------------------------------------------------------------------------------
-
-MenuHandlers.add(:options_menu, :text_speed, {
-  "page"        => :graphics,
-  "name"        => _INTL("Vel. Texto"),
-  "order"       => 10,
-  "type"        => :array,
-  "parameters"  => [_INTL("Len."), _INTL("Med."), _INTL("Ráp."), _INTL("Inst.")],
-  "description" => _INTL("Elige la velocidad a la que aparece el texto."),
-  "on_select"   => proc { |screen| screen.sprites[:speech_box].letterbyletter = true },
-  "get_proc"    => proc { next $PokemonSystem.textspeed },
-  "set_proc"    => proc { |value, screen|
-    next if value == $PokemonSystem.textspeed
-    $PokemonSystem.textspeed = value
-    # Display the message with the selected text speed to gauge it better.
-    screen.sprites[:speech_box].textspeed      = MessageConfig.pbGetTextSpeed
-    screen.sprites[:speech_box].letterbyletter = true
-    screen.sprites[:speech_box].text           = screen.sprites[:speech_box].text
-  }
-})
 
 MenuHandlers.add(:options_menu, :battle_animations, {
   "page"        => :graphics,

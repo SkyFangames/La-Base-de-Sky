@@ -432,7 +432,7 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     ball.setZ(0, 25)
     ball.setVisible(0, false)
     # Poké Ball tracking the player's hand animation (if trainer is visible)
-    if @showingTrainer && traSprite && traSprite.x > 0
+    if @showingTrainer && traSprite && traSprite.bitmap && traSprite.x > 0
       ball.setZ(0, traSprite.z - 1)
       ballStartX, ballStartY = ballTracksHand(ball, traSprite)
     end
@@ -704,7 +704,7 @@ class Battle::Scene::Animation::PokeballThrowCapture < Battle::Scene::Animation
     ball.setZ(0, batSprite.z + 1)
     @ballSpriteIndex = (@success) ? @tempSprites.length - 1 : -1
     # Set up trainer sprite (only visible in Safari Zone battles)
-    if @showingTrainer && traSprite && traSprite.bitmap.width >= traSprite.bitmap.height * 2
+    if @showingTrainer && traSprite && traSprite.bitmap && traSprite.bitmap.width >= traSprite.bitmap.height * 2
       trainer = addSprite(traSprite, PictureOrigin::BOTTOM)
       # Trainer animation
       ballStartX, ballStartY = trainerThrowingFrames(ball, trainer, traSprite)

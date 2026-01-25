@@ -12,7 +12,7 @@ class PokemonSummary_Scene
     overlay = @sprites["overlay"].bitmap
     
     if PluginManager.installed?("BW Summary Screen")
-      x_pos = SHINY_LEAF_BW_X
+      x_pos = Graphics.width + SHINY_LEAF_BW_X
       y_pos = SHINY_LEAF_BW_Y
     else
       x_pos = SHINY_LEAF_X

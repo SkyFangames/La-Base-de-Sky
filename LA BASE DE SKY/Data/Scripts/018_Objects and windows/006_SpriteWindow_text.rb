@@ -1042,6 +1042,9 @@ module HoverImageMixin
     @hover_image = Sprite.new(self.viewport)
     @hover_image.z = self.z + 100
     @hover_image.visible = false
+    @hover_background = Sprite.new(self.viewport)
+    @hover_background.z = self.z + 99
+    @hover_background.visible = false
     @hover_animated_bitmap = nil
     @current_image_path = nil
   end
@@ -1049,10 +1052,12 @@ module HoverImageMixin
   def parseCommandsWithImages(commands)
     @commands = []
     @command_images = []
+    @command_show_background = []
     commands.each do |cmd|
       if cmd.is_a?(Array)
         @commands.push(cmd[0])
         @command_images.push(cmd[1]) if cmd.length > 1 && cmd[1]
+        @command_show_background.push(cmd[2]) if cmd.length > 2
       else
         @commands.push(cmd)
       end
@@ -1065,6 +1070,11 @@ module HoverImageMixin
       @hover_image.dispose
       @hover_image = nil
     end
+    if @hover_background
+      @hover_background.bitmap.dispose if @hover_background.bitmap
+      @hover_background.dispose
+      @hover_background = nil
+    end
     @hover_animated_bitmap.dispose if @hover_animated_bitmap&.respond_to?(:dispose)
     @hover_animated_bitmap = nil
   end
@@ -1074,19 +1084,24 @@ module HoverImageMixin
     
     initHoverImage unless @hover_image
     image_source = @command_images[self.index]
+    show_background = @command_show_background && @command_show_background[self.index]
     
     if image_source && self.index >= 0 && self.index < @command_images.length
-      setHoverImage(image_source) if @current_image_path != image_source
+      if @current_image_path != image_source || @current_show_background != show_background
+        setHoverImage(image_source, show_background)
+      end
       updateHoverImagePosition if @hover_image.visible
     else
       @hover_image.visible = false
+      @hover_background.visible = false if @hover_background
       @current_image_path = nil
+      @current_show_background = nil
     end
   end
 
   private
 
-  def setHoverImage(source)
+  def setHoverImage(source, show_background = false)
     return unless isValidImageSource?(source)
     
     clearHoverBitmap
@@ -1096,12 +1111,24 @@ module HoverImageMixin
     end
     @hover_image.bitmap = copyBitmap(extractBitmap(source))
     @current_image_path = source
+    @current_show_background = show_background
     @hover_image.visible = true
+    
+    # Create or hide background
+    if show_background && @hover_background
+      createHoverBackground(@hover_image.bitmap.width, @hover_image.bitmap.height)
+      @hover_background.visible = true
+    elsif @hover_background
+      @hover_background.visible = false
+    end
+    
     updateHoverImagePosition
   rescue => e
     puts "Error loading hover image: #{e.message}"
     @hover_image.visible = false
+    @hover_background.visible = false if @hover_background
     @current_image_path = nil
+    @current_show_background = nil
   end
 
   def isValidImageSource?(source)
@@ -1137,11 +1164,87 @@ module HoverImageMixin
     @hover_image.bitmap = nil
   end
 
+  def createHoverBackground(img_width, img_height)
+    # Dispose old background bitmap if it exists
+    @hover_background.bitmap.dispose if @hover_background.bitmap
+    
+    # Get the system windowskin path
+    windowskin_path = MessageConfig.pbGetSystemFrame
+    
+    # Try to use windowskin if available
+    if windowskin_path && windowskin_path != "" && pbResolveBitmap(windowskin_path)
+      # Load windowskin to check dimensions
+      temp_skin = Bitmap.new(windowskin_path)
+      
+      # Determine border size based on windowskin dimensions
+      # VX windowskin: 128x128 with 16px borders
+      # XP windowskin: 192x128 with 16px borders
+      if temp_skin.width == 128 && temp_skin.height == 128
+        border_size = 16
+        slice = Rect.new(16, 16, 96, 96)  # 128 - 16 - 16 = 96
+      elsif temp_skin.width == 192 && temp_skin.height == 128
+        border_size = 16
+        slice = Rect.new(16, 16, 160, 96)  # 192 - 16 - 16 = 160, 128 - 16 - 16 = 96
+      else
+        # Unknown format, use safe defaults
+        border_size = 16
+        slice = Rect.new(16, 16, temp_skin.width - 32, temp_skin.height - 32)
+      end
+      temp_skin.dispose
+      
+      @hover_padding = border_size
+      bg_width = img_width + (border_size * 2)
+      bg_height = img_height + (border_size * 2)
+      
+      # Create the background using 9-slice scaling
+      rect = Rect.new(0, 0, bg_width, bg_height)
+      @hover_background.bitmap = Bitmap.smartWindow(slice, rect, windowskin_path)
+    else
+      # Fallback: Create simple background bitmap with border
+      @hover_padding = 8
+      bg_width = img_width + (@hover_padding * 2)
+      bg_height = img_height + (@hover_padding * 2)
+      
+      @hover_background.bitmap = Bitmap.new(bg_width, bg_height)
+      
+      # Draw a semi-transparent box with a border
+      base_color = Color.new(0, 0, 0, 160)
+      border_color = Color.new(255, 255, 255, 200)
+      
+      # Fill background
+      @hover_background.bitmap.fill_rect(0, 0, bg_width, bg_height, base_color)
+      
+      # Draw border
+      border_width = 2
+      @hover_background.bitmap.fill_rect(0, 0, bg_width, border_width, border_color) # Top
+      @hover_background.bitmap.fill_rect(0, bg_height - border_width, bg_width, border_width, border_color) # Bottom
+      @hover_background.bitmap.fill_rect(0, 0, border_width, bg_height, border_color) # Left
+      @hover_background.bitmap.fill_rect(bg_width - border_width, 0, border_width, bg_height, border_color) # Right
+    end
+  end
+
   def updateHoverImagePosition
-    @hover_image.z = self.z + 100
     @hover_image.viewport = self.viewport
-    @hover_image.x = self.x - @hover_image.bitmap.width
-    @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
+    
+    # Position background if visible (render background first, then center image on it)
+    if @hover_background && @hover_background.visible
+      padding = @hover_padding || 16
+      @hover_background.z = self.z + 99
+      @hover_background.viewport = self.viewport
+      # Position background to the left of the command window
+      @hover_background.x = self.x - @hover_background.bitmap.width - 8
+      @hover_background.y = self.y + (self.height / 2) - (@hover_background.bitmap.height / 2)
+      
+      # Center image inside the background
+      @hover_image.z = self.z + 100
+      @hover_image.x = @hover_background.x + padding
+      @hover_image.y = @hover_background.y + padding
+    else
+      # No background, position image directly
+      @hover_image.z = self.z + 100
+      @hover_image.x = self.x - @hover_image.bitmap.width - 8
+      @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
+    end
   end
 end
 

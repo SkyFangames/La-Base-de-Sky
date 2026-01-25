@@ -183,7 +183,7 @@ class Battle::Move::UserMakeSubstituteSwitchOutUser < Battle::Move
     user.effects[PBEffects::Trapping]     = 0
     user.effects[PBEffects::TrappingMove] = nil
     user.effects[PBEffects::Substitute]   = @subLife / 2
-    @battle.pbDisplay(_INTL("¡{1} ha hecho un sustituto!", user.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} ha creado un sustituto!", user.pbThis))
   end
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
@@ -368,7 +368,7 @@ class Battle::Move::BindTarget < Battle::Move
     when :FIRESPIN
       msg = _INTL("¡{1} fue atrapado en el torbellino de fuego!", target.pbThis)
     when :INFESTATION
-      msg = _INTL("¡{1} es presa del acoso de  {2}!", target.pbThis, user.pbThis(true))
+      msg = _INTL("¡{1} es presa del acoso de {2}!", target.pbThis, user.pbThis(true))
     when :MAGMASTORM
       msg = _INTL("¡Lluvia Ígnea atrapó a {1}!", target.pbThis(true))
     when :SANDTOMB

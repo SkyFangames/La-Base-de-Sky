@@ -410,31 +410,34 @@ class SpritePositioner
             ret = true
         end
         
-      elsif Input.triggerex?(:F)
-        searchTerm = pbOpenGenericListSearch
-        if searchTerm
-            # Usamos la función inteligente
-            new_list = @allspecies.select do |sp|
-                pbSmartMatch?(sp[3], searchTerm)
-            end
-            
-            if new_list.length > 0
-                current_species_list = new_list
-                refresh_list.call
-                cw.index = 0
-                oldindex = -1 
-            else
-                pbMessage(_INTL("No se han encontrado resultados."))
-            end
-        end
+      elsif Input.triggerex?(:F) || Input.trigger?(Input::ACTION)
+        current_index = cw.index
+        SpeciesSearcher.new(current_species_list, cw, self)
+        # refresh_list.call
+        # searchTerm = pbOpenGenericListSearch
+        # if searchTerm
+        #   # Usamos la función inteligente
+        #   new_list = allspecies.select do |sp|
+        #     pbSmartMatch?(sp[3], searchTerm)
+        #   end
+          
+        #   if new_list.length > 0
+        #     current_species_list = new_list
+        #     refresh_list.call
+        #     cw.index = 0
+        #     oldindex = -1 
+        #   else
+        #     pbMessage(_INTL("No se han encontrado resultados."))
+        #   end
+        # end
       end
     end
     
     # Guardar índice para la próxima vez
     if current_species_list.length == allspecies.length
-        @oldSpeciesIndex = cw.index
+      @oldSpeciesIndex = cw.index
     else
-        @oldSpeciesIndex = 0
+      @oldSpeciesIndex = 0
     end
     
     cw.dispose

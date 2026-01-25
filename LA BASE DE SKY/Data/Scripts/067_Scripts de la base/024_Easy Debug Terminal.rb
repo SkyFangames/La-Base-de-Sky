@@ -72,8 +72,12 @@ if !$joiplay
       if Input.triggerex?(:ESCAPE)
         break
       elsif Input.triggerex?(:RETURN)
-        ret = window.text
-        break
+        if Input.pressex?(:LSHIFT) || Input.pressex?(:RSHIFT)
+          window.insert("\n")
+        else
+          ret = window.text
+          break
+        end
       end
       window.update
       yield if block_given?
@@ -84,7 +88,7 @@ if !$joiplay
     return ret
   end
 
-  class Window_TextEntry_Keyboard_Terminal < Window_TextEntry
+  class Window_TextEntry_Keyboard_Terminal < Window_TextEntry_Keyboard
     def initialize(text, x, y, width, height)
       super(text, x, y, width, height)
       self.opacity = 0
@@ -98,81 +102,85 @@ if !$joiplay
       refresh
     end
 
+    def resize_height
+      lines = self.text.split("\n", -1)
+      line_count = lines.empty? ? 1 : lines.length
+      new_height = 64 + ((line_count - 1) * 32)
+      
+      if self.height != new_height
+        self.height = new_height
+        self.contents = Bitmap.new(self.width - 32, self.height - 32)
+        if self.contents.font.respond_to?(:name)
+          self.contents.font.name = ["Power Green", "Arial"]
+        end
+        self.contents.font.size = 20
+        self.contents.font.bold = true
+        refresh
+      end
+    end
+
+    def insert(ch)
+      if super(ch)
+        resize_height
+        return true
+      end
+      return false
+    end
+
+    def delete
+      if super
+        resize_height
+        return true
+      end
+      return false
+    end
+
     def refresh
       self.contents.clear
       bg_color = Color.new(0, 0, 0, 160)
       self.contents.fill_rect(0, 0, self.contents.width, self.contents.height, bg_color)
       prompt = "> "
       self.contents.font.color = Color.new(0, 255, 0)
-      self.contents.draw_text(1, (self.contents.height - 24) / 2 , 30, 32, prompt)
+      self.contents.draw_text(1, 4, 30, 32, prompt)
       self.contents.font.color = Color.new(255, 255, 255)
       text_x = 20 
-      self.contents.draw_text(text_x, 0, self.contents.width - text_x, 32, self.text)
+      
+      lines = self.text.split("\n", -1)
+      lines.each_with_index do |line, i|
+        self.contents.draw_text(text_x, 32 * i, self.contents.width - text_x, 32, line)
+      end
+
       if @cursor_shown
         subtext = self.text[0...@helper.cursor]
-        cursor_x = text_x + self.contents.text_size(subtext).width
-        self.contents.fill_rect(cursor_x, 4, 2, 24, Color.new(255, 255, 255))
-      end
-    end
+        line_index = subtext.count("\n")
+        current_line_start = subtext.rindex("\n")
+        current_line_start = (current_line_start ? current_line_start + 1 : 0)
+        subtext_on_line = subtext[current_line_start..-1]
+        
+        current_full_line = lines[line_index] || ""
+        full_line_width = self.contents.text_size(current_full_line).width
+        cursor_text_width = self.contents.text_size(subtext_on_line).width
+        max_width = self.contents.width - text_x
+        
+        if full_line_width > 0 && full_line_width > max_width
+          scale = max_width.to_f / full_line_width
+          cursor_text_width = (cursor_text_width * scale).to_i
+        end
 
-    def update
-      cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i % 2 == 0
-      if cursor_to_show != @cursor_shown
-        @cursor_shown = cursor_to_show
-        refresh
+        cursor_x = text_x + cursor_text_width
+        cursor_y = 4 + (line_index * 32)
+        self.contents.fill_rect(cursor_x, cursor_y, 2, 24, Color.new(255, 255, 255))
       end
-      return if !self.active
-      
-      # Moving cursor
-      if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-        if @helper.cursor > 0
-          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-            @helper.cursor -= 1
-            word = self.text[0..@helper.cursor].split(/\s+/).last
-            @helper.cursor -= word.length if word
-          else
-            @helper.cursor -= 1
-          end
-          @cursor_timer_start = System.uptime
-          @cursor_shown = true
-          self.refresh
-        end
-        return
-      elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-        if @helper.cursor < self.text.scan(/./m).length
-          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-            @helper.cursor += 1
-            # Calculate distance to next word
-            word = self.text[@helper.cursor..-1].split(/\s+/).first
-            @helper.cursor += word.length if word
-          else
-            @helper.cursor += 1
-          end
-          @cursor_timer_start = System.uptime
-          @cursor_shown = true
-          self.refresh
-        end
-        return
-      elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
-        return unless @helper.cursor > 0
-        if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
-          word = self.text[0..@helper.cursor].split(/\s+/).last
-          if word
-            word += " " if word != self.text
-            word.length.times { self.delete }
-          else
-            self.delete
-          end
-        else
-          self.delete if @helper.cursor > 0
-        end
-        refresh 
-        return
-      elsif Input.triggerex?(:UP) && $InCommandLine && !$game_temp.lastcommand.empty?
+   end
+
+   def handle_input
+    super
+    if Input.triggerex?(:UP) && $InCommandLine && !$game_temp.lastcommand.empty?
         self.text = $game_temp.lastcommand.shift.to_s
         $game_temp.lastcommand.push(self.text)
         @helper.cursor = self.text.scan(/./m).length
         refresh
+        resize_height
         return
       elsif Input.triggerex?(:DOWN) && $InCommandLine && !$game_temp.lastcommand.empty?
         $game_temp.lastcommand.insert(0, $game_temp.lastcommand.pop)
@@ -180,28 +188,24 @@ if !$joiplay
         $game_temp.lastcommand.push(self.text)
         @helper.cursor = self.text.scan(/./m).length
         refresh
+        resize_height
         return
       elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
         return
       elsif Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
         Input.clipboard = self.text if Input.triggerex?(:C)
-        Console.echoln "Saved \"#{self.text}\" to clipboard." if Input.triggerex?(:C)
+        Console.echoln "\"#{self.text}\" copiado al portapapeles." if Input.triggerex?(:C)
         if Input.triggerex?(:V)
-          self.text << Input.clipboard
-          @helper.cursor = self.text.scan(/./m).length
-          refresh
+          Input.clipboard.each_char { |c| insert(c) } 
         elsif Input.triggerex?(:X)
           Input.clipboard = self.text
-          Console.echoln "Saved \"#{self.text}\" to clipboard."
+          Console.echoln "\"#{self.text}\" copiado al portapapeles."
           self.text = ""
           @helper.cursor = 0
           refresh
+          resize_height
         end
       end
-
-      old_text = self.text
-      Input.gets.each_char { |c| insert(c) }
-      refresh if self.text != old_text
     end
   end
 

@@ -30,9 +30,9 @@ class BaseSearcher
 
   # Opens the search box and initiates the search process.
   # @return [Boolean, Integer] Returns false if search is cancelled, otherwise returns search result.
-  def open_search_box
+  def open_search_box(position = :right)
     on_input = ->(text, char = '') { search_by_name(text, char) }
-    term = pb_message_free_text_with_on_input(search_prompt, "", false, SEARCH_BOX_MAX_LENGTH, width = SEARCH_BOX_WIDTH, on_input = on_input)
+    term = pb_message_free_text_with_on_input(search_prompt, "", false, SEARCH_BOX_MAX_LENGTH, width = SEARCH_BOX_WIDTH, on_input = on_input, position = position)
 
     return false if ['', nil].include?(term)
 
@@ -80,7 +80,7 @@ class BaseSearcher
   # @param text [String] The search text.
   # @return [Boolean] True if the name contains the search text.
   def matches_name?(item_name, text)
-    item_name.downcase.include?(text.downcase)
+    pbSmartMatch?(item_name, text)
   end
 
   # Validates whether an item should be included in the search.

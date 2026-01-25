@@ -327,7 +327,7 @@ class PokemonPokedex_Scene
   SLIDER_MIN_BOXHEIGHT = 40                # Altura mínima de la caja
 
   # Constantes de posición para la ventana de búsqueda del Pokédex
-  DEXSEARCH_TITLE_X   = Graphics.width / 2
+  DEXSEARCH_TITLE_X   = Settings::SCREEN_WIDTH / 2
   DEXSEARCH_TITLE_Y   = 10
   DEXSEARCH_ORDER_X   = 136
   DEXSEARCH_ORDER_Y   = 64
@@ -345,9 +345,9 @@ class PokemonPokedex_Scene
   DEXSEARCH_SHAPE_Y   = 174
   DEXSEARCH_RESET_X   = 80
   DEXSEARCH_RESET_Y   = 346
-  DEXSEARCH_START_X   = Graphics.width / 2
+  DEXSEARCH_START_X   = Settings::SCREEN_WIDTH / 2
   DEXSEARCH_START_Y   = 346
-  DEXSEARCH_CANCEL_X  = Graphics.width - 80
+  DEXSEARCH_CANCEL_X  = Settings::SCREEN_WIDTH - 80
   DEXSEARCH_CANCEL_Y  = 346
 
   # Constantes para las posiciones de los parámetros en pbRefreshDexSearch
@@ -387,11 +387,11 @@ class PokemonPokedex_Scene
   DEXSEARCH_PARAM_HW_BLT_Y   = 52
 
   # Constantes para posiciones del cuadro de parámetros (pbRefreshDexSearchParam)
-  DEXSEARCH_PARAM_TITLE_X    = Graphics.width / 2
+  DEXSEARCH_PARAM_TITLE_X    = Settings::SCREEN_WIDTH / 2
   DEXSEARCH_PARAM_TITLE_Y    = 10
   DEXSEARCH_PARAM_OK_X       = 80
   DEXSEARCH_PARAM_OK_Y       = 346
-  DEXSEARCH_PARAM_CANCEL_X   = Graphics.width - 80
+  DEXSEARCH_PARAM_CANCEL_X   = Settings::SCREEN_WIDTH - 80
   DEXSEARCH_PARAM_CANCEL_Y   = 346
 
   # Constantes para la posición del texto título en pbRefreshDexSearchParam
@@ -1497,4 +1497,3 @@ class PokemonPokedexScreen
     @scene.pbEndScene
   end
 end
-

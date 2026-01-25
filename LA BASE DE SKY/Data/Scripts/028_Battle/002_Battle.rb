@@ -798,7 +798,7 @@ class Battle
     return @field.weather
   end
 
-  def pbCanStartWeather?(newWeather, ignore_primal)
+  def pbCanStartWeather?(newWeather, ignore_primal = false)
     return false if @field.weather == newWeather
     primal_weathers = [:HarshSun, :HeavyRain, :StrongWinds]
     if !ignore_primal && primal_weathers.include?(@field.weather)
@@ -901,7 +901,7 @@ class Battle
   end
 
   def pbStartWeatherAbility(new_weather, battler, ignore_primal = false, message = nil)
-    return if !pbCanStartWeather?(newWeather, ignore_primal)
+    return if !pbCanStartWeather?(new_weather, ignore_primal)
     pbShowAbilitySplash(battler)
     if !Scene::USE_ABILITY_SPLASH
       pbDisplay(_INTL("¡{2} de {1} se activó!", battler.pbThis, battler.abilityName))

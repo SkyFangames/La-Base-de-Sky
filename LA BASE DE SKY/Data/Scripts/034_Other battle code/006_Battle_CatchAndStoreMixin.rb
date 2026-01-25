@@ -143,11 +143,11 @@ module Battle::CatchAndStoreMixin
       item_name = GameData::Item.get(ball).name
       PBDebug.log("[Threw Poké Ball] #{item_name}, failed due to no target")
       if item_name.starts_with_vowel?
-        pbDisplay(_INTL("{1} lanzó un {2}!", pbPlayer.name, item_name))
+        pbDisplay(_INTL("¡{1} lanzó un {2}!", pbPlayer.name, item_name))
       else
-        pbDisplay(_INTL("{1} lanzó una {2}!", pbPlayer.name, item_name))
+        pbDisplay(_INTL("¡{1} lanzó una {2}!", pbPlayer.name, item_name))
       end
-      pbDisplay(_INTL("Pero no había ningún objetivo..."))
+      pbDisplay(_INTL("Pero no había objetivo..."))
       return true
     end
     if trainerBattle? && !(GameData::Item.get(ball).is_snag_ball? && battler.shadowPokemon?)
@@ -259,7 +259,7 @@ module Battle::CatchAndStoreMixin
     # Failed
     PBDebug.log("[Threw Poké Ball] #{GameData::Item.get(ball).name}, #{num_shakes} shakes (failed)")
     case num_shakes
-    when 0 then pbDisplay(_INTL("¡Oh no! ¡El Pokémon se ha escapado!"))
+    when 0 then pbDisplay(_INTL("¡Oh, no! ¡El Pokémon se ha escapado!"))
     when 1 then pbDisplay(_INTL("¡Vaya! ¡Parecía que lo habías atrapado!"))
     when 2 then pbDisplay(_INTL("¡Qué pena! ¡Te ha faltado poco!"))
     when 3 then pbDisplay(_INTL("¡Uy! ¡Casi lo consigues!"))

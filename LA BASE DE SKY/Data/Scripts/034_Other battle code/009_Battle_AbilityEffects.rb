@@ -491,6 +491,26 @@ Battle::AbilityEffects::OnHPDroppedBelowHalf.add(:EMERGENCYEXIT,
 
 Battle::AbilityEffects::OnHPDroppedBelowHalf.copy(:EMERGENCYEXIT, :WIMPOUT)
 
+
+#===============================================================================
+# OnHPDroppedBelowThird handlers
+#===============================================================================
+Battle::AbilityEffects::AfterMoveUseFromTarget.add(:OVERGROW, proc { |ability, target, user, move, switched_battlers, battle|
+  next if !target.droppedBelowThirdHP
+  battle.pbShowAbilitySplash(target)
+  type = GameData::Ability.get(ability).flags[0] if !GameData::Ability.get(ability).flags.empty?
+  type = GameData::Type.get(type).name if type && GameData::Type.exists?(type)
+  if type
+    battle.pbDisplay(_INTL("¡{1} activado! Los ataques de tipo {2} de {3} ahora son más potentes.", target.abilityName, type, target.pbThis(true)))
+  else
+    battle.pbDisplay(_INTL("¡{1} activado! Los ataques del primer tipo de {2} ahora son más potentes.", target.abilityName, target.pbThis(true)))
+  end
+  battle.pbHideAbilitySplash(target)
+})
+
+Battle::AbilityEffects::AfterMoveUseFromTarget.copy(:OVERGROW, :TORRENT, :BLAZE, :SWARM)
+
+
 #===============================================================================
 # StatusCheckNonIgnorable handlers
 #===============================================================================
@@ -2584,7 +2604,7 @@ Battle::AbilityEffects::AfterMoveUseFromTarget.add(:PICKPOCKET,
       next
     end
     battle.swapHeldItems(user, target)
-    battle.pbDisplay(_INTL("¡{1} robó el {3} de {2}!", target.pbThis, user.pbThis(true), target.itemName))
+    battle.pbDisplay(_INTL("¡{1} robó {3} de {2}!", target.pbThis, user.pbThis(true), target.itemName))
     battle.pbHideAbilitySplash(target)
     target.pbHeldItemTriggerCheck
   }
@@ -3193,9 +3213,9 @@ Battle::AbilityEffects::OnSwitchIn.add(:FOREWARN,
     battle.pbShowAbilitySplash(battler)
     forewarnMoveName = forewarnMoves[battle.pbRandom(forewarnMoves.length)]
     if Battle::Scene::USE_ABILITY_SPLASH
-      battle.pbDisplay(_INTL("¡Se ha detectado el movimiento {2} de {1}!", battler.pbThis, forewarnMoveName))
+      battle.pbDisplay(_INTL("¡Se ha detectado el movimiento {2} de {1}!", battler.pbThis(true), forewarnMoveName))
     else
-      battle.pbDisplay(_INTL("¡Alerta de {1} ha detectado el movimiento {2}!", battler.pbThis, forewarnMoveName))
+      battle.pbDisplay(_INTL("¡Alerta de {1} ha detectado el movimiento {2}!", battler.pbThis(true), forewarnMoveName))
     end
     battle.pbHideAbilitySplash(battler)
   }
@@ -3701,7 +3721,7 @@ Battle::AbilityEffects::OnTerrainChange.add(:MIMICRY,
     next if !new_type
     battle.pbShowAbilitySplash(battler)
     battler.pbChangeTypes(new_type)
-    battle.pbDisplay(_INTL("¡El tipo de {1} cambió a tipo {2}!", battler.pbThis, new_type_name))
+    battle.pbDisplay(_INTL("¡El tipo de {1} cambió a tipo {2}!", battler.pbThis(true), new_type_name))
     battle.pbHideAbilitySplash(battler)
   }
 )
@@ -3713,13 +3733,18 @@ Battle::AbilityEffects::OnTerrainChange.add(:QUARKDRIVE,
       best = nil
       [:ATTACK, :DEFENSE, :SPECIAL_ATTACK, :SPECIAL_DEFENSE, :SPEED].each do |stat|
         value = battler.stat_with_stages(stat)
-        best = [stat, value] if !value || value > stat[1]
+        if !best || value > best[1]
+          best = [stat, value]
+        end
       end
-      battler.effects[PBEffects::ProtosynthesisStat] = best[0]
-      battle.pbShowAbilitySplash(battler)
-      battle.pbDisplay(_INTL("¡El campo electrico activó la {1} de {2}!", GameData::Stat.get(best[0]).name, battler.pbThis(true)))
-      battle.pbDisplay(_INTL("¡La {1} de {2} aumentó!", GameData::Stat.get(best[0]).name, battler.pbThis))
-      battle.pbHideAbilitySplash(battler)
+      if best
+        battler.effects[PBEffects::ProtosynthesisStat] = best[0]
+        battle.pbShowAbilitySplash(battler)
+        battle.pbDisplay(_INTL("¡El campo eléctrico activó la {1} de {2}!", GameData::Stat.get(best[0]).name, battler.pbThis(true)))
+        battle.pbDisplay(_INTL("¡La {1} de {2} aumentó!", GameData::Stat.get(best[0]).name, battler.pbThis))
+        battle.pbHideAbilitySplash(battler)
+      end
+      
     elsif battler.effects[PBEffects::ProtosynthesisStat]
       battler.effects[PBEffects::ProtosynthesisStat] = nil
       battle.pbDisplay(_INTL("Los efectos de {1} han desaparecido...", battler.abilityName))

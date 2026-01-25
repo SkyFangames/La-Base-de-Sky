@@ -193,19 +193,19 @@ class PokemonPartyPanel < Sprite
   UI_HP_BAR_BG_Y     = 50
   UI_BALL_X          = 10
   UI_BALL_Y          = 0
-  UI_POKEMON_ICON_X  = 60
+  UI_POKEMON_ICON_X  = 56
   UI_POKEMON_ICON_Y  = 40
   UI_HELD_ITEM_X     = 62
   UI_HELD_ITEM_Y     = 48
   
   # Posiciones de texto e información
-  UI_NAME_X          = 96
+  UI_NAME_X          = 90
   UI_NAME_Y          = 22
   UI_LEVEL_ICON_X    = 20
   UI_LEVEL_ICON_Y    = 70
   UI_LEVEL_TEXT_X    = 42
   UI_LEVEL_TEXT_Y    = 68
-  UI_GENDER_X        = 224
+  UI_GENDER_X        = 230
   UI_GENDER_Y        = 22
   UI_HP_TEXT_X       = 224
   UI_HP_TEXT_Y       = 66

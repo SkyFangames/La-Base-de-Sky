@@ -303,14 +303,6 @@ module Settings
   # en la que se encuentre el jugador.
   def self.pokedex_names
     return [
-      [_INTL("Pokédex de Kanto"), 0],
-      [_INTL("Pokédex de Johto"), 1],
-      _INTL("Pokédex Nacional")
-    ]
-  end
-  
-  def self.pokedex_names
-    return [
       [_INTL("Pokédex de Kanto"),   0],
       [_INTL("Pokédex de Johto"),   1],
       [_INTL("Pokédex de Hoenn"),   2],
@@ -452,6 +444,9 @@ module Settings
   # Número del interruptor que, si está en ON, desactiva el acceso a la caja de
   # almacenamiento de Pokémon (PC) a través de la pantalla de Equipo.
   DISABLE_BOX_LINK_SWITCH   = 35
+  # Número del interruptor que, si está en ON, todos los Pokémon salvajes 
+  # serán supervariocolor (super shiny).
+  SUPER_SHINY_WILD_POKEMON_SWITCH = 38
 
   #=============================================================================
   
@@ -612,6 +607,11 @@ module Settings
   # Si quieres usar la nueva interfaz de opciones (true) o la clásica (false).
   USE_NEW_OPTIONS_UI = true
 
+
+  # Si las capturas de pantalla se guardan en la carpeta "Saves" junto a las
+  # partidas guardadas (true) o en la carpeta "Screenshots" del juego (false).
+  STORE_SCREENSHOTS_IN_SAVE_FOLDER = true
+
   #=============================================================================
   # Aquí van los créditos de tu juego, en un array. Puedes poner las líneas 
   # dentro de un _INTL() para que sea fácil de traducirlas a otros idiomas.
@@ -624,12 +624,12 @@ module Settings
       " PON AQUÍ TUS CRÉDITOS ",
       "",
       
-    
       "LA BASE DE SKY",
       _INTL("Creada por:"),
       "Skyflyer<s>DPertierra",
       "",
       _INTL("Colaboraciones:"),
+      "ZikSanchez",
       "DarmanInigo<s>Nieves1236",
       "deNombreTuri<s>Pokepachito",
       "Ebaru",

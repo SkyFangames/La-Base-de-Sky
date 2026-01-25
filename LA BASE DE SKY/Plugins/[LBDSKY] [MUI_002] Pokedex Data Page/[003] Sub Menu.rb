@@ -833,6 +833,6 @@ class PokemonPokedexInfo_Scene
     else
       data_text = DATA_TEXT_TAGS[0] + "Volver a los datos de la especie."
     end
-    drawFormattedTextEx(overlay, DATA_TEXT_X, DATA_TEXT_Y, DATA_TEXT_WIDTH, _INTL("{1}", data_text))
+    drawFormattedTextEx(overlay, DATA_TEXT_X, DATA_TEXT_Y, DATA_TEXT_W, _INTL("{1}", data_text))
   end
 end

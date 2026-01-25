@@ -341,19 +341,47 @@ def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1)
   itemIndex = 0
   sortMode = (sortType >= 0) ? sortType : 0   # 0=ID, 1=alphabetical
   sorting = true
+  
+  full_list_original = commands.clone
+  current_search_term = nil
+
   loop do
     if sorting
-      case sortMode
-      when 0
-        commands.sort! { |a, b| a[0] <=> b[0] }
-      when 1
-        commands.sort! { |a, b| a[1] <=> b[1] }
+      temp_commands = full_list_original.clone
+      
+      if current_search_term
+        # Filtramos en una variable temporal
+        filtered = full_list_original.select do |cmd|
+          pbSmartMatch?(cmd[1], current_search_term)
+        end
+        
+        if filtered.empty?
+          pbMessage(_INTL("No se han encontrado resultados para '{1}'.", current_search_term))
+          current_search_term = nil
+          temp_commands = full_list_original.clone # Volvemos a mostrar todo
+        else
+          temp_commands = filtered
+        end
       end
+      
+      commands = temp_commands
+
+      # Ordenamiento
+      case sortMode
+      when 0 then commands.sort! { |a, b| a[0] <=> b[0] }
+      when 1 then commands.sort! { |a, b| a[1] <=> b[1] }
+      end
+
+      # Posición
       if itemID.is_a?(Symbol)
         commands.each_with_index { |command, i| itemIndex = i if command[2] == itemID }
       elsif itemID && itemID > 0
         commands.each_with_index { |command, i| itemIndex = i if command[0] == itemID }
       end
+      
+      itemIndex = 0 if itemIndex >= commands.length
+
+      # Generar
       realcommands = []
       commands.each do |command|
         if sortType <= 0
@@ -364,35 +392,40 @@ def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1)
       end
       sorting = false
     end
+
     cmd = pbCommandsSortable(cmdwin, realcommands, -1, itemIndex, (sortType < 0))
+    
     case cmd[0]
-    when 0   # Chose an option or cancelled
-      itemID = (cmd[1] < 0) ? cancelValue : (commands[cmd[1]][2] || commands[cmd[1]][0])
+    when 0
+      if cmd[1] < 0
+        itemID = cancelValue
+      else
+        itemID = (commands[cmd[1]][2] || commands[cmd[1]][0])
+      end
       break
-    when 1   # Toggle sorting
-      itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
+    when 1
+      if commands.length > 0
+          itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
+      end
       sortMode = (sortMode + 1) % 2
       sorting = true
+    when 2
+      current_search_term = cmd[1]
+      sorting = true
+      itemIndex = 0
     end
   end
   cmdwin.dispose
   return itemID
 end
 
-def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sortable = false)
-  cmdwindow.commands = commands
-  cmdwindow.index    = defaultindex if defaultindex >= 0
-  cmdwindow.x        = 0
-  cmdwindow.y        = 0
-  cmdwindow.width    = Graphics.width / 2 if cmdwindow.width < Graphics.width / 2
-  cmdwindow.height   = Graphics.height
-  cmdwindow.z        = 99999
-  cmdwindow.active   = true
+def commands_sortable_handle_input(cmdwindow, cmdIfCancel, sortable)
   command = 0
   loop do
     Graphics.update
     Input.update
     cmdwindow.update
+    
     if Input.trigger?(Input::ACTION) && sortable
       command = [1, cmdwindow.index]
       break
@@ -403,9 +436,28 @@ def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sort
       command = [0, cmdwindow.index]
       break
     end
+    command_aux = commands_sortable_handle_input_enhancements(command, cmdwindow, cmdIfCancel, sortable)
+    if command_aux
+      command = command_aux
+      break
+    end
   end
+  return command
+end
+  
+def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sortable = false)
+  cmdwindow.commands = commands
+  cmdwindow.index    = defaultindex if defaultindex >= 0
+  cmdwindow.index    = 0 if cmdwindow.index >= commands.length 
+  
+  cmdwindow.x        = 0
+  cmdwindow.y        = 0
+  cmdwindow.width    = Graphics.width / 2 if cmdwindow.width < Graphics.width / 2
+  cmdwindow.height   = Graphics.height
+  cmdwindow.z        = 99999
+  cmdwindow.active   = true
+  command = commands_sortable_handle_input(cmdwindow, cmdIfCancel, sortable)
   ret = command
   cmdwindow.active = false
   return ret
 end
-

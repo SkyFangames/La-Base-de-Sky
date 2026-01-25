@@ -22,9 +22,11 @@ end
 #===============================================================================
 # Parse choice images from event comments
 # Place comments before Show Choices command in the event:
-#   ChoiceImage: 1, species, PIKACHU, 0
-#   ChoiceImage: 2, species, CHARIZARD, 0
-#   ChoiceImage: 1, Graphics/Pokemon/Front/PIKACHU
+#   s:ChoiceImage: show_background
+#   s:ChoiceImage: 1, species, PIKACHU, 0
+#   s:ChoiceImage: 2, species, CHARIZARD, 0
+#   s:ChoiceImage: 1, Graphics/Pokemon/Front/PIKACHU
+#   s:ChoiceImage: 2, item, POTION
 #===============================================================================
 def pbGetChoiceImages(commands)
   return nil unless pbMapInterpreterRunning?
@@ -37,6 +39,7 @@ def pbGetChoiceImages(commands)
   return nil unless current_index
   
   choice_images = {}
+  show_background = false
   # Look backwards from current position for ChoiceImage comments
   # Stop when we hit structural boundaries (When branches, other Show Choices, etc.)
   (current_index - 1).downto(0) do |i|
@@ -46,10 +49,17 @@ def pbGetChoiceImages(commands)
     break if [102, 402, 404].include?(item.code)
     # Skip non-comment commands but continue searching
     next unless [108, 408].include?(item.code)
-    next unless item.parameters[0].start_with?("ChoiceImage:")
+    next unless item.parameters[0].start_with?("s:ChoiceImage:")
     
-    # Parse: "ChoiceImage: INDEX, TYPE, ..."
-    parts = item.parameters[0].sub("ChoiceImage:", "").split(",").map(&:strip)
+    # Parse: "ChoiceImage: INDEX, TYPE, ..." or "ChoiceImage: show_background"
+    parts = item.parameters[0].sub("s:ChoiceImage:", "").split(",").map(&:strip)
+    
+    # Check for show_background flag
+    if parts[0].downcase == "show_background"
+      show_background = true
+      next
+    end
+    
     next if parts.length < 2
     
     index = parts[0].to_i - 1  # Convert to 0-based index
@@ -60,6 +70,9 @@ def pbGetChoiceImages(commands)
       species = parts[2].to_sym
       form = parts[3] ? parts[3].to_i : 0
       bitmap = GameData::Species.sprite_bitmap(species, form) if GameData::Species.exists?(species)
+    elsif parts[1] == "item" && parts.length >= 2
+      item_id = parts[2].to_sym
+      bitmap = GameData::Item.icon_bitmap(item_id) if GameData::Item.exists?(item_id)
     else
       # Direct file path - join all parts after index in case path contains commas
       file_path = parts[1..-1].join(",").strip
@@ -73,17 +86,22 @@ def pbGetChoiceImages(commands)
     choice_images[index] = bitmap if bitmap
   end
   
-  return choice_images.empty? ? nil : choice_images
+  return nil if choice_images.empty?
+  return { images: choice_images, show_background: show_background }
 end
 
 def pbParseChoiceImages(commands)
-  choice_images = pbGetChoiceImages(commands)
-  return commands unless choice_images
+  result = pbGetChoiceImages(commands)
+  return commands unless result
+  
+  choice_images = result[:images]
+  show_background = result[:show_background]
   
   parsed_commands = []
   commands.each_with_index do |cmd, i|
     if choice_images[i]
-      parsed_commands.push([cmd, choice_images[i]])
+      # Pass both the image and the show_background flag
+      parsed_commands.push([cmd, choice_images[i], show_background])
     else
       parsed_commands.push(cmd)
     end

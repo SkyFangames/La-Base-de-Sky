@@ -3100,6 +3100,177 @@ BPPrice = 50
 Flags = MegaStone,Fling_80
 Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Floette Flor Eterna en combate.
 #-------------------------------
+[GARCHOMPITEZ]
+Name = Garchompita Z
+NamePlural = Garchompitas Z
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Garchomp en combate.
+#-------------------------------
+[ABSOLITEZ]
+Name = Absolita Z
+NamePlural = Absolitas Z
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Absol en combate.
+#-------------------------------
+[LUCARIONITEZ]
+Name = Lucarita Z
+NamePlural = Lucaritas Z
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Lucario en combate.
+#-------------------------------
+[SCOVILLAINITE]
+Name = Scovillainita
+NamePlural = Scovillainitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Scovillain en combate.
+#-------------------------------
+[CRABOMINITE]
+Name =  Crabominablita
+NamePlural = Crabominablitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Crabominable en combate.
+#-------------------------------
+[STARAPTITE]
+Name = Staraptorita
+NamePlural = Staraptoritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Staraptor en combate.
+#-------------------------------
+[GOLURKITE]
+Name = Golurkita
+NamePlural = Golurkitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Golurk en combate.
+#-------------------------------
+[RAICHUNITEX]
+Name = Raichunita X
+NamePlural = Raichunitas X
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Raichu en combate.
+#-------------------------------
+[RAICHUNITEY]
+Name = Raichunita Y
+NamePlural = Raichunitas Y
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Raichu en combate.
+#-------------------------------
+[DARKRANITE]
+Name = Darkrainita 
+NamePlural =  Darkrainitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Darkrai en combate.
+#-------------------------------
+[TATSUGIRINITE]
+Name = Tatsugirita
+NamePlural = Tatsugiritas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Tatsugiri en combate.
+#-------------------------------
+[MAGEARNITE]
+Name = Magearnita
+NamePlural = Magearnitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Magearna en combate.
+#-------------------------------
+[GOLISOPITE]
+Name = Golisopodita
+NamePlural = Golisopoditas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Golisopod en combate.
+#-------------------------------
+[MEOWSTICITE]
+Name = Meowsticita
+NamePlural = Meowsticitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Meowstic en combate.
+#-------------------------------
+[HEATRANITE]
+Name = Heatranita
+NamePlural = Heatranitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Heatran en combate.
+#-------------------------------
+[GLIMMORANITE]
+Name = Glimmoranita
+NamePlural = Glimmoranitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Glimmora en combate.
+#-------------------------------
+[BAXCALIBRITE]
+Name = Baxcaliburita
+NamePlural = Baxcaliburitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Baxcalibur en combate.
+#-------------------------------
+[CHIMECHITE]
+Name = Chimechita
+NamePlural = Chimechitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Chimecho en combate.
+#-------------------------------
+[ZERAORITE]
+Name = Zeraoranita
+NamePlural = Zeraoranitas
+Pocket = 1
+Price = 0
+BPPrice = 50
+Flags = MegaStone,Fling_80
+Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Zeraora en combate.
+#-------------------------------
 [POTION]
 Name = Poción
 NamePlural = Pociones

@@ -2,38 +2,45 @@
 # consola habilitada en Windows. En Linux y macOS, simplemente ejecuta el 
 # ejecutable directamente desde una terminal.
 module Console
-  def self.setup_console
+  module_function
+
+  def setup_console
     return unless $DEBUG
     echoln "GPU Cache Máximo: #{Bitmap.max_size}"
-    echoln "-------------------------------------------------------------------------------"
-    echoln "JUEGO: #{System.game_title} - Ventana de Salida"
-    echoln "-------------------------------------------------------------------------------"
+    echoln Console.markup_style("Puedes ignorar cualquier mensaje anterior sobre fluidsynth y la fuente primaria no encontrada.", text: :brown)
+    echoln ""
+    echoln Console.markup_style("===============================================================================", text: :yellow)
+    echoln Console.markup_style("JUEGO: \"#{System.game_title}\" - Ventana de Salida", text: :yellow)
+    echoln Console.markup_style("===============================================================================", text: :yellow)
     echoln "Si puedes ver esta ventana, estás ejecutando el juego en Modo de Depuración. Esto significa"
     echoln "que estás jugando una versión de depuración del juego, o estás jugando desde"
     echoln "dentro de RPG Maker XP."
     echoln ""
     echoln "Cerrar esta ventana cerrará el juego. Si deseas deshacerte de esta ventana,"
     echoln "ejecuta el programa desde la Consola, o descarga una versión lanzada del juego."
-    echoln "-------------------------------------------------------------------------------"
-    echoln "Salida de Depurador:"
-    echoln "-------------------------------------------------------------------------------"
     echoln ""
-
+    echoln Console.markup_style("===============================================================================", text: :yellow)
+    echoln Console.markup_style("Salida de Depurador:", text: :yellow)
+    echoln Console.markup_style("===============================================================================", text: :yellow)
+    echoln ""
   end
 
-  def self.readInput
+  def readInput
     return gets.strip
   end
 
-  def self.readInput2
+  def readInput2
     return self.readInput
   end
 
-  def self.get_input
+  def get_input
     echo self.readInput2
   end
 end
 
+#===============================================================================
+#
+#===============================================================================
 module Kernel
   def echo(string)
     return unless $DEBUG
@@ -46,8 +53,6 @@ module Kernel
   end
 end
 
-Console.setup_console
-
 #===============================================================================
 # Formato de mensajes de consola
 #===============================================================================
@@ -57,22 +62,20 @@ module Console
   #-----------------------------------------------------------------------------
   #  cadena de eco en la consola (ejemplo de abreviatura de opciones comunes)
   #-----------------------------------------------------------------------------
+
   # heading 1
   def echo_h1(msg)
     echoln markup_style("*** #{msg} ***", text: :brown)
-    echoln ""
   end
 
   # heading 2
   def echo_h2(msg, **options)
     echoln markup_style(msg, **options)
-    echoln ""
   end
 
   # heading 3
   def echo_h3(msg)
     echoln markup(msg)
-    echoln ""
   end
 
   # list item
@@ -131,6 +134,7 @@ module Console
   #-----------------------------------------------------------------------------
   # Opciones de marcado
   #-----------------------------------------------------------------------------
+
   def string_colors
     {
       default: "38", black: "30", red: "31", green: "32", brown: "33",
@@ -233,3 +237,7 @@ module Console
   end
 end
 
+#===============================================================================
+#
+#===============================================================================
+Console.setup_console

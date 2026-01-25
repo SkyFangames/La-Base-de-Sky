@@ -173,7 +173,7 @@ class PokemonSummary_Scene
     #---------------------------------------------------------------------------
     # [:nickname] Nicknames the Pokemon. (Gen 9+)
     when :nickname
-      nickname = pbEnterPokemonName(_INTL("¿Qué mote quieres para {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, (@pokemon.name != @pokemon.species_data.name ? @pokemon.name : "" ), @pokemon, true)
+      nickname = pbEnterPokemonName(_INTL("¿Mote de {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, (@pokemon.name != @pokemon.species_data.name ? @pokemon.name : "" ), @pokemon, true)
       @pokemon.name = nickname
       dorefresh = true
     #---------------------------------------------------------------------------
@@ -289,6 +289,9 @@ class PokemonSummary_Scene
       elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_skills
         pbPlayDecisionSE
         showAbilityDescription(@pokemon)
+      elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_info
+        pbPlayDecisionSE
+        showShadowDescription(@pokemon)
       elsif Input.trigger?(Input::USE)
         dorefresh = pbPageCustomUse(@page_id)
         if !dorefresh

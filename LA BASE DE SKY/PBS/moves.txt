@@ -2384,7 +2384,7 @@ TotalPP = 15
 Target = UserSide
 Priority = 3
 FunctionCode = ProtectUserSideFromPriorityMoves
-Description = Protege a el equipo de ataques con prioridad. Puede fallar si se utiliza repetidamente.
+Description = Protege al equipo de ataques con prioridad. Puede fallar si se utiliza repetidamente.
 #-------------------------------
 [VCREATE]
 Name = V de Fuego
