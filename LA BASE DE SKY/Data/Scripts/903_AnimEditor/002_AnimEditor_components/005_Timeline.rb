@@ -456,9 +456,9 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     if @duration == old_dur
       change_particle(index)
     else
-      keyframe = @selected_keyframe
-      selected_row = @selected_row
       refresh
+      self.selected_keyframe = @selected_keyframe
+      self.selected_row = @selected_row
     end
   end
 
@@ -697,7 +697,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     if pos[0] && pos[1] && (@list_rect.contains?(*pos) || @timeline_rect.contains?(*pos))
       if @timeline_rect.contains?(*pos)
         this_keyframe = ((pos[0] - @timeline_rect.x + @timeline_ox - TIME_BAR_LEFT_BUFFER) / KEYFRAME_SPACING.to_f).round
-        self.selected_keyframe = this_keyframe if this_keyframe >= 0 && this_keyframe < @duration + DURATION_BUFFER
+        self.selected_keyframe = this_keyframe if this_keyframe >= 0
       end
       this_row = (pos[1] - @timeline_rect.y + @timeline_oy - AnimationEditor::ListedParticle::ROW_SPACING) / AnimationEditor::ListedParticle::FULL_ROW_HEIGHT
       self.selected_row = this_row if this_row >= 0 && this_row < rows_count

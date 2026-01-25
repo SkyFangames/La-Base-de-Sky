@@ -2,7 +2,7 @@
 #
 #===============================================================================
 class UIControls::SEPicker < UIControls::BaseControl
-  BUTTON_WIDTH  = 27
+  BUTTON_WIDTH  = 20
   BUTTON_HEIGHT = 20
 
   PICKER_BOX_SPACING       = 4
@@ -156,14 +156,14 @@ class UIControls::SEPicker < UIControls::BaseControl
     # Draw button graphic
     # TODO: This could really do with a better design.
     btmp_graphic = %w(
-      . . . . . . . . . . . . . . . . . . . X . . .
-      . . . . . . . X X X . . . . . . . . . X . . .
-      . . . . . . X . . X . . . . . X . . . X X . .
-      . . . . . X . . . X . . . . . X X . . . X . .
-      . . . . X . . . . X . . . . . . X . . . X . .
-      X X X X . . . . . X . . X . . . X . . . X X .
-      X . . X . . . . . X . . X X . . X X . . . X .
-      X . . X . . . . . X . . . X . . . X . . . X .
+      . . . . . . . . . . . . . . . .
+      . . . . . . . . . . . . X . . .
+      . . . . . . X . . . . . . X . .
+      . . . . . X X . . . X . . . X .
+      . . . . X . X . . . . X . . X .
+      X X X X . . X . X . . X . . . X
+      X . . . . . X . . X . . X . . X
+      X . . . . . X . . X . . X . . X
     )
     icon_color = get_color_of(:text)
     btmp_width = BUTTON_WIDTH - 4

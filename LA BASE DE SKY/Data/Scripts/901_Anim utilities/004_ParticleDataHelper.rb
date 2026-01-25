@@ -143,30 +143,29 @@ module AnimationEditor::ParticleDataHelper
   #-----------------------------------------------------------------------------
 
   # Returns an array, whose indexes are keyframes, where the values in the array
-  # are commands. A keyframe's value can be one of these:
-  #   0   - SetXYZ
-  #   [+/- duration, interpolation type] --- MoveXYZ (duration's sign is whether
-  #                                          it makes the value higher or lower)
+  # are commands. A keyframe's value is either nil or an array:
+  #   [+/- duration, interpolation type]
+  # The duration can be 0 (SetXYZ) or non-0 (MoveXYZ). The duration's sign is
+  # whether it makes the value higher or lower.
   def get_particle_property_commands_timeline(particle, property, commands)
     return nil if !commands || commands.empty?
+    ret = []
     if particle[:name] == "SE"
-      ret = []
-      commands.each { |cmd| ret[cmd[0]] = 0 }
+      commands.each { |cmd| ret[cmd[0]] = [0, :none] }
       return ret
     end
     if !GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES.include?(property)
       raise _INTL("No se pudo obtener el valor predeterminado para la propiedad {1}.", property)
     end
-    ret = []
     val = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[property]
     commands.each do |cmd|
       if cmd[1] > 0   # MoveXYZ
         dur = cmd[1]
-        dur *= -1 if cmd[2] < val
+        dur *= -1 if ![:color, :tone].include?(property) && cmd[2] < val
         ret[cmd[0]] = [dur, cmd[3] || :linear]
-        ret[cmd[0] + cmd[1]] = 0
+        ret[cmd[0] + cmd[1]] = [0, :none]
       else   # SetXYZ
-        ret[cmd[0]] = 0
+        ret[cmd[0]] = [0, :none]
       end
       val = cmd[2]   # New actual value
     end
@@ -289,6 +288,108 @@ module AnimationEditor::ParticleDataHelper
       end
     end
     return (particle[property].empty?) ? nil : particle[property]
+  end
+
+  # NOTE: This only allows movement of a command to a frame without a command
+  #       that is between the two commands already surrounding it.
+  def move_command(particle, property, src_frame, dst_frame)
+    return particle[property] if particle[property].nil?
+    # Find the commands that need changing
+    cmd_prior = nil
+    cmd_this_set = nil
+    cmd_this_move = nil
+    particle[property].each do |cmd|
+      cmd_prior = cmd if cmd[1] > 0 && cmd[0] + cmd[1] == src_frame
+      cmd_this_set = cmd if cmd[0] == src_frame && cmd[1] == 0
+      cmd_this_move = cmd if cmd[0] == src_frame && cmd[1] > 0
+    end
+    # Change the commands
+    cmd_prior[1] += dst_frame - src_frame if cmd_prior
+    cmd_this_set[0] = dst_frame if cmd_this_set
+    if cmd_this_move
+      cmd_this_move[0] = dst_frame
+      cmd_this_move[1] += src_frame - dst_frame
+    end
+    # NOTE: No need to sort the commands because they're still in chronological
+    #       order.
+    return particle[property]
+  end
+
+  # NOTE: This doesn't change the commands parameter, but instead returns a copy
+  #       of it with the move applied.
+  def move_command_in_commands_timeline(commands, src_frame, dst_frame)
+    return nil if !commands
+    ret = []
+    cmd_prior_src = nil
+    cmd_next_src = nil
+    cmd_prior_dst = nil
+    cmd_next_dst = nil
+    commands.each_with_index do |cmd, i|
+      next if !cmd
+      ret[i] = cmd.clone
+      next if i == src_frame
+      cmd_prior_src = i if i < src_frame
+      cmd_next_src = i if i > src_frame && cmd_next_src.nil?
+      cmd_prior_dst = i if i < dst_frame
+      cmd_next_dst = i if i > dst_frame && cmd_next_dst.nil?
+    end
+    return ret if src_frame == dst_frame
+    # If command remains between the same two other commands, we want to
+    # preserve both interpolations between them; otherwise, just delete the
+    # command from src_frame and add it at dst_frame
+    # TODO: If dst_frame == cmd_prior_src, should we make the entire region use
+    #       src_frame's interpolation? Currently it uses cmd_prior_src's.
+    if cmd_prior_src == cmd_prior_dst && cmd_next_src == cmd_next_dst
+      # Move command
+      ret[dst_frame] = ret[src_frame]
+      ret[src_frame] = nil
+      # Fix duration of interpolation coming into dst_frame
+      if cmd_prior_src && ret[cmd_prior_src][1] != :none
+        ret[cmd_prior_src][0] = (ret[cmd_prior_src][0] > 0) ? dst_frame - cmd_prior_src : cmd_prior_src - dst_frame
+      end
+      # Fix duration of interpolation coming out of dst_frame
+      if ret[dst_frame][1] != :none
+        ret[dst_frame][0] = (ret[dst_frame][0] > 0) ? cmd_next_src - dst_frame : dst_frame - cmd_next_src
+      end
+    else
+      # Delete src_frame
+      ret[src_frame] = nil
+      # Fix duration of interpolation coming into src_frame
+      if cmd_prior_src && ret[cmd_prior_src][1] != :none
+        if cmd_next_src
+          # TODO: This doesn't figure out whether the value becomes higher or
+          #       lower over its new interpolation, so the line's slope may be
+          #       inaccurate. I don't think it matters.
+          ret[cmd_prior_src][0] = (ret[cmd_prior_src][0] > 0) ? cmd_next_src - cmd_prior_src : cmd_prior_src - cmd_next_src
+        else
+          # No command to interpolate to
+          ret[cmd_prior_src] = [0, :none]
+        end
+      end
+      # Add dst_frame
+      if ret[dst_frame].nil?
+        if cmd_prior_dst.nil? || ret[cmd_prior_dst][1] == :none
+          # dst_frame isn't splitting an interpolation line
+          ret[dst_frame] = [0, :none]
+        else
+          # dst_frame is splitting an interpolation line
+          ret[dst_frame] = [0, ret[cmd_prior_dst][1]]
+          # Fix duration of interpolation coming into dst_frame
+          # TODO: This doesn't figure out whether the value becomes higher or
+          #       lower over its new interpolation, so the line's slope may be
+          #       inaccurate. I don't think it matters.
+          ret[cmd_prior_dst][0] = (ret[cmd_prior_dst][0] > 0) ? dst_frame - cmd_prior_dst : cmd_prior_dst - dst_frame
+          # Fix duration of interpolation coming out of dst_frame
+          if cmd_next_dst
+            # TODO: This doesn't figure out whether the value becomes higher or
+            #       lower over its new interpolation, so the line's slope may be
+            #       inaccurate. I don't think it matters.
+            ret[dst_frame][0] = (ret[cmd_prior_dst][0] > 0) ? cmd_next_dst - dst_frame : dst_frame - cmd_next_dst
+          end
+        end
+      end
+    end
+    return ret
   end
 
   def optimize_all_particles(particles)

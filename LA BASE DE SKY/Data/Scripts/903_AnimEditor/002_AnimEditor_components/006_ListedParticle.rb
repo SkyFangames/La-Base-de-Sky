@@ -167,9 +167,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   def group_name(group)
     return {
-      :position_group       => _INTL("Posición"),
-      :transformation_group => _INTL("Transformación"),
-      :appearance_group     => _INTL("Apariencia")
+      :position_group       => _INTL("Position"),
+      :transformation_group => _INTL("Transformation"),
+      :appearance_group     => _INTL("Appearance")
     }[group] || group.to_s.capitalize
   end
 
@@ -210,10 +210,10 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     return @rows[id][LIST_CONTROL]
   end
 
-  def row_and_keyframe_for_coords(mouse_x, mouse_y, nearest_command = true)
+  def row_and_keyframe_for_coords(mouse_x, mouse_y, nearest_command = true, ignore_duration = false)
     mouse_x += AnimationEditor::Timeline::KEYFRAME_SPACING / 2 if nearest_command
     this_keyframe = (mouse_x - AnimationEditor::Timeline::TIME_BAR_LEFT_BUFFER) / AnimationEditor::Timeline::KEYFRAME_SPACING
-    return nil, nil if this_keyframe < 0 || this_keyframe >= @duration
+    return nil, nil if this_keyframe < 0 || (!ignore_duration && this_keyframe > @duration)
     this_row = nil
     each_row_in_order do |key, row_visible|
       next if !row_visible || !@rows[key] || !@rows[key][LIST_SPRITE]
@@ -301,9 +301,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       cmds.each_with_index do |cmd, i|
         next if !cmd
         @group_commands[group] ||= []
-        @group_commands[group][i] = true
+        @group_commands[group][i] = [0, :none]
         @group_commands[:main] ||= []
-        @group_commands[:main][i] = true
+        @group_commands[:main][i] = [0, :none]
       end
     end
     # Calculate visibilities for every keyframe
@@ -313,7 +313,14 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   end
 
   def commands_for_row(row)
-    return @group_commands[row] || @commands[row]
+    ret = @group_commands[row] || @commands[row]
+    if @command_move_current && row == @command_move_start[0] &&
+       @command_move_current != @command_move_start[1]
+      ret = AnimationEditor::ParticleDataHelper.move_command_in_commands_timeline(
+        ret, @command_move_start[1], @command_move_current
+      )
+    end
+    return ret
   end
 
   #-----------------------------------------------------------------------------
@@ -475,6 +482,40 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   #-----------------------------------------------------------------------------
 
+  # NOTE: If @command_move_current = nil, the command hasn't been moved at all,
+  #       so its command diamond won't look any different. That's why it isn't
+  #       initially set - just clicking on a command without intending to drag
+  #       it elsewhere shouldn't make it look different.
+  def update_command_moving
+    # Command is dropped; record it as moved if it has been moved
+    if Input.release?(Input::MOUSELEFT)
+      if @command_move_current && @command_move_current != @command_move_start[1]
+        @values ||= {}   # [property, start keyframe, end keyframe]
+        @values[:move_command] = [nil, [*@command_move_start, @command_move_current]]
+      end
+      this_row = @command_move_start[0]
+      @command_move_start = nil
+      @command_move_current = nil
+      @command_move_limits = nil
+      draw_timeline_sprite(this_row)   # Refresh row
+      return
+    end
+    # Check for mouse movement
+    mouse_x, mouse_y = @clickable_area.mouse_pos
+    return if !mouse_x || !mouse_y
+    mouse_x += @timeline_ox
+    mouse_y += @timeline_viewport.oy
+    _this_row, this_keyframe = row_and_keyframe_for_coords(mouse_x, mouse_y, true, true)
+    return if !this_keyframe
+    this_keyframe = @command_move_limits[0] if @command_move_limits[0] && this_keyframe < @command_move_limits[0]
+    this_keyframe = @command_move_limits[1] if @command_move_limits[1] && this_keyframe > @command_move_limits[1]
+    if (@command_move_current && this_keyframe != @command_move_current) ||
+       (@command_move_current.nil? && this_keyframe != @command_move_start[1])
+      @command_move_current = this_keyframe
+      draw_timeline_sprite(@command_move_start[0])   # Refresh row
+    end
+  end
+
   def update_interpolation_picker
     close_picker = false
     # Update controls
@@ -521,11 +562,21 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       this_row, this_keyframe = row_and_keyframe_for_coords(mouse_x, mouse_y, true)
       # TODO: Maybe allow dragging commands in group rows/:main?
       if this_row && (row_is_property?(this_row) || (@particle[:name] == "SE"))
-        # TODO: Need to do something special for :main for SE particle.
         cmds = commands_for_row(this_row)
         if cmds && cmds[this_keyframe]
-          # TODO: Start dragging command at this_keyframe. Perhaps set @captured
-          #       to @clickable_area? If so, don't call clear_changed on it.
+          lower_limit = nil
+          upper_limit = nil
+          cmds.each_with_index do |cmd, i|
+            next if !cmd
+            lower_limit = i if i < this_keyframe
+            upper_limit = i if i > this_keyframe && upper_limit.nil?
+          end
+          lower_limit += 1 if lower_limit
+          upper_limit -= 1 if upper_limit
+          if lower_limit.nil? || upper_limit.nil? || lower_limit != upper_limit
+            @command_move_start = [this_row, this_keyframe]
+            @command_move_limits = [lower_limit, upper_limit]
+          end
         end
       end
       @clickable_area.make_not_busy
@@ -556,9 +607,10 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     return if disposed? || !@visible
     @toggling_picker_box = false
     # Update controls
-    # TODO: If @captured is whatever I end up doing for dragging commands,
-    #       update that specially.
-    if @picker_box
+    if @command_move_start
+      update_command_moving
+      return
+    elsif @picker_box
       update_interpolation_picker
       return
     elsif @captured

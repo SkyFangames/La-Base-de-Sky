@@ -284,6 +284,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     cmds = commands_for_row(row)
     return if !cmds || cmds.empty?
     diamond_color = get_color_of(:text)
+    diamond_move_color = get_color_of(:background)
     interp_color = get_color_of(:text)
     keyframe_spacing = AnimationEditor::Timeline::KEYFRAME_SPACING
     first_keyframe = -1
@@ -294,8 +295,11 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       draw_x = TIMELINE_LEFT_SPACING + (i * keyframe_spacing) - @timeline_ox
       # Draw command diamonds
       sprite.bitmap.fill_diamond(draw_x, ROW_HEIGHT / 2, DIAMOND_SIZE, diamond_color)
+      if @command_move_current && row == @command_move_start[0] && i == @command_move_current
+        sprite.bitmap.fill_diamond(draw_x, ROW_HEIGHT / 2, DIAMOND_SIZE - 1, diamond_move_color)
+      end
       # Draw interpolation lines between command diamonds
-      if cmds[i].is_a?(Array)   # [duration, interp_type]
+      if cmds[i][0] != 0 && cmds[i][1] != :none   # [duration, interp_type]
         sprite.bitmap.draw_interpolation_line(
           draw_x + DIAMOND_SIZE + 2,
           INTERP_LINE_Y,
