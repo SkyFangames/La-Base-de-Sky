@@ -24,6 +24,9 @@ def pbListScreen(title, lister)
   selectedmap = -1
   commands = lister.commands
   selindex = lister.startIndex
+
+  full_original_list = lister.commands.clone
+
   if commands.length == 0
     value = lister.value(-1)
     lister.dispose
@@ -34,21 +37,7 @@ def pbListScreen(title, lister)
   end
   list.commands = commands
   list.index    = selindex
-  loop do
-    Graphics.update
-    Input.update
-    list.update
-    if list.index != selectedmap
-      lister.refresh(list.index)
-      selectedmap = list.index
-    end
-    if Input.trigger?(Input::BACK)
-      selectedmap = -1
-      break
-    elsif Input.trigger?(Input::USE)
-      break
-    end
-  end
+  list_screen_handle_input(list, lister, selectedmap, full_original_list)
   value = lister.value(selectedmap)
   lister.dispose
   title.dispose
@@ -56,6 +45,38 @@ def pbListScreen(title, lister)
   viewport.dispose
   Input.update
   return value
+end
+
+def list_screen_handle_input(list, lister, selectedmap, full_original_list, block=false)
+  loop do
+    Graphics.update
+    Input.update
+    list.update
+    lister.update if defined?(lister.update)
+    if list.index != selectedmap
+      lister.refresh(list.index)
+      selectedmap = list.index
+    end
+    if Input.trigger?(Input::BACK)
+      selectedmap = -1
+      break
+    elsif Input.trigger?(Input::ACTION) && block
+      yield(Input::ACTION, lister.value(selectedmap))
+      list.commands = lister.commands
+      list.index = list.commands.length if list.index == list.commands.length
+      lister.refresh(list.index)
+    elsif Input.trigger?(Input::USE)
+      if block
+        yield(Input::USE, lister.value(selectedmap))
+        list.commands = lister.commands
+        list.index = list.commands.length if list.index == list.commands.length
+        lister.refresh(list.index)
+      else
+        break
+      end
+    end
+    list_screen_handle_input_enhancements(list, lister, selectedmap, full_original_list, block)
+  end
 end
 
 def pbListScreenBlock(title, lister)
@@ -72,6 +93,9 @@ def pbListScreenBlock(title, lister)
   selectedmap = -1
   commands = lister.commands
   selindex = lister.startIndex
+
+  full_original_list = lister.commands.clone
+
   if commands.length == 0
     value = lister.value(-1)
     lister.dispose
@@ -82,28 +106,7 @@ def pbListScreenBlock(title, lister)
   end
   list.commands = commands
   list.index = selindex
-  loop do
-    Graphics.update
-    Input.update
-    list.update
-    if list.index != selectedmap
-      lister.refresh(list.index)
-      selectedmap = list.index
-    end
-    if Input.trigger?(Input::ACTION)
-      yield(Input::ACTION, lister.value(selectedmap))
-      list.commands = lister.commands
-      list.index = list.commands.length if list.index == list.commands.length
-      lister.refresh(list.index)
-    elsif Input.trigger?(Input::BACK)
-      break
-    elsif Input.trigger?(Input::USE)
-      yield(Input::USE, lister.value(selectedmap))
-      list.commands = lister.commands
-      list.index = list.commands.length if list.index == list.commands.length
-      lister.refresh(list.index)
-    end
-  end
+  list_screen_handle_input(list, lister, selectedmap, full_original_list, true)
   lister.dispose
   title.dispose
   list.dispose

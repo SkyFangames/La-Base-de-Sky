@@ -82,282 +82,39 @@ end
 #-------------------------------------------------------------------------------
 # 2. pbChooseList
 #-------------------------------------------------------------------------------
-def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1)
-    cmdwin = pbListWindow([])
-    itemID = default
-    itemIndex = 0
-    sortMode = (sortType >= 0) ? sortType : 0
-    sorting = true
-    
-    full_list_original = commands.clone
-    current_search_term = nil
 
-    loop do
-      if sorting
-        temp_commands = full_list_original.clone
-        
-        if current_search_term
-          # Filtramos en una variable temporal
-          filtered = full_list_original.select do |cmd|
-            pbSmartMatch?(cmd[1], current_search_term)
-          end
+def commands_sortable_handle_input_enhancements(cmdwindow, commands, cmdIfCancel, sortable, command)
+  if Input.triggerex?(:F)
+    searchTerm = pbOpenGenericListSearch
+    if searchTerm
+      command = [2, searchTerm]
+    end
+  end
+end
+
+#-------------------------------------------------------------------------------
+# 3. pbListScreen Searcher
+#-------------------------------------------------------------------------------
+def list_screen_handle_input_enhancements(list, lister, selectedmap, full_original_list, block=false)
+  if Input.triggerex?(:F)
+    searchTerm = pbOpenGenericListSearch
+    if searchTerm
+      # Lista Maestra   
+      newSearch = full_original_list.select do |cmd|
+        pbSmartMatch?(cmd.to_s, searchTerm)
+      end
           
-          if filtered.empty?
-            pbMessage(_INTL("No se han encontrado resultados para '{1}'.", current_search_term))
-            current_search_term = nil
-            temp_commands = full_list_original.clone # Volvemos a mostrar todo
-          else
-            temp_commands = filtered
-          end
-        end
-        
-        commands = temp_commands
-
-        # Ordenamiento
-        case sortMode
-        when 0 then commands.sort! { |a, b| a[0] <=> b[0] }
-        when 1 then commands.sort! { |a, b| a[1] <=> b[1] }
-        end
-
-        # Posición
-        if itemID.is_a?(Symbol)
-          commands.each_with_index { |command, i| itemIndex = i if command[2] == itemID }
-        elsif itemID && itemID > 0
-          commands.each_with_index { |command, i| itemIndex = i if command[0] == itemID }
-        end
-        
-        itemIndex = 0 if itemIndex >= commands.length
-
-        # Generar
-        realcommands = []
-        commands.each do |command|
-          if sortType <= 0
-            realcommands.push(sprintf("%03d: %s", command[0], command[1]))
-          else
-            realcommands.push(command[1])
-          end
-        end
-        sorting = false
-      end
-
-      cmd = pbCommandsSortable(cmdwin, realcommands, -1, itemIndex, (sortType < 0))
-      
-      case cmd[0]
-      when 0
-        if cmd[1] < 0
-          itemID = cancelValue
-        else
-          itemID = (commands[cmd[1]][2] || commands[cmd[1]][0])
-        end
-        break
-      when 1
-        if commands.length > 0
-            itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
-        end
-        sortMode = (sortMode + 1) % 2
-        sorting = true
-      when 2
-        current_search_term = cmd[1]
-        sorting = true
-        itemIndex = 0
+      unless newSearch.empty?
+        lister.commands_override = newSearch
+        list.commands = lister.commands
+        list.index = 0
+        lister.refresh(0)
+        selectedmap = -1
+      else
+        pbMessage(_INTL("No hay resultados."))
       end
     end
-    cmdwin.dispose
-    return itemID
-end
-  
-def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sortable = false)
-    cmdwindow.commands = commands
-    cmdwindow.index    = defaultindex if defaultindex >= 0
-    cmdwindow.index    = 0 if cmdwindow.index >= commands.length 
-    
-    cmdwindow.x        = 0
-    cmdwindow.y        = 0
-    cmdwindow.width    = Graphics.width / 2 if cmdwindow.width < Graphics.width / 2
-    cmdwindow.height   = Graphics.height
-    cmdwindow.z        = 99999
-    cmdwindow.active   = true
-    command = 0
-    
-    loop do
-      Graphics.update
-      Input.update
-      cmdwindow.update
-      
-      if Input.trigger?(Input::ACTION) && sortable
-        command = [1, cmdwindow.index]
-        break
-      elsif Input.trigger?(Input::BACK)
-        command = [0, (cmdIfCancel > 0) ? cmdIfCancel - 1 : cmdIfCancel]
-        break
-      elsif Input.triggerex?(:F)
-          searchTerm = pbOpenGenericListSearch
-          if searchTerm
-            command = [2, searchTerm]
-            break
-          end
-      elsif Input.trigger?(Input::USE)
-        command = [0, cmdwindow.index]
-        break
-      end
-    end
-    ret = command
-    cmdwindow.active = false
-    return ret
-end
-
-#-------------------------------------------------------------------------------
-# 3. pbListScreen
-#-------------------------------------------------------------------------------
-def pbListScreen(title, lister)
-  viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
-  list = pbListWindow([])
-  list.viewport = viewport
-  list.z        = 2
-  title = Window_UnformattedTextPokemon.newWithSize(
-    title, Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
-  )
-  title.z = 2
-  lister.setViewport(viewport)
-  selectedmap = -1
-  
-  full_original_list = lister.commands.clone
-  
-  commands = lister.commands
-  selindex = lister.startIndex
-  if commands.length == 0
-    value = lister.value(-1)
-    lister.dispose
-    title.dispose
-    list.dispose
-    viewport.dispose
-    return value
   end
-  list.commands = commands
-  list.index    = selindex
-  
-  loop do
-    Graphics.update
-    Input.update
-    list.update
-    if list.index != selectedmap
-      lister.refresh(list.index)
-      selectedmap = list.index
-    end
-    
-    if Input.trigger?(Input::BACK)
-      selectedmap = -1
-      break
-    elsif Input.triggerex?(:F)
-        searchTerm = pbOpenGenericListSearch
-        if searchTerm
-            newSearch = full_original_list.select do |cmd|
-                pbSmartMatch?(cmd.to_s, searchTerm)
-            end
-            
-            if newSearch.length > 0
-                lister.commands_override = newSearch
-                list.commands = lister.commands
-                list.index = 0
-                lister.refresh(0)
-                selectedmap = -1
-            else
-                pbMessage(_INTL("No se han encontrado resultados."))
-            end
-        end
-    elsif Input.trigger?(Input::USE)
-      break
-    end
-  end
-  
-  value = lister.value(selectedmap)
-  lister.dispose
-  title.dispose
-  list.dispose
-  viewport.dispose
-  Input.update
-  return value
-end
-
-#-------------------------------------------------------------------------------
-# 4. pbListScreenBlock
-#-------------------------------------------------------------------------------
-def pbListScreenBlock(title, lister)
-  viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-  viewport.z = 99999
-  list = pbListWindow([], Graphics.width / 2)
-  list.viewport = viewport
-  list.z        = 2
-  title = Window_UnformattedTextPokemon.newWithSize(
-    title, Graphics.width / 2, 0, Graphics.width / 2, 64, viewport
-  )
-  title.z = 2
-  lister.setViewport(viewport)
-  selectedmap = -1
-  
-  # Lista Maestra
-  full_original_list = lister.commands.clone
-  
-  commands = lister.commands
-  selindex = lister.startIndex
-  if commands.length == 0
-    value = lister.value(-1)
-    lister.dispose
-    title.dispose
-    list.dispose
-    viewport.dispose
-    return value
-  end
-  list.commands = commands
-  list.index = selindex
-  
-  loop do
-    Graphics.update
-    Input.update
-    list.update
-    if list.index != selectedmap
-      lister.refresh(list.index)
-      selectedmap = list.index
-    end
-    
-    if Input.trigger?(Input::ACTION)
-      yield(Input::ACTION, lister.value(selectedmap))
-      list.commands = lister.commands
-      list.index = list.commands.length if list.index == list.commands.length
-      lister.refresh(list.index)
-    elsif Input.trigger?(Input::BACK)
-      break
-    elsif Input.triggerex?(:F) # BÚSQUEDA AÑADIDA AQUÍ
-        searchTerm = pbOpenGenericListSearch
-        if searchTerm
-            clean_term = pbRemoveAccents(searchTerm).downcase
-            newSearch = full_original_list.select do |cmd|
-                pbSmartMatch?(cmd.to_s, searchTerm)
-            end
-            
-            if newSearch.length > 0
-                lister.commands_override = newSearch
-                list.commands = lister.commands
-                list.index = 0
-                lister.refresh(0)
-                selectedmap = -1
-            else
-                pbMessage(_INTL("No hay resultados."))
-            end
-        end
-    elsif Input.trigger?(Input::USE)
-      yield(Input::USE, lister.value(selectedmap))
-      list.commands = lister.commands
-      list.index = list.commands.length if list.index == list.commands.length
-      lister.refresh(list.index)
-    end
-  end
-  lister.dispose
-  title.dispose
-  list.dispose
-  viewport.dispose
-  Input.update
 end
 
 #-------------------------------------------------------------------------------
@@ -383,8 +140,8 @@ TARGET_LISTERS.each do |klass_name|
   
   klass.class_eval do
     def commands_override=(value)
-        @commands_override = value
-        @needs_id_refresh = true
+      @commands_override = value
+      @needs_id_refresh = true
     end
 
     # Alias del método original
@@ -393,44 +150,44 @@ TARGET_LISTERS.each do |klass_name|
     end
 
     def commands
-        if @commands_override
-            if @needs_id_refresh
-                new_ids = []
-                new_maps = []
+      if @commands_override
+        if @needs_id_refresh
+          new_ids = []
+          new_maps = []
 
-                # Obtenemos la lista completa original
-                original_cmds = commands_original_for_search
-                original_offset = (defined?(@addGlobalOffset)) ? @addGlobalOffset : 0
-                
-                # Reconstruimos los IDs basándonos en el índice original
-                @commands_override.each do |cmd| 
-                  original_index = original_cmds.index(cmd)
-                  if original_index
-                    if defined?(@ids) && @ids
-                        new_ids.push(@ids[original_index]) 
-                    end
-                  if defined?(@maps) && @maps
-                      # Calculamos el índice real en el array @maps original
-                      map_real_index = original_index - original_offset
-                      if map_real_index >= 0 && map_real_index < @maps.length
-                        new_maps.push(@maps[map_real_index])
-                      end
-                    end
-                  end
+          # Obtenemos la lista completa original
+          original_cmds = commands_original_for_search
+          original_offset = (defined?(@addGlobalOffset)) ? @addGlobalOffset : 0
+          
+          # Reconstruimos los IDs basándonos en el índice original
+          @commands_override.each do |cmd| 
+            original_index = original_cmds.index(cmd)
+            if original_index
+              if defined?(@ids) && @ids
+                  new_ids.push(@ids[original_index]) 
+              end
+            if defined?(@maps) && @maps
+                # Calculamos el índice real en el array @maps original
+                map_real_index = original_index - original_offset
+                if map_real_index >= 0 && map_real_index < @maps.length
+                  new_maps.push(@maps[map_real_index])
                 end
-                
-                if defined?(@ids) && @ids
-                    @ids = new_ids
-                end
-                if defined?(@maps) && @maps
-                  @maps = new_maps
-                  @addGlobalOffset = 0 if defined?(@addGlobalOffset)
-                end
-                @needs_id_refresh = false
+              end
             end
-            return @commands_override 
+          end
+            
+          if defined?(@ids) && @ids
+              @ids = new_ids
+          end
+          if defined?(@maps) && @maps
+            @maps = new_maps
+            @addGlobalOffset = 0 if defined?(@addGlobalOffset)
+          end
+          @needs_id_refresh = false
         end
-        return commands_original_for_search
+        return @commands_override 
+      end
+      return commands_original_for_search
     end
   end
 end
