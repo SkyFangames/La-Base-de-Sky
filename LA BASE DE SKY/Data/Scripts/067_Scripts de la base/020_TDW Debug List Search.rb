@@ -80,14 +80,14 @@ def pbOpenGenericListSearch
 end
 
 #-------------------------------------------------------------------------------
-# 2. pbChooseList
+# 2. pbChooseList command enhancements
 #-------------------------------------------------------------------------------
-
-def commands_sortable_handle_input_enhancements(cmdwindow, commands, cmdIfCancel, sortable, command)
+def commands_sortable_handle_input_enhancements(command, cmdwindow, cmdIfCancel, sortable)
   if Input.triggerex?(:F)
     searchTerm = pbOpenGenericListSearch
     if searchTerm
       command = [2, searchTerm]
+      return command
     end
   end
 end

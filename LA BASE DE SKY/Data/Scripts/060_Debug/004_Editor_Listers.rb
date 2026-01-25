@@ -47,7 +47,7 @@ def pbListScreen(title, lister)
   return value
 end
 
-def list_screen_handle_input(list, lister, selectedmap, full_original_list, block=false)
+def list_screen_handle_input(list, lister, selectedmap, full_original_list, screen_block = false, &block)
   loop do
     Graphics.update
     Input.update
@@ -58,15 +58,15 @@ def list_screen_handle_input(list, lister, selectedmap, full_original_list, bloc
       selectedmap = list.index
     end
     if Input.trigger?(Input::BACK)
-      selectedmap = -1
+      selectedmap = -1 if !screen_block
       break
-    elsif Input.trigger?(Input::ACTION) && block
+    elsif Input.trigger?(Input::ACTION) && screen_block
       yield(Input::ACTION, lister.value(selectedmap))
       list.commands = lister.commands
       list.index = list.commands.length if list.index == list.commands.length
       lister.refresh(list.index)
     elsif Input.trigger?(Input::USE)
-      if block
+      if screen_block
         yield(Input::USE, lister.value(selectedmap))
         list.commands = lister.commands
         list.index = list.commands.length if list.index == list.commands.length
@@ -75,11 +75,11 @@ def list_screen_handle_input(list, lister, selectedmap, full_original_list, bloc
         break
       end
     end
-    list_screen_handle_input_enhancements(list, lister, selectedmap, full_original_list, block)
+    list_screen_handle_input_enhancements(list, lister, selectedmap, full_original_list, screen_block, &block)
   end
 end
 
-def pbListScreenBlock(title, lister)
+def pbListScreenBlock(title, lister, &block)
   viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
   viewport.z = 99999
   list = pbListWindow([], Graphics.width / 2)
@@ -106,7 +106,7 @@ def pbListScreenBlock(title, lister)
   end
   list.commands = commands
   list.index = selindex
-  list_screen_handle_input(list, lister, selectedmap, full_original_list, true)
+  list_screen_handle_input(list, lister, selectedmap, full_original_list, true, &block)
   lister.dispose
   title.dispose
   list.dispose

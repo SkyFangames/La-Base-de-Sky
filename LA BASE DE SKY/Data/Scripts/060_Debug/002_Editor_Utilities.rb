@@ -392,13 +392,21 @@ def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1)
       end
       sorting = false
     end
+
     cmd = pbCommandsSortable(cmdwin, realcommands, -1, itemIndex, (sortType < 0))
+    
     case cmd[0]
-    when 0   # Chose an option or cancelled
-      itemID = (cmd[1] < 0) ? cancelValue : (commands[cmd[1]][2] || commands[cmd[1]][0])
+    when 0
+      if cmd[1] < 0
+        itemID = cancelValue
+      else
+        itemID = (commands[cmd[1]][2] || commands[cmd[1]][0])
+      end
       break
-    when 1   # Toggle sorting
-      itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
+    when 1
+      if commands.length > 0
+          itemID = commands[cmd[1]][2] || commands[cmd[1]][0]
+      end
       sortMode = (sortMode + 1) % 2
       sorting = true
     when 2
@@ -411,11 +419,13 @@ def pbChooseList(commands, default = 0, cancelValue = -1, sortType = 1)
   return itemID
 end
 
-def commands_sortable_handle_input(cmdwindow, commands, cmdIfCancel, sortable)
+def commands_sortable_handle_input(cmdwindow, cmdIfCancel, sortable)
+  command = 0
   loop do
     Graphics.update
     Input.update
     cmdwindow.update
+    
     if Input.trigger?(Input::ACTION) && sortable
       command = [1, cmdwindow.index]
       break
@@ -426,25 +436,28 @@ def commands_sortable_handle_input(cmdwindow, commands, cmdIfCancel, sortable)
       command = [0, cmdwindow.index]
       break
     end
-    commands_sortable_handle_input_enhancements(cmdwindow, commands, cmdIfCancel, sortable, command)
+    command_aux = commands_sortable_handle_input_enhancements(command, cmdwindow, cmdIfCancel, sortable)
+    if command_aux
+      command = command_aux
+      break
+    end
   end
   return command
 end
-
-
+  
 def pbCommandsSortable(cmdwindow, commands, cmdIfCancel, defaultindex = -1, sortable = false)
   cmdwindow.commands = commands
   cmdwindow.index    = defaultindex if defaultindex >= 0
+  cmdwindow.index    = 0 if cmdwindow.index >= commands.length 
+  
   cmdwindow.x        = 0
   cmdwindow.y        = 0
   cmdwindow.width    = Graphics.width / 2 if cmdwindow.width < Graphics.width / 2
   cmdwindow.height   = Graphics.height
   cmdwindow.z        = 99999
   cmdwindow.active   = true
-  command = 0
-
+  command = commands_sortable_handle_input(cmdwindow, cmdIfCancel, sortable)
   ret = command
   cmdwindow.active = false
   return ret
 end
-
