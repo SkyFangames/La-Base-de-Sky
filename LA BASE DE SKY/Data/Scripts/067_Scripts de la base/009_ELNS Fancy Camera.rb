@@ -197,10 +197,25 @@ class Game_Player < Game_Character
   # Center player on-screen
   alias old_update_screen_position update_screen_position
 
+  def center(x, y)
+    pbCameraReset if $game_temp.camera_pos
+    self.map.display_x = (x * Game_Map::REAL_RES_X) - SCREEN_CENTER_X
+    self.map.display_y = (y * Game_Map::REAL_RES_Y) - SCREEN_CENTER_Y
+    @camera_snap_cooldown = 10
+  end 
+
   def update_screen_position(_last_real_x, _last_real_y)
     # Si el mapa está haciendo scroll estándar, abortamos.
     return if self.map.scrolling?
-    target = [@real_x - SCREEN_CENTER_X, @real_y - SCREEN_CENTER_Y]
+    target = [@real_x - SCREEN_CENTER_X, @real_y - SCREEN_CENTER_Y]    
+    @camera_snap_cooldown = 0 if !@camera_snap_cooldown
+    if @camera_snap_cooldown > 0
+      @camera_snap_cooldown -= 1
+      self.map.display_x = target[0]
+      self.map.display_y = target[1]
+      return
+    end
+    
     is_controlled = false
 
     # Comprobamos overrides
@@ -319,12 +334,6 @@ class Game_Player < Game_Character
     super
     center(x, y) if center
     make_encounter_count
-  end
-
-  def center(x, y)
-    pbCameraReset if $game_temp.camera_pos
-    self.map.display_x = (x * Game_Map::REAL_RES_X) - SCREEN_CENTER_X
-    self.map.display_y = (y * Game_Map::REAL_RES_Y) - SCREEN_CENTER_Y
   end
 end
 
