@@ -129,6 +129,10 @@ class Game_Event < Game_Character
         filename = $1.strip
         @character_name = "Followers/#{filename}"
         @cry_species = filename
+
+          #---- DOPPELGANGER ---
+      elsif cmd_text.match(/^doppelganger/i)
+        @character_name = $game_player.character_name
       end
     end
   end
