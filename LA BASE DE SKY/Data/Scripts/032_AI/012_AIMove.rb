@@ -405,6 +405,11 @@ class Battle::AI::AIMove
         end
       when :ShadowSky
         multipliers[:final_damage_multiplier] *= 1.5 if calc_type == :SHADOW
+      when :Hail
+        if Settings::HAIL_WEATHER_TYPE > 0 && target.pbHasType?(:ICE) &&
+            (physicalMove?(calc_type) || function_code == "UseTargetDefenseInsteadOfTargetSpDef")
+          multipliers[:defense_multiplier] *= 1.5
+        end
       end
     end
     # Aurora Veil, Reflect, Light Screen

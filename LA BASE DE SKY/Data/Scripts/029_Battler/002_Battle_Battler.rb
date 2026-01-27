@@ -708,6 +708,7 @@ class Battle::Battler
   end
 
   def takesHailDamage?
+    return false if Settings::HAIL_WEATHER_TYPE == 1
     return false if !takesIndirectDamage?
     return false if pbHasType?(:ICE)
     return false if inTwoTurnAttack?("TwoTurnAttackInvulnerableUnderground",
