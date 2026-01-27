@@ -494,8 +494,8 @@ class Battle::Move
       end
     when :ShadowSky
       multipliers[:final_damage_multiplier] *= 1.5 if type == :SHADOW
-    when :Hail
-      if Settings::HAIL_WEATHER_TYPE > 0 && target.pbHasType?(:ICE) && 
+    when :Snowstorm
+      if target.pbHasType?(:ICE) && 
          (physicalMove? || @function_code == "UseTargetDefenseInsteadOfTargetSpDef")
         multipliers[:defense_multiplier] *= 1.5
       end
@@ -561,7 +561,7 @@ class Battle::Move
     end
     ret = 100 if $DEBUG && Input.press?(Input::CTRL)
     return ret if [0, 100].include?(ret)
-    if @battle.pbWeather == :Hail &&
+    if [:Hail, :Snowstorm].include?(@battle.pbWeather) &&
        (@function_code.include?("FrostbiteTarget") ||
        (Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE && @function_code.include?("FreezeTarget")))
       ret *= 2

@@ -214,7 +214,8 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
 
   def pbMoveFailed?(user, targets)
     if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
-      if !@battle.pbCanStartWeather?(:Hail)
+      weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm 
+      if !@battle.pbCanStartWeather?(weather)
         @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
         return true
       end
@@ -223,7 +224,8 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    @battle.pbStartWeather(user, :Hail, true, false)
+    weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm 
+    @battle.pbStartWeather(user, weather, true, false)
   end
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)

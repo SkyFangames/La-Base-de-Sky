@@ -3496,7 +3496,8 @@ Battle::AbilityEffects::OnSwitchIn.add(:SLOWSTART,
 
 Battle::AbilityEffects::OnSwitchIn.add(:SNOWWARNING,
   proc { |ability, battler, battle, switch_in|
-    battle.pbStartWeatherAbility(:Hail, battler)
+    weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm
+    battle.pbStartWeatherAbility(weather, battler)
   }
 )
 

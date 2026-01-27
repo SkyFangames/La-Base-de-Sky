@@ -831,7 +831,8 @@ class Battle
       when :Sun         then pbDisplay(_INTL("¡El sol pega fuerte!"))
       when :Rain        then pbDisplay(_INTL("¡Ha empezado a llover!"))
       when :Sandstorm   then pbDisplay(_INTL("¡Se ha desatado una tormenta de arena!"))
-      when :Hail        then pbDisplay(_INTL("¡Ha empezado a nevar!"))
+      when :Hail        then pbDisplay(_INTL("¡Ha empezado a granizar!"))
+      when :Snowstorm   then pbDisplay(_INTL("¡Ha empezado a nevar!"))
       when :HarshSun    then pbDisplay(_INTL("¡El sol que hace ahora es realmente abrasador!"))
       when :HeavyRain   then pbDisplay(_INTL("¡Ha empezado a diluviar!"))
       when :StrongWinds then pbDisplay(_INTL("¡Las misteriosas turbulencias protegen a los Pokémon de tipo Volador!"))
@@ -851,16 +852,18 @@ class Battle
     old_weather = @field.weather
     case @field.weather
     when :Sun, :HarshSun    then pbDisplay(_INTL("¡El sol vuelve a brillar como siempre!"))
-    when :Rain, :HeavyRain   then pbDisplay(_INTL("¡Ha dejado de llover!"))
-    when :Sandstorm   then pbDisplay(_INTL("La tormenta de arena ha amainado."))
-    when :Hail
-        case Settings::HAIL_WEATHER_TYPE
-        when 0 then pbDisplay(_INTL("Ha dejado de granizar."))
-        when 1 then pbDisplay(_INTL("Ha dejado de nevar."))
-        when 2 then pbDisplay(_INTL("Ha dejado de granizar."))
-        end
-    when :StrongWinds then pbDisplay(_INTL("¡Las misteriosas turbulencias han amainado!"))
-    when :ShadowSky   then pbDisplay(_INTL("El cielo sombrío se desvaneció."))
+    when :Rain, :HeavyRain  then pbDisplay(_INTL("¡Ha dejado de llover!"))
+    when :Sandstorm         then pbDisplay(_INTL("La tormenta de arena ha amainado."))
+    when :Hail              then pbDisplay(_INTL("¡Ha dejado de granizar!"))
+    when :Snowstorm         then pbDisplay(_INTL("¡Ha dejado de nevar!"))
+    # when :Hail
+    #     case Settings::HAIL_WEATHER_TYPE
+    #     when 0 then pbDisplay(_INTL("Ha dejado de granizar."))
+    #     when 1 then pbDisplay(_INTL("Ha dejado de nevar."))
+    #     when 2 then pbDisplay(_INTL("Ha dejado de granizar."))
+        # end
+    when :StrongWinds       then pbDisplay(_INTL("¡Las misteriosas turbulencias han amainado!"))
+    when :ShadowSky         then pbDisplay(_INTL("El cielo sombrío se desvaneció."))
     end
     @field.weather = :None
     # Check for form changes/abilities/items caused by the weather changing

@@ -52,14 +52,14 @@ GameData::BattleWeather.register({
 
 GameData::BattleWeather.register({
   :id        => :Hail,
-  :name      => _INTL("Nevada"),
+  :name      => _INTL("Granizo"),
   :animation => "Hail"
 })
 
 GameData::BattleWeather.register({
   :id        => :Snowstorm,
   :name      => _INTL("Nevada"),
-  :animation => "Snowstorm"
+  :animation => "Snow"
 })
 
 GameData::BattleWeather.register({

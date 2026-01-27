@@ -232,7 +232,8 @@ module BattleCreationHelperMethods
       when :Rain, :Storm
         battle.defaultWeather = :Rain
       when :Hail
-        battle.defaultWeather = :Hail
+        weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm
+        battle.defaultWeather = weather
       when :Sandstorm
         battle.defaultWeather = :Sandstorm
       when :Sun
