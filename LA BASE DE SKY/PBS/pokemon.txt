@@ -25960,7 +25960,7 @@ Color = Blue
 Shape = BipedalTail
 Habitat = Rare
 Category = Paradoja
-Pokedex = Ondulagua guarda cierto parecido con uno de los bocetos que realizó la brigada de exploración del Área Cero en el Libro Escarlata. Se caracteriza por los singulares cuernos que tiene en la frente. Además, soporta el peso de su cuerpo con sus patas traseras, por lo que anda en postura bípeda.
+Pokedex = Una criatura violenta rodeada de misterio, cuyo nombre se inspira en cierto monstruo acuático mencionado en un viejo diario de exploración.
 Generation = 9
 Flags = Paradox
 #-------------------------------
@@ -25985,7 +25985,7 @@ Color = Green
 Shape = Quadruped
 Habitat = Rare
 Category = Paradoja
-Pokedex = Ferroverdor guarda cierto parecido con uno de los bocetos que realizó la brigada de exploración del Área Cero en el Libro Púrpura. Su cuerpo es liso, reluciente y de textura metálica. Cuenta con unos puntos brillantes en la frente y el cuello que a veces se transforman en espadas largas.
+Pokedex = Unos pocos testimonios afirman haberlo visto cortar en tiras árboles y rocas de gran tamaño mediante sus espadas luminosas.
 Generation = 9
 Flags = Paradox
 #-------------------------------
