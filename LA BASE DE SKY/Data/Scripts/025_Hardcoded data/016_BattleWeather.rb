@@ -57,6 +57,12 @@ GameData::BattleWeather.register({
 })
 
 GameData::BattleWeather.register({
+  :id        => :Snowstorm,
+  :name      => _INTL("Nevada"),
+  :animation => "Snowstorm"
+})
+
+GameData::BattleWeather.register({
   :id        => :HarshSun,
   :name      => _INTL("Sol abrasador"),
   :animation => "HarshSun"
