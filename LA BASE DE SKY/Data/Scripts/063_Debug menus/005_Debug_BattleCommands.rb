@@ -249,7 +249,7 @@ MenuHandlers.add(:battle_debug_menu, :weather, {
     cmd = 0
     loop do
       weather_data = GameData::BattleWeather.try_get(battle.field.weather)
-      msg = _INTL("Clima actual: {1}", weather_data.name || _INTL("Desconocido"))
+      msg = _INTL("Clima actual: {1}", weather_data&.name || _INTL("Desconocido"))
       if weather_data.id != :None
         if battle.field.weatherDuration > 0
           msg += "\n"
