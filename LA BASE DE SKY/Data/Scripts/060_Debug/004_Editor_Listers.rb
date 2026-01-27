@@ -37,7 +37,7 @@ def pbListScreen(title, lister)
   end
   list.commands = commands
   list.index    = selindex
-  list_screen_handle_input(list, lister, selectedmap, full_original_list)
+  selectedmap = list_screen_handle_input(list, lister, selectedmap, full_original_list)
   value = lister.value(selectedmap)
   lister.dispose
   title.dispose
@@ -48,6 +48,7 @@ def pbListScreen(title, lister)
 end
 
 def list_screen_handle_input(list, lister, selectedmap, full_original_list, screen_block = false, &block)
+  breaked = false
   loop do
     Graphics.update
     Input.update
@@ -59,6 +60,7 @@ def list_screen_handle_input(list, lister, selectedmap, full_original_list, scre
     end
     if Input.trigger?(Input::BACK)
       selectedmap = -1 if !screen_block
+      breaked = true
       break
     elsif Input.trigger?(Input::ACTION) && screen_block
       yield(Input::ACTION, lister.value(selectedmap))
@@ -72,11 +74,13 @@ def list_screen_handle_input(list, lister, selectedmap, full_original_list, scre
         list.index = list.commands.length if list.index == list.commands.length
         lister.refresh(list.index)
       else
+        breaked = true
         break
       end
     end
     list_screen_handle_input_enhancements(list, lister, selectedmap, full_original_list, screen_block, &block)
   end
+  return selectedmap if breaked
 end
 
 def pbListScreenBlock(title, lister, &block)
