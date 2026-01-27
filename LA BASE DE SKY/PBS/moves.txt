@@ -9109,7 +9109,7 @@ Category = Status
 Accuracy = 0
 TotalPP = 10
 Target = BothSides
-FunctionCode = StartHailWeatherSwitchOutUser
+FunctionCode = StartSnowstormWeatherSwitchOutUser
 Flags = CannotMetronome
 Description = Cuenta un chiste con una acogida tan fría que hace que nieve, y se cambia por un Pokémon del equipo. 
 #-------------------------------

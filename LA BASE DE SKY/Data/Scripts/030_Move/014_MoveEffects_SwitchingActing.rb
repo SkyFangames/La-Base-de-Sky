@@ -209,13 +209,13 @@ end
 #===============================================================================
 class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   def pbDisplayChargeMessage(user)
-    @battle.pbDisplay(_INTL("{1} is preparing to tell a chillingly bad joke!", user.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} se está preparando para contar un chiste escalofriantemente malo!", user.pbThis))
   end
 
   def pbMoveFailed?(user, targets)
     if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
-      if !@battle.pbCanStartWeather?(:Snowstorm)
-        @battle.pbDisplay(_INTL("But it failed!"))
+      if !@battle.pbCanStartWeather?(:Hail)
+        @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
         return true
       end
     end
@@ -223,7 +223,7 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    @battle.pbStartWeather(user, :Snowstorm, true, false)
+    @battle.pbStartWeather(user, :Hail, true, false)
   end
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
