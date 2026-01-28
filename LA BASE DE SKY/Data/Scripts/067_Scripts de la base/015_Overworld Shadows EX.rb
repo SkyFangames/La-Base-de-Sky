@@ -280,12 +280,18 @@ class Sprite_OWShadow
       @shadow_data_up   = generate_shadow_data(3) # Row 3: Up
     end
     return unless @shadow_data_down # Wait until generation is successful
-    ground_y = (@event.real_y - $game_map.display_y + 3) / 4 + 32
-    jump_offset = 0
+
+    is_floating = @event.respond_to?(:is_floating) && @event.is_floating
+    float_offset = (is_floating && @event.respond_to?(:float_offset)) ? @event.float_offset : 0
     if @event.jumping?
+      ground_y = (@event.real_y - $game_map.display_y + 3) / 4 + 32
       jump_offset = (ground_y - @rsprite.y).abs
+    elsif is_floating
+      ground_y = @rsprite.y + float_offset
+      jump_offset = 0
     else
       ground_y = @rsprite.y
+      jump_offset = 0
     end
     if @event.direction == 8 || @event.direction == 6
       current_data = @shadow_data_up
@@ -293,21 +299,29 @@ class Sprite_OWShadow
       current_data = @shadow_data_down
     end
     current_data = @shadow_data_down if current_data.nil?
+
+    s_off_x = (@event.respond_to?(:shadow_offset_x) ? @event.shadow_offset_x : 0)
+    s_off_y = (@event.respond_to?(:shadow_offset_y) ? @event.shadow_offset_y : 0)
     @sprite.bitmap  = current_data[:bitmap]
-    @sprite.x       = @rsprite.x
-    @sprite.y       = ground_y
+    @sprite.x       = @rsprite.x + s_off_x
+    @sprite.y       = ground_y + s_off_y
     @sprite.ox      = (current_data[:bitmap].width / 2) - current_data[:offset]
     @sprite.oy      = current_data[:bitmap].height
     @sprite.z       = @event.screen_z(current_data[:bitmap].height) - 1
-    if jump_offset > 0
+    scale_factor = 1.0
+
+    if @event.jumping?
       scale_factor = 1.0 - (jump_offset * 0.01)
-      scale_factor = 0.4 if scale_factor < 0.4      
-      @sprite.zoom_x  = @rsprite.zoom_x * scale_factor
-      @sprite.zoom_y  = @rsprite.zoom_y * scale_factor
-    else
-      @sprite.zoom_x  = @rsprite.zoom_x
-      @sprite.zoom_y  = @rsprite.zoom_y
+    elsif is_floating
+      scale_factor = 1.0 - (float_offset * 0.03)
     end
+
+    scale_factor = 0.4 if scale_factor < 0.4
+    scale_factor = 1.2 if scale_factor > 1.2
+
+    @sprite.zoom_x  = @rsprite.zoom_x * scale_factor
+    @sprite.zoom_y  = @rsprite.zoom_y * scale_factor
+    
     @sprite.opacity = @rsprite.opacity
     @sprite.visible = @rsprite.visible && @event.shows_shadow?
   end

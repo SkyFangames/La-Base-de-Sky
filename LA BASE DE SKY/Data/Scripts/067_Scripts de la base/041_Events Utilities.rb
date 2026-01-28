@@ -14,7 +14,9 @@
 #   s:Hitbox/Rx,Ry               -> Define un radio de colisión alrededor del evento
 #                                   e igualmente permite la interacción con él.
 #   s:Offset/X,Y                 -> Desplaza el gráfico visualmente (en píxeles).
+#   s:Offset_shadow/X,Y          -> Desplaza el gráfico de la sombra (en píxeles).
 #   s:Float                      -> Activa una animación de levitación suave.
+#   s:doppelganger               -> Cambia al gráfico actual del jugador.
 #   s:pokemon_event/Nombre       -> Cambiará el gráfico al del Pokémon especificado.
 #   s:pokemon_event_shiny/Nombre -> Lo mismo, pero su versión Shiny.
 #                                   Ambos inlcuyen que al interactuar suene su cry.
@@ -26,6 +28,8 @@ class Game_Event < Game_Character
   attr_accessor :visual_offset_x, :visual_offset_y
   attr_accessor :is_floating
   attr_accessor :cry_species
+  attr_reader :float_offset
+  attr_accessor :shadow_offset_x, :shadow_offset_y
 
   #-----------------------------------------------------------------------------
   # PROTECCIÓN DE ALIAS
@@ -61,6 +65,9 @@ class Game_Event < Game_Character
     @visual_offset_x = 0
     @visual_offset_y = 0
     @is_floating = false
+    @float_offset = 0
+    @shadow_offset_x = 0
+    @shadow_offset_y = 0
     @cry_species = nil
     zik_ext_initialize(map_id, event, map)
   end
@@ -95,6 +102,7 @@ class Game_Event < Game_Character
     @visual_offset_x = 0
     @visual_offset_y = 0
     @is_floating = false
+    @float_offset = 0
     @cry_species = nil
 
     return unless @page && @list
@@ -115,6 +123,11 @@ class Game_Event < Game_Character
         @visual_offset_x = $1.to_i
         @visual_offset_y = $2.to_i
 
+      # --- OFFSET SHADOW ---
+      elsif cmd_text.match(/^s:Offset_shadow\/([-\d]+),([-\d]+)/i)
+        @shadow_offset_x = $1.to_i
+        @shadow_offset_y = $2.to_i
+
       # --- FLOAT ---
       elsif cmd_text.match(/^s:Float/i)
         @is_floating = true
@@ -130,8 +143,8 @@ class Game_Event < Game_Character
         @character_name = "Followers/#{filename}"
         @cry_species = filename
 
-          #---- DOPPELGANGER ---
-      elsif cmd_text.match(/^doppelganger/i)
+      #---- DOPPELGANGER ---
+      elsif cmd_text.match(/^s:doppelganger/i)
         @character_name = $game_player.character_name
       end
     end
@@ -165,8 +178,10 @@ class Game_Event < Game_Character
     
     if @is_floating
       timer = Graphics.frame_count + (@id * 7)
-      offset = (Math.sin(timer / 15.0) * 5).round
-      y -= offset 
+      @float_offset = (Math.sin(timer / 15.0) * 5).round
+      y -= @float_offset 
+    else
+      @float_offset = 0
     end
     
     return y
