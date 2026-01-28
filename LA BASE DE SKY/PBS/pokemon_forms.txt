@@ -1346,7 +1346,7 @@ Abilities = SHARPNESS
 HiddenAbilities = SHARPNESS
 Height = 1.2
 Weight = 49.0
-pokedex = Utilizando su pelaje, que ha moldeado en formas afiladas como garras, elimina a sus enemigos de un solo golpe. Lo hace como acto de compasión para evitarles el sufrimiento.
+Pokedex = Utilizando su pelaje, que ha moldeado en formas afiladas como garras, elimina a sus enemigos de un solo golpe. Lo hace como acto de compasión para evitarles el sufrimiento.
 Generation = 9
 #-------------------------------
 [GLALIE,1]
@@ -1574,7 +1574,7 @@ Abilities = MEGALAUNCHER
 HiddenAbilities = MEGALAUNCHER
 Height = 1.3
 Weight = 49.4
-pokedex = Al envolverse completamente en su aura, Mega Lucario Z puede desviar todo tipo de ataques, combatiendo como si danzara con gracia.
+Pokedex = Al envolverse completamente en su aura, Mega Lucario Z puede desviar todo tipo de ataques, combatiendo como si danzara con gracia.
 Generation = 9
 #-------------------------------
 [ABOMASNOW,1]
@@ -3088,7 +3088,7 @@ PokedexForm = 35
 PokedexForm = 35
 #-------------------------------
 [ALCREMIE,42]
-FormName = Forma Crema Rosa
+FormName = Forma Mezcla Rosa
 Color = Yellow
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
@@ -3252,6 +3252,7 @@ Moves = -1,MOONLIGHT,1,HEADLONGRUSH,1,SCRATCH,1,LEER,1,LICK,8,FURYSWIPES,13,PAYB
 TutorMoves = AVALANCHE,BODYPRESS,BODYSLAM,BRICKBREAK,BULLDOZE,CALMMIND,CRUNCH,DIG,DOUBLEEDGE,EARTHPOWER,EARTHQUAKE,ENDURE,FACADE,FIREPUNCH,FLING,FOCUSBLAST,FOCUSPUNCH,GIGAIMPACT,GUNKSHOT,HARDPRESS,HEAVYSLAM,HELPINGHAND,HIGHHORSEPOWER,HYPERBEAM,HYPERVOICE,ICEPUNCH,LOWKICK,METALCLAW,MUDSHOT,PROTECT,RAINDANCE,REST,ROAR,ROCKSLIDE,ROCKTOMB,SCARYFACE,SEEDBOMB,SHADOWCLAW,SLEEPTALK,SMACKDOWN,SNARL,STOMPINGTANTRUM,STONEEDGE,SUBSTITUTE,SUNNYDAY,SWIFT,SWORDSDANCE,TAKEDOWN,TAUNT,THIEF,THUNDERPUNCH,TRAILBLAZE,UPROAR,VACUUMWAVE
 Height = 2.7
 Weight = 333.0
+Pokedex = Ha desarrollado unas capacidades y un aspecto especiales tras haber sobrevivido en la tierra donde recaló al atravesar el mar.
 Generation = 9
 #-------------------------------
 [BASCULEGION,1]
@@ -3275,6 +3276,7 @@ Pokedex = Desprende una fragancia floral. Puede saltar más de 5 m fácilmente g
 [MAUSHOLD,1]
 FormName = Familia de Tres
 Weight = 2.3
+Pokedex = Una cría apareció de la noche a la mañana. Conviven como si fuesen una familia, aunque se desconocen los lazos que los unen.
 #-------------------------------
 [REVAVROOM,1]
 Types = FIRE
@@ -3299,16 +3301,19 @@ Abilities = INTIMIDATE
 [SQUAWKABILLY,1]
 FormName = Plumaje Azul
 Color = Blue
+Pokedex = Constituyen el segundo grupo más numeroso tras los ejemplares de plumaje verde, a los que consideran rivales.
 #-------------------------------
 [SQUAWKABILLY,2]
 FormName = Plumaje Amarillo
 HiddenAbilities = SHEERFORCE
 Color = Yellow
+Pokedex = La agresividad de los ejemplares de plumaje amarillo responde a su negativa a ser sometidos por otros grupos más numerosos.
 #-------------------------------
 [SQUAWKABILLY,3]
 FormName = Plumaje Blanco
 HiddenAbilities = SHEERFORCE
 Color = White
+Pokedex = Aunque los ejemplares de este color sean la minoría y no les guste combatir, cuando corren peligro demuestran ser valientes y audaces.
 #-------------------------------
 [SCOVILLAIN,1]
 FormName = Mega Scovillain
@@ -3329,6 +3334,7 @@ BaseExp = 228
 Height = 1.8
 Weight = 97.4
 Category = Héroe
+Pokedex = Es el héroe de los mares. Acude al rescate de la gente y de los Pokémon que se estén ahogando nadando a velocidades de 50 nudos.
 #-------------------------------
 [GLIMMORA,1]
 FormName = Mega Glimmora
@@ -3397,6 +3403,7 @@ Generation = 9
 FormName = Forma Trinodular
 Height = 4.5
 Weight = 47.4
+Pokedex = En un estudio reciente se descubrió que el número de segmentos de su cuerpo está determinado por su genética.
 #-------------------------------
 [BAXCALIBUR,1]
 FormName = Mega Baxcalibur
