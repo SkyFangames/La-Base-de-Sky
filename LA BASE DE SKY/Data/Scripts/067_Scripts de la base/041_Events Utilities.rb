@@ -195,9 +195,10 @@ class Game_Event < Game_Character
     end
   
     # Prioridad 2: SIZEBLOCK
-    bw = @block_width || 1
-    bh = @block_height || 1
-    return x.between?(@x, @x + bw - 1) &&
-           y.between?(@y - bh + 1, @y)
+    # Usamos block_width o block_height si es mayor a 1, si no, usamos el de Essentials.
+    effective_width = (@block_width > 1) ? @block_width : (@width || 1)
+    effective_height = (@block_height > 1) ? @block_height : (@height || 1)
+    return x.between?(@x, @x + effective_width - 1) &&
+           y.between?(@y - effective_height + 1, @y)
   end
 end
