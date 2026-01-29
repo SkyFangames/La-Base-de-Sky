@@ -20,6 +20,9 @@
 #   s:pokemon_event/Nombre       -> Cambiará el gráfico al del Pokémon especificado.
 #   s:pokemon_event_shiny/Nombre -> Lo mismo, pero su versión Shiny.
 #                                   Ambos inlcuyen que al interactuar suene su cry.
+#   s:Custom/RUTA                -> Carga un gráfico en específico para el ow usando
+#                                   una ruta dentro de Graphics.
+#                                   Ejemplo: s:Custom/Pictures/introBoy
 #====================================================================================
 
 class Game_Event < Game_Character
@@ -146,6 +149,11 @@ class Game_Event < Game_Character
       #---- DOPPELGANGER ---
       elsif cmd_text.match(/^s:doppelganger/i)
         @character_name = $game_player.character_name
+      
+      # --- CUSTOM ---
+      elsif cmd_text.match(/^s:Custom\/(.+)/i)
+        filename = $1.strip
+        @character_name = "../#{filename}"  
       end
     end
   end
