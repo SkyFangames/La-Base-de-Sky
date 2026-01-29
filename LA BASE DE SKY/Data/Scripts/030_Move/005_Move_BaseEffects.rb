@@ -643,7 +643,7 @@ class Battle::Move::PledgeMove < Battle::Move
     when :Rainbow   # Fire + Water
       if user.pbOwnSide.effects[PBEffects::Rainbow] == 0
         user.pbOwnSide.effects[PBEffects::Rainbow] = 4
-        msg = _INTL("¡Ha aparecido un arcoiris sobre {1}!", user.pbTeam(true))
+        msg = _INTL("¡Ha aparecido un arcoíris sobre {1}!", user.pbTeam(true))
         animName = (user.opposes?) ? "RainbowOpp" : "Rainbow"
       end
     when :Swamp   # Water + Grass

@@ -1047,7 +1047,7 @@ Battle::AbilityEffects::PriorityBracketChange.add(:MYCELIUMMIGHT,
 Battle::AbilityEffects::PriorityBracketUse.add(:QUICKDRAW,
   proc { |ability, battler, battle|
     battle.pbShowAbilitySplash(battler)
-    battle.pbDisplay(_INTL("¡La habilidad {2} de {1} hizó que se mueva más rápido!", battler.abilityName, battler.pbThis(true)))
+    battle.pbDisplay(_INTL("¡La habilidad {2} de {1} hizo que se mueva más rápido!", battler.abilityName, battler.pbThis(true)))
     battle.pbHideAbilitySplash(battler)
   }
 )
@@ -2354,7 +2354,7 @@ Battle::AbilityEffects::OnBeingHit.add(:WANDERINGSPIRIT,
     if Battle::Scene::USE_ABILITY_SPLASH
         battle.pbDisplay(_INTL("¡{1} ha cambiado habilidades con {2}!", target.pbThis, user.pbThis(true)))
     else
-        battle.pbDisplay(_INTL("¡{1} combió su habilidad {2} con la habilidad {4} de {3}!",
+        battle.pbDisplay(_INTL("¡{1} cambió su habilidad {2} con la habilidad {4} de {3}!",
            target.pbThis, user.abilityName, user.pbThis(true), target.abilityName))
     end
     battle.pbHideAbilitySplash(target)
@@ -2715,7 +2715,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HEALER,
         when :SLEEP
           battle.pbDisplay(_INTL("¡La habilidad {2} de {1} despertó a su compañero!", battler.pbThis(true), battler.abilityName))
         when :POISON
-          battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó el envenamiento de su compañero!", battler.pbThis(true), battler.abilityName))
+          battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó el envenenamiento de su compañero!", battler.pbThis(true), battler.abilityName))
         when :BURN
           battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó la quemadura de su compañero!", battler.pbThis(true), battler.abilityName))
         when :PARALYSIS
@@ -2741,7 +2741,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HYDRATION,
       when :SLEEP
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} le despertó!", battler.pbThis(true), battler.abilityName))
       when :POISON
-        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenamiento!", battler.pbThis(true), battler.abilityName))
+        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenenamiento!", battler.pbThis(true), battler.abilityName))
       when :BURN
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su quemadura!", battler.pbThis(true), battler.abilityName))
       when :PARALYSIS
@@ -2766,7 +2766,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:SHEDSKIN,
       when :SLEEP
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} le despertó!", battler.pbThis(true), battler.abilityName))
       when :POISON
-        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenamiento!", battler.pbThis(true), battler.abilityName))
+        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenenamiento!", battler.pbThis(true), battler.abilityName))
       when :BURN
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su quemadura!", battler.pbThis(true), battler.abilityName))
       when :PARALYSIS
@@ -3229,7 +3229,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:FRISK,
     battle.pbShowAbilitySplash(battler)
     if Settings::MECHANICS_GENERATION >= 6
       foes.each do |b|
-        battle.pbDisplay(_INTL("{1} ha cacheado a {2} y ha hallado {3}!", battler.pbThis, b.pbThis(true), b.itemName))
+        battle.pbDisplay(_INTL("¡{1} ha cacheado a {2} y ha hallado {3}!", battler.pbThis, b.pbThis(true), b.itemName))
       end
     else
       foe = foes[battle.pbRandom(foes.length)]

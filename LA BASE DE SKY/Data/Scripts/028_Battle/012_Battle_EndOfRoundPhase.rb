@@ -487,7 +487,7 @@ class Battle
                              _INTL("El conjuro de {1} se ha desvanecido.", @battlers[side].pbTeam(true)))
     # Pledge Rainbow
     pbEORCountDownSideEffect(side, PBEffects::Rainbow,
-                             _INTL("El arcoiris sobre {1} ha desaparecido.", @battlers[side].pbTeam(true)))
+                             _INTL("El arcoíris sobre {1} ha desaparecido.", @battlers[side].pbTeam(true)))
     # Pledge Sea of Fire
     pbEORCountDownSideEffect(side, PBEffects::SeaOfFire,
                              _INTL("El mar de llamas que rodeaba a {1} ha desaparecido.", @battlers[side].pbTeam(true)))

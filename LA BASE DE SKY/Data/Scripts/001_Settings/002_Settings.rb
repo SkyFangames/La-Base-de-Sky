@@ -651,7 +651,7 @@ module Settings
       "letting people use their resources.",
       "You are awesome.",
       "Thanks to BellBlitzKing for",
-      "his Pokemon Sound Effects Pack:",
+      "his Pokémon Sound Effects Pack:",
       "Gen 1 to Gen 7 - All Attacks SFX.",
       "Kirik<s>Marin",
       "Maruno<s>AiurJordan",

@@ -527,7 +527,7 @@ Battle::ItemEffects::StatusCure.add(:LUMBERRY,
       when :SLEEP
         battle.pbDisplay(_INTL("¡{1} se ha despertado con {2}!", battler.pbThis, itemName))
       when :POISON
-        battle.pbDisplay(_INTL("¡{1} se ha curado del envenienmiento con {2}!", battler.pbThis, itemName))
+        battle.pbDisplay(_INTL("¡{1} se ha curado del envenenamiento con {2}!", battler.pbThis, itemName))
       when :BURN
         battle.pbDisplay(_INTL("¡{1} se ha curado de las quemaduras con {2}!", battler.pbThis, itemName))
       when :PARALYSIS

@@ -1117,7 +1117,7 @@ MenuHandlers.add(:options_menu, :battle_style, {
   "order"       => 20,
   "type"        => :array,
   "parameters"  => [_INTL("Cambios"), _INTL("Fijo")],
-  "description" => _INTL("Elige si quieres que se te ofrezca la opcion de cambiar de Pokemon cuando se debilita un Pokémon del rival."),
+  "description" => _INTL("Elige si quieres que se te ofrezca la opción de cambiar de Pokémon cuando se debilita el del rival."),
   "get_proc"    => proc { next $PokemonSystem.battlestyle },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.battlestyle = value }
 })

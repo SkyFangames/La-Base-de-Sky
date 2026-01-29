@@ -486,7 +486,7 @@ class Battle::Move::TrapUserAndTargetInBattle < Battle::Move
     return if Settings::MORE_TYPE_EFFECTS && target.pbHasType?(:GHOST)
     return if user.trappedInBattle? || target.trappedInBattle?
     target.effects[PBEffects::JawLock] = user.index
-    @battle.pbDisplay(_INTL("¡Ningún Pokemon puede huir!!"))
+    @battle.pbDisplay(_INTL("¡Ningún Pokémon puede huir!!"))
   end
 end
 

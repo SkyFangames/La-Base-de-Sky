@@ -32,11 +32,11 @@ module Settings
   # Activa o desactiva la animación de Reversión Primigenia utilizada por este plugin.
   SHOW_PRIMAL_ANIM = true
 
-  # Activa el nuevo repartir experiencia que se puede activar para cada pokemon del equipo.
+  # Activa el nuevo repartir experiencia que se puede activar para cada pokémon del equipo.
   USE_NEW_EXP_SHARE = true
 
   ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida, sin necesidad de dar ningun objeto
-  ## o de activar el $player.has_exp_all, si desean activar el expshare para todos los pokemons, con alguno
+  ## o de activar el $player.has_exp_all, si desean activar el expshare para todos los pokémon, con alguno
   ## de los 2 metodos mencionados anteriormente, deben dejar esta variable en false.
   EXPSHARE_ENABLED = true
 
@@ -73,7 +73,7 @@ module Settings
   # especies nuevas.
   SHOW_TYPE_EFFECTIVENESS_FOR_NEW_SPECIES = false
 
-  # Cuando un Pokemon es debilitado todos sus sprites se veran grisados
+  # Cuando un Pokémon es debilitado todos sus sprites se veran grisados
   # Al curarlo vuelven a su color original
   GREY_OUT_FAINTED = true
   
@@ -104,7 +104,7 @@ module Settings
   # Si agregan paginas nuevas a la pokédex en medio, cambiar esto
   ADVANCED_DEX_PAGE = 4
 
-  # # Mostrar Siluetas para los Pokemon no vistos en la dex
+  # # Mostrar Siluetas para los Pokémon no vistos en la dex
   SHOW_SILHOUETTES_IN_DEX = false
 
   # Mostrar cambios de stats respecto a los juegos oficiales
@@ -122,7 +122,7 @@ module Settings
   
   
 ################################################################################
-#  ENHANCED POKEMON UI
+#  ENHANCED POKÉMON UI
 ################################################################################
   # Ruta de gráficos
   # Almacena la ruta para los gráficos utilizados por este plugin.

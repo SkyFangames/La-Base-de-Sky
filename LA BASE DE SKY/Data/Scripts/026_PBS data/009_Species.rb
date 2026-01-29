@@ -128,7 +128,7 @@ module GameData
         ["Moves",             LevelUpMovesProperty,               _INTL("Movimientos que aprende el Pokémon por nivel.")],
         ["TutorMoves",        EggMovesProperty.new,               _INTL("Movimientos que se pueden enseñar al Pokémon por MT/MO/Tutor de Movimientos.")],
         ["EggMoves",          EggMovesProperty.new,               _INTL("Movimientos que puede aprender el Pokémon mediante crianza.")],
-        ["EggGroups",         EggGroupsProperty.new,              _INTL("Grupos Huevo a los que pertenece el Pokemon con fines de crianza.")],
+        ["EggGroups",         EggGroupsProperty.new,              _INTL("Grupos Huevo a los que pertenece el Pokémon con fines de crianza.")],
         ["HatchSteps",        LimitProperty.new(99_999),          _INTL("Número de pasos hasta que eclosiona un huevo de esta especie.")],
         ["Incense",           ItemProperty,                       _INTL("Objeto que debe llevar uno de los padres para producir un huevo de esta especie.")],
         ["Offspring",         GameDataPoolProperty.new(:Species), _INTL("Todas las especies que puede ser la descendencia al criar para un huevo de esta especie (si está en blanco, el huevo sólo puede ser de esta especie).")],
@@ -141,7 +141,7 @@ module GameData
         ["Pokedex",           StringProperty,                     _INTL("Descripción del Pokémon como se muestra en la Pokédex.")],
         ["Generation",        LimitProperty.new(99_999),          _INTL("Número de la generación en la que debutó el Pokémon.")],
         ["Flags",             StringListProperty,                 _INTL("Palabras/frases que distinguen esta especie de otras.")],
-        ["WildItemCommon",    GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) comunmente llevado(s) por Pokémon salvajes de esta especie.")],
+        ["WildItemCommon",    GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) comúnmente llevado(s) por Pokémon salvajes de esta especie.")],
         ["WildItemUncommon",  GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) raramente llevado(s) por Pokémon salvajes de esta especie.")],
         ["WildItemRare",      GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) muy raramente llevado(s) por Pokémon salvajes de esta especie.")],
         ["Evolutions",        EvolutionsProperty.new,             _INTL("Caminos evolutivos de esta especie.")]

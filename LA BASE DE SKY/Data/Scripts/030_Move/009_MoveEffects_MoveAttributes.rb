@@ -146,12 +146,12 @@ class Battle::Move::DamageTargetAlly < Battle::Move
       b.pbReduceHP(b.totalhp / 16, false)
     end
     if hitAlly.length == 2
-      @battle.pbDisplay(_INTL("Las chispas también alcanzarón a {1} y {2}!",
+      @battle.pbDisplay(_INTL("Las chispas también alcanzaron a {1} y {2}!",
                               @battle.battlers[hitAlly[0][0]].pbThis(true),
                               @battle.battlers[hitAlly[1][0]].pbThis(true)))
     elsif hitAlly.length > 0
       hitAlly.each do |b|
-        @battle.pbDisplay(_INTL("Las chispas también alcanzarón a {1}!",
+        @battle.pbDisplay(_INTL("Las chispas también alcanzaron a {1}!",
                                 @battle.battlers[b[0]].pbThis(true)))
       end
     end

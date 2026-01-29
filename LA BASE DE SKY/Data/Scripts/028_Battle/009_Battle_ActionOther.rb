@@ -197,7 +197,7 @@ class Battle
     elsif battler.isSpecies?(:GROUDON)
       pbCommonAnimation("PrimalGroudon2", battler)
     end
-    pbDisplay(_INTL("¡{1} ha experimentado una Regresión Primigenea y ha recobrado su apariencia primitiva!", battler.pbThis))
+    pbDisplay(_INTL("¡{1} ha experimentado una Regresión Primigenia y ha recobrado su apariencia primitiva!", battler.pbThis))
   end
 end
 

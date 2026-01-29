@@ -518,7 +518,7 @@ class Battle::Move::LowerUserDefSpDef1RaiseUserAtkSpAtkSpd2 < Battle::Move
       break
     end
     if failed
-      @battle.pbDisplay(_INTL("Las estadísticas de {1} no pueden alterarse más!", user.pbThis(true)))
+      @battle.pbDisplay(_INTL("¡Las estadísticas de {1} no pueden alterarse más!", user.pbThis(true)))
       return true
     end
     return false
@@ -2233,7 +2233,7 @@ class Battle::Move::UserTargetAverageBaseAtkSpAtk < Battle::Move
     newspatk = ((user.spatk + target.spatk) / 2).floor
     user.attack = target.attack = newatk
     user.spatk  = target.spatk  = newspatk
-    @battle.pbDisplay(_INTL("¡{1} suma su capacidad ofensiva con la del objetivo y las reparte equitativamnete!", user.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} suma su capacidad ofensiva con la del objetivo y las reparte equitativamente!", user.pbThis))
   end
 end
 
@@ -2247,7 +2247,7 @@ class Battle::Move::UserTargetAverageBaseDefSpDef < Battle::Move
     newspdef = ((user.spdef + target.spdef) / 2).floor
     user.defense = target.defense = newdef
     user.spdef   = target.spdef   = newspdef
-    @battle.pbDisplay(_INTL("¡{1} suma su capacidad defensiva con la del objetivo y las reparte equitativamnete!", user.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} suma su capacidad defensiva con la del objetivo y las reparte equitativamente!", user.pbThis))
   end
 end
 
