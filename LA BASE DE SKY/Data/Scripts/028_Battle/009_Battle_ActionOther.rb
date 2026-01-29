@@ -147,7 +147,7 @@ class Battle
     when 1   # Rayquaza
       pbDisplay(_INTL("¡El ruego vehemente de {1} alcanza a {2}!", trainerName, battler.pbThis(true)))
     else
-      pbDisplay(_INTL("¡La {2} de {1} está reaccioando al {4} de {3}!",
+      pbDisplay(_INTL("¡La {2} de {1} está reaccionado al {4} de {3}!",
                       battler.pbThis(true), battler.itemName, trainerName, pbGetMegaRingName(idxBattler)))
     end
     pbCommonAnimation("MegaEvolution", battler)

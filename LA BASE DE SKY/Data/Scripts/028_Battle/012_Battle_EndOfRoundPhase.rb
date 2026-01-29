@@ -118,7 +118,7 @@ class Battle
       next if !@battlers[idxPos] || !@battlers[idxPos].canHeal?
       wishMaker = pbThisEx(idxPos, pos.effects[PBEffects::WishMaker])
       @battlers[idxPos].pbRecoverHP(pos.effects[PBEffects::WishAmount])
-      pbDisplay(_INTL("¡{1} se ha hecho realidad!", wishMaker))
+      pbDisplay(_INTL("¡El deseo de {1} se ha hecho realidad!", wishMaker))
     end
   end
 

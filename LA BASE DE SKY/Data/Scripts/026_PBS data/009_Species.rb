@@ -124,7 +124,7 @@ module GameData
         ["CatchRate",         LimitProperty.new(255),             _INTL("Ratio de captura de esta especie (0-255).")],
         ["Happiness",         LimitProperty.new(255),             _INTL("Felicidad base de esta especie (0-255).")],
         ["Abilities",         AbilitiesProperty.new,              _INTL("Habilidades que puede tener este Pokémon (max. 2).")],
-        ["HiddenAbilities",   AbilitiesProperty.new,              _INTL("Habilidades Ocultas Secret que puede tener este Pokémon.")],
+        ["HiddenAbilities",   AbilitiesProperty.new,              _INTL("Habilidades Ocultas que puede tener este Pokémon.")],
         ["Moves",             LevelUpMovesProperty,               _INTL("Movimientos que aprende el Pokémon por nivel.")],
         ["TutorMoves",        EggMovesProperty.new,               _INTL("Movimientos que se pueden enseñar al Pokémon por MT/MO/Tutor de Movimientos.")],
         ["EggMoves",          EggMovesProperty.new,               _INTL("Movimientos que puede aprender el Pokémon mediante crianza.")],
