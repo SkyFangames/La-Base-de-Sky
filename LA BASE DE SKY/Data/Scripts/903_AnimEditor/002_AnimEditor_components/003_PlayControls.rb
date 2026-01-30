@@ -27,7 +27,9 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
   DURATION_VALUE_X     = SLOWDOWN_BUTTON_X - 17   # This is the right side of the label, not the left
   DURATION_VALUE_Y     = DURATION_LABEL_Y
 
-  def initialize(x, y, width, height, viewport)
+  def initialize(x, y, width, height, viewport, anim)
+    @anim = anim
+    @fps = @anim[:fps]
     @duration = 0
     @slowdown = SLOWDOWN_FACTORS[0]
     @looping  = false
@@ -141,14 +143,18 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
                    UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("Duration")))
     # Duration value
     add_control_at(:duration_value, DURATION_VALUE_X, DURATION_VALUE_Y,
-                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("{1}s", @duration / 20.0)))
+                   UIControls::Label.new(
+                    200, LABEL_HEIGHT, self.viewport,
+                    _ISPRINTF("{1:.02f}s", @duration / @anim[:fps].to_f)
+                   ))
     @controls[:duration_value].x -= @controls[:duration_value].text_width
   end
 
   #-----------------------------------------------------------------------------
 
   def duration=(new_val)
-    return if @duration == new_val
+    return if @duration == new_val && @fps == @anim[:fps]
+    @fps = @anim[:fps]
     @duration = new_val
     if @duration == 0
       get_control(:play).disable
@@ -156,7 +162,7 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
       get_control(:play).enable
     end
     ctrl = get_control(:duration_value)
-    ctrl.text = _INTL("{1}s", @duration / 20.0)
+    ctrl.text = _ISPRINTF("{1:.02f}s", @duration / @anim[:fps].to_f)
     ctrl.x = DURATION_VALUE_X - ctrl.text_width
     refresh
   end
@@ -193,12 +199,12 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
       get_control(:loop).visible = false
       get_control(:unloop).visible = true
       @looping = true
-      @values.delete(key)   # Don't need to announce this has changed
+      @changed_controls.delete(key)   # Don't need to announce this has changed
     when :unloop
       get_control(:unloop).visible = false
       get_control(:loop).visible = true
       @looping = false
-      @values.delete(key)   # Don't need to announce this has changed
+      @changed_controls.delete(key)   # Don't need to announce this has changed
     else
       if key.to_s[/slowdown/]
         # A slowdown button was pressed; apply its effect now
@@ -211,16 +217,16 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
             c.set_not_highlighted
           end
         end
-        @values.delete(key)   # Don't need to announce this has changed
+        @changed_controls.delete(key)   # Don't need to announce this has changed
       end
     end
   end
 
   def update
     super
-    if @values
-      @values.keys.each { |key| make_control_change(key) }
-      @values = nil if @values.empty?
+    if @changed_controls
+      @changed_controls.keys.each { |key| make_control_change(key) }
+      @changed_controls = nil if @changed_controls.empty?
     end
   end
 end

@@ -10,6 +10,9 @@
 #       this.
 #===============================================================================
 class AnimationEditor::ListedParticle < UIControls::BaseContainer
+  attr_reader   :particle
+  attr_accessor :groups_expanded
+
   # TODO: Add mask and crop properties.
   PROPERTY_GROUPS = {
     :position_group       => [:x, :y, :z],
@@ -490,8 +493,8 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     # Command is dropped; record it as moved if it has been moved
     if Input.release?(Input::MOUSELEFT)
       if @command_move_current && @command_move_current != @command_move_start[1]
-        @values ||= {}   # [property, start keyframe, end keyframe]
-        @values[:move_command] = [nil, [*@command_move_start, @command_move_current]]
+        @changed_controls ||= {}   # [property, start keyframe, end keyframe]
+        @changed_controls[:move_command] = [nil, [*@command_move_start, @command_move_current]]
       end
       this_row = @command_move_start[0]
       @command_move_start = nil
@@ -537,8 +540,8 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     # Check for updated controls
     @picker_controls&.each_pair do |id, ctrl|
       next if !ctrl.changed?
-      @values ||= {}
-      @values[id] = [LIST_CONTROL, @interpolation_target]
+      @changed_controls ||= {}
+      @changed_controls[id] = [LIST_CONTROL, @interpolation_target]
       ctrl.clear_changed
       close_picker = true
     end
@@ -632,8 +635,8 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     @rows.each_pair do |id, objs|
       [LIST_ARROW, LIST_CONTROL].each do |obj|
         next if !objs[obj]&.changed?
-        @values ||= {}
-        @values[id] = [obj, objs[obj].value]
+        @changed_controls ||= {}
+        @changed_controls[id] = [obj, objs[obj].value]
         objs[obj].clear_changed
       end
     end

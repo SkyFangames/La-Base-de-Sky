@@ -22,7 +22,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     arrow_level = 0   # No arrow
     draw_box = true
     bg_color = get_color_of(:property_background)
-    text = "Unnamed"
+    text = "Sin nombre"
     if row == :main
       level = 0
       if @particle[:name] == "SE"
@@ -31,7 +31,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
         arrow = @groups_expanded[row] ? 2 : 1
         bg_color = focus_color(@particle[:focus])
       end
-      text = @particle[:name] || "Unnamed"
+      text = @particle[:name] || "Sin nombre"
     elsif PROPERTY_GROUPS.keys.include?(row)
       level = 1
       arrow = @groups_expanded[row] ? 2 : 1
@@ -140,17 +140,9 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       @rows[row][LIST_CONTROL] = ctrl
       return
     when :x, :y, :z, :zoom_x, :zoom_y, :angle, :opacity, :frame
-      vals = {   # Min, max, default value
-        :x       => [ -999,  999,   0],
-        :y       => [ -999,  999,   0],
-        :z       => [  -50,   50,   0],
-        :zoom_x  => [    0, 1000, 100],
-        :zoom_y  => [    0, 1000, 100],
-        :angle   => [-1080, 1080,   0],
-        :opacity => [    0,  255, 255],
-        :frame   => [    0,   99,   0]
-      }[row] || [0, 0, 0]
-      ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals)
+      vals = AnimationEditor::PROPERTY_RANGES[row] || [0, 0]
+      default = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[row] || 0
+      ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals, default)
     when :flip
       ctrl = UIControls::Checkbox.new(ctrl_width, ctrl_height, @list_viewport, false)
     when :visible
@@ -163,13 +155,13 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
                                         GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[:tone])
     when :blending
       vals = {
-        0 => _INTL("None"),
-        1 => _INTL("Add"),
-        2 => _INTL("Sub")
+        0 => _INTL("Ninguno"),
+        1 => _INTL("Añadir"),
+        2 => _INTL("Sustraer")
       }
       ctrl = UIControls::DropdownList.new(ctrl_width, ctrl_height, @list_viewport, vals, 0)
     else
-      raise _INTL("Couldn't decide what kind of control to make for property {1}.", row)
+      raise _INTL("No se pudo decidir qué tipo de control crear para la propiedad {1}.", row)
     end
     if ctrl
       ctrl.x = CONTROL_X

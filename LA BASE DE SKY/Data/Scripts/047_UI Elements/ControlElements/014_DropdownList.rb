@@ -25,9 +25,9 @@ class UIControls::DropdownList < UIControls::BaseControl
 
   #-----------------------------------------------------------------------------
 
-  def values=(new_vals)
+  def options=(new_vals)
     @options = new_vals
-    @dropdown_menu.values = @options if @dropdown_menu
+    @dropdown_menu.options = @options if @dropdown_menu
   end
 
   def value=(new_value)

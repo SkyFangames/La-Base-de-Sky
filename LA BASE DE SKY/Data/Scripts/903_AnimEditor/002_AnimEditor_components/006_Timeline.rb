@@ -195,6 +195,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     initialize_scrollbars
     initialize_buttons
     initialize_listed_particles
+    refresh_all_row_positions_and_visibilities
     # For detecting a mouse button press in the time bar, including keeping the
     # button held and moving to quickly change the selected keyframe
     add_control_at(:time_bar, x + TIMELINE_X, y,
@@ -256,7 +257,6 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     @particles.each_with_index do |particle, i|
       @display_particles[i] = create_new_listed_particle(particle)
     end
-    refresh_all_row_positions_and_visibilities
   end
 
   def create_new_listed_particle(particle)
@@ -482,8 +482,8 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     calculate_duration
     @display_particles.each { |particle| particle.duration = @duration }
     refresh_all_row_positions_and_visibilities
-    keyframe = @selected_keyframe
-    selected_row = @selected_row
+    self.selected_keyframe = @selected_keyframe
+    self.selected_row = @selected_row
   end
 
   def swap_particles(idx1, idx2)
@@ -491,15 +491,22 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     refresh_all_row_positions_and_visibilities
   end
 
-  # TODO: This method may not be needed.
+  # Used by undo/redo.
   def set_particles(new_particles)
     @particles = new_particles
     calculate_duration
-    initialize_listed_particles
+    expansions = {}
+    @display_particles.each do |particle|
+      expansions[particle.particle[:name]] = Marshal.load(Marshal.dump(particle.groups_expanded))
+    end
+    initialize_listed_particles   # Disposes old @display_particles, makes new ones
     @display_particles.each { |particle| particle.duration = @duration }
-    # TODO: If calling this method because of undo/redo, I'd like the same row
-    #       expansions and ox/oy values and selected_row/keyframe to be
-    #       restored. Do that here.
+    @display_particles.each do |particle|
+      particle.groups_expanded = expansions[particle.particle[:name]] if expansions[particle.particle[:name]]
+    end
+    refresh_all_row_positions_and_visibilities
+    self.selected_keyframe = @selected_keyframe
+    self.selected_row = @selected_row
   end
 
   #-----------------------------------------------------------------------------
@@ -558,7 +565,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
         )
       end
       if (this_keyframe % 5) == 0 && draw_x >= -KEYFRAME_SPACING
-        text = (this_keyframe / 20.0).to_s
+        text = this_keyframe.to_s
         draw_text(@sprites[:time_bar].bitmap, draw_x + 1, 0, text)
       end
       this_keyframe += 1
@@ -664,21 +671,21 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     # Check for updated controls
     @controls.each_pair do |id, c|
       next if !c.changed?
-      @values ||= {}
-      @values[id] = c.value
+      @changed_controls ||= {}
+      @changed_controls[id] = c.value
       c.clear_changed
     end
     # Check for updated listed particles
     @display_particles.each_with_index do |particle, particle_index|
       next if !particle.changed?
-      particle.values.each_pair do |row, value|
+      particle.changed_controls.each_pair do |row, value|
         if value[0] == AnimationEditor::ListedParticle::LIST_ARROW
           particle.toggle_group_visibility(row)
           self.selected_row = @selected_row
           refresh_all_row_positions_and_visibilities
         else
-          @values ||= {}
-          @values[row] = [particle_index, value[1]]   # [particle_index, value]
+          @changed_controls ||= {}
+          @changed_controls[row] = [particle_index, value[1]]   # [particle_index, value]
         end
       end
       particle.clear_changed

@@ -605,9 +605,10 @@ module AnimationEditor::ParticleDataHelper
   # Inserts an empty frame at the given frame. Delays all commands at or after
   # the given frame by 1, and increases the duration of all commands that
   # overlap the given frame.
-  def insert_frame(particle, frame)
-    particle.each_pair do |property, values|
+  def insert_frame(particle, frame, property = nil)
+    particle.each_pair do |prop, values|
       next if !values.is_a?(Array) || values.empty?
+      next if !property.nil? && prop != property
       values.each do |cmd|
         if cmd[0] >= frame
           cmd[0] += 1
@@ -621,14 +622,16 @@ module AnimationEditor::ParticleDataHelper
   # Removes a frame at the given frame. Deletes all commands in that frame, then
   # brings all commands after the given frame earlier by 1, and reduces the
   # duration of all commands that overlap the given frame.
-  def remove_frame(particle, frame)
-    particle.keys.each do |property|
-      next if !particle[property].is_a?(Array) || particle[property].empty?
-      delete_command(particle, property, frame, true)
+  def remove_frame(particle, frame, property = nil)
+    particle.keys.each do |prop|
+      next if !particle[prop].is_a?(Array) || particle[prop].empty?
+      next if !property.nil? && prop != property
+      delete_command(particle, prop, frame, true)
     end
-    particle.delete_if { |property, values| values.is_a?(Array) && values.empty? }
-    particle.each_pair do |key, values|
+    particle.delete_if { |_prop, values| values.is_a?(Array) && values.empty? }
+    particle.each_pair do |prop, values|
       next if !values.is_a?(Array) || values.empty?
+      next if !property.nil? && prop != property
       values.each do |cmd|
         if cmd[0] > frame
           cmd[0] -= 1

@@ -13,8 +13,9 @@
 #       9999+ = UI
 #===============================================================================
 class AnimationEditor::Canvas < Sprite
+  attr_writer :anim
   attr_reader :sprites    # Only used while playing the animation
-  attr_reader :values
+  attr_reader :changed_controls
 
   FRAME_SIZE           = 48
   PARTICLE_FRAME_COLOR = Color.new(0, 0, 0, 64)
@@ -205,11 +206,11 @@ class AnimationEditor::Canvas < Sprite
   end
 
   def changed?
-    return !@values.nil?
+    return !@changed_controls.nil?
   end
 
   def clear_changed
-    @values = nil
+    @changed_controls = nil
   end
 
   #-----------------------------------------------------------------------------
@@ -436,12 +437,12 @@ class AnimationEditor::Canvas < Sprite
     case particle[:name]
     when "User"
       spr = @battler_sprites[user_index]
-      raise _INTL("Sprite for particle {1} not found somehow (battler index {2}).",
+      raise _INTL("Sprite para la partícula {1} no encontrado (indice del combatiente {2}).",
                   particle[:name], user_index) if !spr
       frame = @battler_frame_sprites[user_index]
     when "Target"
       spr = @battler_sprites[target_idx]
-      raise _INTL("Sprite for particle {1} not found somehow (battler index {2}).",
+      raise _INTL("Sprite para la partícula {1} no encontrado (indice del combatiente {2}).",
                   particle[:name], target_idx) if !spr
       frame = @battler_frame_sprites[target_idx]
     else
@@ -639,10 +640,14 @@ class AnimationEditor::Canvas < Sprite
       end
     end
     return if nearest_index < 0
-    @values = { :particle_index => nearest_index }
+    @changed_controls = { :particle_index => nearest_index }
   end
 
   def on_mouse_release
+    # NOTE: We set this value now for the sake of recording a snapshot in the
+    #       undo history.
+    @changed_controls ||= {}
+    @changed_controls[:on_mouse_release] = true
     @captured = nil
   end
 
@@ -663,8 +668,8 @@ class AnimationEditor::Canvas < Sprite
         sprite, frame = get_sprite_and_frame(@selected_particle)
       end
       new_pos = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, :x, @display_keyframe)[0] + x_move
-      @values ||= {}
-      @values[:x] = new_pos
+      @changed_controls ||= {}
+      @changed_controls[:x] = new_pos
     end
     # Move selected particle up/down
     y_move = 0
@@ -681,8 +686,8 @@ class AnimationEditor::Canvas < Sprite
         sprite, frame = get_sprite_and_frame(@selected_particle)
       end
       new_pos = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, :y, @display_keyframe)[0] + y_move
-      @values ||= {}
-      @values[:y] = new_pos
+      @changed_controls ||= {}
+      @changed_controls[:y] = new_pos
     end
     # Mouse clicks
     if Input.trigger?(Input::MOUSELEFT)
@@ -737,8 +742,8 @@ class AnimationEditor::Canvas < Sprite
         end
       end
       new_pos *= -1 if relative_to_index >= 0 && relative_to_index.odd? && particle[:foe_invert_x]
-      @values ||= {}
-      @values[:x] = new_pos
+      @changed_controls ||= {}
+      @changed_controls[:x] = new_pos
       @captured[0] = new_canvas_x
       sprite.x = new_canvas_x
     end
@@ -774,8 +779,8 @@ class AnimationEditor::Canvas < Sprite
         end
       end
       new_pos *= -1 if relative_to_index >= 0 && relative_to_index.odd? && particle[:foe_invert_y]
-      @values ||= {}
-      @values[:y] = new_pos
+      @changed_controls ||= {}
+      @changed_controls[:y] = new_pos
       @captured[1] = new_canvas_y
       sprite.y = new_canvas_y
     end
@@ -789,11 +794,11 @@ class AnimationEditor::Canvas < Sprite
     case @anim[:particles][@selected_particle][:name]
     when "User"
       target = @battler_sprites[user_index]
-      raise _INTL("Sprite for particle \"{1}\" not found somehow.",
+      raise _INTL("Sprite para la partícula \"{1}\" no encontrado.",
                   @anim[:particles][@selected_particle][:name]) if !target
     when "Target"
       target = @battler_sprites[target_indices[0]]
-      raise _INTL("Sprite for particle \"{1}\" not found somehow.",
+      raise _INTL("Sprite para la partícula \"{1}\" no encontrado.",
                   @anim[:particles][@selected_particle][:name]) if !target
     else
       target = @particle_sprites[@selected_particle]

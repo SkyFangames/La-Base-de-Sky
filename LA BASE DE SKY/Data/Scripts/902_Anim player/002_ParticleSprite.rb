@@ -8,9 +8,8 @@ class AnimationPlayer::ParticleSprite
   attr_accessor :base_angle, :angle_override
   attr_accessor :foe_invert_x, :foe_invert_y, :foe_flip
 
-  FRAMES_PER_SECOND = 20.0
-
-  def initialize
+  def initialize(fps)
+    @fps = fps.to_f
     @processes = []
     @sprite = nil
     @battler_sprite = false
@@ -84,8 +83,8 @@ class AnimationPlayer::ParticleSprite
         start_val = process[6][2 * i, 2].to_i(16)
         end_val = process[3][2 * i, 2].to_i(16)
         val = AnimationPlayer::Helper.interpolate(
-          process[4], start_val, end_val, process[2] / FRAMES_PER_SECOND,
-          process[1] / FRAMES_PER_SECOND, elapsed_time
+          process[4], start_val, end_val, process[2] / @fps,
+          process[1] / @fps, elapsed_time
         )
         new_val.push(sprintf("%02X", val))
       end
@@ -96,19 +95,19 @@ class AnimationPlayer::ParticleSprite
         start_val = process[6][3 * i, 3].to_i(16)
         end_val = process[3][3 * i, 3].to_i(16)
         val = AnimationPlayer::Helper.interpolate(
-          process[4], start_val, end_val, process[2] / FRAMES_PER_SECOND,
-          process[1] / FRAMES_PER_SECOND, elapsed_time
+          process[4], start_val, end_val, process[2] / @fps,
+          process[1] / @fps, elapsed_time
         )
         new_val.push((val >= 0 ? "+" : "-") + sprintf("%02X", val.abs))
       end
       @values[process[0]] = new_val.join
     else
       @values[process[0]] = AnimationPlayer::Helper.interpolate(
-        process[4], process[6], process[3], process[2] / FRAMES_PER_SECOND,
-        process[1] / FRAMES_PER_SECOND, elapsed_time
+        process[4], process[6], process[3], process[2] / @fps,
+        process[1] / @fps, elapsed_time
       )
     end
-    if elapsed_time >= (process[1] + process[2]) / FRAMES_PER_SECOND
+    if elapsed_time >= (process[1] + process[2]) / @fps
       process[5] = false   # Mark process as finished
     end
   end
@@ -177,7 +176,7 @@ class AnimationPlayer::ParticleSprite
   end
 
   def update(elapsed_time)
-    frame = (elapsed_time * FRAMES_PER_SECOND).floor
+    frame = (elapsed_time * @fps).floor
     changed_properties = []
     @processes.each do |process|
       # Skip processes that aren't due to start yet

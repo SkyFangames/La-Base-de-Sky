@@ -2,6 +2,36 @@
 #
 #===============================================================================
 class AnimationEditor
+  def add_to_change_history
+    @redo_history.clear
+    new_snapshot = Marshal.load(Marshal.dump(@anim))
+    if @undo_history.last != new_snapshot
+      @undo_history.push(new_snapshot)
+      refresh_component_values(:batch_edits)
+    end
+  end
+
+  def undo_change
+    return if @undo_history.length <= 1
+    @redo_history.push(@undo_history.pop)
+    reapply_particles
+  end
+
+  def redo_change
+    return if @redo_history.empty?
+    @undo_history.push(@redo_history.pop)
+    reapply_particles
+  end
+
+  def reapply_particles
+    @anim = Marshal.load(Marshal.dump(@undo_history.last))
+    @components[:canvas].anim = @anim
+    @components[:timeline].set_particles(@anim[:particles])
+    refresh
+  end
+
+  #-----------------------------------------------------------------------------
+
   def refresh_editor_settings_options
     ctrls = @components[:editor_settings]
     # Color scheme
@@ -12,15 +42,15 @@ class AnimationEditor
     files.map! { |file| file[0].gsub(/_bg$/, "") }
     files.delete_if { |file| !pbResolveBitmap("Graphics/Battlebacks/" + file.sub(/_eve$/, "").sub(/_night$/, "") + "_message") }
     files.map! { |file| [file, file] }
-    ctrls.get_control(:canvas_bg).values = files.to_h
+    ctrls.get_control(:canvas_bg).options = files.to_h
     ctrls.get_control(:canvas_bg).value = @settings[:canvas_bg]
     # User and target sprite graphics
     files = get_all_files_in_folder("Graphics/Pokemon/Front", [".png", ".jpg", ".jpeg"])
     files.delete_if { |file| !GameData::Species.exists?(file[0]) }
     files.map! { |file| [file[0], file[0]] }
-    ctrls.get_control(:user_sprite_name).values = files.to_h
+    ctrls.get_control(:user_sprite_name).options = files.to_h
     ctrls.get_control(:user_sprite_name).value = @settings[:user_sprite_name]
-    ctrls.get_control(:target_sprite_name).values = files.to_h
+    ctrls.get_control(:target_sprite_name).options = files.to_h
     ctrls.get_control(:target_sprite_name).value = @settings[:target_sprite_name]
     # Default interpolation
     ctrls.get_control(:default_interpolation).value = @settings[:default_interpolation] || :linear
@@ -34,13 +64,13 @@ class AnimationEditor
       GameData::Move.each { |m| move_list.push([m.id.to_s, m.name]) }
       move_list.push(["STRUGGLE", _INTL("Struggle")]) if move_list.none? { |val| val[0] == "STRUGGLE" }
       move_list.sort! { |a, b| a[1] <=> b[1] }
-      ctrls.get_control(:move_label).text = _INTL("Move")
-      ctrls.get_control(:move).values = move_list.to_h
+      ctrls.get_control(:move_label).text = _INTL("Movimiento")
+      ctrls.get_control(:move).options = move_list.to_h
       ctrls.get_control(:move).value = @anim[:move]
       ctrls.get_control(:type).value = :move
     when :common, :opp_common
-      ctrls.get_control(:move_label).text = _INTL("Common animation")
-      ctrls.get_control(:move).values = COMMON_ANIMATIONS.sort
+      ctrls.get_control(:move_label).text = _INTL("Animación común")
+      ctrls.get_control(:move).options = COMMON_ANIMATIONS.sort
       ctrls.get_control(:type).value = :common
     end
     ctrls.get_control(:opp_variant).value = ([:opp_move, :opp_common].include?(@anim[:type]))
@@ -50,6 +80,7 @@ class AnimationEditor
     ctrls.get_control(:has_user).value = !@anim[:no_user]
     ctrls.get_control(:has_target).value = !@anim[:no_target]
     ctrls.get_control(:usable).value = !(@anim[:ignore] || false)
+    ctrls.get_control(:fps).value = @anim[:fps] || 20
   end
 
   def refresh_particle_property_options(idx_particle = nil)
@@ -78,16 +109,16 @@ class AnimationEditor
       ctrls.get_control(:focus).enable
     end
     focus_values = {
-      :foreground             => _INTL("Foreground"),
-      :midground              => _INTL("Midground"),
-      :background             => _INTL("Background"),
-      :user                   => _INTL("User"),
-      :target                 => _INTL("Target"),
-      :user_and_target        => _INTL("User and target"),
-      :user_side_foreground   => _INTL("In front of user's side"),
-      :user_side_background   => _INTL("Behind user's side"),
-      :target_side_foreground => _INTL("In front of target's side"),
-      :target_side_background => _INTL("Behind target's side")
+      :foreground             => _INTL("Frente"),
+      :midground              => _INTL("Medio"),
+      :background             => _INTL("Fondo"),
+      :user                   => _INTL("Usuario"),
+      :target                 => _INTL("Objetivo"),
+      :user_and_target        => _INTL("Usuario y objetivo"),
+      :user_side_foreground   => _INTL("Delante del lado del usuario"),
+      :user_side_background   => _INTL("Detrás del lado del usuario"),
+      :target_side_foreground => _INTL("Delante del lado del objetivo"),
+      :target_side_background => _INTL("Detrás del lado del objetivo")
     }
     if @anim[:no_user]
       GameData::Animation::FOCUS_TYPES_WITH_USER.each { |f| focus_values.delete(f) }
@@ -95,7 +126,7 @@ class AnimationEditor
     if @anim[:no_target]
       GameData::Animation::FOCUS_TYPES_WITH_TARGET.each { |f| focus_values.delete(f) }
     end
-    ctrls.get_control(:focus).values = focus_values
+    ctrls.get_control(:focus).options = focus_values
     # Spawner quantity
     if !this_particle[:spawner] || this_particle[:spawner] == :none
       ctrls.get_control(:spawn_quantity).disable
@@ -140,6 +171,29 @@ class AnimationEditor
     ctrls.refresh
   end
 
+  def refresh_command_batch_editor_options
+    editor = @components[:command_batch_editor]
+    # Set list of particles and deselect them all
+    particle_names = @anim[:particles].map { |part| part[:name] }
+    # TODO: Ensure the SE particle is always last. Else make particle_names a
+    #       hash and make CheckboxList support a hash.
+    particle_names.delete("SE")
+    editor.get_control(:particles).options = particle_names
+    editor.get_control(:particles).deselect_all
+    # Set keyframe range to cover entire animation
+    editor.get_control(:start_keyframe).value = 0
+    editor.get_control(:end_keyframe).value = @components[:timeline].duration
+    # Set all value boxes to 0
+    properties = []
+    AnimationEditor::ListedParticle::PROPERTY_GROUPS.each_value do |props|
+      props.each do |prop|
+        next if [:color, :tone].include?(prop)
+        properties.push(prop) if GameData::Animation.property_can_interpolate?(prop)
+      end
+    end
+    properties.each { |property| editor.get_control(property).value = 0 }
+  end
+
   def refresh_component_values(component_sym, extra_value = nil)
     component = @components[component_sym]
     case component_sym
@@ -149,7 +203,7 @@ class AnimationEditor
       user_indices = { 0 => "0" }
       user_indices[2] = "2" if @settings[:side_sizes][0] >= 2
       user_indices[4] = "4" if @settings[:side_sizes][0] >= 3
-      component.get_control(:user_index).values = user_indices
+      component.get_control(:user_index).options = user_indices
       component.get_control(:user_index).value = @settings[:user_index]
       component.get_control(:target_indices).value = @settings[:target_indices].join(",")
       component.get_control(:user_opposes).value = @settings[:user_opposes]
@@ -158,6 +212,17 @@ class AnimationEditor
     when :canvas
       component.keyframe = keyframe
       component.selected_particle = particle_index
+    when :batch_edits
+      if @undo_history.length > 1
+        component.get_control(:undo).enable
+      else
+        component.get_control(:undo).disable
+      end
+      if @redo_history.length > 0
+        component.get_control(:redo).enable
+      else
+        component.get_control(:redo).disable
+      end
     when :timeline
       # Disable the "move particle up/down" buttons if the selected particle
       # can't move that way (or there is no selected particle)
@@ -178,6 +243,8 @@ class AnimationEditor
       refresh_animation_property_options
     when :particle_properties
       refresh_particle_property_options(extra_value)
+    when :command_batch_editor
+      refresh_command_batch_editor_options
     end
   end
 
@@ -201,17 +268,19 @@ class AnimationEditor
       idx_particle, property = @components[:timeline].particle_index_and_property
       if property
         particle = @anim[:particles][idx_particle]
-        value = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, property, keyframe)[0]
-        new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value)
-        if new_cmds
-          particle[property] = new_cmds
-          # NOTE: Intentionally not adding @settings[:default_interpolation]
-          #       here, because the inserted command will have the same value as
-          #       the one before it and won't need interpolating anyway.
-        else
-          particle.delete(property)
+        if !AnimationEditor::ParticleDataHelper.has_command_at?(particle, property, keyframe)
+          value = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, property, keyframe)[0]
+          new_cmds = AnimationEditor::ParticleDataHelper.add_command(particle, property, keyframe, value)
+          if new_cmds
+            particle[property] = new_cmds
+            # NOTE: Intentionally not adding @settings[:default_interpolation]
+            #       here, because the inserted command will have the same value as
+            #       the one before it and won't need interpolating anyway.
+          else
+            particle.delete(property)
+          end
+          refresh
         end
-        refresh
       end
     elsif Input.triggerex?(:DELETE)
       idx_particle, property = @components[:timeline].particle_index_and_property
@@ -225,6 +294,12 @@ class AnimationEditor
         end
         refresh
       end
+    elsif Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+      if Input.triggerex?(:Z)
+        undo_change
+      elsif Input.triggerex?(:Y)
+        redo_change
+      end
     end
   end
 
@@ -237,10 +312,10 @@ class AnimationEditor
       component.update
       @captured = sym if component.busy?
       if component.changed?
-        if component.respond_to?("values")
-          values = component.values
-          if values
-            values.each_pair do |property, value|
+        if component.respond_to?("changed_controls")
+          changed_ctrls = component.changed_controls
+          if changed_ctrls
+            changed_ctrls.each_pair do |property, value|
               apply_changed_value(sym, property, value)
             end
           end
@@ -269,8 +344,8 @@ class AnimationEditor
         play_animation
         @ready_to_play = false
       elsif @captured.nil? && @quit
-        case message(_INTL("Do you want to save changes to the animation?"),
-                    [:yes, _INTL("Yes")], [:no, _INTL("No")], [:cancel, _INTL("Cancel")])
+        case message(_INTL("¿Quieres guardar los cambios en la animación?"),
+                     [:yes, _INTL("Sí")], [:no, _INTL("No")], [:cancel, _INTL("Cancelar")])
         when :yes
           save
         when :cancel

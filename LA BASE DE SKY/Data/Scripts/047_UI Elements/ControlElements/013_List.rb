@@ -7,7 +7,7 @@ class UIControls::List < UIControls::BaseControl
   ROW_HEIGHT           = 24
   TEXT_PADDING_X       = 4
 
-  def initialize(width, height, viewport, values = [], row_height = ROW_HEIGHT)
+  def initialize(width, height, viewport, options = [], row_height = ROW_HEIGHT)
     super(width, height, viewport)
     @scrollbar = UIControls::Scrollbar.new(height - (LIST_FRAME_THICKNESS * 2), viewport)
     @scrollbar.x = width - UIControls::Scrollbar::SLIDER_WIDTH - LIST_FRAME_THICKNESS
@@ -20,7 +20,7 @@ class UIControls::List < UIControls::BaseControl
     @rows_count = (height / @row_height).floor   # Number of rows visible at once
     @top_row  = 0
     @selected = -1
-    self.values = values
+    self.options = options
   end
 
   def dispose
@@ -60,27 +60,27 @@ class UIControls::List < UIControls::BaseControl
     invalidate if self.respond_to?(:invalidate)
   end
 
-  # Each value in @values is an array: [id, text].
-  def values=(new_vals)
-    @values = new_vals
+  # Each value in @options is an array: [id, text].
+  def options=(new_vals)
+    @options = new_vals
     set_interactive_rects
-    @scrollbar.range = [@values.length, 1].max * @row_height
+    @scrollbar.range = [@options.length, 1].max * @row_height
     if @scrollbar.visible
       self.top_row = (@scrollbar.position.to_f / @row_height).round
     else
       self.top_row = 0
     end
-    self.selected = -1 if @selected >= @values.length
+    self.selected = -1 if @selected >= @options.length
     invalidate
   end
 
   # Returns the ID of the selected row.
   def value
     return nil if @selected < 0
-    if @values.is_a?(Array)
-      return (@values[@selected].is_a?(Array)) ? @values[@selected][0] : @selected
-    elsif @values.is_a?(Hash)
-      return @values.keys[@selected]
+    if @options.is_a?(Array)
+      return (@options[@selected].is_a?(Array)) ? @options[@selected][0] : @selected
+    elsif @options.is_a?(Hash)
+      return @options.keys[@selected]
     end
     return nil
   end
@@ -89,7 +89,7 @@ class UIControls::List < UIControls::BaseControl
     old_val = @top_row
     @top_row = val
     if @scrollbar.visible
-      @top_row = @top_row.clamp(0, @values.length - @rows_count)
+      @top_row = @top_row.clamp(0, @options.length - @rows_count)
     else
       @top_row = 0
     end
@@ -120,7 +120,7 @@ class UIControls::List < UIControls::BaseControl
 
   def set_interactive_rects
     @interactions = {}
-    @values.length.times do |i|
+    @options.length.times do |i|
       @interactions[i] = Rect.new(
         LIST_FRAME_THICKNESS, LIST_FRAME_THICKNESS + (@row_height * i),
         width - (LIST_FRAME_THICKNESS * 2), @row_height
@@ -154,7 +154,7 @@ class UIControls::List < UIControls::BaseControl
     # Draw control outline
     self.bitmap.outline_rect(0, 0, width, height, get_color_of(:line))
     # Draw text options
-    @values.each_with_index do |val, i|
+    @options.each_with_index do |val, i|
       next if i < @top_row || i >= @top_row + @rows_count
       if @selected == i
         self.bitmap.fill_rect(
@@ -263,7 +263,7 @@ class UIControls::List < UIControls::BaseControl
     elsif @hover_area
       wheel_v = Input.scroll_v
       scroll_dist = UIControls::Scrollbar::SCROLL_DISTANCE
-      scroll_dist /= 2 if @values.length / @rows_count > 20   # Arbitrary 20
+      scroll_dist /= 2 if @options.length / @rows_count > 20   # Arbitrary 20
       if wheel_v > 0   # Scroll up
         @scrollbar.slider_top -= scroll_dist
       elsif wheel_v < 0   # Scroll down

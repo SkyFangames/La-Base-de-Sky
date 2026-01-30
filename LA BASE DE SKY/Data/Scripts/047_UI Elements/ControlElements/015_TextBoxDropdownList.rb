@@ -25,9 +25,9 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
 
   #-----------------------------------------------------------------------------
 
-  def values=(new_vals)
+  def options=(new_vals)
     @options = new_vals
-    @dropdown_menu.values = @options if @dropdown_menu
+    @dropdown_menu.options = @options if @dropdown_menu
   end
 
   #-----------------------------------------------------------------------------
@@ -214,7 +214,7 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
       filtered_options = @options.select do |key, val|
         key.downcase.include?(@value.downcase) || val.downcase.include?(@value.downcase)
       end
-      @dropdown_menu.values = filtered_options
+      @dropdown_menu.options = filtered_options
       @applied_filter = true
     end
   end

@@ -17,12 +17,12 @@ class UIControls::SEPicker < UIControls::BaseControl
   PICKER_BOX_WIDTH  = (2 * PICKER_BOX_LIST_X) + PICKER_BOX_LIST_WIDTH   # 210
   PICKER_BOX_HEIGHT = (2 * PICKER_BOX_LIST_Y) + PICKER_BOX_LIST_HEIGHT + PICKER_BOX_SPACING + PICKER_BOX_BUTTON_HEIGHT   # 126
 
-  # NOTE: @values are the contents of the list. @value is temporary and used
+  # NOTE: @options are the contents of the list. @value is temporary and used
   #       only when a button is pressed (it contains the ID of that button and
   #       the list's index at that time).
-  def initialize(width, height, viewport, values)
+  def initialize(width, height, viewport, options)
     super(width, height, viewport)
-    @values              = values
+    @options             = options
     @toggling_picker_box = false
   end
 
@@ -33,9 +33,9 @@ class UIControls::SEPicker < UIControls::BaseControl
 
   #-----------------------------------------------------------------------------
 
-  def value=(new_values)
-    return if @values == new_values
-    @values = new_values
+  def value=(new_options)
+    return if @options == new_options
+    @options = new_options
     invalidate
   end
 
@@ -128,7 +128,7 @@ class UIControls::SEPicker < UIControls::BaseControl
 
   def refresh_picker_box
     return if !@picker_box_bg
-    @picker_controls[:list].values = @values
+    @picker_controls[:list].options = @options
     if @picker_controls[:list].value
       @picker_controls[:edit].enable
       @picker_controls[:delete].enable

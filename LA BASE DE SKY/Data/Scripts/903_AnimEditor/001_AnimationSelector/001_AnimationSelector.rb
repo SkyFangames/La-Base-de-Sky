@@ -223,7 +223,7 @@ class AnimationEditor::AnimationSelector
   end
 
   def confirm_message(text)
-    return message(text, [:yes, _INTL("Yes")], [:no, _INTL("No")]) == :yes
+    return message(text, [:yes, _INTL("Sí")], [:no, _INTL("No")]) == :yes
   end
 
   #-----------------------------------------------------------------------------
@@ -316,16 +316,16 @@ class AnimationEditor::AnimationSelector
     when 0
       @components.get_control(:moves).set_highlighted
       @components.get_control(:commons).set_not_highlighted
-      @components.get_control(:moves_list).values = @move_list
-      @components.get_control(:moves_label).text = _INTL("Moves")
+      @components.get_control(:moves_list).options = @move_list
+      @components.get_control(:moves_label).text = _INTL("Movimientos")
     when 1
       @components.get_control(:moves).set_not_highlighted
       @components.get_control(:commons).set_highlighted
-      @components.get_control(:moves_list).values = @common_list
-      @components.get_control(:moves_label).text = _INTL("Common animations")
+      @components.get_control(:moves_list).options = @common_list
+      @components.get_control(:moves_label).text = _INTL("Animaciones comunes")
     end
     # Put the correct list into the animations list
-    @components.get_control(:animations_list).values = selected_move_animations
+    @components.get_control(:animations_list).options = selected_move_animations
     # Enable/disable buttons depending on what is selected
     if @components.get_control(:animations_list).value
       @components.get_control(:edit).enable
@@ -380,7 +380,7 @@ class AnimationEditor::AnimationSelector
       end
     when :delete
       anim_id = selected_animation_id
-      if anim_id && confirm_message(_INTL("Are you sure you want to delete this animation?"))
+      if anim_id && confirm_message(_INTL("¿Estás seguro de que quieres eliminar esta animación?"))
         pbs_path = GameData::Animation.get(anim_id).pbs_path
         GameData::Animation::DATA.delete(anim_id)
         if GameData::Animation::DATA.any? { |_key, anim| anim.pbs_path == pbs_path }
@@ -397,7 +397,7 @@ class AnimationEditor::AnimationSelector
   def update
     @components.update
     if @components.changed?
-      @components.values.each_pair do |property, value|
+      @components.changed_controls.each_pair do |property, value|
         apply_button_press(property)
       end
       @components.clear_changed
