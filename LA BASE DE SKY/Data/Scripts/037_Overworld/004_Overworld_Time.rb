@@ -188,7 +188,7 @@ def pbGetAbbrevMonthName(month, without_dot = false)
           _INTL("Feb."),
           _INTL("Mar."),
           _INTL("Abr."),
-          _INTL("May"),
+          _INTL("May."),
           _INTL("Jun."),
           _INTL("Jul."),
           _INTL("Ago."),

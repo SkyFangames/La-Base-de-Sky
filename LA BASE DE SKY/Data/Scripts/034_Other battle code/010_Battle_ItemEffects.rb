@@ -628,7 +628,7 @@ Battle::ItemEffects::StatusCure.add(:RAWSTBERRY,
 
 Battle::ItemEffects::StatLossImmunity.add(:CLEARAMULET,
   proc { |item, battler, stat, battle, showMessages|
-    battle.pbDisplay(_INTL("The effects of {1}'s {2} prevent its stats from being lowered!",
+    battle.pbDisplay(_INTL("¡Los efectos del {2} de {1} evitan que sus estadísticas bajen!",
                            battler.pbThis, GameData::Item.get(item).name)) if showMessages
     next true
   }
@@ -647,7 +647,7 @@ Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
     next false if !battle.pbCanSwitchOut?(battler.index)   # Battler can't switch out
     next false if !battle.pbCanChooseNonActive?(battler.index)   # No Pokémon can switch in
     battle.pbCommonAnimation("UseItem", battler)
-    battle.pbDisplay(_INTL("{1} is switched out by the {2}!", battler.pbThis, battler.itemName))
+    battle.pbDisplay(_INTL("¡{1} se retira por {2}!", battler.pbThis, battler.itemName))
     battler.pbConsumeItem(true, false)
     if battle.endOfRound   # Just switch out
       battle.scene.pbRecall(battler.index) if !battler.fainted?
@@ -678,19 +678,19 @@ Battle::ItemEffects::CopyStatChanges.add(:MIRRORHERB,
     end
     next if raises.none? { |stat, increment| increment > 0 }
     battle.pbCommonAnimation("UseItem", battler)
-    battle.pbDisplay(_INTL("{1} used its {2} to mirror its opponent's stat changes!",
+    battle.pbDisplay(_INTL("¡{1} usó su {2} para copiar los cambios de estadísticas del rival!",
                             battler.pbThis, battler.itemName))
     raises.each_pair do |stat, increment|
       next if increment <= 0
       if stat == :CRITICAL_HIT
         battler.setCriticalHitRate(increment)
         battle.pbCommonAnimation("CriticalHitRateUp", battler)
-        battle.pbDisplay(_INTL("{1} is getting pumped!", battler.pbThis))
+        battle.pbDisplay(_INTL("¡{1} se está concentrando!", battler.pbThis))
       else
         battler.pbRaiseStatStage(stat, increment, battler)
       end
     end
-    battle.pbDisplay(_INTL("The {1} was used up...", battler.itemName))
+    battle.pbDisplay(_INTL("¡{1} se consumió...", battler.itemName))
     battler.pbHeldItemTriggered(item)
   }
 )
@@ -1890,7 +1890,7 @@ Battle::ItemEffects::OnWeatherChange.add(:BOOSTERENERGY,
     battle.pbCommonAnimation("UseItem", battler)
     battle.pbDisplay(_INTL("¡{1} se ha consumido!", GameData::Item.get(item).name))
     battle.pbShowAbilitySplash(battler)
-    battle.pbDisplay(_INTL("{1} usó su {2} para activar {3}!",
+    battle.pbDisplay(_INTL("¡{1} usó su {2} para activar {3}!",
                            battler.pbThis, GameData::Item.get(item).name, battler.abilityName))
     battle.pbDisplay(_INTL("¡{1} aumentó su {2}!", battler.pbThis, GameData::Stat.get(best[0]).name))
     battle.pbHideAbilitySplash(battler)
@@ -1918,11 +1918,11 @@ Battle::ItemEffects::OnTerrainChange.add(:BOOSTERENERGY,
     battler.effects[PBEffects::ProtosynthesisStat] = best[0]
     battler.effects[PBEffects::BoosterEnergy] = true
     battle.pbCommonAnimation("UseItem", battler)
-    battle.pbDisplay(_INTL("The {1} was used up...", GameData::Item.get(item).name))
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", GameData::Item.get(item).name))
     battle.pbShowAbilitySplash(battler)
-    battle.pbDisplay(_INTL("{1} used its {2} to activate {3}!",
+    battle.pbDisplay(_INTL("¡{1} usó su {2} para activar {3}!",
                            battler.pbThis, GameData::Item.get(item).name, battler.abilityName))
-    battle.pbDisplay(_INTL("{1}'s {2} was heightened!", battler.pbThis, GameData::Stat.get(best[0]).name))
+    battle.pbDisplay(_INTL("¡{1} aumentó su {2}!", battler.pbThis, GameData::Stat.get(best[0]).name))
     battle.pbHideAbilitySplash(battler)
     battler.pbHeldItemTriggered(item)
     next true

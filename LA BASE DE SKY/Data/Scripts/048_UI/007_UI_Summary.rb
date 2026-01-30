@@ -568,7 +568,7 @@ class PokemonSummary_Scene
     # Draw all images
     pbDrawImagePositions(overlay, imagepos)
     # Write various bits of text
-    pagename = [_INTL("INFORMACION"),
+    pagename = [_INTL("INFORMACIÓN"),
                 _INTL("NOTAS ENTREN."),
                 _INTL("ESTADÍSTICAS"),
                 _INTL("MOVIMIENTOS"),

@@ -126,7 +126,7 @@ ItemHandlers::UseFromBag.add(:ESCAPEROPE, proc { |item, bag_screen|
   if ($PokemonGlobal.escapePoint rescue false) && $PokemonGlobal.escapePoint.length > 0
     next 2   # End screen and use item
   end
-  pbMessage(_INTL("Can't use that here."))
+  pbMessage(_INTL("No puede usarse aquí."))
   next 0
 })
 ItemHandlers::ConfirmUseInField.add(:ESCAPEROPE, proc { |item|   # Called from Ready Menu
@@ -1211,7 +1211,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:KELPSYBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:KELPSYBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :ATTACK, qty, [
-      _INTL("¡{1} te adora! Its base Attack fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Aataque base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Ataque de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Ataque de base!", pkmn.name)
     ]
@@ -1228,7 +1228,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:QUALOTBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:QUALOTBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :DEFENSE, qty, [
-      _INTL("¡{1} te adora! Its base Defense fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Defensa base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Defensa de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Defensa de base!", pkmn.name)
     ]
@@ -1245,7 +1245,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:HONDEWBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:HONDEWBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :SPECIAL_ATTACK, qty, [
-      _INTL("¡{1} te adora! Its base Special Attack fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Ataque Especial base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Ataque Especial de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Ataque Especial de base!", pkmn.name)
     ]
@@ -1262,7 +1262,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:GREPABERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:GREPABERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :SPECIAL_DEFENSE, qty, [
-      _INTL("¡{1} te adora! Its base Special Defense fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Defensa Especial base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Defensa Especial de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Defensa Especial de base!", pkmn.name)
     ]
@@ -1279,7 +1279,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:TAMATOBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:TAMATOBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :SPEED, qty, [
-      _INTL("¡{1} te adora! Its base Speed fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Velocidad base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Velocidad de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Veloc de base!", pkmn.name)
     ]
@@ -1737,7 +1737,7 @@ ItemHandlers::UseOnPokemon.add(:NLUNARIZERUSED, proc { |item, qty, pkmn, scene|
     scene.pbDisplay(_INTL("No se puede usar en Pokémon debilitados."))
     next false
   elsif $player.party_full?
-    scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
+    scene.pbDisplay(_INTL("No tienes espacio para separar a los Pokémon."))
     next false
   end
   # Unfusing
@@ -1760,7 +1760,7 @@ ItemHandlers::UseOnPokemon.add(:REINSOFUNITY, proc { |item, qty, pkmn, scene|
     next false
   end
   # Fusing
-  chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
+  chosen = scene.pbChoosePokemon(_INTL("¿Fusionar con qué Pokémon?"))
   next false if chosen < 0
   other_pkmn = $player.party[chosen]
   if pkmn == other_pkmn
