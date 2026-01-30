@@ -20,6 +20,10 @@ module Settings
     # También determina si la tasa de golpe crítico puede ser copiada por 
     # Transform/Psych Up.
     NEW_CRITICAL_HIT_RATE_MECHANICS             = (MECHANICS_GENERATION >= 6)
+
+    # El fondo se mueve a los lados al inicio de la batalla, junto con las bases laterales y el/los entrenador(es)/Pokémon. 
+    # Si esto es true, el fondo no se moverá (las bases/entrenadores/Pokémon sí lo harán).
+    DISABLE_SLIDING_BACKGROUND = false
   
     #=============================================================================
 

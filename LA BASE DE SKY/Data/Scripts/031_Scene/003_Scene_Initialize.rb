@@ -141,9 +141,11 @@ class Battle::Scene
     # Apply graphics
     bg = pbAddSprite("battle_bg", 0, 0, battleBG, @viewport)
     bg.z = 0
-    bg = pbAddSprite("battle_bg2", -Graphics.width, 0, battleBG, @viewport)
-    bg.z      = 0
-    bg.mirror = true
+    if !Settings::DISABLE_SLIDING_BACKGROUND
+      bg = pbAddSprite("battle_bg2", -Graphics.width, 0, battleBG, @viewport)
+      bg.z      = 0
+      bg.mirror = true
+    end
     2.times do |side|
       baseX, baseY = Battle::Scene.pbBattlerPosition(side)
       base = pbAddSprite("base_#{side}", baseX, baseY,
