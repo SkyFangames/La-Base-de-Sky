@@ -684,7 +684,7 @@ class PokemonStorageScene
       box = @storage[i]
       if box
         if swapping  && i == @storage.currentBox
-          commands.push("No intercambiar")
+          commands.push(_INTL("No intercambiar"))
           next
         end
 		    commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))

@@ -108,7 +108,7 @@ class Pokemon
 
   def inspect
     str = super.chop
-    str << sprintf(" %s Nv.%s>", @species, @level.to_s || "???")
+    str << sprintf(_INTL(" %s Nv.%s>"), @species, @level.to_s || "???")
     return str
   end
 
@@ -484,6 +484,11 @@ class Pokemon
     end
     return @shiny
   end
+  
+  def shiny=(value)
+    @shiny = value
+    @super_shiny = false if !@shiny
+  end
 
   # @return [Boolean] whether this Pokémon is super shiny (differently colored,
   #   square sparkles)
@@ -494,14 +499,21 @@ class Pokemon
       c = (a >> 16) & 0xFFFF
       d = b ^ c
       @super_shiny = (d == 0)
+      @super_shiny = (d < (Settings::SHINY_POKEMON_CHANCE)/10) if Settings::SUPER_SHINY_1_DE_10
     end
     return @super_shiny
   end
-
+  
   # @param value [Boolean] whether this Pokémon is super shiny
   def super_shiny=(value)
     @super_shiny = value
     @shiny = true if @super_shiny
+  end
+
+  # Makes this Pokémon not shiny.
+  def no_shinyness
+    @shiny = false
+    @super_shiny = false
   end
 
   #=============================================================================

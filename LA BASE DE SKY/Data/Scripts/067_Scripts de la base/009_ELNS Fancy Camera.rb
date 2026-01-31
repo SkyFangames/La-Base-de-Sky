@@ -14,7 +14,7 @@ class FancyCamera
   OVERRIDE_SCROLL_MAP = false
 end
 
-#if $game_switches && $game_switches[CAMERA_FANCY]
+#if $game_switches && $game_switches[Settings::CAMERA_FANCY]
 
 class Game_Temp
   attr_accessor :camera_pos, :camera_x, :camera_y, :camera_shake,
@@ -250,7 +250,7 @@ class Game_Player < Game_Character
     speed = $game_temp.camera_speed * 0.2
 
     debug_active = defined?($passa_sprite) && $passa_sprite && !$passa_sprite.disposed?
-    fancy_switch = $game_switches && $game_switches[CAMERA_FANCY]
+    fancy_switch = $game_switches && $game_switches[Settings::CAMERA_FANCY]
 
     if debug_active
       # Si el DebugPassability está activo

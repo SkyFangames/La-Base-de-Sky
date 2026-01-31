@@ -70,6 +70,9 @@ module Settings
   SHINY_POKEMON_CHANCE = (MECHANICS_GENERATION >= 6) ? 16 : 8
   # Si los Super Variocolor están activados (usan una animación distinta).
   SUPER_SHINY          = (MECHANICS_GENERATION >= 8)
+  # Si quieres que, en caso de haber super variocolor, el % sea 1 de cada 10
+  # (en lugar de 1 de cada 65536).
+  SUPER_SHINY_1_DE_10  = true
 
   LEGENDARIES_HAVE_SOME_PERFECT_IVS   = (MECHANICS_GENERATION >= 6)
   # La posibilidad de que un Pokémon salvaje o de Huevo tenga Pokérus

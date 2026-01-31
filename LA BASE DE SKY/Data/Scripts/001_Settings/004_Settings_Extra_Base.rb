@@ -15,6 +15,21 @@ module Settings
   # el formato es [:IDOBJETO] por ejemplo [:SITRUSBERRY]
   RESTORE_HELD_ITEMS_BLACKLIST = []
 
+  # Esta es la lista de bayas por si las quieres añadir en los corchetes.
+=begin 
+  :CHERIBERRY, :CHESTOBERRY, :PECHABERRY, :RAWSTBERRY,
+  :ASPEARBERRY, :LEPPABERRY, :ORANBERRY, :PERSIMBERRY, :LUMBERRY, :SITRUSBERRY,
+  :FIGYBERRY, :WIKIBERRY, :MAGOBERRY, :AGUAVBERRY, :IAPAPABERRY, :RAZZBERRY,
+  :BLUKBERRY, :NANABBERRY, :WEPEARBERRY, :PINAPBERRY, :POMEGBERRY, :KELPSYBERRY,
+  :QUALOTBERRY, :HONDEWBERRY, :GREPABERRY, :TAMATOBERRY, :CORNNBERRY, :MAGOSTBERRY,
+  :RABUTABERRY, :NOMELBERRY, :SPELONBERRY, :PAMTREBERRY, :WATMELBERRY, :DURINBERRY,
+  :BELUEBERRY, :OCCABERRY, :PASSHOBERRY, :WACANBERRY, :RINDOBERRY, :YACHEBERRY,
+  :CHOPLEBERRY, :KEBIABERRY, :SHUCABERRY, :COBABERRY, :PAYAPABERRY, :TANGABERRY,
+  :CHARTIBERRY, :KASIBBERRY, :HABANBERRY, :COLBURBERRY, :BABIRIBERRY, :ROSELIBERRY,
+  :CHILANBERRY, :LIECHIBERRY, :GANLONBERRY, :SALACBERRY, :PETAYABERRY, :APICOTBERRY,
+  :LANSATBERRY, :STARFBERRY, :ENIGMABERRY, :MICLEBERRY, :CUSTAPBERRY, :JABOCABERRY,
+  :ROWAPBERRY, :KEEBERRY, :MARANGABERRY
+=end
   
   ################################################################################
   #  CONFIGURACIÓN DEL DELUXE BATTLE SCRIPT
@@ -41,10 +56,19 @@ module Settings
   EXPSHARE_ENABLED = true
 
 
+  ################################################################################
+  #  CONFIGURACIÓN DE POKÉMON
+  ################################################################################
+  # Elige si quieres que las formas de la línea evolutiva de Spewpa dependan de el ID del jugador.
+  LINEA_DE_SPEWPA_POR_ID = true
+
+  # Elige si quieres que las formas regionales dependan de la región en la que esté el jugador.
+  REGIONAL_FORMS_DEPEND_ON_MAP_LOCATION = true
+
   
-################################################################################
-#  CONFIGURACIÓN DEL ENHANCED BATTLE UI
-################################################################################
+  ################################################################################
+  #  CONFIGURACIÓN DEL ENHANCED BATTLE UI
+  ################################################################################
   # Almacena la ruta para los gráficos utilizados por este plugin.
   BATTLE_UI_GRAPHICS_PATH = "Graphics/Plugins/Enhanced Battle UI/"
   
@@ -77,9 +101,9 @@ module Settings
   # Al curarlo vuelven a su color original
   GREY_OUT_FAINTED = true
   
-################################################################################
-#  POKÉDEX AVANZADA
-################################################################################
+  ################################################################################
+  #  POKÉDEX AVANZADA
+  ################################################################################
 
   # Si está en true hace que en las dexes verifique tambien si has visto formas alternativas
   # esto es util si quieres hacer una dex solo de formas regionales o megas
@@ -112,18 +136,18 @@ module Settings
   SHOW_STAT_CHANGES_WITH_POKEAPI = false
 
 
-  
-################################################################################
-#  TURBO
-################################################################################
-# Habilitar o deshabilitar opciones del menú, habilitado por defecto.
+    
+  ################################################################################
+  #  TURBO
+  ################################################################################
+  # Habilitar o deshabilitar opciones del menú, habilitado por defecto.
   SPEED_OPTIONS = true
   
   
   
-################################################################################
-#  ENHANCED POKÉMON UI
-################################################################################
+  ################################################################################
+  #  ENHANCED POKÉMON UI
+  ################################################################################
   # Ruta de gráficos
   # Almacena la ruta para los gráficos utilizados por este plugin.
   POKEMON_UI_GRAPHICS_PATH = "Graphics/Plugins/Enhanced Pokemon UI/"
@@ -179,13 +203,11 @@ module Settings
   USE_DEFAULT_PLAYER_NAMES = false
   MALE_PLAYER_NAME = "Rojo"
   FEMALE_PLAYER_NAME = "Hoja"
+
+  # Es el número de switch que usa la Fancy Camera. Debes encender este switch
+  # para activar la cámara fancy.
+  CAMERA_FANCY = 75
 end
-
-
-# Poner a verdadero para poder usar la cámara elegante con las nuevas funciones.
-# Es el número del Switch
-CAMERA_FANCY = 59
-
 
 
 #===============================================================================
