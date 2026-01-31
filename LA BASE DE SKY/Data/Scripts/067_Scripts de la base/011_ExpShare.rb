@@ -153,32 +153,32 @@ if Settings::USE_NEW_EXP_SHARE
         def pbGainExp
             # Play wild victory music if it's the end of the battle (has to be here)
             @scene.pbWildBattleSuccess if wildBattle? && pbAllFainted?(1) && !pbAllFainted?(0)
-            return if !@internalBattle || !@expGain
+            return if !@internalBattle || @rules[:no_exp_gain]
             # Go through each battler in turn to find the Pokémon that participated in
             # battle against it, and award those Pokémon Exp/EVs
-            expAll = $player.has_exp_all || $bag.has?(:EXPALL) 
+            expAll = $player.has_exp_all || $bag.has?(:EXPALL)
             p1 = pbParty(0)
             @battlers.each do |b|
-            next unless b&.opposes?   # Can only gain Exp from fainted foes
-            next if b.participants.length == 0
-            next unless b.fainted? || b.captured
-            # Count the number of participants
-            numPartic = 0
-            b.participants.each do |partic|
+                next unless b&.opposes?   # Can only gain Exp from fainted foes
+                next if b.participants.length == 0
+                next unless b.fainted? || b.captured
+                # Count the number of participants
+                numPartic = 0
+                b.participants.each do |partic|
                 next unless p1[partic]&.able? && pbIsOwner?(0, partic)
                 numPartic += 1
-            end
-            # Find which Pokémon have an Exp Share
-            expShare = []
-            if !expAll
+                end
+                # Find which Pokémon have an Exp Share
+                expShare = []
+                if !expAll
                 eachInTeam(0, 0) do |pkmn, i|
                     next if !pkmn.able?
-                    next if (!pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE) && !pkmn.expshare
+                    next if !pkmn.hasItem?(:EXPSHARE) && initialItem(0, i) != :EXPSHARE
                     expShare.push(i)
                 end
-            end
-            # Calculate EV and Exp gains for the participants
-            if numPartic > 0 || expShare.length > 0 || expAll
+                end
+                # Calculate EV and Exp gains for the participants
+                if numPartic > 0 || expShare.length > 0 || expAll
                 unGroupMessage = !Settings::GROUP_EXP_SHARE_MESSAGE && expShare.length > 0 && expShare.length > b.participants.length ? true : false
                 # Gain EVs and Exp for participants
                 eachInTeam(0, 0) do |pkmn, i|
@@ -195,17 +195,17 @@ if Settings::USE_NEW_EXP_SHARE
                 if expAll
                     showMessage = true
                     eachInTeam(0, 0) do |pkmn, i|
-                        next if !pkmn.able?
-                        next if b.participants.include?(i) || expShare.include?(i) 
-                        pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!")) if showMessage && (expShare.length > numPartic && pbParty(0).length > 1)
-                        showMessage = false
-                        pbGainEVsOne(i, b)
-                        pbGainExpOne(i, b, numPartic, expShare, expAll, false)
+                    next if !pkmn.able?
+                    next if b.participants.include?(i) || expShare.include?(i)
+                    pbDisplayPaused(_INTL("¡Tus otros Pokémon también ganaron puntos de experiencia!")) if showMessage && (expShare.length > numPartic && pbParty(0).length > 1)
+                    showMessage = false
+                    pbGainEVsOne(i, b)
+                    pbGainExpOne(i, b, numPartic, expShare, expAll, false)
                     end
                 end
-            end
-            # Clear the participants array
-            b.participants = []
+                end
+                # Clear the participants array
+                b.participants = []
             end
         end
     end
