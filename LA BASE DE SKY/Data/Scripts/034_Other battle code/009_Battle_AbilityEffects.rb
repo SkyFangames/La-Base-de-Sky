@@ -217,12 +217,12 @@ module Battle::AbilityEffects
     DamageCalcFromTargetAlly.trigger(ability, user, target, move, mults, power, type)
   end
 
-  def self.triggerCriticalCalcFromUser(ability, user, target, move, crit_stage)
-    return trigger(CriticalCalcFromUser, ability, user, target, move, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromUser(ability, user, target, crit_stage, move = nil)
+    return trigger(CriticalCalcFromUser, ability, user, target, crit_stage, move, ret: crit_stage)
   end
 
-  def self.triggerCriticalCalcFromTarget(ability, user, target, move, crit_stage)
-    return trigger(CriticalCalcFromTarget, ability, user, target, move, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromTarget(ability, user, target, crit_stage, move = nil)
+    return trigger(CriticalCalcFromTarget, ability, user, target, crit_stage, move, ret: crit_stage)
   end
 
   #-----------------------------------------------------------------------------
