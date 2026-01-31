@@ -305,6 +305,9 @@ class PokemonPokedex_Scene
   CAPTURED_TEXT_Y = 346
   CAPTURED_NUMBER_X = 152
   CAPTURED_NUMBER_Y = 346
+  # Colores de texto en refresh
+  REFRESH_BASE_COLOR   = Color.new(88, 88, 80)
+  REFRESH_SHADOW_COLOR = Color.new(168, 184, 184)
 
   # Constantes para el control deslizante (slider) del listado
   SLIDER_X = 468                           # X del slider
@@ -635,8 +638,8 @@ class PokemonPokedex_Scene
   def pbRefresh
     overlay = @sprites["overlay"].bitmap
     overlay.clear
-    base   = Color.new(88, 88, 80)
-    shadow = Color.new(168, 184, 184)
+    base   = REFRESH_BASE_COLOR
+    shadow = REFRESH_SHADOW_COLOR
     iconspecies = @sprites["pokedex"].species 
     iconspecies = nil if !$player.seen?(iconspecies) && !Settings::SHOW_SILHOUETTES_IN_DEX
     # Write various bits of text
