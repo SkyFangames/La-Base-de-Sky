@@ -786,3 +786,105 @@ GameData::Evolution.register({
   }
 })
 
+################################################################################
+# 
+# New evolution methods.
+# 
+################################################################################
+
+
+GameData::Evolution.register({
+  :id            => :CollectItems,
+  :parameter     => :Item,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+    next $bag.quantity(parameter) >= 999
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    next false if evo_species != new_species || $bag.quantity(parameter) < 999
+    $bag.remove(parameter, 999)
+    next true
+  }
+})
+
+GameData::Evolution.register({
+  :id            => :LevelWithPartner,
+  :parameter     => Integer,
+  :level_up_proc => proc { |pkmn, parameter|
+    next pkmn.level >= parameter && $PokemonGlobal.partner
+  }
+})
+
+GameData::Evolution.register({
+  :id            => :LevelUseMoveCount,
+  :parameter     => :Move,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+    next pkmn.evo_move_count(parameter) >= 20
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    next false if evo_species != new_species || pkmn.evo_move_count(parameter) < 20
+    pkmn.set_evo_move_count(parameter, 0)
+    next true
+  }
+})
+
+GameData::Evolution.register({
+  :id            => :LevelDefeatItsKindWithItem,
+  :parameter     => :Item,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+    next pkmn.evo_crest_count(parameter) >= 3
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    next false if evo_species != new_species || pkmn.evo_crest_count(parameter) < 3
+    pkmn.set_evo_crest_count(parameter,0)
+    next true
+  }
+})
+
+GameData::Evolution.register({
+  :id            => :LevelRecoilDamage,
+  :parameter     => Integer,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+    next pkmn.evo_recoil_count >= parameter
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    next false if evo_species != new_species || pkmn.evo_recoil_count < parameter
+    pkmn.evo_recoil_count = 0
+    next true
+  }
+})
+
+GameData::Evolution.register({
+  :id            => :LevelRecoilDamageForm0,
+  :parameter     => Integer,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+  if pkmn.evo_recoil_count >= parameter
+    pkmn.form = pkmn.gender if pkmn.form == 0
+    next true
+  end
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    next false if evo_species != new_species || pkmn.evo_recoil_count < parameter
+    pkmn.evo_recoil_count = 0
+    next true
+  }
+})
+
+GameData::Evolution.register({
+  :id            => :LevelWalk,
+  :parameter     => Integer,
+  :any_level_up  => true,   # Needs any level up
+  :level_up_proc => proc { |pkmn, parameter|
+    next pkmn.evo_step_count >= parameter
+  },
+  :after_evolution_proc => proc { |pkmn, new_species, parameter, evo_species|
+    next false if evo_species != new_species || pkmn.evo_step_count < parameter
+    pkmn.evo_step_count = 0
+    next true
+  }
+})
+

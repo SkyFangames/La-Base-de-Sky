@@ -188,8 +188,7 @@ EventHandlers.add(:on_step_taken, :auto_move_player,
 EventHandlers.add(:on_step_taken, :party_pokemon_distance_tracker,
   proc { |event|
     $player.pokemon_party.each do |pkmn|
-      next if ![:PAWMO, :BRAMBLIN, :RELLOR].include?(pkmn.species)
-      pkmn.evolution_counter += 1
+      pkmn.walking_evolution if pkmn.able?
     end
   }
 )

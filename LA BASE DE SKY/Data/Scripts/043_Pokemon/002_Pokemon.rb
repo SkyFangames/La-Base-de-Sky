@@ -1290,6 +1290,104 @@ class Pokemon
     return ret
   end
 
+   #-----------------------------------------------------------------------------
+  # Move count evolution utilities.
+  #-----------------------------------------------------------------------------
+  def init_evo_move_count(move)
+    @evo_move_count = Hash.new if !@evo_move_count
+    @evo_move_count[move] = 0 if !@evo_move_count[move]
+  end
+  
+  def move_count_evolution(move, qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelUseMoveCount && evo[2] == move
+        init_evo_move_count(move)
+        @evo_move_count[move] += qty
+        break
+      end
+    end
+  end
+  
+  def evo_move_count(move)
+    init_evo_move_count(move)
+    return @evo_move_count[move]
+  end
+  
+  def set_evo_move_count(move, value)
+    init_evo_move_count(move)
+    @evo_move_count[move] = value
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Leader's crest evolution utilities.
+  #-----------------------------------------------------------------------------
+  def init_evo_crest_count(item)
+    @evo_crest_count = Hash.new if !@evo_crest_count
+    @evo_crest_count[item] = 0 if !@evo_crest_count[item]
+  end
+  
+  def leaders_crest_evolution(item, qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelDefeatItsKindWithItem && evo[2] == item
+        init_evo_crest_count(item)
+        @evo_crest_count[item] += qty
+        break
+      end
+    end
+  end
+  
+  def evo_crest_count(item)
+    init_evo_crest_count(item)
+    return @evo_crest_count[item]
+  end
+  
+  def set_evo_crest_count(item, value)
+    init_crest_count(item)
+    @evo_crest_count[item] = value
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Recoil damage evolution utilities.
+  #-----------------------------------------------------------------------------
+  def recoil_evolution(qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelRecoilDamage || evo[1] == :LevelRecoilDamageForm0
+        @evo_recoil_count = 0 if !@evo_recoil_count
+        @evo_recoil_count += qty
+        break
+      end
+    end
+  end
+  
+  def evo_recoil_count
+    return @evo_recoil_count || 0
+  end
+  
+  def evo_recoil_count=(value)
+    @evo_recoil_count = value
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Walking evolution utilities.
+  #-----------------------------------------------------------------------------
+  def walking_evolution(qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelWalk
+        @evo_step_count = 0 if !@evo_step_count
+        @evo_step_count += qty
+        break
+      end
+    end
+  end
+    
+  def evo_step_count
+    return @evo_step_count || 0
+  end
+  
+  def evo_step_count=(value)
+    @evo_step_count = value
+  end
+
   # Creates a new Pokémon object.
   # @param species [Symbol, String, GameData::Species] Pokémon species
   # @param level [Integer] Pokémon level
@@ -1375,3 +1473,46 @@ def change_pokemon_gender(recheck_form = true)
   pokemon.changeGender(recheck_form)
   return true
 end
+
+#-------------------------------------------------------------------------------
+# Initializes Mirror Herb step counter.
+#-------------------------------------------------------------------------------
+class PokemonGlobalMetadata
+  attr_accessor :mirrorherb_steps
+  alias paldea_initialize initialize
+  def initialize
+    @mirrorherb_steps = 0
+    paldea_initialize
+  end
+end
+
+#-------------------------------------------------------------------------------
+# Tracks steps taken while Pokemon in the party are holding a Mirror Herb.
+# Every 256 steps, inherits Egg moves from other party members if possible.
+#-------------------------------------------------------------------------------
+EventHandlers.add(:on_player_step_taken, :mirrorherb_step, proc {
+  if $player.able_party.any? { |p| p&.hasItem?(:MIRRORHERB) }
+    $PokemonGlobal.mirrorherb_steps = 0 if !$PokemonGlobal.mirrorherb_steps
+    $PokemonGlobal.mirrorherb_steps += 1
+    if $PokemonGlobal.mirrorherb_steps > 255
+      found_eggMove = false
+      $player.able_party.each_with_index do |pkmn, i|
+        next if pkmn.item != :MIRRORHERB
+        next if pkmn.numMoves == Pokemon::MAX_MOVES
+        baby_species = pkmn.species_data.get_baby_species
+        eggmoves = GameData::Species.get(baby_species).egg_moves.clone
+        eggmoves.shuffle.each do |move|
+          next if pkmn.hasMove?(move)
+          next if !$player.get_pokemon_with_move(move)
+          pkmn.learn_move(move)
+          found_eggMove = true
+          break
+        end
+        break if found_eggMove
+      end
+      $PokemonGlobal.mirrorherb_steps = 0
+    end
+  else
+    $PokemonGlobal.mirrorherb_steps = 0
+  end
+})

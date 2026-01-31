@@ -438,6 +438,7 @@ class Battle::Move::RecoilMove < Battle::Move
     if user.pokemon.isSpecies?(:BASCULIN) && [2, 3].include?(user.pokemon.form)
       user.pokemon.evolution_counter += amt
     end
+    user.pokemon.recoil_evolution(amt)
     user.pbReduceHP(amt, false)
     @battle.pbDisplay(_INTL("¡{1} también se ha hecho daño!", user.pbThis))
     user.pbItemHPHealCheck

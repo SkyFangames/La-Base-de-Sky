@@ -723,6 +723,8 @@ class Battle
     # Effects that apply to a battler that wear off after a number of rounds
     pbEOREndBattlerEffects(priority)
     # Check for end of battle (i.e. because of Perish Song)
+    echoln "Checking for end of battle after EOR effects..."
+    echoln "decided? = #{decided?}"
     if decided?
       pbGainExp
       return

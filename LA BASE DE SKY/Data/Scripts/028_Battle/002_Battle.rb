@@ -722,6 +722,13 @@ class Battle
     else
       pbPlayer.pokedex.register_defeated(battler.species)
     end
+    
+    # Add counter for evolution method Bisharp -> Kingambit
+    return if battler.lastFoeAttacker.empty?
+    attacker = @battlers[battler.lastFoeAttacker.last]
+    return if !attacker || !attacker.pbOwnedByPlayer?
+    return if attacker.species != battler.species
+    attacker.pokemon.leaders_crest_evolution(battler.item_id)
   end
 
   def initialItem(side, idxParty)
