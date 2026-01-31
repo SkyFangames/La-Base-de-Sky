@@ -1536,7 +1536,7 @@ ItemHandlers::UseOnPokemon.add(:ROTOMCATALOG, proc { |item, qty, pkmn, scene|
   elsif new_form > 0 && new_form < choices.length - 1
     pkmn.setForm(new_form) do
       scene.pbRefresh
-      scene.pbDisplay(_INTL("¡{1} se tranformó!", pkmn.name))
+      scene.pbDisplay(_INTL("¡{1} se transformó!", pkmn.name))
     end
     next true
   end
@@ -1560,7 +1560,7 @@ ItemHandlers::UseOnPokemon.add(:ZYGARDECUBE, proc { |item, qty, pkmn, scene|
     newForm = (pkmn.form == 0) ? 1 : 0
     pkmn.setForm(newForm) do
       scene.pbRefresh
-      scene.pbDisplay(_INTL("¡{1} se tranformó!", pkmn.name))
+      scene.pbDisplay(_INTL("¡{1} se transformó!", pkmn.name))
     end
     next true
   when 1   # Change ability
@@ -1867,7 +1867,7 @@ ItemHandlers::UseOnPokemon.add(:METEORITE, proc { |item, qty, pkmn, scene|
     _INTL("Forma Velocidad"),
     _INTL("Cancelar")
   ]
-  new_form = scene.pbShowCommands(_INTL("¿En que forma debería convertise {1}?", pkmn.name), choices, pkmn.form)
+  new_form = scene.pbShowCommands(_INTL("¿En que forma debería convertirse {1}?", pkmn.name), choices, pkmn.form)
   if new_form == pkmn.form
     scene.pbDisplay(_INTL("No tendría efecto."))
     next false

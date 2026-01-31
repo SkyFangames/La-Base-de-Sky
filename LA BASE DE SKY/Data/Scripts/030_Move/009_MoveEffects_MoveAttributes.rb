@@ -1782,7 +1782,7 @@ class Battle::Move::TargetMovesBecomeElectric < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Electrify] = true
-    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Electrico!", target.pbThis(true)))
+    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Eléctrico!", target.pbThis(true)))
   end
 end
 

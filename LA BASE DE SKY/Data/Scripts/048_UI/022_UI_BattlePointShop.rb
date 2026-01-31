@@ -558,7 +558,7 @@ def pbBattlePointShop(stock, speech = nil)
   screen = BattlePointShopScreen.new(scene, stock)
   screen.pbBuyScreen
   pbMessage(_INTL("Gracias por tu visita."))
-  pbMessage(_INTL("Por favor, visítanos de nuevo cuando hayas conseguido más PB."))
+  pbMessage(_INTL("Por favor, visítenos de nuevo cuando hayas conseguido más PB."))
   $game_temp.clear_mart_prices
 end
 

@@ -561,7 +561,7 @@ class PokemonBagScreen
       commands[commands.length]                 = _INTL("Cancelar")
       # Show commands generated above
       itemname = itm.name
-      command = @scene.pbShowCommands(_INTL("Has selecccionado {1}.", itemname), commands)
+      command = @scene.pbShowCommands(_INTL("Has seleccionado {1}.", itemname), commands)
       if cmdRead >= 0 && command == cmdRead   # Read mail
         pbFadeOutIn do
           pbDisplayMail(Mail.new(item, "", ""))
@@ -625,7 +625,7 @@ class PokemonBagScreen
             params.setRange(0, Settings::BAG_MAX_PER_SLOT)
             params.setDefaultValue(qty)
             newqty = pbMessageChooseNumber(
-              _INTL("Elige la nueva calidad de {1} (máx. {2}).", itemplural, Settings::BAG_MAX_PER_SLOT), params
+              _INTL("Elige la nueva cantidad de {1} (máx. {2}).", itemplural, Settings::BAG_MAX_PER_SLOT), params
             ) { @scene.pbUpdate }
             if newqty > qty
               @bag.add(item, newqty - qty)

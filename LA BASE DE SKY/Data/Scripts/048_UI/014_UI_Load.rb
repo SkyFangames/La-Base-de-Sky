@@ -269,7 +269,7 @@ class PokemonLoadScreen
     save_data = SaveData.read_from_file(file_path)
     unless SaveData.valid?(save_data)
       if File.file?(file_path + ".bak")
-        pbMessage(_INTL("El archivo está corrupto. Se va a cargar un reespaldo."))
+        pbMessage(_INTL("El archivo está corrupto. Se va a cargar un respaldo."))
         save_data = load_save_file(file_path + ".bak")
       else
         self.prompt_save_deletion

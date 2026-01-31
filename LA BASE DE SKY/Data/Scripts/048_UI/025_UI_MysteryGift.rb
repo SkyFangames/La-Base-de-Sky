@@ -196,7 +196,7 @@ def pbManageMysteryGifts
         pbMessage(_INTL("No se han podido guardar los datos en el archivo MysteryGift.txt. Inténtalo de nuevo."))
       end
     elsif command == commands.length - 3   # Borrar los regalos recibidos
-      if pbConfirmMessage(_INTL("¿Quieres eliminar el registro de tu jugaror de regalos misteriosos? Esto hará que puedas recibirlos todos de nuevo."))
+      if pbConfirmMessage(_INTL("¿Quieres eliminar el registro de tu jugador de regalos misteriosos? Esto hará que puedas recibirlos todos de nuevo."))
         $player.mystery_gifts = []
         pbMessage(_INTL("Has eliminado correctamente los regalos recibidos."))
 
@@ -214,7 +214,7 @@ def pbManageMysteryGifts
       pbMessage(_INTL("Puedes usar servicios como la web de Pastebin para subir ahí tus regalos y que así tus jugadores puedan descargarlos."))
       pbMessage(_INTL("Recuerda que debes poner la URL de tu Pastebin en el script \"UI_MysteryGift\" dentro de los scripts del juego, a los que se accede desde el editor."))
       pbMessage(_INTL("Puedes encontrarlo rápidamente si entras en el editor de scripts, pulsas \"cntrl + shift + F\" y escribes \"module MysteryGift\"."))
-      pbMessage(_INTL("¡IMPORTANTE! En el archibo \"MysteryGiftMaster.txt\" se pueden leer todos los datos de tus regalos y sus contraseñas. Te recomiendo que lo elimines de la carpeta del juego cuando lo vayas a compartir, para que nadie tenga acceso al mismo."))
+      pbMessage(_INTL("¡IMPORTANTE! En el archivo \"MysteryGiftMaster.txt\" se pueden leer todos los datos de tus regalos y sus contraseñas. Te recomiendo que lo elimines de la carpeta del juego cuando lo vayas a compartir, para que nadie tenga acceso al mismo."))
     elsif command >= 0 && command < commands.length - 4   # A gift
       cmd = 0
       loop do

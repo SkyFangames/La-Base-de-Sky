@@ -649,7 +649,7 @@ if !Settings::USE_NEW_OPTIONS_UI
   })
 
   MenuHandlers.add(:options_menu, :battle_style, {
-    "name"        => _INTL("Estilo Combate"),
+    "name"        => _INTL("Estilo de Combate."),
     "order"       => 50,
     "type"        => EnumOption,
     "parameters"  => [_INTL("Cambio"), _INTL("Fijo")],

@@ -3506,7 +3506,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:SUPERSWEETSYRUP,
     next if battler.abilityUsedOnce?
     battler.markAbilityUsedOnce
     battle.pbShowAbilitySplash(battler)
-    battle.pbDisplay(_INTL("¡La cubierta de caramelo de {1} emana un aroma super dulce!", battler.pbThis(true)))
+    battle.pbDisplay(_INTL("¡La cubierta de caramelo de {1} emana un aroma súper dulce!", battler.pbThis(true)))
     battle.allOtherSideBattlers(battler.index).each do |b|
       next if !b.near?(battler)
       b.pbLowerEvasionStatStageSupersweetSyrup(battler)

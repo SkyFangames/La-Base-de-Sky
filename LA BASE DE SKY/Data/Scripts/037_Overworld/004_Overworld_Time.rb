@@ -177,7 +177,7 @@ def pbGetMonthName(month)
           _INTL("Junio"),
           _INTL("Julio"),
           _INTL("Agosto"),
-          _INTL("September"),
+          _INTL("Septiembre"),
           _INTL("Octubre"),
           _INTL("Noviembre"),
           _INTL("Diciembre")][month - 1]

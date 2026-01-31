@@ -1093,10 +1093,10 @@ PageHandlers.add(:options_menu, :graphics, {
 
 MenuHandlers.add(:options_menu, :text_speed, {
   "page"        => :gameplay,
-  "name"        => _INTL("Vel. Texto"),
+  "name"        => _INTL("Velocidad de Texto"),
   "order"       => 10,
   "type"        => :array,
-  "parameters"  => [_INTL("Len."), _INTL("Med."), _INTL("Ráp."), _INTL("Inst.")],
+  "parameters"  => [_INTL("Len"), _INTL("Med"), _INTL("Ráp"), _INTL("Inst")],
   "description" => _INTL("Elige la velocidad a la que aparece el texto."),
   "on_select"   => proc { |screen| screen.sprites[:speech_box].letterbyletter = true },
   "get_proc"    => proc { next $PokemonSystem.textspeed },
@@ -1113,10 +1113,10 @@ MenuHandlers.add(:options_menu, :text_speed, {
 
 MenuHandlers.add(:options_menu, :battle_style, {
   "page"        => :gameplay,
-  "name"        => _INTL("Estilo de combate"),
+  "name"        => _INTL("Estilo de Combate"),
   "order"       => 20,
   "type"        => :array,
-  "parameters"  => [_INTL("Cambios"), _INTL("Fijo")],
+  "parameters"  => [_INTL("Cambio"), _INTL("Fijo")],
   "description" => _INTL("Elige si quieres que se te ofrezca la opción de cambiar de Pokémon cuando se debilita el del rival."),
   "get_proc"    => proc { next $PokemonSystem.battlestyle },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.battlestyle = value }

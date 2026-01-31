@@ -376,9 +376,9 @@ Battle::ItemEffects::HPHeal.add(:MICLEBERRY,
     itemName = GameData::Item.get(item).name
     if forced
       PBDebug.log("[Item triggered] Forced consuming of #{itemName}")
-      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su proximo ataque!", battler.pbThis))
+      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su próximo ataque!", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su proximo ataque con {2}!",
+      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su próximo ataque con {2}!",
          battler.pbThis, itemName))
     end
     next true
@@ -490,7 +490,7 @@ Battle::ItemEffects::StatusCure.add(:CHERIBERRY,
     PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
     battle.pbCommonAnimation("EatBerry", battler) if !forced
     battler.pbCureStatus(forced)
-    battle.pbDisplay(_INTL("¡{1} se ha cudado de la parálisis con {2}!", battler.pbThis, itemName)) if !forced
+    battle.pbDisplay(_INTL("¡{1} se ha curado de la parálisis con {2}!", battler.pbThis, itemName)) if !forced
     next true
   }
 )

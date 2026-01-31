@@ -345,7 +345,7 @@ class Battle::Scene
         end
       else
         pbMessageDisplay(msgwindow,
-                         _INTL("REFEREE: ¡Juicio: {1} a {2}!\n¡El ganador es {3}!",
+                         _INTL("ÁRBITRO: ¡Juicio: {1} a {2}!\n¡El ganador es {3}!",
                                total1, total2, battler2.name) + "\\wtnp[20]") do
           pbBattleArenaUpdate
           dimmingvp.update
