@@ -9856,7 +9856,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = None
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Movimiento cuyo tipo varia al del usuario en caso de que éste haya teracristalizado.
+Description = Movimiento cuyo tipo varía al del usuario en caso de que éste haya teracristalizado.
 #-------------------------------
 [NIHILLIGHT]
 Name = Luz Devastadora

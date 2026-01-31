@@ -1,4 +1,4 @@
-﻿# See the documentation on the wiki to learn how to edit this file.
+﻿# Consulta la documentación en la wiki para aprender cómo editar este archivo.
 #-------------------------------
 [VENUSAUR,1]
 FormName = Mega Venusaur
@@ -600,6 +600,9 @@ Category = Esfera
 Pokedex = Su complexión superficial es muy semejante a la de un bonguri. Cuando se enoja, la electricidad que emite es veinte veces más potente que la de un rayo.
 Generation = 8
 Flags = InheritFormWithEverStone
+#-------------------------------
+[EXEGGCUTE,1]
+Generation = 7
 #-------------------------------
 [EXEGGUTOR,1]
 FormName = Forma Alola
@@ -1958,9 +1961,9 @@ Moves = 1,ASTONISH,1,PROTECT,4,HAZE,8,NIGHTSHADE,12,DISABLE,16,BRUTALSWING,20,CR
 TutorMoves = ALLYSWITCH,ATTRACT,BRUTALSWING,CALMMIND,CAPTIVATE,CONFIDE,DARKPULSE,DOUBLEEDGE,DOUBLETEAM,EARTHPOWER,EARTHQUAKE,ENDURE,ENERGYBALL,FACADE,FAKETEARS,FRUSTRATION,HEX,HIDDENPOWER,IMPRISON,IRONDEFENSE,MIMIC,NASTYPLOT,NATURALGIFT,PAYBACK,POLTERGEIST,PROTECT,PSYCHIC,RAINDANCE,REST,RETURN,ROCKSLIDE,ROCKTOMB,ROUND,SAFEGUARD,SANDSTORM,SECRETPOWER,SHADOWBALL,SKILLSWAP,SLEEPTALK,SNORE,SUBSTITUTE,SWAGGER,THIEF,TOXIC,TOXICSPIKES,TRICK,TRICKROOM,WILLOWISP,WONDERROOM,ZENHEADBUTT
 EggMoves = MEMENTO
 Pokedex = Yamask ha sido poseído por una tabla de arcilla sobre la que pesa una maldición. Se dice que absorbe y se nutre de rencor e inquina.
-Evolutions = RUNERIGUS,AfterBattleCounterMakeReady,49,RUNERIGUS,EventReady,2
 Generation = 8
 Flags = InheritFormWithEverStone
+Evolutions = RUNERIGUS,AfterBattleCounterMakeReady,49,RUNERIGUS,EventReady,2
 #-------------------------------
 [ZORUA,1]
 FormName = Forma Hisui
@@ -2659,7 +2662,7 @@ Pokedex = Convoca a los muertos con su danza de ensueño. De su malicia extrae p
 Abilities = OWNTEMPO
 HiddenAbilities = OWNTEMPO
 Flags = InheritFormFromMother
-Evolutions = LYCANROC,Level,25
+Evolutions = LYCANROC,LevelEvening,25
 #-------------------------------
 [LYCANROC,1]
 FormName = Forma Nocturna
@@ -2974,187 +2977,296 @@ Evolutions = POLTEAGEIST,Item,CHIPPEDPOT
 FormName = Forma Genuina
 Pokedex = Tiene un sabor y un aroma sumamente singulares. Si su Entrenador se hace pleno merecedor de su confianza, le permite catarlo ligeramente.
 #-------------------------------
+[ALCREMIE,1]
+FormName = Forma Crema de Vainilla Confite corazón
+#-------------------------------
+[ALCREMIE,2]
+FormName = Forma Crema de Vainilla Confite flor
+#-------------------------------
+[ALCREMIE,3]
+FormName = Forma Crema de Vainilla Confite estrella
+#-------------------------------
+[ALCREMIE,4]
+FormName = Forma Crema de Vainilla Confite trébol
+#-------------------------------
+[ALCREMIE,5]
+FormName = Forma Crema de Vainilla Confite fruto
+#-------------------------------
+[ALCREMIE,6]
+FormName = Forma Crema de Vainilla Confite lazo
+#-------------------------------
 [ALCREMIE,7]
-FormName = Forma Crema Rosa
+FormName = Forma Crema Rosa Confite fresa
 Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,8]
-PokedexForm = 7
+FormName = Forma Crema Rosa Confite corazón
+Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,9]
-PokedexForm = 7
+FormName = Forma Crema Rosa Confite flor
+Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,10]
-PokedexForm = 7
+FormName = Forma Crema Rosa Confite estrella
+Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,11]
-PokedexForm = 7
+FormName = Forma Crema Rosa Confite trébol
+Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,12]
-PokedexForm = 7
+FormName = Forma Crema Rosa Confite fruto
+Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,13]
-PokedexForm = 7
+FormName = Forma Crema Rosa Confite lazo
+Pokedex = A causa de unas sutiles vibraciones en las células de su cuerpo en el momento de la evolución, ha adquirido un sabor agridulce.
 #-------------------------------
 [ALCREMIE,14]
-FormName = Forma Crema de Té
+FormName = Forma Crema de Té Confite fresa
 Color = Green
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,15]
-PokedexForm = 14
+FormName = Forma Crema de Té Confite corazón
+Color = Green
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,16]
-PokedexForm = 14
+FormName = Forma Crema de Té Confite flor
+Color = Green
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,17]
-PokedexForm = 14
+FormName = Forma Crema de Té Confite estrella
+Color = Green
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,18]
-PokedexForm = 14
+FormName = Forma Crema de Té Confite trébol
+Color = Green
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,19]
-PokedexForm = 14
+FormName = Forma Crema de Té Confite fruto
+Color = Green
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,20]
-PokedexForm = 14
+FormName = Forma Crema de Té Confite lazo
+Color = Green
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque fragante.
 #-------------------------------
 [ALCREMIE,21]
-FormName = Forma Crema de Menta
+FormName = Forma Crema de Menta Confite fresa
 Color = Blue
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,22]
-PokedexForm = 21
+FormName = Forma Crema de Menta Confite corazón
+Color = Blue
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,23]
-PokedexForm = 21
+FormName = Forma Crema de Menta Confite flor
+Color = Blue
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,24]
-PokedexForm = 21
+FormName = Forma Crema de Menta Confite estrella
+Color = Blue
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,25]
-PokedexForm = 21
+FormName = Forma Crema de Menta Confite trébol
+Color = Blue
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,26]
-PokedexForm = 21
+FormName = Forma Crema de Menta Confite fruto
+Color = Blue
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,27]
-PokedexForm = 21
+FormName = Forma Crema de Menta Confite lazo
+Color = Blue
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque refrescante.
 #-------------------------------
 [ALCREMIE,28]
-FormName = Forma Crema de Limón
+FormName = Forma Crema de Limón Confite fresa
 Color = Yellow
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,29]
-PokedexForm = 28
+FormName = Forma Crema de Limón Confite corazón
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,30]
-PokedexForm = 28
+FormName = Forma Crema de Limón Confite flor
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,31]
-PokedexForm = 28
+FormName = Forma Crema de Limón Confite estrella
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,32]
-PokedexForm = 28
+FormName = Forma Crema de Limón Confite trébol
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,33]
-PokedexForm = 28
+FormName = Forma Crema de Limón Confite fruto
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,34]
-PokedexForm = 28
+FormName = Forma Crema de Limón Confite lazo
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,35]
-FormName = Forma Crema Salada
-Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque salado.
+FormName = Forma Crema Salada Confite fresa
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,36]
-PokedexForm = 35
+FormName = Forma Crema Salada Confite corazón
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,37]
-PokedexForm = 35
+FormName = Forma Crema Salada Confite flor
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,38]
-PokedexForm = 35
+FormName = Forma Crema Salada Confite estrella
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,39]
-PokedexForm = 35
+FormName = Forma Crema Salada Confite trébol
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,40]
-PokedexForm = 35
+FormName = Forma Crema Salada Confite fruto
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,41]
-PokedexForm = 35
+FormName = Forma Crema Salada Confite lazo
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque agrio.
 #-------------------------------
 [ALCREMIE,42]
-FormName = Forma Mezcla Rosa
+FormName = Forma Mezcla Rosa Confite fresa
 Color = Yellow
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,43]
-PokedexForm = 42
+FormName = Forma Mezcla Rosa Confite corazón
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,44]
-PokedexForm = 42
+FormName = Forma Mezcla Rosa Confite flor
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,45]
-PokedexForm = 42
+FormName = Forma Mezcla Rosa Confite estrella
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,46]
-PokedexForm = 42
+FormName = Forma Mezcla Rosa Confite trébol
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,47]
-PokedexForm = 42
+FormName = Forma Mezcla Rosa Confite fruto
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,48]
-PokedexForm = 42
+FormName = Forma Mezcla Rosa Confite fruto
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque especial.
 #-------------------------------
 [ALCREMIE,49]
-FormName = Forma Mezcla Caramelo
+FormName = Forma Mezcla Caramelo Confite fresa
 Color = Brown
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,50]
-PokedexForm = 49
+FormName = Forma Mezcla Caramelo Confite corazón
+Color = Brown
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,51]
-PokedexForm = 49
+FormName = Forma Mezcla Caramelo Confite flor
+Color = Brown
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,52]
-PokedexForm = 49
+FormName = Forma Mezcla Caramelo Confite estrella
+Color = Brown
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,53]
-PokedexForm = 49
+FormName = Forma Mezcla Caramelo Confite trébol
+Color = Brown
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,54]
-PokedexForm = 49
+FormName = Forma Mezcla Caramelo Confite fruto
+Color = Brown
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,55]
-PokedexForm = 49
+FormName = Forma Mezcla Caramelo Confite lazo
+Color = Brown
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque amargo.
 #-------------------------------
 [ALCREMIE,56]
-FormName = Forma Mezcla Tres Sabores
+FormName = Forma Mezcla Tres Sabores Confite fresa
 Color = Yellow
 Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [ALCREMIE,57]
-PokedexForm = 56
+FormName = Forma Mezcla Tres Sabores Confite corazón
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [ALCREMIE,58]
-PokedexForm = 56
+FormName = Forma Mezcla Tres Sabores Confite flor
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [ALCREMIE,59]
-PokedexForm = 56
+FormName = Forma Mezcla Tres Sabores Confite estrella
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [ALCREMIE,60]
-PokedexForm = 56
+FormName = Forma Mezcla Tres Sabores Confite trébol
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [ALCREMIE,61]
-PokedexForm = 56
+FormName = Forma Mezcla Tres Sabores Confite fruto
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [ALCREMIE,62]
-PokedexForm = 56
+FormName = Forma Mezcla Tres Sabores Confite lazo
+Color = Yellow
+Pokedex = Cuando se ve amenazado, se defiende lanzando a sus agresores una nata con un toque complejo.
 #-------------------------------
 [FALINKS,1]
 FormName = Mega Falinks
@@ -3257,6 +3369,7 @@ Generation = 9
 #-------------------------------
 [BASCULEGION,1]
 FormName = Forma Hembra
+GenderRatio = AlwaysFemale
 BaseStats = 120,92,65,78,100,75
 #-------------------------------
 [ENAMORUS,1]
