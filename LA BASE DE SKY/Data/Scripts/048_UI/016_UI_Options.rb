@@ -132,149 +132,151 @@ if !Settings::USE_NEW_OPTIONS_UI
       end
     end
   end
+end
 
-  #===============================================================================
-  #
-  #===============================================================================
-  module PropertyMixin
-    attr_reader :name
+#===============================================================================
+#
+#===============================================================================
+module PropertyMixin
+  attr_reader :name
 
-    def get
-      return @get_proc&.call
-    end
-
-    def set(*args)
-      @set_proc&.call(*args)
-    end
+  def get
+    return @get_proc&.call
   end
 
-  #===============================================================================
-  #
-  #===============================================================================
-  class EnumOption
-    include PropertyMixin
-    attr_reader :values
+  def set(*args)
+    @set_proc&.call(*args)
+  end
+end
 
-    def initialize(name, values, get_proc, set_proc)
-      @name     = name
-      @values   = values.map { |val| _INTL(val) }
-      @get_proc = get_proc
-      @set_proc = set_proc
-    end
+#===============================================================================
+#
+#===============================================================================
+class EnumOption
+  include PropertyMixin
+  attr_reader :values
 
-    def next(current)
-      index = current + 1
-      index = @values.length - 1 if index > @values.length - 1
-      return index
-    end
-
-    def prev(current)
-      index = current - 1
-      index = 0 if index < 0
-      return index
-    end
+  def initialize(name, values, get_proc, set_proc)
+    @name     = name
+    @values   = values.map { |val| _INTL(val) }
+    @get_proc = get_proc
+    @set_proc = set_proc
   end
 
-  #===============================================================================
-  #
-  #===============================================================================
-  class NumberOption
-    include PropertyMixin
-    attr_reader :lowest_value
-    attr_reader :highest_value
-
-    def initialize(name, range, get_proc, set_proc)
-      @name = name
-      case range
-      when Range
-        @lowest_value  = range.begin
-        @highest_value = range.end
-      when Array
-        @lowest_value  = range[0]
-        @highest_value = range[1]
-      end
-      @get_proc = get_proc
-      @set_proc = set_proc
-    end
-
-    def next(current)
-      index = current + @lowest_value
-      index += 1
-      index = @lowest_value if index > @highest_value
-      return index - @lowest_value
-    end
-
-    def prev(current)
-      index = current + @lowest_value
-      index -= 1
-      index = @highest_value if index < @lowest_value
-      return index - @lowest_value
-    end
+  def next(current)
+    index = current + 1
+    index = @values.length - 1 if index > @values.length - 1
+    return index
   end
 
-  #===============================================================================
-  #
-  #===============================================================================
-  class SliderOption
-    include PropertyMixin
-    attr_reader :lowest_value
-    attr_reader :highest_value
+  def prev(current)
+    index = current - 1
+    index = 0 if index < 0
+    return index
+  end
+end
 
-    def initialize(name, range, get_proc, set_proc)
-      @name          = name
+#===============================================================================
+#
+#===============================================================================
+class NumberOption
+  include PropertyMixin
+  attr_reader :lowest_value
+  attr_reader :highest_value
+
+  def initialize(name, range, get_proc, set_proc)
+    @name = name
+    case range
+    when Range
+      @lowest_value  = range.begin
+      @highest_value = range.end
+    when Array
       @lowest_value  = range[0]
       @highest_value = range[1]
-      @interval      = range[2]
-      @get_proc      = get_proc
-      @set_proc      = set_proc
     end
-
-    def next(current)
-      index = current + @lowest_value
-      index += @interval
-      index = @highest_value if index > @highest_value
-      return index - @lowest_value
-    end
-
-    def prev(current)
-      index = current + @lowest_value
-      index -= @interval
-      index = @lowest_value if index < @lowest_value
-      return index - @lowest_value
-    end
+    @get_proc = get_proc
+    @set_proc = set_proc
   end
 
-  class ButtonOption
-    include PropertyMixin
-
-    def initialize(name, values, get_proc, set_proc)
-      @name = name
-      @values = [_INTL("")]
-      @get_proc = get_proc
-      @set_proc = set_proc
-    end
-
-    def values
-      return @values
-    end
-
-    def next(current)
-      return current
-    end
-
-    def prev(current)
-      return current
-    end
-
-    def action(scene)
-      @set_proc.call(0, scene)
-    end
-
-    def set(value, scene)
-      # Do nothing when the value is changed
-    end
+  def next(current)
+    index = current + @lowest_value
+    index += 1
+    index = @lowest_value if index > @highest_value
+    return index - @lowest_value
   end
 
+  def prev(current)
+    index = current + @lowest_value
+    index -= 1
+    index = @highest_value if index < @lowest_value
+    return index - @lowest_value
+  end
+end
+
+#===============================================================================
+#
+#===============================================================================
+class SliderOption
+  include PropertyMixin
+  attr_reader :lowest_value
+  attr_reader :highest_value
+
+  def initialize(name, range, get_proc, set_proc)
+    @name          = name
+    @lowest_value  = range[0]
+    @highest_value = range[1]
+    @interval      = range[2]
+    @get_proc      = get_proc
+    @set_proc      = set_proc
+  end
+
+  def next(current)
+    index = current + @lowest_value
+    index += @interval
+    index = @highest_value if index > @highest_value
+    return index - @lowest_value
+  end
+
+  def prev(current)
+    index = current + @lowest_value
+    index -= @interval
+    index = @lowest_value if index < @lowest_value
+    return index - @lowest_value
+  end
+end
+
+class ButtonOption
+  include PropertyMixin
+
+  def initialize(name, values, get_proc, set_proc)
+    @name = name
+    @values = [_INTL("")]
+    @get_proc = get_proc
+    @set_proc = set_proc
+  end
+
+  def values
+    return @values
+  end
+
+  def next(current)
+    return current
+  end
+
+  def prev(current)
+    return current
+  end
+
+  def action(scene)
+    @set_proc.call(0, scene)
+  end
+
+  def set(value, scene)
+    # Do nothing when the value is changed
+  end
+end
+
+if !Settings::USE_NEW_OPTIONS_UI
   #===============================================================================
   # Main options list
   #===============================================================================
@@ -784,4 +786,3 @@ if !Settings::USE_NEW_OPTIONS_UI
     }
   })
 end
-
