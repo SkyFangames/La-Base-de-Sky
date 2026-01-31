@@ -454,7 +454,7 @@ module TrainerBattleProperty
     properties = [
       [_INTL("Tipo de Entrenador"),   TrainerTypeProperty,     _INTL("Nombre del tipo de Entrenador de este Entrenador.")],
       [_INTL("Nombre de Entrenador"), StringProperty,          _INTL("Nombre del Entrenador.")],
-      [_INTL("Versión"),              LimitProperty.new(9999), _INTL("Número usado para distinguir Entrenadorescon el mismo nombre y tipo de Entrenador.")],
+      [_INTL("Versión"),              LimitProperty.new(9999), _INTL("Número usado para distinguir Entrenadores con el mismo nombre y tipo de Entrenador.")],
       [_INTL("Texto al perder"),      StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador.")],
       [_INTL("Texto al perder F"),    StringProperty,          _INTL("Mensaje mostrado en batalla cuando derrotas a este Entrenador y estás jugando con el personaje femenino.")]
     ]
@@ -639,7 +639,7 @@ module TrainerPokemonProperty
       [_INTL("Forma"),           LimitProperty2.new(999),              _INTL("Forma del Pokémon.")],
       [_INTL("Género"),          GenderProperty,                       _INTL("Género del Pokémon.")],
       [_INTL("Variocolor"),      BooleanProperty2,                     _INTL("Si está en true, el Pokémon es de otro color.")],
-      [_INTL("SuperVariocolor"), BooleanProperty2,                     _INTL("Si el Pokémon es Super Shiny (variocolor con una animación especial).")],
+      [_INTL("SuperVariocolor"), BooleanProperty2,                     _INTL("Si el Pokémon es Súper Shiny (variocolor con una animación especial).")],
       [_INTL("Oscuro"),          BooleanProperty2,                     _INTL("Si está en true, el Pokémon es un Pokémon Oscuro.")]
     ]
     Pokemon::MAX_MOVES.times do |i|
@@ -647,7 +647,7 @@ module TrainerPokemonProperty
                             MovePropertyForSpecies.new(oldsetting), _INTL("Un movimiento que conoce el Pokémon. Dejar todos los movs. en blanco (usa la tecla Z para eliminar) para un moveset de Pokémon salvaje.")])
     end
     pkmn_properties.concat(
-      [[_INTL("Habilidad"),           AbilityProperty,                         _INTL("Habilidad del Pokémon. Sobreescribe el índice de la habilidad.")],
+      [[_INTL("Habilidad"),           AbilityProperty,                         _INTL("Habilidad del Pokémon. Sobrescribe el índice de la habilidad.")],
        [_INTL("Índice de habilidad"), LimitProperty2.new(99),                  _INTL("Índice de la habilidad. 0=primera habilidad, 1=segunda habilidad, 2+=habilidad oculta.")],
        [_INTL("Objeto equipado"),     ItemProperty,                            _INTL("Objeto que lleva equipado el Pokémon.")],
        [_INTL("Naturaleza"),          GameDataProperty.new(:Nature),           _INTL("Naturaleza del Pokémon.")],

@@ -272,7 +272,7 @@ module Battle::DebugMixin
     # Level, gender, shininess
     ret += _INTL("Nivel {1}, {2}", battler.level,
                  (battler.pokemon.male?) ? "♂" : (battler.pokemon.female?) ? "♀" : _INTL("genderless"))
-    ret += ", " + _INTL("shiny") if battler.pokemon.shiny?
+    ret += ", " + _INTL("variocolor") if battler.pokemon.shiny?
     ret += "\n"
     # HP
     ret += _INTL("PS: {1}/{2} ({3}%)", battler.hp, battler.totalhp, (100.0 * battler.hp / battler.totalhp).to_i)
@@ -320,7 +320,7 @@ module Battle::DebugMixin
     ret += "\n"
     # Level, gender, shininess
     ret += _INTL("Nivel {1}, {2}", pkmn.level,
-                 (pkmn.male?) ? "♂" : (pkmn.female?) ? "♀" : _INTL("genderless"))
+                 (pkmn.male?) ? "♂" : (pkmn.female?) ? "♀" : _INTL("sin género"))
     ret += ", " + _INTL("variocolor") if pkmn.shiny?
     ret += "\n"
     # HP

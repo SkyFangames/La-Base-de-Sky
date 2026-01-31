@@ -220,7 +220,7 @@ def pbManageMysteryGifts
       loop do
         commands = pbRefreshMGCommands(master, online)
         gift = master[command]
-        cmds = [_INTL("Marcar/desmarcar regalo"),
+        cmds = [_INTL("Marcar/Desmarcar regalo"),
                 _INTL("Editar el regalo"),
                 _INTL("Recibir el regalo"),
                 _INTL("Eliminar el regalo"),
