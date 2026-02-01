@@ -456,7 +456,7 @@ MenuHandlers.add(:battle_debug_menu, :opposing_side, {
 MenuHandlers.add(:battle_debug_menu, :position_effects, {
   "name"        => _INTL("Efectos de la posición..."),
   "parent"      => :field,
-  "description" => _INTL("Efectos que se aplican en la posición individial de los combatientes."),
+  "description" => _INTL("Efectos que se aplican en la posición individual de los combatientes."),
   "effect"      => proc { |battle|
     positions = []
     cmds = []

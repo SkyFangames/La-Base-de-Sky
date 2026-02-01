@@ -19,32 +19,32 @@ ARROW_Y_DIVISOR = 16      # Divisor aplicado a la altura del sprite de flecha pa
 # E.g. "Surfing" instead of "Water"
 # If missing, the script will use the encounter type names in GameData::EncounterTypes
 USER_DEFINED_NAMES = {
-:Land => "Hierba",
-:LandDay => "Hierba (día)",
-:LandNight => "Hierba (noche)",
-:LandMorning => "Hierba (mañana)",
-:LandAfternoon => "Hierba (medio día)", 
-:LandEvening => "Hierba (atardecer)",
-:Cave => "Cueva",
-:CaveDay => "Cueva (día)",
-:CaveNight => "Cueva (noche)",
-:CaveMorning => "Cueva (mañana)",
-:CaveAfternoon => "Cueva (medio día)",
-:CaveEvening => "Cueva (atardecer)",
-:Water => "Surfeando",
-:WaterDay => "Surfeando (día)",
-:WaterNight => "Surfeando (noche)",
-:WaterMorning => "Surfeando (mañana)",
-:WaterAfternoon => "Surfeando (medio día)",
-:WaterEvening => "Surfeando (atardecer)",
-:OldRod => "Pescando (Caña Vieja)",
-:GoodRod => "Pescando (Caña Buena)",
-:SuperRod => "Pescando (Super Caña)",
-:RockSmash => "Golpe Roca",
-:HeadbuttLow => "Cabezazo (Raro)",
-:HeadbuttHigh => "Cabezazo (Común)",
-:BugContest => "Concurso de Bichos",
-:PokeRadar => "PokéRadar"
+  :Land           => _INTL("Hierba"),
+  :LandDay        => _INTL("Hierba (día)"),
+  :LandNight      => _INTL("Hierba (noche)"),
+  :LandMorning    => _INTL("Hierba (mañana)"),
+  :LandAfternoon  => _INTL("Hierba (medio día)"), 
+  :LandEvening    => _INTL("Hierba (atardecer)"),
+  :Cave           => _INTL("Cueva"),
+  :CaveDay        => _INTL("Cueva (día)"),
+  :CaveNight      => _INTL("Cueva (noche)"),
+  :CaveMorning    => _INTL("Cueva (mañana)"),
+  :CaveAfternoon  => _INTL("Cueva (medio día)"),
+  :CaveEvening    => _INTL("Cueva (atardecer)"),
+  :Water          => _INTL("Surfeando"),
+  :WaterDay       => _INTL("Surfeando (día)"),
+  :WaterNight     => _INTL("Surfeando (noche)"),
+  :WaterMorning   => _INTL("Surfeando (mañana)"),
+  :WaterAfternoon => _INTL("Surfeando (medio día)"),
+  :WaterEvening   => _INTL("Surfeando (atardecer)"),
+  :OldRod         => _INTL("Pescando (Caña Vieja)"),
+  :GoodRod        => _INTL("Pescando (Caña Buena)"),
+  :SuperRod       => _INTL("Pescando (Super Caña)"),
+  :RockSmash      => _INTL("Golpe Roca"),
+  :HeadbuttLow    => _INTL("Cabezazo (Raro)"),
+  :HeadbuttHigh   => _INTL("Cabezazo (Común)"),
+  :BugContest     => _INTL("Concurso de Bichos"),
+  :PokeRadar      => _INTL("PokéRadar")
 }
 
 # Remove the '#' from this line to use default encounter type names
@@ -196,10 +196,11 @@ class EncounterList_Scene
       i += 1
     end
     # Get user-defined encounter name or default one if not present
-    name = USER_DEFINED_NAMES ? USER_DEFINED_NAMES[curr_key] : GameData::EncounterType.get(curr_key).real_name
+    raw_name = USER_DEFINED_NAMES ? USER_DEFINED_NAMES[curr_key] : GameData::EncounterType.get(curr_key).real_name
+    name = _INTL(raw_name)
     loctext = _INTL("<ac><c2=7E105D08>{1}:</c2> <c2=43F022E8>{2}</c2></ac>", $game_map.name, name)
-    loctext += sprintf("<al><c2=7FFF5EF7>Encuentros totales de la zona: %s</c2></al>",enc_array.length)
-    loctext += sprintf("<c2=63184210>-----------------------------------------</c2>")
+    loctext += _INTL("<al><c2=7FFF5EF7>Encuentros totales de la zona: {1}</c2></al>", enc_array.length)
+    loctext += "<c2=63184210>-----------------------------------------</c2>"
     @sprites["locwindow"].setText(loctext)
   end
 

@@ -1018,7 +1018,7 @@ module Compiler
     compile_pbs_files
     compile_animations
     compile_trainer_events(mustCompile)
-    Console.echo_li(_INTL("Saving messages..."))
+    Console.echo_li(_INTL("Guardando mensajes..."))
     Translator.gather_script_and_event_texts
     MessageTypes.save_default_messages
     MessageTypes.load_default_messages if FileTest.exist?("Data/messages_core.dat")

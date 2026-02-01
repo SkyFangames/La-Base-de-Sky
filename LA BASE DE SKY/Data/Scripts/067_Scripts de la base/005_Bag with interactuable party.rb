@@ -1167,7 +1167,7 @@ class PokemonBag_Scene
             BagSearcher.new(thispocket, itemwindow, self)
           elsif Input.trigger?(Input::ACTION) # Sort Items
             sort_keys = @bag.last_viewed_pocket == 4 ? [:number, :name, :type] : [:type, :name]
-            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Número"),_INTL("Alfabeticamente"), _INTL("Tipo")] : [_INTL("Categoría"), _INTL("Alfabeticamente")]
+            sort_commands = @bag.last_viewed_pocket == 4 ? [_INTL("Número"),_INTL("Alfabéticamente"), _INTL("Tipo")] : [_INTL("Categoría"), _INTL("Alfabéticamente")]
             option = pbMessage(_INTL("¿Cómo deseas ordenar tus objetos?"), sort_commands, -1)
             if option != -1 && option < sort_keys.length
               sorted_pocket = sort_pocket(sort_keys[option], thispocket, itemwindow.pocket)
@@ -1800,7 +1800,7 @@ class PokemonBagScreen
           @scene.pbRefresh
           dispqty  = (itm.is_important?) ? 1 : qty
           itemname = (dispqty > 1) ? itm.portion_name_plural : itm.portion_name
-          pbDisplay(_INTL("Ha sdejado {1} {2}.", dispqty, itemname))
+          pbDisplay(_INTL("Has dejado {1} {2}.", dispqty, itemname))
         else
           pbDisplay(_INTL("No hay espacio para almacenar objetos."))
         end

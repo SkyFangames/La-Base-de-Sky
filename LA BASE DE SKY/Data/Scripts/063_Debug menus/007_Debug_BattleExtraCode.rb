@@ -324,7 +324,7 @@ class Battle::DebugSetEffects
       cmds.push(i)
       cmd = cmds.length - 1 if default == i
     end
-    cmd = pbMessage("\\ts[]" + _INTL("Choose a battler/position."), commands, -1, nil, cmd)
+    cmd = pbMessage("\\ts[]" + _INTL("Elige un combatiente/posición."), commands, -1, nil, cmd)
     return (cmd >= 0) ? cmds[cmd] : default
   end
 

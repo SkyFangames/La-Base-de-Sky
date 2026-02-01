@@ -1224,7 +1224,7 @@ module Compiler
               newEvents = []
               if cost == 0
                 push_branch(newEvents, "$bag.can_add?(:#{itemname})", oldIndent)
-                push_text(newEvents, _INTL("Here you go!"), oldIndent + 1)
+                push_text(newEvents, _INTL("¡Aquí tienes!"), oldIndent + 1)
                 push_script(newEvents, "pbReceiveItem(:#{itemname})", oldIndent + 1)
                 push_else(newEvents, oldIndent + 1)
                 push_text(newEvents, _INTL("No te queda espacio en la Mochila."), oldIndent + 1)
