@@ -202,6 +202,21 @@ module PageHandlers
     end
   end
 
+  def has_any?(menu, page)
+    # Check if the page exists
+    page_options = get(menu, page)
+    return false if page_options.nil?
+    # Check if there are any MenuHandlers registered for this page
+    has_menu_handlers = false
+    MenuHandlers.each(menu) do |option, hash|
+      if hash["page"] == page
+        has_menu_handlers = true
+        break
+      end
+    end
+    return has_menu_handlers
+  end
+
   def call(menu, page)
     return @@handlers[menu]&.[](page)
   end

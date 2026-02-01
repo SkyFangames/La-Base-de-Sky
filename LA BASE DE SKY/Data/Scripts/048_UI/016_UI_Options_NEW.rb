@@ -1091,6 +1091,13 @@ PageHandlers.add(:options_menu, :graphics, {
 #   :description => proc { next _INTL("Edita los controles del juego.") }
 # })
 
+PageHandlers.add(:options_menu, :plugins, {
+  :name  => proc { next _INTL("Plugins") },
+  :order => 50,
+  :condition => proc { next PageHandlers.has_any?(:options_menu, :plugins) },
+  :description => proc { next _INTL("Configuraciones de Plugins.") }
+})
+
 MenuHandlers.add(:options_menu, :text_speed, {
   "page"        => :gameplay,
   "name"        => _INTL("Velocidad de Texto"),

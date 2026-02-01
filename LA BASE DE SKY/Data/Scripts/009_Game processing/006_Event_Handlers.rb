@@ -138,6 +138,10 @@ class HandlerHash
     handler = self[id]
     return handler&.call(*args)
   end
+
+  def empty?
+    return @hash.empty?
+  end
 end
 
 #===============================================================================
