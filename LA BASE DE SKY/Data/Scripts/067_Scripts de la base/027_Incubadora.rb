@@ -203,7 +203,7 @@ class Hatcher
       #Manipulate an egg
       if Input.trigger?(Input::USE)
         if $PokemonGlobal.eggs[@index] == nil
-          ret = Kernel.pbConfirmMessage("La incubadora está vacía\\n¿Quieres agregar un Huevo?")
+          ret = Kernel.pbConfirmMessage(_INTL("La incubadora está vacía\n¿Quieres agregar un Huevo?"))
           if ret == true
             if Settings::INCUBATOR_CHOOSE_EGG_FROM_PC
               chosen = pbChooseEggFromPC
@@ -221,7 +221,7 @@ class Hatcher
               }
               if chosen != -1 && $player.party[chosen] != nil
                 if !$player.party[chosen].egg?
-                  Kernel.pbMessage("El Pokémon elegido no es un Huevo.")
+                  Kernel.pbMessage(_INTL("El Pokémon elegido no es un Huevo."))
                 else
                   $PokemonGlobal.eggs[@index] = $player.party[chosen]
                   $player.party.delete_at(chosen)
@@ -231,7 +231,7 @@ class Hatcher
             end
           end
         else
-          ret = Kernel.pbConfirmMessage("¿Quieres sacar este Huevo de la incubadora?")
+          ret = Kernel.pbConfirmMessage(_INTL("¿Quieres sacar este Huevo de la incubadora?"))
           if ret == true
             takeEgg($PokemonGlobal.eggs[@index],@index)
             $game_temp.bag_scene.pbHardRefresh if $game_temp && $game_temp.bag_scene && defined?($game_temp.bag_scene.pbHardRefresh)
@@ -288,7 +288,7 @@ def pbGenerateEgg(pkmn, text = "")
   pkmn.calc_stats
   # Add egg to party
   if (GameData::Item.exists?(:EGGHATCHER) && $bag.has?(:EGGHATCHER))
-    ret = Kernel.pbConfirmMessage("¿Quieres agregar el Huevo a la incubadora?")
+    ret = Kernel.pbConfirmMessage(_INTL("¿Quieres agregar el Huevo a la incubadora?"))
     if ret == true
       ret = addEgg(pkmn)
       if ret == true
@@ -446,6 +446,3 @@ ItemHandlers::UseInField.add(:EGGHATCHER,proc{|item|
   }
   next 1
 })
-
-
-

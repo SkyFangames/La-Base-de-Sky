@@ -7213,8 +7213,8 @@ Flags = KeyItem
 Description = Dispositivo que ofrece información sobre los Pokémon salvajes del lugar en el que estés.
 #-------------------------------
 [VIAL]
-Name = Pokévial
-NamePlural = Pokévial
+Name = Curaportátil
+NamePlural = Curaportátiles
 Pocket = 8
 Price = 0
 FieldUse = Direct
@@ -7222,8 +7222,8 @@ Flags = KeyItem
 Description = Aparato de usos limitados que permite curar a todo tu equipo. Se recarga en Centros Pokémon.
 #-------------------------------
 [EMPTYVIAL]
-Name = Pokévial
-NamePlural = Pokévial
+Name = Curaportátil
+NamePlural = Curaportátiles
 Pocket = 8
 Price = 0
 FieldUse = Direct
