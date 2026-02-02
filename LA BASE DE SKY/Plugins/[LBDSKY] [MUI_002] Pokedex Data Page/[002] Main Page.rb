@@ -12,6 +12,8 @@ class PokemonPokedexInfo_Scene
   TYPE_MULTI_BASE_X = 298
   TYPE_MULTI_SPACING = 100
 
+ TYPE_GENDER_Y = 48
+	
   GENDER_ICON_X1 = 10
   GENDER_ICON_X2 = 44
   GENDER_ICON_SRC_UNIT = 32
@@ -532,7 +534,7 @@ class PokemonPokedexInfo_Scene
         type_number = GameData::Type.get(type).icon_position
         type_rect = Rect.new(0, type_number * TYPE_ICON_HEIGHT, TYPE_ICON_WIDTH, TYPE_ICON_HEIGHT)
         type_x = (species_data.types.length == 1) ? TYPE_SINGLE_X : TYPE_MULTI_BASE_X + (TYPE_MULTI_SPACING * i)
-        overlay.blt(type_x, 48, @typebitmap.bitmap, type_rect)
+        overlay.blt(type_x, TYPE_GENDER_Y, @typebitmap.bitmap, type_rect)
       end
     end
     #---------------------------------------------------------------------------
@@ -549,8 +551,8 @@ class PokemonPokedexInfo_Scene
         gender = (@gender == 0) ? [1, 0] : [0, 1]
       end
     end
-    imagepos.push([path + "gender", GENDER_ICON_X1, 48, GENDER_ICON_SRC_UNIT * gender[0],  0, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT],
-            [path + "gender", GENDER_ICON_X2, 48, GENDER_ICON_SRC_UNIT * gender[1], GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT])
+    imagepos.push([path + "gender", GENDER_ICON_X1, TYPE_GENDER_Y, GENDER_ICON_SRC_UNIT * gender[0],  0, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT],
+            [path + "gender", GENDER_ICON_X2, TYPE_GENDER_Y, GENDER_ICON_SRC_UNIT * gender[1], GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT])
     #---------------------------------------------------------------------------
     # Draws habitat icon.
     #---------------------------------------------------------------------------
