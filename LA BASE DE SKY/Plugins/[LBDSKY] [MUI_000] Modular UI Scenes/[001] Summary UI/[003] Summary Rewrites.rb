@@ -278,11 +278,7 @@ class PokemonSummary_Scene
         pbSEStop
         @pokemon.play_cry
         @show_back = !@show_back
-        if PluginManager.installed?("[DBK] Animated Pokémon System")
-          @sprites["pokemon"].setSummaryBitmap(@pokemon, @show_back)
-        else
-          @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
-        end
+        @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
       elsif Input.trigger?(Input::BACK)
         pbPlayCloseMenuSE
         break
