@@ -27,6 +27,7 @@ class PokemonPokedexInfo_Scene
   SHAPE_SRC_UNIT = 60
   SHAPE_SIZE = 60
 
+  EGG_GROUP_X = 302
   EGG_RECT_ALT_X = 62
   EGG_RECT_X = 0
   EGG_SINGLE_Y = 188
@@ -574,7 +575,7 @@ class PokemonPokedexInfo_Scene
     egg_groups.each_with_index do |group, i|
       rectY = GameData::EggGroup.get(group).icon_position
       group_y = (egg_groups.length == 1) ? EGG_SINGLE_Y : EGG_MULTI_BASE_Y + EGG_MULTI_SPACING * i
-      imagepos.push([path + "egg_groups", 302, group_y, rectX, EGG_SRC_HEIGHT * rectY, EGG_SRC_WIDTH, EGG_SRC_HEIGHT])
+      imagepos.push([path + "egg_groups", EGG_GROUP_X, group_y, rectX, EGG_SRC_HEIGHT * rectY, EGG_SRC_WIDTH, EGG_SRC_HEIGHT])
     end
     #---------------------------------------------------------------------------
     # Draws the base stats text and bars.
