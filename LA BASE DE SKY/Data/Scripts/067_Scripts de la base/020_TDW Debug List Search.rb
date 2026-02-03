@@ -101,7 +101,13 @@ def list_screen_handle_input_enhancements(list, lister, selectedmap, full_origin
     if searchTerm
       # Lista Maestra   
       newSearch = full_original_list.select do |cmd|
-        pbSmartMatch?(cmd.to_s, searchTerm)
+        cmd_text = cmd.to_s
+        if cmd_text =~ /^\d+:\s*(.+)$/
+          cmd_text = $1
+        end
+
+        cmd_translated = _INTL(cmd_text)        
+        pbSmartMatch?(cmd_translated, searchTerm)
       end
           
       unless newSearch.empty?
