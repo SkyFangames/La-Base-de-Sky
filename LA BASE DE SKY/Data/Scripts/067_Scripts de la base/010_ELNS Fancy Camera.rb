@@ -251,11 +251,11 @@ class Game_Player < Game_Character
       when :surfing, :surfing_fast, :surfing_jumping, :surfing_stopped
         if !@move_route_forcing
           pbCameraSpeed(1.4) if FancyCamera::INCREASE_WHEN_RUNNING
-          self.move_speed = (type == :surfing_jumping) ? 3 : 4
+          self.move_speed = speed
         end
         new_charset = pbGetPlayerCharset(meta.surf_charset)
       when :descending_waterfall, :ascending_waterfall
-        self.move_speed = 2 if !@move_route_forcing
+        self.move_speed = speed if !@move_route_forcing
         new_charset = pbGetPlayerCharset(meta.surf_charset)
       when :cycling, :cycling_fast, :cycling_jumping, :cycling_stopped
         if !@move_route_forcing
