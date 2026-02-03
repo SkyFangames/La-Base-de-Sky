@@ -13752,7 +13752,7 @@ Weight = 2.1
 Color = Blue
 Shape = Winged
 Category = Murciélago
-Pokedex = Este peculiar Pokésmon pega sus fosas nasales a la pared para dormir y, cuando las retira, deja un corazón marcado.
+Pokedex = Este peculiar Pokémon pega sus fosas nasales a la pared para dormir y, cuando las retira, deja un corazón marcado.
 Generation = 5
 Evolutions = SWOOBAT,Happiness,
 #-------------------------------

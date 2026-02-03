@@ -206,7 +206,7 @@ module Settings
 
   # Es el número de switch que usa la Fancy Camera. Debes encender este switch
   # para activar la cámara fancy.
-  CAMERA_FANCY = 75
+  CAMERA_FANCY = 59
 end
 
 
