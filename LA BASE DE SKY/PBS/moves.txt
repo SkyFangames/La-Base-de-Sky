@@ -1517,7 +1517,7 @@ Accuracy = 0
 TotalPP = 20
 Target = UserAndAllies
 FunctionCode = RaisePlusMinusUserAndAlliesDefSpDef1
-Description = Aumentar la Defensa y la Defensa Espepecial de los aliados con las habilidades Más y Menos.
+Description = Aumentar la Defensa y la Defensa Especial de los aliados con las habilidades Más y Menos.
 #-------------------------------
 [THUNDERWAVE]
 Name = Onda Trueno
@@ -2012,7 +2012,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = UseUserDefenseInsteadOfUserAttack
 Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome
-Description = El usuario embistie al objetivo. Cuanto más alta sea la Defensa del usuario, más daño inflingirá.
+Description = El usuario embiste al objetivo. Cuanto más alta sea la Defensa del usuario, más daño inflingirá.
 #-------------------------------
 [SUBMISSION]
 Name = Sumisión
@@ -2958,7 +2958,7 @@ TotalPP = 10
 Target = Other
 FunctionCode = HealUserByThreeQuartersOfDamageDone
 Flags = CanProtect,CanMirrorMove
-Description = Absorbe energía del Pokémon objetivo y recupera más de la mitad del daño inflingido.
+Description = Absorbe energía del Pokémon objetivo y recupera más de la mitad del daño infligido.
 #-------------------------------
 [AIRSLASH]
 Name = Tajo Aéreo
@@ -4753,7 +4753,7 @@ TotalPP = 5
 Target = NearOther
 FunctionCode = TypeDependsOnUserDrive
 Flags = CanProtect,CanMirrorMove,CannotMetronome
-Description = Ataca al objetivo con un gran laser. El tipo del ataque lo determina el cartucho que porta el usuario.
+Description = Ataca al objetivo con un gran láser. El tipo del ataque lo determina el cartucho que porta el usuario.
 #-------------------------------
 [THRASH]
 Name = Saña
@@ -5504,7 +5504,7 @@ Target = None
 Priority = 1
 FunctionCode = MultiTurnAttackBideThenReturnDoubleDamage
 Flags = Contact,CanProtect
-Description = Resiste dos golpes para liberar la energia acumulada.
+Description = Resiste dos golpes para liberar la energía acumulada.
 #-------------------------------
 [CRUSHGRIP]
 Name = Agarrón
@@ -9001,7 +9001,7 @@ Target = NearOther
 FunctionCode = DamageTargetAddSpikesToFoeSide
 Flags = Contact,CanProtect,CanMirrorMove,Slicing
 EffectChance = 100
-Description = Ataca con una espada de forma brusca y, al hacerlo, se deprenden púas que rodean al bando enemigo.
+Description = Ataca con una espada de forma brusca y, al hacerlo, se desprenden púas que rodean al bando enemigo.
 #-------------------------------
 [TAKEHEART]
 Name = Bálsamo Osado

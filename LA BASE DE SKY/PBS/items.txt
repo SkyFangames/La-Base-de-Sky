@@ -3279,7 +3279,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 20 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 20 PS de un Pokémon.
 #-------------------------------
 [SUPERPOTION]
 Name = Superpoción
@@ -3289,7 +3289,7 @@ Price = 700
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 60 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 60 PS de un Pokémon.
 #-------------------------------
 [HYPERPOTION]
 Name = Hiperpoción
@@ -3299,7 +3299,7 @@ Price = 1500
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 120 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 120 PS de un Pokémon.
 #-------------------------------
 [MAXPOTION]
 Name = Poción Máxima
@@ -3310,7 +3310,7 @@ BPPrice = 2
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura todos los PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura todos los PS de un Pokémon.
 #-------------------------------
 [FULLRESTORE]
 Name = Restaura Todo
@@ -3339,7 +3339,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que libera a un Pokémon de las garras del sueño.
+Description = Medicina en espray que libera a un Pokémon de las garras del sueño.
 #-------------------------------
 [ANTIDOTE]
 Name = Antídoto
@@ -3349,7 +3349,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que contrarresta los efectos del veneno en un Pokémon.
+Description = Medicina en espray que contrarresta los efectos del veneno en un Pokémon.
 #-------------------------------
 [BURNHEAL]
 Name = Antiquemadura
@@ -3359,7 +3359,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing    
-Description = Medicina en spray que cura las quemaduras a un Pokémon.
+Description = Medicina en espray que cura las quemaduras a un Pokémon.
 #-------------------------------
 [PARALYZEHEAL]
 Name = Antiparalizante
@@ -3369,7 +3369,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura a un Pokémon paralizado.
+Description = Medicina en espray que cura a un Pokémon paralizado.
 #-------------------------------
 [ICEHEAL]
 Name = Antihielo
@@ -3379,7 +3379,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que descongela a un Pokémon.
+Description = Medicina en espray que descongela a un Pokémon.
 #-------------------------------
 [FULLHEAL]
 Name = Cura Total
@@ -3389,7 +3389,7 @@ Price = 400
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura todos los problemas de estado de un Pokémon.
+Description = Medicina en espray que cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [PEWTERCRUNCHIES]
 Name = Rokikos
