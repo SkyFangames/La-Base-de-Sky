@@ -1,7 +1,7 @@
 #===============================================================================
 # Abstraction layer for Pokemon Essentials
 #===============================================================================
-class PokemonMartAdapter
+class PokemonMartAdapter 
   def getMoney
     return $player.money
   end
@@ -14,6 +14,67 @@ class PokemonMartAdapter
     $player.money = value
   end
 
+  def getItemIconRect(_item)
+    return Rect.new(0, 0, 48, 48)
+  end
+
+  def getDisplayPrice(item, selling = false)
+    price = getPrice(item, selling).to_s_formatted
+    return _INTL("$ {1}", price)
+  end
+
+  # ========== ABSTRACT METHODS - Must be implemented by subclasses ==========
+
+  def getItemIcon(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getItemIcon"
+  end
+
+  def getInventory
+    raise NotImplementedError, "#{self.class} debe implementar #getInventory"
+  end
+
+  def getName(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getName"
+  end
+
+  def getNamePlural(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getNamePlural"
+  end
+
+  def getDisplayName(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getDisplayName"
+  end
+
+  def getDescription(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getDescription"
+  end
+
+  def getQuantity(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getQuantity"
+  end
+
+  def getPrice(item, selling = false)
+    raise NotImplementedError, "#{self.class} debe implementar #getPrice"
+  end
+
+  def getDisplayPrice(item, selling = false)
+    raise NotImplementedError, "#{self.class} debe implementar #getDisplayPrice"
+  end
+
+  def canSell?(item)
+    raise NotImplementedError, "#{self.class} debe implementar #canSell?"
+  end
+
+  def addItem(item)
+    raise NotImplementedError, "#{self.class} debe implementar #addItem"
+  end
+
+  def removeItem(item)
+    raise NotImplementedError, "#{self.class} debe implementar #removeItem"
+  end
+end
+
+class PokemonItemMartAdapter < PokemonMartAdapter
   def getInventory
     return $bag
   end
@@ -74,11 +135,6 @@ class PokemonMartAdapter
     return (item) ? GameData::Item.icon_filename(item) : nil
   end
 
-  # Unused
-  def getItemIconRect(_item)
-    return Rect.new(0, 0, 48, 48)
-  end
-
   def getQuantity(item)
     return $bag.quantity(item)
   end
@@ -97,11 +153,6 @@ class PokemonMartAdapter
     end
     return GameData::Item.get(item).sell_price if selling
     return GameData::Item.get(item).price
-  end
-
-  def getDisplayPrice(item, selling = false)
-    price = getPrice(item, selling).to_s_formatted
-    return _INTL("$ {1}", price)
   end
 
   def canSell?(item)
@@ -644,7 +695,7 @@ class PokemonMartScreen
   def initialize(scene, stock)
     @scene = scene
     @stock = stock
-    @adapter = PokemonMartAdapter.new
+    @adapter = PokemonItemMartAdapter.new
   end
 
   def pbConfirm(msg)
