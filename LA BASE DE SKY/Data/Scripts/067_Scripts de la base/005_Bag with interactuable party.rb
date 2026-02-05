@@ -127,6 +127,32 @@ class Window_PokemonBag < Window_DrawableCommand
   attr_accessor :party2sel
   attr_accessor :filterlist
 
+  # Coordenadas
+  ITEM_X_OFFSET       = 16
+  ITEM_Y_OFFSET       = 16
+  ITEM_WIDTH_OFFSET   = 16
+  CLOSE_TEXT_Y_OFFSET = 4
+  MACHINE_NUMBER_Y_OFFSET = 4
+  MACHINE_NAME_X_OFFSET = 70
+  MACHINE_NAME_Y_OFFSET = 4
+  REGISTER_ICON_WIDTH_OFFSET = 72
+  REGISTER_ICON_Y_OFFSET = 10
+  FAVORITE_REGISTERED_ICON_WIDTH_OFFSET = 30
+  FAVORITE_ICON_Y_OFFSET = 13
+  FAVORITE_KEYITEM_ICON_WIDTH_OFFSET = 92
+  FAVORITE_ICON_WIDTH_OFFSET = 88
+  QUANTITY_X_OFFSET = 16
+  QUANTITY_Y_OFFSET = 2
+  CURSOR_Y_OFFSET = 2
+
+  # Colores
+  BASE_COLOR_CLOSE_TEXT   = Color.new(78, 86, 100)
+  SHADOW_COLOR_CLOSE_TEXT = Color.new(157, 171, 178)
+  BASE_COLOR_SORTING      = Color.new(224, 0, 0)
+  SHADOW_COLOR_SORTING    = Color.new(248, 144, 144)
+  BASE_COLOR_SELECTION    = Color.new(78, 86, 100)
+  SHADOW_COLOR_SELECTION  = Color.new(157, 171, 178)
+
   def initialize(bag, filterlist, pocket, x, y, width, height)
     @bag        = bag
     @filterlist = filterlist
@@ -134,7 +160,7 @@ class Window_PokemonBag < Window_DrawableCommand
     @sorting  = false
     @party1sel = false
     @party2sel = false
-    @adapter  = PokemonMartAdapter.new
+    @adapter  = PokemonItemMartAdapter.new
     super(x, y, width, height)
     @selarrow   = AnimatedBitmap.new("Graphics/UI/Bag Screen with Party/cursor")
     @swaparrow  = AnimatedBitmap.new("Graphics/UI/Bag Screen with Party/cursor_swap")
@@ -193,13 +219,13 @@ class Window_PokemonBag < Window_DrawableCommand
       else
         bmp = @selarrow.bitmap
       end
-      pbCopyBitmap(self.contents, bmp, rect.x, rect.y + 2)
+      pbCopyBitmap(self.contents, bmp, rect.x, rect.y + CURSOR_Y_OFFSET)
     end
   end
 
   def drawItem(index, _count, rect)
     textpos = []
-    rect = Rect.new(rect.x + 16, rect.y + 16, rect.width - 16, rect.height)
+    rect = Rect.new(rect.x + ITEM_X_OFFSET, rect.y + ITEM_Y_OFFSET, rect.width - ITEM_WIDTH_OFFSET, rect.height)
     thispocket = @bag.pockets[@pocket]
     if index == self.itemCount - 1
       if @selarrow && index == self.index
@@ -207,33 +233,33 @@ class Window_PokemonBag < Window_DrawableCommand
           baseColor   = self.baseColor
           shadowColor = self.shadowColor
         else
-          baseColor   = Color.new(78, 86, 100)
-          shadowColor = Color.new(157, 171, 178)
+          baseColor   = BASE_COLOR_CLOSE_TEXT
+          shadowColor = SHADOW_COLOR_CLOSE_TEXT
         end
       else
         baseColor   = self.baseColor
         shadowColor = self.shadowColor
       end
-      textpos.push([_INTL("CERRAR MOCHILA"), rect.x, rect.y + 4, :left, baseColor, shadowColor])
+      textpos.push([_INTL("CERRAR MOCHILA"), rect.x, rect.y + CLOSE_TEXT_Y_OFFSET, :left, baseColor, shadowColor])
     else
       item = (@filterlist) ? thispocket[@filterlist[@pocket][index]][0] : thispocket[index][0]
       baseColor   = self.baseColor
       shadowColor = self.shadowColor
       if @sorting && index == self.index
-        baseColor   = Color.new(224, 0, 0)
-        shadowColor = Color.new(248, 144, 144)
+        baseColor   = BASE_COLOR_SORTING
+        shadowColor = SHADOW_COLOR_SORTING
       elsif @party2sel && index == self.index
         baseColor   = self.baseColor
         shadowColor = self.shadowColor
       elsif @selarrow && index == self.index
-        baseColor   = Color.new(78, 86, 100)
-        shadowColor = Color.new(157, 171, 178)
+        baseColor   = BASE_COLOR_SELECTION
+        shadowColor = SHADOW_COLOR_SELECTION
       end
       item_data = GameData::Item.get(item)
       if item_data.is_machine?
         textpos.push(
-          [@adapter.getDisplayNameMachineNumber(item), rect.x, rect.y + 4, :left, baseColor, shadowColor],
-          [@adapter.getDisplayNameMachineName(item), rect.x+70, rect.y + 4, :left, baseColor, shadowColor]
+          [@adapter.getDisplayNameMachineNumber(item), rect.x, rect.y + MACHINE_NUMBER_Y_OFFSET, :left, baseColor, shadowColor],
+          [@adapter.getDisplayNameMachineName(item), rect.x + MACHINE_NAME_X_OFFSET, rect.y + MACHINE_NAME_Y_OFFSET, :left, baseColor, shadowColor]
         )
       else
         textpos.push(
@@ -245,13 +271,13 @@ class Window_PokemonBag < Window_DrawableCommand
         if @bag.registered?(item)
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/icon_register", rect.x + rect.width - 72, rect.y + 10, 0, 0, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/icon_register", rect.x + rect.width - REGISTER_ICON_WIDTH_OFFSET, rect.y + REGISTER_ICON_Y_OFFSET, 0, 0, -1, 24]]
           )
           showing_register_icon = true
         elsif pbCanRegisterItem?(item)
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/icon_register", rect.x + rect.width - 72, rect.y + 10, 0, 24, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/icon_register", rect.x + rect.width - REGISTER_ICON_WIDTH_OFFSET, rect.y + REGISTER_ICON_Y_OFFSET, 0, 24, -1, 24]]
           )
           showing_register_icon = true
         end
@@ -260,25 +286,25 @@ class Window_PokemonBag < Window_DrawableCommand
         if !pbCanRegisterItem?(item) && !item_data.show_quantity? && !item_data.is_key_item? 
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 30, rect.y + 13, 0, 0, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - FAVORITE_REGISTERED_ICON_WIDTH_OFFSET, rect.y + FAVORITE_ICON_Y_OFFSET, 0, 0, -1, 24]]
           )
         elsif item_data.is_key_item?
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 92, rect.y + 13, 0, 0, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - FAVORITE_KEYITEM_ICON_WIDTH_OFFSET, rect.y + FAVORITE_ICON_Y_OFFSET, 0, 0, -1, 24]]
           )
         else
           pbDrawImagePositions(
             self.contents,
-            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - 88, rect.y + 13, 0, 0, -1, 24]]
+            [["Graphics/UI/Bag Screen with Party/favourite", rect.x + rect.width - FAVORITE_ICON_WIDTH_OFFSET, rect.y + FAVORITE_ICON_Y_OFFSET, 0, 0, -1, 24]]
           )
         end
       end
       if item_data.show_quantity? && !showing_register_icon
         qty = (@filterlist) ? thispocket[@filterlist[@pocket][index]][1] : thispocket[index][1]
         qtytext = _ISPRINTF("x{1: 3d}", qty)
-        xQty    = rect.x + rect.width - self.contents.text_size(qtytext).width - 16
-        textpos.push([qtytext, xQty, rect.y + 2, :left, baseColor, shadowColor])
+        xQty    = rect.x + rect.width - self.contents.text_size(qtytext).width - QUANTITY_X_OFFSET
+        textpos.push([qtytext, xQty, rect.y + QUANTITY_Y_OFFSET, :left, baseColor, shadowColor])
       end
     end
     pbDrawTextPositions(self.contents, textpos)
@@ -310,10 +336,16 @@ class PokemonBagPartyBlankPanel < Sprite
   attr_accessor :text
   attr_accessor :text_color
 
+  # Coordenadas
+  PANEL_WIDTH = 112
+  PANEL_X_OFFSET = 4
+  PANEL_Y_BASE = 96
+  PANEL_Y_OFFSET = 2
+
   def initialize(_pokemon,index,viewport=nil)
     super(viewport)
-    self.x = (index % 2) * 112 + 4
-    self.y = (index % 2) + 96 + 2
+    self.x = (index % 2) * PANEL_WIDTH + PANEL_X_OFFSET
+    self.y = (index % 2) + PANEL_Y_BASE + PANEL_Y_OFFSET
     @panelbgsprite = AnimatedBitmap.new("Graphics/UI/Bag Screen with Party/ptpanel_blank")
     self.bitmap = @panelbgsprite.bitmap
     @text = nil
@@ -342,13 +374,57 @@ class PokemonBagPartyPanel < Sprite
   attr_reader :text
   attr_reader :text_color
 
+  # Coordenadas del panel
+  PANEL_WIDTH = 112
+  PANEL_HEIGHT = 96
+  PANEL_X_OFFSET = 4
+  PANEL_Y_OFFSET = 2
+  
+  # Coordenadas de sprites internos
+  HP_BAR_X_OFFSET = 6
+  HP_BAR_Y_OFFSET = 60
+  POKEMON_SPRITE_X_OFFSET = 32
+  POKEMON_SPRITE_Y_OFFSET = 36
+  HELD_ITEM_X_OFFSET = 76
+  HELD_ITEM_Y_OFFSET = 40
+  
+  # Coordenadas de texto e iconos
+  HP_TEXT_X = 52
+  HP_TEXT_Y = 76
+  HP_BAR_DRAW_X = 8
+  HP_BAR_DRAW_Y = 62
+  STATUS_ICON_X = 48
+  STATUS_ICON_Y = 26
+  POKERUS_ICON_X = 64
+  POKERUS_ICON_Y = 44
+  GENDER_TEXT_X = 92
+  GENDER_TEXT_Y = 8
+  SHINY_ICON_X = 84
+  SHINY_ICON_Y = 44
+  LEVEL_OVERLAY_X = 34
+  LEVEL_OVERLAY_Y = 10
+  LEVEL_TEXT_X = 58
+  LEVEL_TEXT_Y = 8
+  ANNOTATION_TEXT_X = 56
+  ANNOTATION_TEXT_Y = 76
+  
+  # Colores de texto
+  TEXT_BASE_COLOR = Color.new(248, 248, 248)
+  TEXT_OUTLINE_COLOR = Color.new(0, 0, 0)
+  TEXT_SHADOW_COLOR = Color.new(40, 40, 40)
+  GENDER_MALE_COLOR = Color.new(116, 162, 237)
+  GENDER_FEMALE_COLOR = Color.new(237, 116, 140)
+  ANNOTATION_GRAY_COLOR = Color.new(90, 90, 90)
+  ANNOTATION_SHADOW_COLOR = Color.new(40, 40, 40)
+  ANNOTATION_LIGHT_SHADOW_COLOR = Color.new(140, 140, 140)
+
   def initialize(pokemon, index, viewport=nil)
     super(viewport)
     @pokemon = pokemon
     @active = (index == 0)   # true = rounded panel, false = rectangular panel
     @refreshing = true
-    self.x = (index % 2) * 112 + 4
-    self.y = 96 * (index / 2) + 2
+    self.x = (index % 2) * PANEL_WIDTH + PANEL_X_OFFSET
+    self.y = PANEL_HEIGHT * (index / 2) + PANEL_Y_OFFSET
     @panelbgsprite = ChangelingSprite.new(0, 0, viewport)
     @panelbgsprite.z = self.z
     if @active   # Rounded panel
@@ -494,20 +570,20 @@ class PokemonBagPartyPanel < Sprite
         if self.preselected || (self.selected); @hpbgsprite.change_bitmap(:cursor)
         else;                                   @hpbgsprite.change_bitmap(:APTO)
         end
-        @hpbgsprite.x     = self.x + 6
-        @hpbgsprite.y     = self.y + 60
+        @hpbgsprite.x     = self.x + HP_BAR_X_OFFSET
+        @hpbgsprite.y     = self.y + HP_BAR_Y_OFFSET
         @hpbgsprite.color = self.color
       end
     end
     if @pkmnsprite && !@pkmnsprite.disposed?
-      @pkmnsprite.x        = self.x + 32
-      @pkmnsprite.y        = self.y + 36
+      @pkmnsprite.x        = self.x + POKEMON_SPRITE_X_OFFSET
+      @pkmnsprite.y        = self.y + POKEMON_SPRITE_Y_OFFSET
       @pkmnsprite.color    = self.color
       @pkmnsprite.selected = self.selected
     end
     if @helditemsprite&.visible && !@helditemsprite.disposed?
-      @helditemsprite.x     = self.x + 76
-      @helditemsprite.y     = self.y + 40
+      @helditemsprite.x     = self.x + HELD_ITEM_X_OFFSET
+      @helditemsprite.y     = self.y + HELD_ITEM_Y_OFFSET
       @helditemsprite.color = self.color
     end
     if @overlaysprite && !@overlaysprite.disposed?
@@ -518,15 +594,15 @@ class PokemonBagPartyPanel < Sprite
     if @refreshBitmap
       @refreshBitmap = false
       @overlaysprite.bitmap.clear if @overlaysprite.bitmap
-      baseColor   = Color.new(248, 248, 248)
-      outlineColor = Color.new(0, 0, 0)
+      baseColor   = TEXT_BASE_COLOR
+      outlineColor = TEXT_OUTLINE_COLOR
       pbSetSystemFont(@overlaysprite.bitmap)
       pbSetSmallFont(@overlaysprite.bitmap)
       textpos = []
       if !@pokemon.egg?
         if !@text || @text.length == 0
           # Draw HP numbers
-          textpos.push([sprintf("% 3d /% 3d", @pokemon.hp, @pokemon.totalhp), 52, 76, 2, baseColor, Color.new(40, 40, 40), true, Graphics.width]) if !@text || @text.length == 0
+          textpos.push([sprintf("% 3d /% 3d", @pokemon.hp, @pokemon.totalhp), HP_TEXT_X, HP_TEXT_Y, 2, baseColor, TEXT_SHADOW_COLOR, true, Graphics.width]) if !@text || @text.length == 0
         end
           # Draw HP bar
           if @pokemon.hp > 0
@@ -537,7 +613,7 @@ class PokemonBagPartyPanel < Sprite
             hpzone = 1 if @pokemon.hp <= (@pokemon.totalhp / 2).floor
             hpzone = 2 if @pokemon.hp <= (@pokemon.totalhp / 4).floor
             hprect = Rect.new(0, hpzone * 8, w, 8)
-            @overlaysprite.bitmap.blt(8, 62, @hpbar.bitmap, hprect)
+            @overlaysprite.bitmap.blt(HP_BAR_DRAW_X, HP_BAR_DRAW_Y, @hpbar.bitmap, hprect)
           end
           # Draw status
           status = -1
@@ -548,36 +624,36 @@ class PokemonBagPartyPanel < Sprite
           end
           if status >= 0
             statusrect = Rect.new(0, 16 * status, 44, 16)
-            @overlaysprite.bitmap.blt(48, 26, @statuses.bitmap, statusrect)
+            @overlaysprite.bitmap.blt(STATUS_ICON_X, STATUS_ICON_Y, @statuses.bitmap, statusrect)
           end
         # Draw Pokerus icon
           if BagScreenWiInParty::PKRSICON == true
             if @pokemon.pokerusStage == 1
-              @overlaysprite.bitmap.blt(64, 44, @pokerus.bitmap, Rect.new(0, 0, 16, 16))
+              @overlaysprite.bitmap.blt(POKERUS_ICON_X, POKERUS_ICON_Y, @pokerus.bitmap, Rect.new(0, 0, 16, 16))
             elsif @pokemon.pokerusStage == 2
-              @overlaysprite.bitmap.blt(64, 44, @pokerus.bitmap, Rect.new(0, 16, 16, 16))
+              @overlaysprite.bitmap.blt(POKERUS_ICON_X, POKERUS_ICON_Y, @pokerus.bitmap, Rect.new(0, 16, 16, 16))
             end
           end
         # Draw gender symbol
         if @pokemon.male?
-          textpos.push([_INTL("♂"), 92, 8, 0, Color.new(116, 162, 237), outlineColor, true, Graphics.width])
+          textpos.push([_INTL("♂"), GENDER_TEXT_X, GENDER_TEXT_Y, 0, GENDER_MALE_COLOR, outlineColor, true, Graphics.width])
         elsif @pokemon.female?
-          textpos.push([_INTL("♀"), 92, 8, 0, Color.new(237, 116, 140), outlineColor, true, Graphics.width])
+          textpos.push([_INTL("♀"), GENDER_TEXT_X, GENDER_TEXT_Y, 0, GENDER_FEMALE_COLOR, outlineColor, true, Graphics.width])
         end
         # Draw shiny icon
         if @pokemon.shiny? && BagScreenWiInParty::SHINYICON == true
           pbDrawImagePositions(@overlaysprite.bitmap,
-                               [["Graphics/UI/Bag Screen with Party/shiny", 84, 44, 0, 0, 16, 16]])
+                               [["Graphics/UI/Bag Screen with Party/shiny", SHINY_ICON_X, SHINY_ICON_Y, 0, 0, 16, 16]])
         end
       end
       pbDrawTextPositions(@overlaysprite.bitmap, textpos)
       # Draw level text
       if !@pokemon.egg?
         pbDrawImagePositions(@overlaysprite.bitmap,
-                             [["Graphics/UI/Bag Screen with Party/overlay_lv", 34, 10, 0, 0, 22, 14]])
+                             [["Graphics/UI/Bag Screen with Party/overlay_lv", LEVEL_OVERLAY_X, LEVEL_OVERLAY_Y, 0, 0, 22, 14]])
         pbSetSmallFont(@overlaysprite.bitmap)
         pbDrawTextPositions(@overlaysprite.bitmap,
-                            [[@pokemon.level.to_s, 58, 8, 0, baseColor, outlineColor, true, Graphics.width]])
+                            [[@pokemon.level.to_s, LEVEL_TEXT_X, LEVEL_TEXT_Y, 0, baseColor, outlineColor, true, Graphics.width]])
       end
       # Draw annotation text
       if @text && @text.length > 0
@@ -585,13 +661,13 @@ class PokemonBagPartyPanel < Sprite
         pbSetSmallFont(@overlaysprite.bitmap)
         if @text_color
           pbDrawTextPositions(@overlaysprite.bitmap,
-                              [[@text,56,76,2,Color.new(90,90,90),Color.new(40, 40, 40), true, Graphics.width]])
+                              [[@text,ANNOTATION_TEXT_X,ANNOTATION_TEXT_Y,2,ANNOTATION_GRAY_COLOR,ANNOTATION_SHADOW_COLOR, true, Graphics.width]])
         elsif @text_color == false
           pbDrawTextPositions(@overlaysprite.bitmap,[
-                              [@text,56,76,2,baseColor,Color.new(140,140,140),true,Graphics.width]])
+                              [@text,ANNOTATION_TEXT_X,ANNOTATION_TEXT_Y,2,baseColor,ANNOTATION_LIGHT_SHADOW_COLOR,true,Graphics.width]])
         else
           pbDrawTextPositions(@overlaysprite.bitmap,[
-                              [@text,56,76,2,baseColor,Color.new(40,40,40),true,Graphics.width]])
+                              [@text,ANNOTATION_TEXT_X,ANNOTATION_TEXT_Y,2,baseColor,TEXT_SHADOW_COLOR,true,Graphics.width]])
         end
       end
     end
@@ -618,11 +694,95 @@ class PokemonBag_Scene
   POCKETNAMEBASECOLOR    = Color.new(255, 255, 255)
   POCKETNAMEOUTLINECOLOR = Color.new(78, 83, 100)
   ITEMSVISIBLE           = 6
+  
+  # Coordenadas de UI
+  POCKET_ICON_X = 372
+  POCKET_ICON_Y = 0
+  CURRENT_POCKET_X = 372
+  CURRENT_POCKET_Y = 26
+  CURRENT_POCKET_ICON_SIZE = 28
+  ITEM_LIST_X = 204
+  ITEM_LIST_Y = 40
+  ITEM_LIST_WIDTH = 314
+  ITEM_LIST_HEIGHT_BASE = 72
+  ITEM_ICON_X = 48
+  ITEM_ICON_Y_FROM_BOTTOM = 46
+  ITEM_TEXT_X = 72
+  ITEM_TEXT_Y = 274
+  ITEM_TEXT_WIDTH_OFFSET = 96
+  ITEM_TEXT_HEIGHT = 128
+  
+  # Coordenadas de textos de ayuda
+  SORT_TEXT_X = 232
+  SORT_TEXT_Y = 7
+  SEARCH_TEXT_X = 317
+  SEARCH_TEXT_Y = 7
+  HELP_WINDOW_WIDTH = 398
+  
+  # Coordenadas del nombre de bolsillo
+  POCKET_NAME_X = 297
+  POCKET_NAME_Y = 23
+  
+  # Coordenadas del slider
+  SLIDER_TOP_X = 356
+  SLIDER_TOP_Y = 16
+  SLIDER_BOTTOM_X = 356
+  SLIDER_BOTTOM_Y = 228
+  SLIDER_BOX_X = 484
+  SLIDER_Y_START = 80
+  SLIDER_HEIGHT = 174
+  SLIDER_MIN_BOX_HEIGHT = 38
+  
+  # Coordenadas de iconos de bolsillo
+  POCKET_ICON_WIDTH = 14
+  POCKET_ICON_HEIGHT = 26
+  POCKET_ICON_SPRITE_SIZE = 28
+  POCKET_ICON_BITMAP_WIDTH = 130
+  POCKET_ICON_BITMAP_HEIGHT = 52
+  POCKET_ANIMATION_OFFSET = 2
+  
+  # Coordenadas del panorama
+  PANORAMA_STOP_X = -56
+  PANORAMA_SCROLL_SPEED = 2
+  
+  # Colores de fondo BW Style (Estilo Blanco/Negro)
+  BG_COLOR_FEMALE_BG = Color.new(231, 101, 137)
+  BG_COLOR_FEMALE_GRAD = Color.new(243, 133, 169)
+  BG_COLOR_FEMALE_PAN = Color.new(232, 62, 113)
+  BG_COLOR_MALE_BG = Color.new(101, 230, 255)
+  BG_COLOR_MALE_GRAD = Color.new(37, 129, 255)
+  BG_COLOR_MALE_PAN = Color.new(37, 136, 255)
+  
+  # Colores de bolsillos HGSS Style (Estilo Oro/Plata/Cristal)
+  POCKET_1_BG = Color.new(233, 152, 189)
+  POCKET_1_GRAD = Color.new(255, 37, 187)
+  POCKET_1_PAN = Color.new(213, 89, 141)
+  POCKET_2_BG = Color.new(233, 161, 152)
+  POCKET_2_GRAD = Color.new(255, 134, 37)
+  POCKET_2_PAN = Color.new(224, 112, 56)
+  POCKET_3_BG = Color.new(233, 197, 152)
+  POCKET_3_GRAD = Color.new(255, 177, 37)
+  POCKET_3_PAN = Color.new(200, 136, 32)
+  POCKET_4_BG = Color.new(216, 233, 152)
+  POCKET_4_GRAD = Color.new(194, 255, 37)
+  POCKET_4_PAN = Color.new(128, 168, 32)
+  POCKET_5_BG = Color.new(175, 233, 152)
+  POCKET_5_GRAD = Color.new(78, 255, 37)
+  POCKET_5_PAN = Color.new(32, 160, 72)
+  POCKET_6_BG = Color.new(152, 220, 233)
+  POCKET_6_GRAD = Color.new(37, 212, 255)
+  POCKET_6_PAN = Color.new(24, 144, 176)
+  POCKET_7_BG = Color.new(152, 187, 233)
+  POCKET_7_GRAD = Color.new(37, 125, 255)
+  POCKET_7_PAN = Color.new(48, 112, 224)
+  POCKET_8_BG = Color.new(178, 152, 233)
+  POCKET_8_GRAD = Color.new(145, 37, 255)
+  POCKET_8_PAN = Color.new(144, 72, 216)
 
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
-    @sprites["panorama"].x  = 0 if @sprites["panorama"].x == - 56
-    @sprites["panorama"].x -= 2 if BagScreenWiInParty::PANORAMA == true
+    @sprites["panorama"].x  = 0 if @sprites["panorama"].x == PANORAMA_STOP_X
+    @sprites["panorama"].x -= PANORAMA_SCROLL_SPEED if BagScreenWiInParty::PANORAMA == true
   end
 
   def pbStartScene(bag, party = $player.party, choosing = false, filterproc = nil, resetpocket = true)
@@ -676,13 +836,13 @@ class PokemonBag_Scene
     
     if BagScreenWiInParty::BGSTYLE == 1 # BW Style
       if $player.female?
-        @sprites["background"].color = Color.new(231, 101, 137)
-        @sprites["gradient"].color = Color.new(243, 133, 169)
-        @sprites["panorama"].color = Color.new(232, 62, 113)
+        @sprites["background"].color = BG_COLOR_FEMALE_BG
+        @sprites["gradient"].color = BG_COLOR_FEMALE_GRAD
+        @sprites["panorama"].color = BG_COLOR_FEMALE_PAN
       else
-        @sprites["background"].color = Color.new(101, 230, 255)
-        @sprites["gradient"].color = Color.new(37, 129, 255)
-        @sprites["panorama"].color = Color.new(37, 136, 255)
+        @sprites["background"].color = BG_COLOR_MALE_BG
+        @sprites["gradient"].color = BG_COLOR_MALE_GRAD
+        @sprites["panorama"].color = BG_COLOR_MALE_PAN
       end
     elsif BagScreenWiInParty::BGSTYLE == 2 # HGSS Style
       pbPocketColor
@@ -704,24 +864,24 @@ class PokemonBag_Scene
     @sprites["overlay_aux"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     pbSetSystemFont(@sprites["overlay"].bitmap)
     
-    @sprites["pocketicon"] = BitmapSprite.new(130, 52, @viewport)
-    @sprites["pocketicon"].x = 372
-    @sprites["pocketicon"].y = 0
+    @sprites["pocketicon"] = BitmapSprite.new(POCKET_ICON_BITMAP_WIDTH, POCKET_ICON_BITMAP_HEIGHT, @viewport)
+    @sprites["pocketicon"].x = POCKET_ICON_X
+    @sprites["pocketicon"].y = POCKET_ICON_Y
     @sprites["currentpocket"] = IconSprite.new(0, 0, @viewport)
     @sprites["currentpocket"].setBitmap("Graphics/UI/Bag Screen with Party/icon_pocket")
-    @sprites["currentpocket"].x = 372
-    @sprites["currentpocket"].y = 26
-    @sprites["currentpocket"].src_rect = Rect.new(0, 0, 28, 28)
+    @sprites["currentpocket"].x = CURRENT_POCKET_X
+    @sprites["currentpocket"].y = CURRENT_POCKET_Y
+    @sprites["currentpocket"].src_rect = Rect.new(0, 0, CURRENT_POCKET_ICON_SIZE, CURRENT_POCKET_ICON_SIZE)
     
-    @sprites["itemlist"] = Window_PokemonBag.new(@bag, @filterlist, lastpocket, 204, 40, 314, 72 + ITEMSVISIBLE * 32)
+    @sprites["itemlist"] = Window_PokemonBag.new(@bag, @filterlist, lastpocket, ITEM_LIST_X, ITEM_LIST_Y, ITEM_LIST_WIDTH, ITEM_LIST_HEIGHT_BASE + ITEMSVISIBLE * 32)
     @sprites["itemlist"].viewport    = @viewport
     @sprites["itemlist"].pocket      = lastpocket
     @sprites["itemlist"].index       = @bag.last_viewed_index(lastpocket)
     @sprites["itemlist"].baseColor   = ITEMLISTBASECOLOR
     @sprites["itemlist"].shadowColor = ITEMLISTSHADOWCOLOR
-    @sprites["itemicon"] = ItemIconSprite.new(48, Graphics.height - 46, nil, @viewport)
+    @sprites["itemicon"] = ItemIconSprite.new(ITEM_ICON_X, Graphics.height - ITEM_ICON_Y_FROM_BOTTOM, nil, @viewport)
     @sprites["itemtext"] = Window_UnformattedTextPokemon.newWithSize(
-      "", 72, 274, Graphics.width - 72 - 24, 128, @viewport
+      "", ITEM_TEXT_X, ITEM_TEXT_Y, Graphics.width - ITEM_TEXT_WIDTH_OFFSET, ITEM_TEXT_HEIGHT, @viewport
     )
     @sprites["itemtext"].baseColor   = ITEMTEXTBASECOLOR
     @sprites["itemtext"].shadowColor = ITEMTEXTSHADOWCOLOR
@@ -742,8 +902,8 @@ class PokemonBag_Scene
     pbSetTinyFont(overlay_aux)
     pbDrawTextPositions(
       overlay_aux,
-      [[_INTL("Z: Ordenar"), 232, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width],
-       [_INTL("D: Buscar"), 317, 7, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width]]
+      [[_INTL("Z: Ordenar"), SORT_TEXT_X, SORT_TEXT_Y, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width],
+       [_INTL("D: Buscar"), SEARCH_TEXT_X, SEARCH_TEXT_Y, nil, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, :outline, Graphics.width]]
     )
     pbUpdateAnnotation
     pbDeactivateWindows(@sprites)
@@ -755,37 +915,37 @@ class PokemonBag_Scene
   def pbPocketColor
     case @bag.last_viewed_pocket
     when 1
-      @sprites["background"].color = Color.new(233, 152, 189)
-      @sprites["gradient"].color = Color.new(255, 37, 187)
-      @sprites["panorama"].color = Color.new(213, 89, 141)
+      @sprites["background"].color = POCKET_1_BG
+      @sprites["gradient"].color = POCKET_1_GRAD
+      @sprites["panorama"].color = POCKET_1_PAN
     when 2
-      @sprites["background"].color = Color.new(233, 161, 152)
-      @sprites["gradient"].color = Color.new(255, 134, 37)
-      @sprites["panorama"].color = Color.new(224, 112, 56)
+      @sprites["background"].color = POCKET_2_BG
+      @sprites["gradient"].color = POCKET_2_GRAD
+      @sprites["panorama"].color = POCKET_2_PAN
     when 3
-      @sprites["background"].color = Color.new(233, 197, 152)
-      @sprites["gradient"].color = Color.new(255, 177, 37)
-      @sprites["panorama"].color = Color.new(200, 136, 32)
+      @sprites["background"].color = POCKET_3_BG
+      @sprites["gradient"].color = POCKET_3_GRAD
+      @sprites["panorama"].color = POCKET_3_PAN
     when 4
-      @sprites["background"].color = Color.new(216, 233, 152)
-      @sprites["gradient"].color = Color.new(194, 255, 37)
-      @sprites["panorama"].color = Color.new(128, 168, 32)
+      @sprites["background"].color = POCKET_4_BG
+      @sprites["gradient"].color = POCKET_4_GRAD
+      @sprites["panorama"].color = POCKET_4_PAN
     when 5
-      @sprites["background"].color = Color.new(175, 233, 152)
-      @sprites["gradient"].color = Color.new(78, 255, 37)
-      @sprites["panorama"].color = Color.new(32, 160, 72)
+      @sprites["background"].color = POCKET_5_BG
+      @sprites["gradient"].color = POCKET_5_GRAD
+      @sprites["panorama"].color = POCKET_5_PAN
     when 6
-      @sprites["background"].color = Color.new(152, 220, 233)
-      @sprites["gradient"].color = Color.new(37, 212, 255)
-      @sprites["panorama"].color = Color.new(24, 144, 176)
+      @sprites["background"].color = POCKET_6_BG
+      @sprites["gradient"].color = POCKET_6_GRAD
+      @sprites["panorama"].color = POCKET_6_PAN
     when 7
-      @sprites["background"].color = Color.new(152, 187, 233)
-      @sprites["gradient"].color = Color.new(37, 125, 255)
-      @sprites["panorama"].color = Color.new(48, 112, 224)
+      @sprites["background"].color = POCKET_7_BG
+      @sprites["gradient"].color = POCKET_7_GRAD
+      @sprites["panorama"].color = POCKET_7_PAN
     when 8
-      @sprites["background"].color = Color.new(178, 152, 233)
-      @sprites["gradient"].color = Color.new(145, 37, 255)
-      @sprites["panorama"].color = Color.new(144, 72, 216)
+      @sprites["background"].color = POCKET_8_BG
+      @sprites["gradient"].color = POCKET_8_GRAD
+      @sprites["panorama"].color = POCKET_8_PAN
     end
   end
   
@@ -867,28 +1027,28 @@ class PokemonBag_Scene
     @bag.pockets.length.times do |i|
       break if pocketX.length == @bag.pockets.length
       pocketX.push(incrementX)
-      incrementX += 2 if i.odd?
+      incrementX += POCKET_ANIMATION_OFFSET if i.odd?
     end
     pocketAcc = @sprites["itemlist"].pocket - 1 # Current pocket
     @sprites["pocketicon"].bitmap.clear
     (1...@bag.pockets.length).each do |i|
       pocketValue = i - 1
       @sprites["pocketicon"].bitmap.blt(
-        (i - 1) * 14 + pocketX[pocketValue], (i % 2) * 26, @pocketbitmap.bitmap,
-        Rect.new((i - 1) * 28, 0, 28, 28)) if pocketValue != pocketAcc # Unblocked icons
+        (i - 1) * POCKET_ICON_WIDTH + pocketX[pocketValue], (i % 2) * POCKET_ICON_HEIGHT, @pocketbitmap.bitmap,
+        Rect.new((i - 1) * POCKET_ICON_SPRITE_SIZE, 0, POCKET_ICON_SPRITE_SIZE, POCKET_ICON_SPRITE_SIZE)) if pocketValue != pocketAcc # Unblocked icons
     end
     if @choosing && @filterlist
       (1...@bag.pockets.length).each do |i|
         next if @filterlist[i].length > 0
         pocketValue = i - 1
         @sprites["pocketicon"].bitmap.blt(
-          (i - 1) * 14 + pocketX[pocketValue], (i % 2) * 26, @pocketbitmap.bitmap,
-          Rect.new((i - 1) * 28, 56, 28, 28)) # Blocked icons
+          (i - 1) * POCKET_ICON_WIDTH + pocketX[pocketValue], (i % 2) * POCKET_ICON_HEIGHT, @pocketbitmap.bitmap,
+          Rect.new((i - 1) * POCKET_ICON_SPRITE_SIZE, 56, POCKET_ICON_SPRITE_SIZE, POCKET_ICON_SPRITE_SIZE)) # Blocked icons
       end
     end
-    @sprites["currentpocket"].x = 372 + ((pocketAcc) * 14) + pocketX[pocketAcc]
-    @sprites["currentpocket"].y = 26 - (((pocketAcc) % 2) * 26)
-    @sprites["currentpocket"].src_rect = Rect.new((pocketAcc) * 28, 28, 28, 28) # Current pocket icon
+    @sprites["currentpocket"].x = CURRENT_POCKET_X + ((pocketAcc) * POCKET_ICON_WIDTH) + pocketX[pocketAcc]
+    @sprites["currentpocket"].y = CURRENT_POCKET_Y - (((pocketAcc) % 2) * POCKET_ICON_HEIGHT)
+    @sprites["currentpocket"].src_rect = Rect.new((pocketAcc) * POCKET_ICON_SPRITE_SIZE, POCKET_ICON_SPRITE_SIZE, POCKET_ICON_SPRITE_SIZE, POCKET_ICON_SPRITE_SIZE) # Current pocket icon
     # Refresh stuff
     @sprites["itemlist"].refresh
     pbRefreshIndexChanged
@@ -912,34 +1072,34 @@ class PokemonBag_Scene
     # Draw the pocket name
     pbDrawTextPositions(
       overlay,
-      [[PokemonBag.pocket_names[@bag.last_viewed_pocket - 1], 297, 23, :center, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, true, Graphics.width]]
+      [[PokemonBag.pocket_names[@bag.last_viewed_pocket - 1], POCKET_NAME_X, POCKET_NAME_Y, :center, POCKETNAMEBASECOLOR, POCKETNAMEOUTLINECOLOR, true, Graphics.width]]
     )
     # Draw slider arrows
     showslider = false
     if itemlist.top_row > 0
-      overlay.blt(356, 16, @sliderbitmap.bitmap, Rect.new(0, 0, 36, 38))
+      overlay.blt(SLIDER_TOP_X, SLIDER_TOP_Y, @sliderbitmap.bitmap, Rect.new(0, 0, 36, 38))
       showslider = true
     end
     if itemlist.top_item + itemlist.page_item_max < itemlist.itemCount
-      overlay.blt(356, 228, @sliderbitmap.bitmap, Rect.new(0, 38, 36, 38))
+      overlay.blt(SLIDER_BOTTOM_X, SLIDER_BOTTOM_Y, @sliderbitmap.bitmap, Rect.new(0, 38, 36, 38))
       showslider = true
     end
     # Draw slider box
     if showslider
-      sliderheight = 174
+      sliderheight = SLIDER_HEIGHT
       boxheight = (sliderheight * itemlist.page_row_max / itemlist.row_max).floor
       boxheight += [(sliderheight - boxheight) / 2, sliderheight / 6].min
-      boxheight = [boxheight.floor, 38].max
-      y = 80
+      boxheight = [boxheight.floor, SLIDER_MIN_BOX_HEIGHT].max
+      y = SLIDER_Y_START
       y += ((sliderheight - boxheight) * itemlist.top_row / (itemlist.row_max - itemlist.page_row_max)).floor
-      overlay.blt(484, y, @sliderbitmap.bitmap, Rect.new(36, 0, 36, 4))
+      overlay.blt(SLIDER_BOX_X, y, @sliderbitmap.bitmap, Rect.new(36, 0, 36, 4))
       i = 0
       while i * 16 < boxheight - 4 - 18
         height = [boxheight - 4 - 18 - (i * 16), 16].min
-        overlay.blt(484, y + 4 + (i * 16), @sliderbitmap.bitmap, Rect.new(36, 4, 36, height))
+        overlay.blt(SLIDER_BOX_X, y + 4 + (i * 16), @sliderbitmap.bitmap, Rect.new(36, 4, 36, height))
         i += 1
       end
-      overlay.blt(484, y + boxheight - 18, @sliderbitmap.bitmap, Rect.new(36, 20, 36, 18))
+      overlay.blt(SLIDER_BOX_X, y + boxheight - 18, @sliderbitmap.bitmap, Rect.new(36, 20, 36, 18))
     end
     # Set the selected item's icon
     @sprites["itemicon"].item = itemlist.item
@@ -1138,9 +1298,9 @@ class PokemonBag_Scene
               thispocket = @bag.pockets[itemwindow.pocket]
               pbRefresh
               pbSEPlay("GUI bag pocket")
-              @sprites["currentpocket"].x -= 2
+              @sprites["currentpocket"].x -= POCKET_ANIMATION_OFFSET
               pbWait(0.1) {pbUpdate}
-              @sprites["currentpocket"].x += 2
+              @sprites["currentpocket"].x += POCKET_ANIMATION_OFFSET
             end
           elsif Input.trigger?(Input::RIGHT)
             newpocket = itemwindow.pocket
@@ -1159,9 +1319,9 @@ class PokemonBag_Scene
               thispocket = @bag.pockets[itemwindow.pocket]
               pbRefresh
               pbSEPlay("GUI bag pocket")
-              @sprites["currentpocket"].x += 2
+              @sprites["currentpocket"].x += POCKET_ANIMATION_OFFSET
               pbWait(0.1) {pbUpdate}
-              @sprites["currentpocket"].x -= 2
+              @sprites["currentpocket"].x -= POCKET_ANIMATION_OFFSET
             end
           elsif Input.trigger?(Input::SPECIAL)   # Search items
             BagSearcher.new(thispocket, itemwindow, self)
@@ -1263,7 +1423,7 @@ class PokemonBag_Scene
     helpwindow = @sprites["helpwindow"]
     pbBottomLeftLines(helpwindow, 1)
     helpwindow.text = helptext
-    helpwindow.width = 398
+    helpwindow.width = HELP_WINDOW_WIDTH
     helpwindow.visible = true
   end
 
