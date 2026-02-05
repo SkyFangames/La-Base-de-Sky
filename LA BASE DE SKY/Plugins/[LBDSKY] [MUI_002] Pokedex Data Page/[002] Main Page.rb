@@ -520,7 +520,7 @@ class PokemonPokedexInfo_Scene
     species_data = GameData::Species.get_species_form(@species, @form)
     pbGenerateDataLists(species_data) if @data_hash[:species] != species_data.id
     @sprites["itemicon"].item = (owned && !@data_hash[:item].empty?) ? @data_hash[:item].values.last.last : nil
-    @gender = 1 if species_data.gender_ratio == :AlwaysFemale || species_data.form_name == _INTL("Female")
+    @gender = 1 if species_data.gender_ratio == :AlwaysFemale || species_data.form_name == _INTL("Hembra")
     pbDrawDataNotes(:encounter)
     #---------------------------------------------------------------------------
     # Draws species name & typing.

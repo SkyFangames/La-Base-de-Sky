@@ -149,9 +149,9 @@ module GameData
       if GameData::Species.exists?(species)
         prefix = ""
         if @id.to_s.downcase.include?("female")
-          prefix = " siendo hembra"
+          prefix = _INTL(" siendo hembra")
         elsif @id.to_s.downcase.include?("male")
-          prefix = " siendo macho"
+          prefix = _INTL(" siendo macho")
         end
         form = false if evo == :MOTHIM
         species_data = GameData::Species.get(species)
@@ -206,50 +206,50 @@ module GameData
       else
         case param
         when "  "
-          location = (c.empty?) ? "Roca Musgosa" : c[2] + "Roca Musgosa" + c[0]
+          location = (c.empty?) ? _INTL("Roca Musgosa") : c[2] + _INTL("Roca Musgosa") + c[0]
           param_name = _INTL("cerca de una {1}", location)
         when "IceRock"
-          location = (c.empty?) ? "Roca Helada" : c[2] + "Roca Helada" + c[0]
+          location = (c.empty?) ? _INTL("Roca Helada") : c[2] + _INTL("Roca Helada") + c[0]
           param_name = _INTL("cerca de una {1}", location)
         when "Magnetic"
-          location = (c.empty?) ? "Área Magnética" : c[2] + "Área Magnética" + c[0]
+          location = (c.empty?) ? _INTL("Área Magnética") : c[2] + _INTL("Área Magnética") + c[0]
           param_name = _INTL("en un {1}", location)
         else
-          location = (c.empty?) ? "Área Especial" : c[2] + "Área Especial" + c[0]
-          param_name = _INTL("En un {1}", location)
+          location = (c.empty?) ? _INTL("Área Especial") : c[2] + _INTL("Área Especial") + c[0]
+          param_name = _INTL("en un {1}", location)
         end
       end
       #-------------------------------------------------------------------------
       # Determines the first portion of the description based on proc type.
       if @event_proc
-        desc = (full) ? "Tiene #{full_name}" : "O" 
+        desc = (full) ? _INTL("Tiene {1}", full_name) : _INTL("O")
         desc = _INTL("{1} lanza un evento especial", desc)
       elsif @use_item_proc
-        desc = (full) ? "Usando #{param_name} en #{full_name} " : "Usar #{param_name}"
+        desc = (full) ? _INTL("Usando {1} en {2}", param_name, full_name) : _INTL("Usar {1}", param_name)
         #desc = _INTL("{1} {2}", desc, param_name)
       elsif @on_trade_proc
         desc = (full) ? _INTL("Intercambio {1}", full_name) : _INTL("Intercambio")
       elsif @after_battle_proc
-        desc = (full) ? "Tiene #{full_name}" : ""
+        desc = (full) ? _INTL("Tiene {1}", full_name) : _INTL("O") 
         desc = _INTL("{1} finaliza una batalla", desc)
       elsif @level_up_proc
         if @any_level_up
           desc = (full) ? _INTL("Subir de nivel a {1}", full_name) : _INTL("Nivel")
         else
-          desc = (full) ? "Subir a #{full_name}" : "O"
+          desc = (full) ? _INTL("Subir a {1}", full_name) : _INTL("O")
           desc = _INTL("{1} al nivel {2}", desc, param)
         end
       elsif @id == :Shedinja
-        desc = (full) ? "#{full_name} evoluciona" : "evolución"
+        desc = (full) ? _INTL("{1} evoluciona", full_name) : _INTL("evolución")
         desc = _INTL("Puede dejarse en una ranura vacía del equipo después de {1}", desc)
       else
-        desc = (full) ? "#{full_name} evoluciona" : "O"
+        desc = (full) ? _INTL("{1} evoluciona", full_name) : _INTL("O")
         desc = _INTL("{1} a través de un método desconocido", desc)
       end
       #-------------------------------------------------------------------------
       # Determines the full description by combining method-specific details.
       if !nil_or_empty?(@description)
-        desc2 = _INTL("#{@description}", param_name, param_name2)
+        desc2 = _INTL(@description, param_name, param_name2)
         full_desc = _INTL("{1} {2}.", desc, desc2)
       else
         full_desc = _INTL("{1}.", desc)

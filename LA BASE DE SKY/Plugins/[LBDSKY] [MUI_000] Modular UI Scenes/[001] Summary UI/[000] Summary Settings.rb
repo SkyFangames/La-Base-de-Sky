@@ -50,7 +50,7 @@ class PokemonSummary_Scene
     # Example
     #---------------------------------------------------------------------------
     if cmd == "Reset EV's"
-      pbMessage(_INTL("{1}'s effort values were reset.", @pokemon.name))
+      pbMessage(_INTL("Se han reseteado los EVs de {1}.", @pokemon.name))
       GameData::Stat.each_main { |s| @pokemon.ev[s.id] = 0 }
       @pokemon.calc_stats
       return true
@@ -75,7 +75,7 @@ class PokemonSummary_Scene
     # Example
     #---------------------------------------------------------------------------
     if page_id == :page_mining
-      pbMessage(_INTL("Begin mining mini-game."))
+      pbMessage(_INTL("Iniciar minijuego de minería."))
       pbMiningGame
       return true
     end
