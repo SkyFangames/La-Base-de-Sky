@@ -364,7 +364,29 @@ def get_text_colors_for_windowskin(windowskin, color, isDarkSkin, no_ctag = true
       MessageConfig::DARK_TEXT_SHADOW_COLOR,   # 11 Dark default
       MessageConfig::LIGHT_TEXT_MAIN_COLOR,
       MessageConfig::LIGHT_TEXT_SHADOW_COLOR,   # 12 Light default
-      [120, 120, 128], [240, 240, 248]    # 13  White with black background
+      [120, 120, 128], [240, 240, 248],   # 13  White with black background
+      [138,  90,  43], [216, 184, 154],   # 14 Brown
+      [240,  96, 144], [248, 184, 200],   # 15 Pink
+      [152, 224,  32], [216, 240, 168],   # 16 Lime
+      [ 32,  56, 112], [144, 168, 216],   # 17 Navy
+      [140,  32,  32], [216, 160, 160],   # 18 Maroon
+      [ 32, 128, 112], [152, 200, 184],   # 19 Teal
+      [ 88, 168, 240], [184, 216, 248],   # 20 Sky Blue
+      [128, 128,  32], [200, 200, 160],   # 21 Olive
+      [224, 200, 160], [248, 232, 208],   # 22 Beige
+      [184, 144, 224], [224, 208, 248],   # 23 Lavender
+      [216, 176,  32], [240, 224, 168],   # 24 Gold
+      [240, 160,  32], [248, 216, 168],   # 25 Amber
+      [248, 160, 144], [248, 216, 200],   # 26 Peach
+      [200,  32,  48], [240, 160, 168],   # 27 Crimson
+      [248, 120,  88], [248, 200, 184],   # 28 Coral
+      [ 64,  64, 168], [184, 184, 232],   # 29 Indigo
+      [ 96, 120, 160], [192, 208, 232],   # 30 Slate Blue
+      [ 96, 216, 168], [200, 240, 224],   # 31 Mint
+      [ 32,  96,  32], [152, 192, 152],   # 32 Forest Green
+      [112,  32,  64], [200, 160, 184],   # 33 Plum
+      [168, 144, 120], [224, 208, 200],   # 34 Warm Gray
+      [128, 144, 168], [208, 216, 232]    # 35 Cool Gray
     ]
     if color == 0 || color > textcolors.length / 2   # No special colour, use default
       if isDarkSkin   # Dark background, light text
