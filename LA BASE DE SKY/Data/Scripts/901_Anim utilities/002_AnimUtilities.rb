@@ -25,11 +25,11 @@ class Bitmap
   def draw_interpolation_line(x, y, width, height, gradient, type, color)
     start_x = x
     end_x = x + width - 1
-    start_y = (gradient) ? y + height - 1 : y
-    end_y = (gradient) ? y : y + height - 1
     case type
     when :linear
-      # NOTE: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+      # NOTE: https://en.wikipedia.org/wiki/Bresenham's_line_algorithm
+      start_y = (gradient) ? y + height - 1 : y
+      end_y = (gradient) ? y : y + height - 1
       dx = end_x - start_x
       dy = -((end_y - start_y).abs)
       error = dx + dy
@@ -51,40 +51,42 @@ class Bitmap
         end
       end
     when :ease_in, :ease_out, :ease_both   # Quadratic
-      # TODO: Is there a nicer way to draw these lines?
+      gradient = !gradient if type == :ease_out
       start_y = y + height - 1
       end_y = y
+      # Calculate the positions of the curve segments (assuming positive gradient)
       points = []
-      (width + 1).times do |frame|
-        x = frame / width.to_f
+      width.times do |frame|
+        x = frame / (width - 1).to_f
         case type
         when :ease_in
-          points[frame] = (end_y - start_y) * x * x
+          y = ((end_y - start_y) * x ** 2.5).round
+          line_height = (frame == 0) ? 1 : [(y - points.last[1]).abs, 1].max
+          points.push([frame, y, line_height])
         when :ease_out
-          points[frame] = (end_y - start_y) * (1 - ((1 - x) * (1 - x)))
+          y = ((end_y - start_y) * x ** 2.5).round
+          line_height = (frame == 0) ? 1 : [(y - points.last[1]).abs, 1].max
+          points.push([width - frame - 1, y, line_height])
         when :ease_both
-          if x < 0.5
-            points[frame] = (end_y - start_y) * x * x * 2
-          else
-            points[frame] = (end_y - start_y) * (1 - (((-2 * x) + 2) * ((-2 * x) + 2) / 2))
-          end
+          break if frame >= (width + 1) / 2
+          x = [frame / ((width.to_f / 2) - 1).to_f, 1].min
+          y = (((end_y - start_y) / 2.0) * x ** 2.5).round
+          y = -((height - 1) / 2) if y < -((height - 1) / 2)
+          line_height = (frame == 0) ? 1 : [(y - points.last[1]).abs, 1].max
+          points.push([width - frame - 1, (end_y - start_y) - y - line_height + 1, line_height])
+          points.push([frame, y, line_height])
         end
-        points[frame] = points[frame].round
       end
-      width.times do |frame|
-        line_y = points[frame]
-        if frame == 0
-          line_height = 1
-        else
-          line_height = [(points[frame] - points[frame - 1]).abs, 1].max
+      # Draw curve
+      points.each do |point|
+        if gradient   # Bottom left to top right
+          fill_rect(start_x + point[0], start_y + point[1], 1, point[2], color)
+        else   # Top left to bottom right
+          fill_rect(start_x + point[0], end_y - point[1] - point[2] + 1, 1, point[2], color)
         end
-        if !gradient   # Going down
-          line_y = -(height - 1) - line_y - line_height + 1
-        end
-        fill_rect(start_x + frame, start_y + line_y, 1, line_height, color)
       end
     else
-      raise _INTL("Unknown interpolation type {1}.", type)
+      raise _INTL("Tipo de interpolación desconocido: {1}.", type)
     end
   end
 end
