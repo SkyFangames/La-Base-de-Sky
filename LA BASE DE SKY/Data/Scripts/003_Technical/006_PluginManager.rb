@@ -111,7 +111,7 @@ module PluginManager
   # Contiene todos los datos registrados de los plugins.
   @@Plugins = {}
 
-  EXCLUDED_REQUIRES = ["Modular UI Scenes", "Luka's Scripting Utilities", "Marin's Scripting Utilities", 
+  EXCLUDED_REQUIRES = ["v21.1 Hotfixes", "Modular UI Scenes", "Luka's Scripting Utilities", "Marin's Scripting Utilities", 
                        "Tileset Rearranger", "DP Scripting Utilities", "Easy Mouse", "Event Reporting"]
 
   # Registra un plugin y prueba sus dependencias e incompatibilidades.

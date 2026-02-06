@@ -1512,31 +1512,32 @@ ItemHandlers::UseOnPokemon.add(:PRISONBOTTLE, proc { |item, qty, pkmn, scene|
 ItemHandlers::UsableOnPokemon.add(:ROTOMCATALOG, proc { |item, pkmn|
   next pkmn.isSpecies?(:ROTOM) && pkmn.able?
 })
+
 ItemHandlers::UseOnPokemon.add(:ROTOMCATALOG, proc { |item, qty, pkmn, scene|
   if !pkmn.isSpecies?(:ROTOM)
-    scene.pbDisplay(_INTL("No tendría efecto."))
+    scene.pbDisplay(_INTL("Pero no tuvo efecto."))
     next false
   elsif pkmn.fainted?
-    scene.pbDisplay(_INTL("No se puede usar en Pokémon debilitados."))
+    scene.pbDisplay(_INTL("Esto no puede ser usado en un Pokémon debilitado."))
     next false
   end
   choices = [
     _INTL("Bombilla"),
     _INTL("Microondas"),
     _INTL("Lavadora"),
-    _INTL("Frigorífico"),
+    _INTL("Nevera"),
     _INTL("Ventilador"),
-    _INTL("Cortacésped"),
+    _INTL("Corta césped"),
     _INTL("Cancelar")
   ]
-  new_form = scene.pbShowCommands(_INTL("¿Qué electrodoméstico te gustaría pedir?"), choices, pkmn.form)
+  new_form = scene.pbShowCommands(_INTL("¿Qué electrodoméstico quieres pedir?"), choices, pkmn.form)
   if new_form == pkmn.form
     scene.pbDisplay(_INTL("No tendría ningún efecto."))
     next false
-  elsif new_form > 0 && new_form < choices.length - 1
+  elsif new_form >= 0 && new_form < choices.length - 1
     pkmn.setForm(new_form) do
       scene.pbRefresh
-      scene.pbDisplay(_INTL("¡{1} se transformó!", pkmn.name))
+      scene.pbDisplay(_INTL("{1} se transformó!", pkmn.name))
     end
     next true
   end

@@ -572,8 +572,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
         elsif @textchars[@curchar] == "\1"
           @pausing = true if @curchar < @numtextchars - 1
           self.startPause
+          refresh
         end
-        refresh
       end
     end
   end
