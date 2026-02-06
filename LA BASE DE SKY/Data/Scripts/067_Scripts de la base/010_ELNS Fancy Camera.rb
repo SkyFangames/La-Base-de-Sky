@@ -33,11 +33,13 @@ class Game_Temp
 
   def camera_x=(value)
     @camera_x = value
+    @camera_pos = [0, 0] if !@camera_pos
     @camera_pos[0] = ((value == 0) ? 0 : (@camera_x * Game_Map::REAL_RES_X) - Game_Player::SCREEN_CENTER_X)
   end
 
   def camera_y=(value)
     @camera_y = value
+    @camera_pos = [0, 0] if !@camera_pos
     @camera_pos[1] = ((value == 0) ? 0 : (@camera_y * Game_Map::REAL_RES_Y) - Game_Player::SCREEN_CENTER_Y)
   end
 
