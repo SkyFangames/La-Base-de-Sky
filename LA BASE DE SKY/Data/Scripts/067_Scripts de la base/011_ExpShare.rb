@@ -32,7 +32,7 @@ if Settings::USE_NEW_EXP_SHARE
 	end
 
 	MenuHandlers.add(:options_menu, :expshareon, {
-		"name"        => _INTL("Rep Exp al capturar"),
+		"name"        => _INTL("Rep. Exp. al capturar"),
 		"order"       => 40,
 		"type"        => Settings::USE_NEW_OPTIONS_UI ? :array : EnumOption,
 		"condition"   => proc { next expshare_enabled? },

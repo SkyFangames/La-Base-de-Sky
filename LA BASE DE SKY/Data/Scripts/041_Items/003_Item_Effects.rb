@@ -320,7 +320,7 @@ ItemHandlers::UseText.add(:EXPALLOFF, proc { |item|
 })
 ItemHandlers::UseInField.add(:EXPALLOFF, proc { |item|
   $bag.replace_item(:EXPALLOFF, :EXPALL)
-  pbMessage(_INTL("El Rep Exp se ha encendido."))
+  pbMessage(_INTL("El Rep. Exp. se ha encendido."))
   next true
 })
 
@@ -329,7 +329,7 @@ ItemHandlers::UseText.add(:EXPALL, proc { |item|
 })
 ItemHandlers::UseInField.add(:EXPALL, proc { |item|
   $bag.replace_item(:EXPALL, :EXPALLOFF)
-  pbMessage(_INTL("El Rep Exp se ha apagado."))
+  pbMessage(_INTL("El Rep. Exp. se ha apagado."))
   next true
 })
 
@@ -1867,7 +1867,7 @@ ItemHandlers::UseOnPokemon.add(:METEORITE, proc { |item, qty, pkmn, scene|
     _INTL("Forma Velocidad"),
     _INTL("Cancelar")
   ]
-  new_form = scene.pbShowCommands(_INTL("¿En que forma debería convertirse {1}?", pkmn.name), choices, pkmn.form)
+  new_form = scene.pbShowCommands(_INTL("¿En qué forma debería convertirse {1}?", pkmn.name), choices, pkmn.form)
   if new_form == pkmn.form
     scene.pbDisplay(_INTL("No tendría efecto."))
     next false

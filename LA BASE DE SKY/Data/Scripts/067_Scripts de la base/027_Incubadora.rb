@@ -23,7 +23,7 @@
 
 if defined?(PluginManager)
   PluginManager.register({
-  :name => "Egg Hatcher",
+  :name => "Incubadora",
   :essentials => "21.1",
   :version => "1.1",
   :credits => ["Kyu","Clara","Turner","DPertierra"]

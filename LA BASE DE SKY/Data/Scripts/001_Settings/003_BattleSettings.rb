@@ -161,11 +161,11 @@ module Settings
     GROUP_EXP_SHARE_MESSAGE = true
 
 
-    # Whether a move's power/type/category/etc. as shown in battle, the summary
-    # screen and the Move Reminder screen will appear as their calculated values
-    # (true) or their values from the PBS file moves.txt (false). For example, if
-    # this is true, Judgment's displayed type will depend on the Plate being held
-    # by the Pokémon that knows it.
+    # Independientemente de si el poder, tipo, categoría, etc. de un movimiento se muestra en combate, la pantalla de resumen
+    # y la pantalla de Recordatorio de Movimientos aparecerán con sus valores calculados
+    # (verdadero) o con los valores del archivo PBS moves.txt (falso). Por ejemplo, si
+    # esto es verdadero, el tipo mostrado de Sentencia dependerá de la Tabla que sostenga
+    # el Pokémon que lo tenga.
     SHOW_MODIFIED_MOVE_PROPERTIES = true
 
     # Agrega el porcentaje de vida restante del Pokémon enemigo debajo de la barra de vida.
