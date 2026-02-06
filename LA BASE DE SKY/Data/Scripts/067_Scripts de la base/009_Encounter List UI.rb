@@ -49,7 +49,7 @@ class EncounterListSettings
   }
 
   # Remove the '#' from this line to use default encounter type names
-  #EncounterListSettings::USER_DEFINED_NAMES = nil
+  #USER_DEFINED_NAMES = nil
 
   SHOW_SHADOWS_FOR_UNSEEN_POKEMON = true
 
@@ -190,9 +190,9 @@ class EncounterList_Scene
       @sprites["icon_#{i}"].color = @default_color
       @sprites["icon_#{i}"].pbSetParams(s, 0, species_data.form, false)
       
-      if EncounterListSettings::USER_DEFINED_NAMES && !seen_form_any_gender?(s, species_data.form)
+      if EncounterListSettings::SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !seen_form_any_gender?(s, species_data.form)
         @sprites["icon_#{i}"].color = Color.new(0, 0, 0)
-      elsif EncounterListSettings::USER_DEFINED_NAMES && !$player.owned?(species_data) # SI NO LO HE CAPTURADO
+      elsif EncounterListSettings::SHOW_SHADOWS_FOR_UNSEEN_POKEMON && !$player.owned?(species_data) # SI NO LO HE CAPTURADO
         @sprites["icon_#{i}"].tone = Tone.new(0,0,0,255)
       end
       @sprites["icon_#{i}"].visible = true
