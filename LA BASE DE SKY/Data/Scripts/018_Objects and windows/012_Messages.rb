@@ -760,7 +760,7 @@ def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = ni
       elsif !appear_timer_start
         break
       end
-    elsif Input.press?(Input::ACTION) && ( $DEBUG || Settings::ENABLE_SKIP_TEXT )
+    elsif Input.press?(Input::ACTION) && ( $DEBUG || (Settings::ENABLE_SKIP_TEXT && $PokemonSystem.skip_texts==0))
       msgwindow.textspeed=-999
       msgwindow.update
       if msgwindow.busy?
