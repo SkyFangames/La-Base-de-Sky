@@ -10,9 +10,9 @@ class PokemonSystem
   attr_accessor :givenicknames
   attr_accessor :frame
   attr_accessor :textskin
-  attr_accessor :skip_texts
   attr_accessor :language
-  
+
+  attr_reader :skip_texts
   attr_reader   :skip_move_learning
   attr_reader   :main_volume
   attr_reader   :bgmvolume
@@ -223,12 +223,12 @@ class PokemonSystem
   end
 
   def skip_texts
-      return @skip_texts || 1
+    return @skip_texts || 1
   end
 
   def skip_texts=(value)
-      @skip_texts = 1 if !@skip_texts
-      @skip_texts = value
+    return if @skip_texts == value && !@force_set_options
+    @skip_texts = value
   end
 
   # def controls

@@ -685,7 +685,7 @@ SaveData.register_conversion(:v22_add_new_options) do
 end
 
 SaveData.register_conversion(:v22_add_skip_text_option) do
-  lbds_version "1.2.1"
+  lbds_version "1.2.0"
   display_title "Añadiendo opción de saltar textos"
   to_value :pokemon_system do |pokemon_system|
     pokemon_system.skip_texts = 1 if pokemon_system.skip_texts.nil?
