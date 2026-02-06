@@ -162,15 +162,15 @@ if Settings::USE_NEW_EXP_SHARE
 				# Count the number of participants
 				numPartic = 0
 				b.participants.each do |partic|
-				next unless p1[partic]&.able? && pbIsOwner?(0, partic)
-				numPartic += 1
+					next unless p1[partic]&.able? && pbIsOwner?(0, partic)
+					numPartic += 1
 				end
 				# Find which Pokémon have an Exp Share
 				expShare = []
 				if !expAll
 					eachInTeam(0, 0) do |pkmn, i|
-							next if !pkmn.able?
-						next if !pkmn.hasItem?(:EXPSHARE) && initialItem(0, i) != :EXPSHARE
+						next if !pkmn.able?
+						next if !pkmn.hasItem?(:EXPSHARE) && initialItem(0, i) != :EXPSHARE && !pkmn.expshare
 						expShare.push(i)
 					end
 				end
