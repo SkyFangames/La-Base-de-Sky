@@ -896,7 +896,7 @@ MultipleForms.copy(
 # evolve into different forms depending on the location where they evolve.
 #===============================================================================
 
-if Settings::REGIONAL_FORMS_DEPEND_ON_MAP_LOCATION
+if Settings::REGIONAL_FORMS_DEPEND_ON_MAP_REGION
   # Alolan forms.
   MultipleForms.register(:PIKACHU, {
     "getForm" => proc { |pkmn|
