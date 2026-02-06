@@ -29,8 +29,8 @@
 
 # Info page.
 UIHandlers.add(:summary, :page_info, { 
-  "name"      => "INFORMACIÓN",
-  "suffix"    => "info",
+  "name"      => _INTL("INFORMACIÓN"),
+  "suffix"    => _INTL("info"),
   "order"     => 10,
   "options"   => [:item] + (Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN ? [:nickname] : []) + [:pokedex, :mark, :legacy],
   "layout"    => proc { |pkmn, scene| scene.drawPageOne }
@@ -38,8 +38,8 @@ UIHandlers.add(:summary, :page_info, {
 
 # Memo page.
 UIHandlers.add(:summary, :page_memo, {
-  "name"      => "NOTAS ENTREN.",
-  "suffix"    => "memo",
+  "name"      => _INTL("NOTAS ENTREN."),
+  "suffix"    => _INTL("memo"),
   "order"     => 20,
   "options"   => [:item] + (Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN ? [:nickname] : []) + [:pokedex, :mark, :legacy],
   "layout"    => proc { |pkmn, scene| scene.drawPageTwo }
@@ -47,8 +47,8 @@ UIHandlers.add(:summary, :page_memo, {
 
 # Stat page.
 UIHandlers.add(:summary, :page_skills, {
-  "name"      => "ESTADÍSTICAS",
-  "suffix"    => "skills",
+  "name"      => _INTL("ESTADÍSTICAS"),
+  "suffix"    => _INTL("skills"),
   "order"     => 30,
   "options"   => [:item] + (Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN ? [:nickname] : []) + [:pokedex, :mark, :legacy],
   "layout"    => proc { |pkmn, scene| scene.drawPageThree }
@@ -56,8 +56,8 @@ UIHandlers.add(:summary, :page_skills, {
 
 # Moves page.
 UIHandlers.add(:summary, :page_moves, {
-  "name"      => "MOVIMIENTOS",
-  "suffix"    => "moves",
+  "name"      => _INTL("MOVIMIENTOS"),
+  "suffix"    => _INTL("moves"),
   "order"     => 40,
   "options"   => [:moves] + (Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN ? [:remember, :forget] : []) + [:tms],
   "layout"    => proc { |pkmn, scene| scene.drawPageFour }
@@ -65,8 +65,8 @@ UIHandlers.add(:summary, :page_moves, {
 
 # Ribbons page.
 UIHandlers.add(:summary, :page_ribbons, {
-  "name"      => "CINTAS",
-  "suffix"    => "ribbons",
+  "name"      => _INTL("CINTAS"),
+  "suffix"    => _INTL("ribbons"),
   "order"     => 50,
   "layout"    => proc { |pkmn, scene| scene.drawPageFive }
 })
@@ -77,8 +77,8 @@ UIHandlers.add(:summary, :page_ribbons, {
 
 # Info page.
 UIHandlers.add(:summary, :page_egg, {
-  "name"      => "NOTAS ENTREN.",
-  "suffix"    => "egg",
+  "name"      => _INTL("NOTAS ENTREN."),
+  "suffix"    => _INTL("egg"),
   "order"     => 10,
   "onlyEggs"  => true,
   "options"   => [:mark],
