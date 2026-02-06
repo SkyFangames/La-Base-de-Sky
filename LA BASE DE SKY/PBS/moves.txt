@@ -2344,6 +2344,7 @@ Target = User
 Priority = 4
 FunctionCode = ProtectUser
 Description = Frena los ataques, pero puede fallar si se usa repetidamente.
+#-------------------------------
 [MATBLOCK]
 Name = Escudo Tatami
 Type = FIGHTING

@@ -549,7 +549,7 @@ Description = Un hueso de gran valor arqueológico que puede alcanzar un alto pr
 Name = Real de cobre
 NamePlural = Reales de cobre
 Pocket = 1
-Price = 0
+Price = 2000
 Flags = Fling_30
 Description = Moneda de cobre de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -557,7 +557,7 @@ Description = Moneda de cobre de más de tres mil años de antigüedad. Muy valo
 Name = Real de plata
 NamePlural = Reales de plata
 Pocket = 1
-Price = 0
+Price = 10000
 Flags = Fling_30
 Description = Moneda de plata de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -565,7 +565,7 @@ Description = Moneda de plata de más de tres mil años de antigüedad. Muy valo
 Name = Real de oro
 NamePlural = Reales de oro
 Pocket = 1
-Price = 60000
+Price = 20000
 Flags = Fling_30
 Description = Moneda de oro de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -1089,7 +1089,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 10
 Flags = Fling_30
-Description = Objeto de un solo uso. Aumenta la Def. Esp. del Pokémon que la lleva si este recibe un ataque de tipo Agua.
+Description = Aumenta la Def. Esp. del Pokémon que la lleva si este recibe un ataque de tipo Agua. Es de un solo uso.
 #-------------------------------
 [SNOWBALL]
 Name = Bola de Nieve
@@ -1098,7 +1098,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 10
 Flags = Fling_30
-Description = Objeto de un solo uso. Aumenta el Ataque del Pokémon que lo lleva si este recibe un ataque de tipo Hielo.
+Description = Aumenta el Ataque del Pokémon que lo lleva si este recibe un ataque de tipo Hielo. Es de un solo uso.
 #-------------------------------
 [WEAKNESSPOLICY]
 Name = Seguro Debilidad
@@ -1134,7 +1134,7 @@ Pocket = 1
 Price = 300
 BPPrice = 10
 Flags = Fling_30
-Description = Si lo lleva un Pokémon, sube la Velocidad al ser intimidado. De un solo uso.
+Description = Si lo lleva un Pokémon, sube la Velocidad al ser intimidado. Es de un solo uso.
 #-------------------------------
 [ROOMSERVICE]
 Name = Servicio Raro
@@ -1647,8 +1647,8 @@ Flags = Fling_30
 Description = Película metálica que fortalece los ataques de tipo Acero. Debe llevarlo un Pokémon.
 #-------------------------------
 [SILKSCARF]
-Name = Pañuelo Seda
-NamePlural = Pañuelos Seda
+Name = Pañuelo de Seda
+NamePlural = Pañuelos de Seda
 Pocket = 1
 Price = 3000
 SellPrice = 500
@@ -3500,7 +3500,7 @@ Price = 100
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Zumo de bayas 100% natural que restaura 20 PS de un Pokémon.
+Description = Zumo de bayas 100% natural que restaura 20 PS de un Pokémon. Si se equipa el Pokémon lo usará automáticamente.
 #-------------------------------
 [SWEETHEART]
 Name = Corazón Dulce
@@ -3554,8 +3554,8 @@ Flags = Fling_30,Healing
 Description = Leche de alto valor nutritivo que restaura 100 PS de un Pokémon.
 #-------------------------------
 [ENERGYPOWDER]
-Name = Polvoenergía
-NamePlural = Polvoenergías
+Name = Polvo Energía
+NamePlural = Polvos Energía
 Pocket = 2
 Price = 500
 FieldUse = OnPokemon
@@ -3979,7 +3979,7 @@ Price = 20
 BPPrice = 50
 FieldUse = OnPokemon
 Flags = Fling_10
-Description = Menta que cambia la naturaleza de tu Pokémon a seria (neutra).
+Description = Menta que cambia la naturaleza de tu Pokémon a Seria (neutra).
 #-------------------------------
 [ABILITYCAPSULE]
 Name = Cápsula Habilidad
