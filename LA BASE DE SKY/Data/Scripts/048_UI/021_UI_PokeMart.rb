@@ -335,6 +335,7 @@ class PokemonMart_Scene
   CHOOSE_NUMBER_WINDOW_WIDTH    = 224
   CHOOSE_NUMBER_WINDOW_HEIGHT   = 64
   TEXT_BASE_COLOR               = Color.new(248, 248, 248)
+  TEXT_SHADOW_COLOR             = Color.new(0, 0, 0)
   MONEY_BASE_COLOR              = Color.new(88, 88, 80)
   MONEY_SHADOW_COLOR            = Color.new(168, 184, 184)
   QUANTITY_BASE_COLOR           = Color.new(88, 88, 80)
@@ -384,7 +385,7 @@ class PokemonMart_Scene
     )
     pbPrepareWindow(@sprites["itemtextwindow"])
     @sprites["itemtextwindow"].baseColor = TEXT_BASE_COLOR
-    @sprites["itemtextwindow"].shadowColor = Color.black
+    @sprites["itemtextwindow"].shadowColor = TEXT_SHADOW_COLOR
     @sprites["itemtextwindow"].windowskin = nil
     @sprites["helpwindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["helpwindow"])

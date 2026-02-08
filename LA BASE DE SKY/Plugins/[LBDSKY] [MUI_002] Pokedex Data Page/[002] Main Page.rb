@@ -34,6 +34,7 @@ class PokemonPokedexInfo_Scene
   EGG_MULTI_SPACING = 30
   EGG_SRC_WIDTH = 62
   EGG_SRC_HEIGHT = 28
+  EGG_X = 302
 
   STATS_LABEL_X = 12
   STATS_LABEL_Y1 = 104
@@ -518,8 +519,11 @@ class PokemonPokedexInfo_Scene
     textpos = []
     owned = $player.owned?(@species)
     species_data = GameData::Species.get_species_form(@species, @form)
+    @data_hash = {} if !@data_hash
     pbGenerateDataLists(species_data) if @data_hash[:species] != species_data.id
-    @sprites["itemicon"].item = (owned && !@data_hash[:item].empty?) ? @data_hash[:item].values.last.last : nil
+    if @sprites["itemicon"]
+      @sprites["itemicon"].item = (owned && !@data_hash[:item].empty?) ? @data_hash[:item].values.last.last : nil
+    end
     @gender = 1 if species_data.gender_ratio == :AlwaysFemale || species_data.form_name == _INTL("Hembra")
     pbDrawDataNotes(:encounter)
     #---------------------------------------------------------------------------
@@ -574,7 +578,7 @@ class PokemonPokedexInfo_Scene
     egg_groups.each_with_index do |group, i|
       rectY = GameData::EggGroup.get(group).icon_position
       group_y = (egg_groups.length == 1) ? EGG_SINGLE_Y : EGG_MULTI_BASE_Y + EGG_MULTI_SPACING * i
-      imagepos.push([path + "egg_groups", 302, group_y, rectX, EGG_SRC_HEIGHT * rectY, EGG_SRC_WIDTH, EGG_SRC_HEIGHT])
+      imagepos.push([path + "egg_groups", EGG_X, group_y, rectX, EGG_SRC_HEIGHT * rectY, EGG_SRC_WIDTH, EGG_SRC_HEIGHT])
     end
     #---------------------------------------------------------------------------
     # Draws the base stats text and bars.
