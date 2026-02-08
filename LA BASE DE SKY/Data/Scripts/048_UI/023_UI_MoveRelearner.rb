@@ -195,19 +195,43 @@ class MoveRelearnerScreen
 
   def pbGetRelearnableMoves(pkmn)
     return [] if !pkmn || pkmn.egg? || pkmn.shadowPokemon?
-    moves = []
+    move_data = []
+    seen_moves = []
     pkmn.getMoveList.each do |m|
       next if m[0] > pkmn.level || pkmn.hasMove?(m[1])
-      moves.push(m[1]) if !moves.include?(m[1])
+      move_to_add = m.is_a?(GameData::Move) ? m.id : m[1]
+      if !seen_moves.include?(move_to_add)
+        seen_moves << move_to_add
+        origin = if m[0] == -1
+          "Evol."
+        elsif m[0] == 0
+          "Nv. 1"
+        else
+          "Nv. #{m[0]}"
+        end
+        move_data << {move: move_to_add, origin: origin}
+      end
     end
     if Settings::MOVE_RELEARNER_CAN_TEACH_MORE_MOVES && pkmn.first_moves
-      tmoves = []
+      first_move_data = []
       pkmn.first_moves.each do |i|
-        tmoves.push(i) if !moves.include?(i) && !pkmn.hasMove?(i)
+        if !seen_moves.include?(i) && !pkmn.hasMove?(i)
+          seen_moves << i
+          first_move_data << {move: i, origin: "Nv. 1"}
+        end
       end
-      moves = tmoves + moves   # List first moves before level-up moves
+      move_data = first_move_data + move_data
     end
-    return moves | []   # remove duplicates
+    if Settings::SHOW_MTS_MOS_IN_MOVE_RELEARNER
+      tms = pbGetTMMoves(pkmn)
+      tms.each do |tm|
+        if !seen_moves.include?(tm[0])
+          seen_moves << tm[0]
+          move_data << {move: tm[0], origin: tm[1]}
+        end
+      end
+    end
+    return move_data
   end
 
   def pbStartScreen(pkmn)
