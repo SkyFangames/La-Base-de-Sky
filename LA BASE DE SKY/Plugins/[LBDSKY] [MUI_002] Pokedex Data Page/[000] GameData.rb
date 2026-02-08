@@ -205,7 +205,7 @@ module GameData
         end
       else
         case param
-        when "  "
+        when "MossRock"
           location = (c.empty?) ? _INTL("Roca Musgosa") : c[2] + _INTL("Roca Musgosa") + c[0]
           param_name = _INTL("cerca de una {1}", location)
         when "IceRock"
@@ -304,7 +304,7 @@ GameData::Evolution.each do |evo|
   when :LocationFlag                           then evo.description = _INTL("mientras {1}")
   when :Region                                 then evo.description = _INTL("estando el la región {1}")
   when :TradeSpecies                           then evo.description = _INTL("por {1}")
-  when :BattleDealCriticalHit                  then evo.description = _INTL("causando {1} or mas golpes críticos")
+  when :BattleDealCriticalHit                  then evo.description = _INTL("causando {1} o más golpes críticos")
   when :EventAfterDamageTaken                  then evo.description = _INTL("tras perder al menos 49 PS")
   when :LevelWalk                              then evo.description = _INTL("tras dar {1} pasos estando como primer pokémon del equipo")
   when :LevelWithPartner                       then evo.description = _INTL("subiendo de nivel junto a un aliado")

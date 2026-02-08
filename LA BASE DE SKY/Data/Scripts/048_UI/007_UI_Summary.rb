@@ -1595,7 +1595,7 @@ class PokemonSummaryScreen
       ret = @scene.pbChooseMoveToForget(move_to_learn)
       break if ret < 0 || !move_to_learn
       break if $DEBUG || !party[partyindex].moves[ret].hidden_move?
-      pbMessage(_INTL("Las MOs no se pueden así como así.")) { @scene.pbUpdate }
+      pbMessage(_INTL("Las MOs no se pueden olvidar así como así.")) { @scene.pbUpdate }
     end
     @scene.pbEndScene
     return ret

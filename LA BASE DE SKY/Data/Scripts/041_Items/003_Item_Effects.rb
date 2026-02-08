@@ -1537,7 +1537,7 @@ ItemHandlers::UseOnPokemon.add(:ROTOMCATALOG, proc { |item, qty, pkmn, scene|
   elsif new_form >= 0 && new_form < choices.length - 1
     pkmn.setForm(new_form) do
       scene.pbRefresh
-      scene.pbDisplay(_INTL("{1} se transformó!", pkmn.name))
+      scene.pbDisplay(_INTL("¡{1} se transformó!", pkmn.name))
     end
     next true
   end
