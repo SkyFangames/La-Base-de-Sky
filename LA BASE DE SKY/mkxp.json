@@ -143,7 +143,7 @@
     // Sync screen redraws to the monitor refresh rate, to reduce screen
     // tearing.
     //
-    "vsync": true,
+    "vsync": false,
 
     // Use a fixed framerate that is approx. equal to the native screen refresh
     // rate. This is different from "fixedFramerate" because the actual frame
@@ -151,11 +151,11 @@
     // refresh rate cannot be determined, this option is force-disabled. This
     // option may be force-disabled at build time.
     //
-    "syncToRefreshrate": true,
+    "syncToRefreshrate": false,,
 
     // The game's frame rate, if "syncToRefreshrate" is false.
     //
-    // "fixedFramerate": 60
+"fixedFramerate": 60
     
     // Font substitutions allow drop-in replacements of fonts to be used without
     // changing the RGSS scripts, e.g. providing 'Liberation Sans' when the game

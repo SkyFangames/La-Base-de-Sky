@@ -6,6 +6,12 @@ class PokemonSummary_Scene
 
   BALL_IMAGE_X = 8
   BALL_IMAGE_Y = 60
+  IMG_STATUS_X = 124
+  IMG_STATUS_Y = 100
+  IMG_POKERUS_X = 176
+  IMG_POKERUS_Y = 100
+  IMG_SHINY_X = 174
+  IMG_SHINY_Y = 100
   ABILITY_NAME_X = 336
   ABILITY_NAME_Y = 22
   ABILITY_NAME_WIDTH = 0
@@ -357,12 +363,31 @@ class PokemonSummary_Scene
 
 
       def showAbilityDescription(pokemon)
+        @sprites["itemicon"].item = @pokemon.item_id
         overlay=@sprites["overlay"].bitmap
         overlay.clear
         @sprites["background"].setBitmap("Graphics/UI/Summary/bgability_extender")
         imagepos=[]
         ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
-        imagepos.push([ballimage, BALL_IMAGE_X, BALL_IMAGE_Y, 0, 0, -1, -1])
+        imagepos.push([ballimage, BALL_IMAGE_X, BALL_IMAGE_Y])
+        # Show status/fainted/Pokérus infected icon
+        status = -1
+        if @pokemon.fainted?
+          status = GameData::Status.count - 1
+        elsif @pokemon.status != :NONE
+          status = GameData::Status.get(@pokemon.status).icon_position
+        elsif @pokemon.pokerusStage == 1
+          status = GameData::Status.count
+        end
+        if status >= 0
+          imagepos.push(["Graphics/UI/statuses", IMG_STATUS_X, IMG_STATUS_Y, 0, 16 * status, 44, 16])
+        end
+        # Show Pokérus cured icon
+        if @pokemon.pokerusStage == 2
+          imagepos.push(["Graphics/UI/Summary/icon_pokerus", IMG_POKERUS_X, IMG_POKERUS_Y])
+        end
+        # Show shininess star
+        imagepos.push(["Graphics/UI/shiny", IMG_SHINY_X, IMG_SHINY_Y]) if @pokemon.shiny?
         pbDrawImagePositions(overlay, imagepos)
         base = Color.new(248, 248, 248)
         shadow = Color.new(176, 176, 176)
@@ -395,7 +420,7 @@ class PokemonSummary_Scene
         pbDrawTextPositions(overlay, textpos)
         # Draw the Pokémon's markings
         drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
-        pbDrawTextPositions(overlay, textpos)
+        # Draw ability description
         drawTextEx(overlay, ABILITY_DESC_X, ABILITY_DESC_Y, ABILITY_DESC_WIDTH, ABILITY_DESC_HEIGHT, abilitydesc, Color.new(64, 64, 64), shadow)  
         loop do
           Graphics.update
@@ -422,12 +447,31 @@ class PokemonSummary_Scene
       end
 
       def showShadowDescription(pokemon)
+        @sprites["itemicon"].item = @pokemon.item_id
         overlay=@sprites["overlay"].bitmap
         overlay.clear
         @sprites["background"].setBitmap("Graphics/UI/Summary/bg_shadow")
         imagepos=[]
         ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
-        imagepos.push([ballimage, BALL_IMAGE_X, BALL_IMAGE_Y, 0, 0, -1, -1])
+        imagepos.push([ballimage, BALL_IMAGE_X, BALL_IMAGE_Y])
+        # Show status/fainted/Pokérus infected icon
+        status = -1
+        if @pokemon.fainted?
+          status = GameData::Status.count - 1
+        elsif @pokemon.status != :NONE
+          status = GameData::Status.get(@pokemon.status).icon_position
+        elsif @pokemon.pokerusStage == 1
+          status = GameData::Status.count
+        end
+        if status >= 0
+          imagepos.push(["Graphics/UI/statuses", IMG_STATUS_X, IMG_STATUS_Y, 0, 16 * status, 44, 16])
+        end
+        # Show Pokérus cured icon
+        if @pokemon.pokerusStage == 2
+          imagepos.push(["Graphics/UI/Summary/icon_pokerus", IMG_POKERUS_X, IMG_POKERUS_Y])
+        end
+        # Show shininess star
+        imagepos.push(["Graphics/UI/shiny", IMG_SHINY_X, IMG_SHINY_Y]) if @pokemon.shiny?
         pbDrawImagePositions(overlay, imagepos)
         base = Color.new(248, 248, 248)
         shadow = Color.new(176, 176, 176)

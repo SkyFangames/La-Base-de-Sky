@@ -253,7 +253,7 @@ class PokemonSummary_Scene
   # Medidor de Felicidad
   HAPPY_METER_WIDTH_MAX   = 254.0 
   HAPPY_METER_X           = 242
-  HAPPY_METER_Y           = 346
+  HAPPY_METER_Y           = 340
 
   # Calificación de IVs (Estrellas)
   IV_RATING_ICON_SIZE     = 16
@@ -386,7 +386,7 @@ class PokemonSummary_Scene
     @sprites["downarrow"].y = UI_DOWN_ARROW_Y
     @sprites["downarrow"].play
     @sprites["downarrow"].visible = false
-    @sprites["markingbg"] = IconSprite.new(260, 88, @viewport)
+    @sprites["markingbg"] = IconSprite.new(UI_MARKING_BG_X, UI_MARKING_BG_Y, @viewport)
     @sprites["markingbg"].setBitmap("Graphics/UI/Summary/overlay_marking")
     @sprites["markingbg"].visible = false
     @sprites["markingoverlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
@@ -684,7 +684,7 @@ class PokemonSummary_Scene
         memo = black_text_tag + heartmessage
         drawFormattedTextEx(overlay, SHADOW_DESCRIPTION_X, SHADOW_DESCRIPTION_Y, SHADOW_DESCRIPTION_W, memo)
       else
-        drawTextEx(overlay, P3_ABILITY_DESC_X + SHADOW_DESCRIPTION_X_OFFSET, P3_ABILITY_DESC_Y + SHADOW_DESCRIPTION_Y_OFFSET, P3_ABILITY_DESC_W, SHADOW_DESCRIPTION_H, "[ESPECIAL]: Información", Color.new(64, 64, 64), Color.new(176, 176, 176))
+        drawTextEx(overlay, P3_ABILITY_DESC_X + SHADOW_DESCRIPTION_X_OFFSET, P3_ABILITY_DESC_Y + SHADOW_DESCRIPTION_Y_OFFSET, P3_ABILITY_DESC_W, SHADOW_DESCRIPTION_H, "[D]: Información", Color.new(64, 64, 64), Color.new(176, 176, 176))
       end
     else
       endexp = @pokemon.growth_rate.minimum_exp_for_level(@pokemon.level + 1)
@@ -903,7 +903,7 @@ class PokemonSummary_Scene
     ability = @pokemon.ability
     if ability
       textpos.push([ability.name, P3_ABILITY_NAME_X, P3_ABILITY_NAME_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
-      drawTextEx(overlay, P3_ABILITY_DESC_X, P3_ABILITY_DESC_Y, P3_ABILITY_DESC_W, 2, "[ESPECIAL]: Descripción", Color.new(64, 64, 64), Color.new(176, 176, 176))
+      drawTextEx(overlay, P3_ABILITY_DESC_X, P3_ABILITY_DESC_Y, P3_ABILITY_DESC_W, 2, "[D]: Descripción", Color.new(64, 64, 64), Color.new(176, 176, 176))
     end
     # Draw all text
     pbDrawTextPositions(overlay, textpos)

@@ -114,7 +114,7 @@ class PokemonSummary_Scene
       #[sprintf("%d", @pokemon.baseStats[:SPECIAL_ATTACK]), 408, 222, :right, COLOR_NUMERO_BASE, COLOR_NUMERO_SOMBRA],
       [sprintf("%d", @pokemon.iv[:SPECIAL_ATTACK]), SPA_IV_X, SPA_IV_Y, :right, COLOR_NUMERO_BASE, COLOR_NUMERO_SOMBRA],
       [sprintf("%d", @pokemon.ev[:SPECIAL_ATTACK]), SPA_EV_X, SPA_EV_Y, :right, COLOR_NUMERO_BASE, COLOR_NUMERO_SOMBRA],
-      [_INTL("Def Esp."), SPDEF_LABEL_X, SPDEF_LABEL_Y, :left, COLOR_TEXTO_BASE, statshadows[:SPECIAL_DEFENSE]],
+      [_INTL("Def. Esp."), SPDEF_LABEL_X, SPDEF_LABEL_Y, :left, COLOR_TEXTO_BASE, statshadows[:SPECIAL_DEFENSE]],
       [@pokemon.spdef.to_s, SPDEF_VALUE_X, SPDEF_VALUE_Y, :right, COLOR_NUMERO_BASE, COLOR_NUMERO_SOMBRA],
       #[sprintf("%d", @pokemon.baseStats[:SPECIAL_DEFENSE]), 408, 254, :right, COLOR_NUMERO_BASE, COLOR_NUMERO_SOMBRA],
       [sprintf("%d", @pokemon.iv[:SPECIAL_DEFENSE]), SPDEF_IV_X, SPDEF_IV_Y, :right, COLOR_NUMERO_BASE, COLOR_NUMERO_SOMBRA],
