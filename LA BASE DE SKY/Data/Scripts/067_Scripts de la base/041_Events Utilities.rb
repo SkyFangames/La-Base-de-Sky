@@ -268,11 +268,11 @@ class Sprite_Character
       self.oy = bmp.height
 
     # SPRITESHEET
-    elsif @character.respond_to?(:custom_frames) && @character.custom_frames > 0
+    elsif @character.respond_to?(:custom_frames) && @character.custom_frames.to_i > 0
       cw = bmp.width / @character.custom_frames
       ch = bmp.height
 
-      if @character.custom_speed > 0
+      if @character.custom_speed.to_i > 0
         target_frames = @character.custom_speed
       else
         target_frames = (7 - @character.move_speed) * 3
