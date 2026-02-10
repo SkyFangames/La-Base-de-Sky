@@ -10,6 +10,10 @@ class PokemonDataPageSprite < Sprite
   WRAPPER_WIDTH  = 44
   WRAPPER_HEIGHT = 100
 
+  # Tone presets
+  TONE_NORMAL = Tone.new(0,0,0,0)
+  TONE_FADED = Tone.new(-255,-255,-255,0)
+
   def initialize(list, page, viewport = nil)
     super(viewport)
     @pokemonsprites = []
@@ -74,13 +78,13 @@ class PokemonDataPageSprite < Sprite
         @pokemonsprites[i].pbSetParams(species.species, sp_gender, sp_form)
         @pokemonsprites[i].visible = true
         if !$player.owned?(pokemon)
-          @pokemonsprites[i].tone = Tone.new(-255,-255,-255,0)
+          @pokemonsprites[i].tone = TONE_FADED
         else
-          @pokemonsprites[i].tone = Tone.new(0,0,0,0)
+          @pokemonsprites[i].tone = TONE_NORMAL
         end
       elsif pokemon == :RETURN
         @pokemonsprites[i].pbSetParams(pokemon, 0, 0)
-        @pokemonsprites[i].tone = Tone.new(0,0,0,0)
+        @pokemonsprites[i].tone = TONE_NORMAL
         @pokemonsprites[i].visible = true
       else
         @pokemonsprites[i].visible = false
@@ -435,12 +439,13 @@ class PokemonPokedexInfo_Scene
           next if !sp.display_species?(@dexlist, species, true)
           regional_form = sp.form > 0 && sp.is_regional_form?
           base_form = (sp.form > 0) ? GameData::Species.get_species_form(sp.species, sp.base_pokedex_form) : nil
-          next if base_form && !regional_form && 
-		          sp.moves == base_form.moves && 
-              sp.get_tutor_moves == base_form.get_tutor_moves
+          if base_form && !regional_form
+            next if sp.moves.sort == base_form.moves.sort && 
+                    sp.get_tutor_moves.sort == base_form.get_tutor_moves.sort
+          end
           if sp.moves.any? { |m| m[1] == moveID } ||
              sp.get_tutor_moves.include?(moveID) ||
-             sp.get_egg_moves.include?(moveID)
+             sp.get_inherited_moves.include?(moveID)
             list.push(sp.id)
           end
         end
@@ -452,7 +457,7 @@ class PokemonPokedexInfo_Scene
           sp = GameData::Species.try_get(s)
           if sp && sp.moves.any? { |m| m[1] == moveID } ||
              sp.get_tutor_moves.include?(moveID) ||
-             sp.get_egg_moves.include?(moveID)
+             sp.get_inherited_moves.include?(moveID)
             compatible.push(s)
           end
         end
@@ -468,8 +473,8 @@ class PokemonPokedexInfo_Scene
         regional_form = sp.form > 0 && sp.is_regional_form?
         base_form = (sp.form > 0) ? GameData::Species.get_species_form(sp.species, sp.base_pokedex_form) : nil
         next if base_form && !regional_form && 
-		        sp.abilities == base_form.abilities && 
-            sp.hidden_abilities == base_form.hidden_abilities
+                sp.abilities == base_form.abilities && 
+                sp.hidden_abilities == base_form.hidden_abilities
         if sp.abilities.include?(cursor) || sp.hidden_abilities.include?(cursor)
           list.push(sp.id)
         end
@@ -485,7 +490,7 @@ class PokemonPokedexInfo_Scene
         regional_form = sp.form > 0 && sp.is_regional_form?
         base_form = (sp.form > 0) ? GameData::Species.get_species_form(sp.species, sp.base_pokedex_form) : nil
         next if base_form && !regional_form && 
-		        sp.wild_item_common   == base_form.wild_item_common   && 
+                sp.wild_item_common   == base_form.wild_item_common   && 
                 sp.wild_item_uncommon == base_form.wild_item_uncommon &&
                 sp.wild_item_rare     == base_form.wild_item_rare
         if sp.wild_item_common.include?(cursor) ||

@@ -385,12 +385,12 @@ class PokemonPokedexInfo_Scene
       # When the species is an evolved species.
       #-------------------------------------------------------------------------
       else
-        form = (species.default_form >= 0) ? species.default_form : species.form
-        prevo_data = GameData::Species.get_species_form(prevo, form)
         #-----------------------------------------------------------------------
         # Compiles the actual description for this species' evolution method.
         # Some species require special treatment due to unique evolution traits.
         #-----------------------------------------------------------------------
+        form = (species.default_form >= 0) ? species.default_form : species.form
+        prevo_data = GameData::Species.get_species_form(prevo, form)
         if species.species == :ALCREMIE
           name = t[1] + "#{prevo_data.name}" + t[0]
           text = _INTL("{1}Usar varios {2}Confites{3} en {4}.", t[0], t[2], t[0], name)
@@ -646,14 +646,14 @@ class PokemonPokedexInfo_Scene
     #---------------------------------------------------------------------------
     # Move is learned as an Egg Move.
     #---------------------------------------------------------------------------
-    if species.get_egg_moves.include?(moveID)
+    if species.get_inherited_moves.include?(moveID)
       method = t[1] + _INTL("crianza") + t[0]
       methods.push(method)
     end
     #---------------------------------------------------------------------------
     # Move is learned via TM or move tutor.
     #---------------------------------------------------------------------------
-    if species.get_tutor_moves.include?(moveID)
+    if species.tutor_moves.include?(moveID)
       method = _INTL("visitando un {1}tutor de movimientos{2}", t[1], t[0])
       # If none of the below applies, assume this is a move tutor move.
       GameData::Item.each do |item|

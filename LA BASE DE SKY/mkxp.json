@@ -55,7 +55,7 @@
     // non-existing font family is requested by RGSS.
     "fontSub": [
         "Arial>Liberation Sans"
-    ]
+    ],
 
     // The name of this game's save folder. If undefined, the save folder's name
     // will be the "Game Title" as defined in RPG Maker XP. It should not
