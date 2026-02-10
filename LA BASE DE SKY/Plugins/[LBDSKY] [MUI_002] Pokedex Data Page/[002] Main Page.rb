@@ -94,8 +94,8 @@ class PokemonPokedexInfo_Scene
     pbPlayDecisionSE
     pbDrawDataNotes
     species_data = GameData::Species.get_species_form(@species, @form)
-    species = species_data.id
-    @api_data = PokeAPI.get_data(species_data) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+    species_id = species_data.id
+    special_form, _check_form, _check_item = pbGetSpecialFormData(species_data)
     loop do
       Graphics.update
       Input.update
@@ -111,17 +111,17 @@ class PokemonPokedexInfo_Scene
         #-----------------------------------------------------------------------
         # Displays move lists.
         when :moves
-          next if !$player.owned?(species)
-          pbChooseMove
+          next if !$player.owned?(species_id)
+          pbChooseMove(species_data, special_form)
         #-----------------------------------------------------------------------
         # Displays item/ability lists.
         when :item, :ability
-          next if !$player.owned?(species)
-          pbChooseDataList
+          next if !$player.owned?(species_id)
+          pbChooseDataList(special_form)
         #-----------------------------------------------------------------------
         # Displays compatible species lists.
         when :general, :family, :stats, :habitat, :egg, :shape
-          next if !$player.owned?(species)
+          next if !$player.owned?(species_id)
           pbChooseSpeciesDataList
         end
         break if @forceRefresh
@@ -608,7 +608,7 @@ class PokemonPokedexInfo_Scene
     # Draws Ability/Move button text.
     #---------------------------------------------------------------------------
     textpos.push([_INTL("Habilid."), ABILITY_BTN_X, ABILITY_MOVE_Y, :center, base, shadow, :outline],
-           [_INTL("Movimien."),MOVE_BTN_X, ABILITY_MOVE_Y, :center, base, shadow, :outline])		  
+                 [_INTL("Movimien."),MOVE_BTN_X, ABILITY_MOVE_Y, :center, base, shadow, :outline])		  
     #---------------------------------------------------------------------------
     # Sets up sprites if the species is a special form.
     #---------------------------------------------------------------------------
@@ -658,12 +658,12 @@ class PokemonPokedexInfo_Scene
         @sprites["familyicon0"].pbSetParams(@species, @gender, @form)
         @sprites["familyicon0"].x = (stages == 1) ? ICONS_RIGHT_DOUBLE : ICONS_RIGHT_TRIPLE
         @sprites["familyicon0"].visible = true
-          if $player.seen?(prevo)
-            @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
-            @sprites["familyicon1"].tone = TONE_NORMAL
-          else
-            @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
-            @sprites["familyicon1"].tone = TONE_FADED
+        if $player.seen?(prevo)
+          @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
+          @sprites["familyicon1"].tone = TONE_NORMAL
+        else
+          @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
+          @sprites["familyicon1"].tone = TONE_FADED
           # @sprites["familyicon1"].species = nil
         end
         @sprites["familyicon1"].x = (stages == 1) ? ICONS_LEFT_DOUBLE : ICONS_CENTER
