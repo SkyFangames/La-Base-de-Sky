@@ -12,6 +12,8 @@ class PokemonPokedexInfo_Scene
   TYPE_MULTI_BASE_X = 298
   TYPE_MULTI_SPACING = 100
 
+ TYPE_GENDER_Y = 48
+	
   GENDER_ICON_X1 = 10
   GENDER_ICON_X2 = 44
   GENDER_ICON_SRC_UNIT = 32
@@ -27,6 +29,7 @@ class PokemonPokedexInfo_Scene
   SHAPE_SRC_UNIT = 60
   SHAPE_SIZE = 60
 
+  EGG_GROUP_X = 302
   EGG_RECT_ALT_X = 62
   EGG_RECT_X = 0
   EGG_SINGLE_Y = 188
@@ -91,8 +94,8 @@ class PokemonPokedexInfo_Scene
     pbPlayDecisionSE
     pbDrawDataNotes
     species_data = GameData::Species.get_species_form(@species, @form)
-    species = species_data.id
-    @api_data = PokeAPI.get_data(species_data) if Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+    species_id = species_data.id
+    special_form, _check_form, _check_item = pbGetSpecialFormData(species_data)
     loop do
       Graphics.update
       Input.update
@@ -108,17 +111,17 @@ class PokemonPokedexInfo_Scene
         #-----------------------------------------------------------------------
         # Displays move lists.
         when :moves
-          next if !$player.owned?(species)
-          pbChooseMove
+          next if !$player.owned?(species_id)
+          pbChooseMove(species_data, special_form)
         #-----------------------------------------------------------------------
         # Displays item/ability lists.
         when :item, :ability
-          next if !$player.owned?(species)
-          pbChooseDataList
+          next if !$player.owned?(species_id)
+          pbChooseDataList(special_form)
         #-----------------------------------------------------------------------
         # Displays compatible species lists.
         when :general, :family, :stats, :habitat, :egg, :shape
-          next if !$player.owned?(species)
+          next if !$player.owned?(species_id)
           pbChooseSpeciesDataList
         end
         break if @forceRefresh
@@ -535,7 +538,7 @@ class PokemonPokedexInfo_Scene
         type_number = GameData::Type.get(type).icon_position
         type_rect = Rect.new(0, type_number * TYPE_ICON_HEIGHT, TYPE_ICON_WIDTH, TYPE_ICON_HEIGHT)
         type_x = (species_data.types.length == 1) ? TYPE_SINGLE_X : TYPE_MULTI_BASE_X + (TYPE_MULTI_SPACING * i)
-        overlay.blt(type_x, 48, @typebitmap.bitmap, type_rect)
+        overlay.blt(type_x, TYPE_GENDER_Y, @typebitmap.bitmap, type_rect)
       end
     end
     #---------------------------------------------------------------------------
@@ -552,8 +555,8 @@ class PokemonPokedexInfo_Scene
         gender = (@gender == 0) ? [1, 0] : [0, 1]
       end
     end
-    imagepos.push([path + "gender", GENDER_ICON_X1, 48, GENDER_ICON_SRC_UNIT * gender[0],  0, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT],
-            [path + "gender", GENDER_ICON_X2, 48, GENDER_ICON_SRC_UNIT * gender[1], GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT])
+    imagepos.push([path + "gender", GENDER_ICON_X1, TYPE_GENDER_Y, GENDER_ICON_SRC_UNIT * gender[0],  0, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT],
+            [path + "gender", GENDER_ICON_X2, TYPE_GENDER_Y, GENDER_ICON_SRC_UNIT * gender[1], GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT, GENDER_ICON_SRC_UNIT])
     #---------------------------------------------------------------------------
     # Draws habitat icon.
     #---------------------------------------------------------------------------
@@ -578,7 +581,7 @@ class PokemonPokedexInfo_Scene
     egg_groups.each_with_index do |group, i|
       rectY = GameData::EggGroup.get(group).icon_position
       group_y = (egg_groups.length == 1) ? EGG_SINGLE_Y : EGG_MULTI_BASE_Y + EGG_MULTI_SPACING * i
-      imagepos.push([path + "egg_groups", EGG_X, group_y, rectX, EGG_SRC_HEIGHT * rectY, EGG_SRC_WIDTH, EGG_SRC_HEIGHT])
+      imagepos.push([path + "egg_groups", EGG_GROUP_X, group_y, rectX, EGG_SRC_HEIGHT * rectY, EGG_SRC_WIDTH, EGG_SRC_HEIGHT])
     end
     #---------------------------------------------------------------------------
     # Draws the base stats text and bars.
@@ -605,7 +608,7 @@ class PokemonPokedexInfo_Scene
     # Draws Ability/Move button text.
     #---------------------------------------------------------------------------
     textpos.push([_INTL("Habilid."), ABILITY_BTN_X, ABILITY_MOVE_Y, :center, base, shadow, :outline],
-           [_INTL("Movimien."),MOVE_BTN_X, ABILITY_MOVE_Y, :center, base, shadow, :outline])		  
+                 [_INTL("Movimien."),MOVE_BTN_X, ABILITY_MOVE_Y, :center, base, shadow, :outline])		  
     #---------------------------------------------------------------------------
     # Sets up sprites if the species is a special form.
     #---------------------------------------------------------------------------
@@ -655,12 +658,12 @@ class PokemonPokedexInfo_Scene
         @sprites["familyicon0"].pbSetParams(@species, @gender, @form)
         @sprites["familyicon0"].x = (stages == 1) ? ICONS_RIGHT_DOUBLE : ICONS_RIGHT_TRIPLE
         @sprites["familyicon0"].visible = true
-          if $player.seen?(prevo)
-            @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
-            @sprites["familyicon1"].tone = TONE_NORMAL
-          else
-            @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
-            @sprites["familyicon1"].tone = TONE_FADED
+        if $player.seen?(prevo)
+          @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
+          @sprites["familyicon1"].tone = TONE_NORMAL
+        else
+          @sprites["familyicon1"].pbSetParams(prevo, @gender, prevo_data.form)
+          @sprites["familyicon1"].tone = TONE_FADED
           # @sprites["familyicon1"].species = nil
         end
         @sprites["familyicon1"].x = (stages == 1) ? ICONS_LEFT_DOUBLE : ICONS_CENTER

@@ -379,7 +379,7 @@ module GameData
     end
 	
     #---------------------------------------------------------------------------
-    # Includes special form moves in tutor move lists.
+    # Returns all tutor moves including special form moves.
     #---------------------------------------------------------------------------
     def get_tutor_moves
       case @id
@@ -398,8 +398,19 @@ module GameData
       when :CALYREX_1   then moves = [:GLACIALLANCE]
       when :CALYREX_2   then moves = [:ASTRALBARRAGE]
       end
-      return @tutor_moves if !moves
-      return moves.concat(@tutor_moves.clone)
+      return self.tutor_moves.sort unless moves
+      return (self.tutor_moves + moves).sort
+    end
+	
+    #---------------------------------------------------------------------------
+    # Returns all egg moves including special inherited moves.
+    #---------------------------------------------------------------------------
+    def get_inherited_moves
+      case self.get_baby_species
+      when :PICHU then moves = [:VOLTTACKLE]
+      else             moves = []
+      end
+      return (self.get_egg_moves + moves).sort
     end
 	
     #---------------------------------------------------------------------------
