@@ -10277,7 +10277,7 @@ Weight = 310.0
 Color = Green
 Shape = Quadruped
 Category = Continente
-Pokedex = Algunos Pokémon pequeños se juntan en su espalda para hacer sus nidos. Las gentes de antaño creian que el planeta se sustentaba en la espalda de uno.
+Pokedex = Algunos Pokémon pequeños se juntan en su espalda para hacer sus nidos. Las gentes de antaño creían que el planeta se sustentaba en la espalda de uno.
 Generation = 4
 #-------------------------------
 [CHIMCHAR]
@@ -13752,7 +13752,7 @@ Weight = 2.1
 Color = Blue
 Shape = Winged
 Category = Murciélago
-Pokedex = Este peculiar Pókemon pega sus fosas nasales a la pared para dormir y, cuando las retira, deja un corazón marcado.
+Pokedex = Este peculiar Pokémon pega sus fosas nasales a la pared para dormir y, cuando las retira, deja un corazón marcado.
 Generation = 5
 Evolutions = SWOOBAT,Happiness,
 #-------------------------------
@@ -14235,7 +14235,7 @@ Weight = 0.6
 Color = Green
 Shape = Head
 Category = Bolalgodón
-Pokedex = Se deja llevar por las ráfagas de viento. Cuando llueve, su cuepo pesa mucho, así que se guarece bajo árboles grandes.
+Pokedex = Se deja llevar por las ráfagas de viento. Cuando llueve, su cuerpo pesa mucho, así que se guarece bajo árboles grandes.
 Generation = 5
 WildItemUncommon = ABSORBBULB
 Evolutions = WHIMSICOTT,Item,SUNSTONE
@@ -16207,7 +16207,7 @@ Weight = 10.2
 Color = Red
 Shape = Bipedal
 Category = Tajo
-Pokedex = Lucha bajo las órdenes de Bisharp. Se agarra a sus oponentes y les inflinge daño utilizando sus cuchillas.
+Pokedex = Lucha bajo las órdenes de Bisharp. Se agarra a sus oponentes y les inflige daño utilizando sus cuchillas.
 Generation = 5
 Evolutions = BISHARP,Level,52
 #-------------------------------
@@ -17283,7 +17283,7 @@ Weight = 13.5
 Color = Brown
 Shape = Quadruped
 Category = Leoncito
-Pokedex = Cuanto más poderoso es el enemigo al que se enfrenta, más calor desprende su mechón y más energia recorre todo su cuerpo.
+Pokedex = Cuanto más poderoso es el enemigo al que se enfrenta, más calor desprende su mechón y más energía recorre todo su cuerpo.
 Generation = 6
 Evolutions = PYROAR,Level,35
 #-------------------------------
@@ -18515,7 +18515,7 @@ Weight = 215.0
 Color = Blue
 Shape = Quadruped
 Category = Creación
-Pokedex = Según las leyendas, puede compartir el secreto de la vida eterna. Ha despertado tras dormir durante mil años bajo la aparencia de un árbol.
+Pokedex = Según las leyendas, puede compartir el secreto de la vida eterna. Ha despertado tras dormir durante mil años bajo la apariencia de un árbol.
 Generation = 6
 Flags = Legendary
 #-------------------------------

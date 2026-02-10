@@ -19,8 +19,12 @@ class Game_Player < Game_Character
     :running => 4,
     :walking => 3,
     :ice_sliding => 4,
-    :biking => 5,
+    :cycling => 5,
+    :cycling_fast => 5,
+    :cycling_jumping => 3,
     :waterfall => 2,
+    :descending_waterfall => 2,
+    :ascending_waterfall => 2,
     :surfing => 4,
     :surfing_jumping => 3,
     :diving => 3,
@@ -82,11 +86,11 @@ class Game_Player < Game_Character
     when :surf_fishing
       new_charset = pbGetPlayerCharset(meta.surf_fish_charset)
     when :diving, :diving_fast, :diving_jumping, :diving_stopped
-      self.move_speed = 3 if !@move_route_forcing
+      self.move_speed = speed if !@move_route_forcing
       new_charset = pbGetPlayerCharset(meta.dive_charset)
     when :surfing, :surfing_fast, :surfing_jumping, :surfing_stopped
       if !@move_route_forcing
-        self.move_speed = (type == :surfing_jumping) ? 3 : 4
+        self.move_speed = speed
       end
       new_charset = pbGetPlayerCharset(meta.surf_charset)
     when :descending_waterfall, :ascending_waterfall

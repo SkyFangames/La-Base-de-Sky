@@ -21,7 +21,7 @@ class Window_PokemonBag < Window_DrawableCommand
     @filterlist = filterlist
     @pocket     = pocket
     @sorting = false
-    @adapter = PokemonMartAdapter.new
+    @adapter = PokemonItemMartAdapter.new
     super(x, y, width, height)
     @selarrow  = AnimatedBitmap.new("Graphics/UI/Bag/cursor")
     @swaparrow = AnimatedBitmap.new("Graphics/UI/Bag/cursor_swap")

@@ -11,7 +11,7 @@ module OWShadowSettings
   SHADOWLESS_EVENT_NAME     = [
     "door", "FlechaSalida", "nurse", "Enfermera", "Healing balls", "Balls curativas", "Mart","Tendero", "SmashRock", "RocaRompible", "StrengthBoulder", "PiedraFuerza",
     "CutTree", "ArbolCorte", "HeadbuttTree", "ArbolGolpeCabeza", "BerryPlant", "Planta Bayas", ".shadowless", ".noshadow", ".sl", "Entrada Mazmorra Bosque", "Entrada Cueva", "Relic Stone",
-    "Escalera", "Puerta"
+    "Escalera", "Puerta", "ExitArrow", "NoShadow"
   ]
 
   # If the character file and event uses contains one of these words in its filename, it will not have a shadow.
@@ -53,6 +53,10 @@ class Sprite_OWShadow
     @shadow_data_down = nil
     @shadow_data_up   = nil
     
+    # Track character/bitmap changes to regenerate shadow when needed
+    @last_character_name = nil
+    @last_bitmap = nil  # Track the actual bitmap object
+    
     update
   end
   #-----------------------------------------------------------------------------
@@ -60,13 +64,27 @@ class Sprite_OWShadow
   #-----------------------------------------------------------------------------
   def get_frame_coordinates(row_direction)
     rect = @rsprite.src_rect
-    cw = rect.width
-    ch = rect.height   
+    bitmap = @rsprite.bitmap
+    
+    # Si el src_rect tiene las dimensiones completas del bitmap, calculamos el tamaño del frame
+    # dividiendo por 4 (formato estándar de spritesheets 4x4)
+    if rect.width == bitmap.width && rect.height == bitmap.height
+      cw = bitmap.width / 4
+      ch = bitmap.height / 4
+    else
+      cw = rect.width
+      ch = rect.height
+    end
+    
     sx = 0
     sy = 0   
 
     if @event.respond_to?(:character_name) && @event.character_name && !@event.character_name.empty?
-      is_single_sheet = @event.character_name[/^[\$\!]./] ? true : false     
+      # Detect single sheet: starts with $ or !, OR is a Follower sprite
+      char_name = @event.character_name
+      is_single_sheet = char_name[/^[\$\!]./] ? true : false
+      is_single_sheet = true if char_name.downcase.include?("follower")
+      
       if is_single_sheet
         sx = 0
         sy = ch * row_direction
@@ -74,14 +92,14 @@ class Sprite_OWShadow
         idx = (@event.respond_to?(:character_index) ? @event.character_index : 0)
         char_col = idx % 4
         char_row = idx / 4        
-        frames_per_char = (@rsprite.bitmap.width / cw) / 4
+        frames_per_char = (bitmap.width / cw) / 4
         frames_per_char = 4 if frames_per_char < 1        
         sx = char_col * (frames_per_char * cw)
         sy = (char_row * (4 * ch)) + (ch * row_direction)
       end
     end    
 
-    if sx + cw > @rsprite.bitmap.width || sy + ch > @rsprite.bitmap.height
+    if sx + cw > bitmap.width || sy + ch > bitmap.height
       return rect.x, rect.y
     end   
 
@@ -196,8 +214,16 @@ class Sprite_OWShadow
     
     bitmap = @rsprite.bitmap
     rect = @rsprite.src_rect
-    cw = rect.width
-    ch = rect.height
+    
+    # Si el src_rect tiene las dimensiones completas del bitmap, calculamos el tamaño del frame
+    # dividiendo por 4 (formato estándar de spritesheets 4x4)
+    if rect.width == bitmap.width && rect.height == bitmap.height
+      cw = bitmap.width / 4
+      ch = bitmap.height / 4
+    else
+      cw = rect.width
+      ch = rect.height
+    end
     
     # Get coordinates for the specific frame (Down or Up)
     sx, sy = get_frame_coordinates(row_direction)
@@ -244,11 +270,19 @@ class Sprite_OWShadow
     return { :bitmap => bmp, :offset => offset_x }
   end
   #-----------------------------------------------------------------------------
+  # Invalidate shadow data to force regeneration
+  #-----------------------------------------------------------------------------
+  def invalidate_shadow_data
+    @shadow_data_down[:bitmap].dispose if @shadow_data_down && @shadow_data_down[:bitmap]
+    @shadow_data_up[:bitmap].dispose if @shadow_data_up && @shadow_data_up[:bitmap]
+    @shadow_data_down = nil
+    @shadow_data_up = nil
+  end
+  #-----------------------------------------------------------------------------
   # Override the bitmap of the shadow sprite
   #-----------------------------------------------------------------------------
   def set_bitmap(name)
-    @shadow_data_down = nil
-    @shadow_data_up = nil
+    invalidate_shadow_data
     @sprite.dispose if @sprite && !@sprite.disposed?
     @sprite = nil
     @sprite = Sprite.new(@viewport)
@@ -275,10 +309,29 @@ class Sprite_OWShadow
   def update
     return if disposed? || !$scene.is_a?(Scene_Map)
     @sprite = Sprite.new(@viewport) if !@sprite
+    
+    # Check if character graphic or bitmap changed - if so, regenerate shadow
+    current_char_name = @event.respond_to?(:character_name) ? @event.character_name : nil
+    current_bitmap = @rsprite.bitmap
+    
+    # Invalidate if character name changed
+    if current_char_name != @last_character_name
+      @last_character_name = current_char_name
+      invalidate_shadow_data
+    end
+    
+    # Invalidate if bitmap object changed (happens when events are created by code)
+    if current_bitmap != @last_bitmap
+      @last_bitmap = current_bitmap
+      invalidate_shadow_data
+    end
+    
+    # Generate shadow data if needed
     if (!@shadow_data_down || !@shadow_data_up) && @rsprite.bitmap && !@rsprite.disposed?
       @shadow_data_down = generate_shadow_data(0) # Row 0: Down
       @shadow_data_up   = generate_shadow_data(3) # Row 3: Up
     end
+    
     return unless @shadow_data_down # Wait until generation is successful
 
     is_floating = @event.respond_to?(:is_floating) && @event.is_floating
@@ -300,8 +353,8 @@ class Sprite_OWShadow
     end
     current_data = @shadow_data_down if current_data.nil?
 
-    s_off_x = (@event.respond_to?(:shadow_offset_x) ? @event.shadow_offset_x : 0)
-    s_off_y = (@event.respond_to?(:shadow_offset_y) ? @event.shadow_offset_y : 0)
+    s_off_x = (@event.respond_to?(:shadow_offset_x) ? @event.shadow_offset_x.to_i : 0)
+    s_off_y = (@event.respond_to?(:shadow_offset_y) ? @event.shadow_offset_y.to_i : 0)
     @sprite.bitmap  = current_data[:bitmap]
     @sprite.x       = @rsprite.x + s_off_x
     @sprite.y       = ground_y + s_off_y

@@ -499,6 +499,7 @@ MultipleForms.register(:ZYGARDE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
   },
+  "getMegaMoves" => proc { |_pkmn| next { :COREENFORCER => :NIHILLIGHT }  },
   "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     if pkmn.fainted? || endBattle
       pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
@@ -896,7 +897,7 @@ MultipleForms.copy(
 # evolve into different forms depending on the location where they evolve.
 #===============================================================================
 
-if Settings::REGIONAL_FORMS_DEPEND_ON_MAP_LOCATION
+if Settings::REGIONAL_FORMS_DEPEND_ON_MAP_REGION
   # Alolan forms.
   MultipleForms.register(:PIKACHU, {
     "getForm" => proc { |pkmn|

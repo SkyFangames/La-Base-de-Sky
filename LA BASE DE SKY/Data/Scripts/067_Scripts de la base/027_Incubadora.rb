@@ -23,7 +23,7 @@
 
 if defined?(PluginManager)
   PluginManager.register({
-  :name => "Egg Hatcher",
+  :name => "Incubadora",
   :essentials => "21.1",
   :version => "1.1",
   :credits => ["Kyu","Clara","Turner","DPertierra"]
@@ -203,7 +203,7 @@ class Hatcher
       #Manipulate an egg
       if Input.trigger?(Input::USE)
         if $PokemonGlobal.eggs[@index] == nil
-          ret = Kernel.pbConfirmMessage("La incubadora está vacía\\n¿Quieres agregar un Huevo?")
+          ret = pbConfirmMessage(_INTL("La incubadora está vacía\n¿Quieres agregar un Huevo?"))
           if ret == true
             if Settings::INCUBATOR_CHOOSE_EGG_FROM_PC
               chosen = pbChooseEggFromPC
@@ -221,7 +221,7 @@ class Hatcher
               }
               if chosen != -1 && $player.party[chosen] != nil
                 if !$player.party[chosen].egg?
-                  Kernel.pbMessage("El Pokémon elegido no es un Huevo.")
+                  pbMessage(_INTL("El Pokémon elegido no es un Huevo."))
                 else
                   $PokemonGlobal.eggs[@index] = $player.party[chosen]
                   $player.party.delete_at(chosen)
@@ -231,7 +231,7 @@ class Hatcher
             end
           end
         else
-          ret = Kernel.pbConfirmMessage("¿Quieres sacar este Huevo de la incubadora?")
+          ret = pbConfirmMessage(_INTL("¿Quieres sacar este Huevo de la incubadora?"))
           if ret == true
             takeEgg($PokemonGlobal.eggs[@index],@index)
             $game_temp.bag_scene.pbHardRefresh if $game_temp && $game_temp.bag_scene && defined?($game_temp.bag_scene.pbHardRefresh)
@@ -253,14 +253,14 @@ class Hatcher
 end
 
 def takeEgg(egg,index)
-  sel = Kernel.pbConfirmMessage(_INTL("¿Quieres agregarlo a tu equipo?"))
+  sel = pbConfirmMessage(_INTL("¿Quieres agregarlo a tu equipo?"))
   if sel==true
-    Kernel.pbMessage(_INTL("Tu equipo está lleno.\1")) if $player.party.length == 6
+    pbMessage(_INTL("Tu equipo está lleno.\1")) if $player.party.length == 6
     pbStorePokemon(egg)
   else
     if pbBoxesFull?
-      Kernel.pbMessage(_INTL("¡No hay mas espacio para Pokémon!\1"))
-      Kernel.pbMessage(_INTL("¡Las cajas están llenas y no pueden recibir mas Pokémon!"))
+      pbMessage(_INTL("¡No hay mas espacio para Pokémon!\1"))
+      pbMessage(_INTL("¡Las cajas están llenas y no pueden recibir mas Pokémon!"))
       return
     end
     oldcurbox=$PokemonStorage.currentBox
@@ -268,10 +268,10 @@ def takeEgg(egg,index)
     curboxname=$PokemonStorage[oldcurbox].name
     boxname=$PokemonStorage[storedbox].name
     if storedbox!=oldcurbox
-      Kernel.pbMessage(_INTL("La caja \"{1}\" está llena.\1",curboxname))
-      Kernel.pbMessage(_INTL("{1} fue transferido a la caja \"{2}.\"",egg.name,boxname))
+      pbMessage(_INTL("La caja \"{1}\" está llena.\1",curboxname))
+      pbMessage(_INTL("{1} fue transferido a la caja \"{2}.\"",egg.name,boxname))
     else
-      Kernel.pbMessage(_INTL("{1} fue transferido a la caja \"{2}.\"",egg.name,boxname))
+      pbMessage(_INTL("{1} fue transferido a la caja \"{2}.\"",egg.name,boxname))
     end
   end
   $PokemonGlobal.eggs[index] = nil
@@ -288,7 +288,7 @@ def pbGenerateEgg(pkmn, text = "")
   pkmn.calc_stats
   # Add egg to party
   if (GameData::Item.exists?(:EGGHATCHER) && $bag.has?(:EGGHATCHER))
-    ret = Kernel.pbConfirmMessage("¿Quieres agregar el Huevo a la incubadora?")
+    ret = pbConfirmMessage(_INTL("¿Quieres agregar el Huevo a la incubadora?"))
     if ret == true
       ret = addEgg(pkmn)
       if ret == true
@@ -325,7 +325,7 @@ def addEgg(egg)
       return true
     end
   }
-  Kernel.pbMessage("La incubadora está llena.")
+  pbMessage("La incubadora está llena.")
   return false
 end
 
@@ -446,6 +446,3 @@ ItemHandlers::UseInField.add(:EGGHATCHER,proc{|item|
   }
   next 1
 })
-
-
-

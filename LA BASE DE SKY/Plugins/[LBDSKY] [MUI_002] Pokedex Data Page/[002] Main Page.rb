@@ -37,6 +37,7 @@ class PokemonPokedexInfo_Scene
   EGG_MULTI_SPACING = 30
   EGG_SRC_WIDTH = 62
   EGG_SRC_HEIGHT = 28
+  EGG_X = 302
 
   STATS_LABEL_X = 12
   STATS_LABEL_Y1 = 104
@@ -521,9 +522,12 @@ class PokemonPokedexInfo_Scene
     textpos = []
     owned = $player.owned?(@species)
     species_data = GameData::Species.get_species_form(@species, @form)
+    @data_hash = {} if !@data_hash
     pbGenerateDataLists(species_data) if @data_hash[:species] != species_data.id
-    @sprites["itemicon"].item = (owned && !@data_hash[:item].empty?) ? @data_hash[:item].values.last.last : nil
-    @gender = 1 if species_data.gender_ratio == :AlwaysFemale || species_data.form_name == _INTL("Female")
+    if @sprites["itemicon"]
+      @sprites["itemicon"].item = (owned && !@data_hash[:item].empty?) ? @data_hash[:item].values.last.last : nil
+    end
+    @gender = 1 if species_data.gender_ratio == :AlwaysFemale || species_data.form_name == _INTL("Hembra")
     pbDrawDataNotes(:encounter)
     #---------------------------------------------------------------------------
     # Draws species name & typing.

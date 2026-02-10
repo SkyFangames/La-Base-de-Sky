@@ -63,7 +63,7 @@ module Settings
   LINEA_DE_SPEWPA_POR_ID = true
 
   # Elige si quieres que las formas regionales dependan de la región en la que esté el jugador.
-  REGIONAL_FORMS_DEPEND_ON_MAP_LOCATION = true
+  REGIONAL_FORMS_DEPEND_ON_MAP_REGION = true
 
   
   ################################################################################
@@ -206,28 +206,28 @@ module Settings
 
   # Es el número de switch que usa la Fancy Camera. Debes encender este switch
   # para activar la cámara fancy.
-  CAMERA_FANCY = 75
+  CAMERA_FANCY = 59
 end
 
 
 #===============================================================================
-# Pantalla de la Bolsa con Equipo interactivo: Ajustes
+# Pantalla de la Mochila con Equipo
 #===============================================================================
 module BagScreenWiInParty
-# Si deseas que tu pantalla de la Bolsa tenga un panorama desplazable (true o 
-# false):
+  # Si deseas que tu pantalla de la Mochila tenga un panorama desplazable (true o 
+  # false):
   PANORAMA = true
  
-# Color de fondo de la interfaz:
- # 0 para solo naranja (estilo de generaciones más recientes);
- # 1 para un color diferente según el género del jugador (estilo BW);
- # 2 para un color diferente para cada bolsillo (estilo HGSS).
+  # Color de fondo de la interfaz:
+  # 0 para solo naranja (estilo de generaciones más recientes);
+  # 1 para un color diferente según el género del jugador (estilo BW);
+  # 2 para un color diferente para cada bolsillo (estilo HGSS).
   BGSTYLE = 0
 
-# Si deseas que aparezca un icono de Pokérus y/o un icono brillante, respectivamente
-# (true o false):
-  SHINYICON = true
+  # Si deseas que aparezca un icono de Pokérus y/o de shiny, respectivamente
+  # (true o false):
   PKRSICON  = true
+  SHINYICON = true
 end
 
 
@@ -250,8 +250,8 @@ CAN_MULTI_SELECT = true
 CAN_MASS_RELEASE = true
 
 # Si se pueden "dejar" Pokémon en una caja
-# Esto te permite almacenar rápidamente Pokémon en una caja haciendo clic en el botón
-# de uso en el encabezado de la página mientras mueves un Pokémon agarrado
+# Esto te permite almacenar rápidamente Pokémon en una caja haciendo clic en el
+# encabezado de la caja mientras tienes un Pokémon agarrado
 CAN_BOX_POUR     = true
 
 

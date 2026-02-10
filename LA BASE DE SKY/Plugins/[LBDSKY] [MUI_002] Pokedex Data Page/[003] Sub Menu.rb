@@ -583,13 +583,13 @@ class PokemonPokedexInfo_Scene
       end
     else
       if GameData::Ability.exists?(cursor)
-        view = "Habilidades de la especie"
+        view = _INTL("Habilidades de la especie")
       elsif GameData::Item.exists?(cursor)
-        view = "Objetos equipados de la especie"
+        view = _INTL("Objetos equipados de la especie")
       else
-        view = (@viewingMoves) ? "Movimientos de la especie" : "datos de la especie"
+        view = (@viewingMoves) ? _INTL("Movimientos de la especie") : _INTL("datos de la especie")
       end
-      data_text = DATA_TEXT_TAGS[0] + "Volver a #{view}."
+      data_text = _INTL("{1}Volver a {2}.", DATA_TEXT_TAGS[0], view)
     end
     pbDrawImagePositions(overlay, imagepos)
     pbDrawTextPositions(overlay, textpos)
@@ -707,39 +707,39 @@ class PokemonPokedexInfo_Scene
           
           if game_key != api_key
             # Ability changed (Scenario 1: Ability A => Ability B)
-            slot_name = slot == 3 ? "Habilidad Oculta" : "Habilidad #{slot}"
+            slot_name = slot == 3 ? _INTL("Habilidad Oculta") : _INTL("Habilidad {1}", slot)
             changed_abilities.push([slot_name, api_data[0], game_data[0]])
           end
         elsif game_ability && !api_ability
           # Game has ability, API doesn't (Scenario 3: Added ability)
           game_key, game_data = game_ability
-          slot_name = slot == 3 ? "Habilidad Oculta" : "Habilidad #{slot}"
+          slot_name = slot == 3 ? _INTL("Habilidad Oculta") : _INTL("Habilidad {1}", slot)
           added_abilities.push([slot_name, game_data[0]])
         elsif !game_ability && api_ability
           # API has ability, game doesn't (Scenario 2: Removed ability)
           api_key, api_data = api_ability
-          slot_name = slot == 3 ? "Habilidad Oculta" : "Habilidad #{slot}"
+          slot_name = slot == 3 ? _INTL("Habilidad Oculta") : _INTL("Habilidad {1}", slot)
           removed_abilities.push([slot_name, api_data[0]])
         end
       end
       
       # Build difference text
       if !changed_abilities.empty? || !added_abilities.empty? || !removed_abilities.empty?
-        diff_text = "Diferencias de Habilidades:\n"
+        diff_text = _INTL("Diferencias de Habilidades:\n")
         
         # Show changes first (in slot order)
         changed_abilities.each do |slot_name, old_ability, new_ability|
-          diff_text += "\\c[1]#{old_ability} => #{new_ability}\\c[0]\n"
+          diff_text += _INTL("\\c[1]{1} => {2}\\c[0]\n", old_ability, new_ability)
         end
         
         # Show added abilities
         added_abilities.each do |slot_name, ability_name|
-          diff_text += "\\c[3]#{slot_name}: #{ability_name}\\c[0]\n"
+          diff_text += _INTL("\\c[3]{1}: {2}\\c[0]\n", slot_name, ability_name)
         end
         
         # Show removed abilities
         removed_abilities.each do |slot_name, ability_name|
-          diff_text += "\\c[2]Eliminada: #{ability_name}\\c[0]\n"
+          diff_text += _INTL("\\c[2]Eliminada: {1}\\c[0]\n", ability_name)
         end
         
         pbPlayDecisionSE
@@ -787,15 +787,15 @@ class PokemonPokedexInfo_Scene
         case cursor
         when :item
           case num
-          when 0 then note = "Común"
-          when 1 then note = "Poco común"
-          when 2 then note = "Raro"
+          when 0 then note = _INTL("Común")
+          when 1 then note = _INTL("Poco común")
+          when 2 then note = _INTL("Raro")
           end
         when :ability
           case num
-          when 0 then note = "Habil. #{list.index(id) + 1}"
-          when 1 then note = "H. Oculta"
-          when 2 then note = "H. Especial"
+          when 0 then note = _INTL("Habil. {1}", list.index(id) + 1)
+          when 1 then note = _INTL("H. Oculta")
+          when 2 then note = _INTL("H. Especial")
           end
         end
         idx = num
@@ -831,7 +831,7 @@ class PokemonPokedexInfo_Scene
     when Symbol
       data_text = DATA_TEXT_TAGS[0] + data.get(list[index]).description
     else
-      data_text = DATA_TEXT_TAGS[0] + "Volver a los datos de la especie."
+      data_text = DATA_TEXT_TAGS[0] + _INTL("Volver a los datos de la especie.")
     end
     drawFormattedTextEx(overlay, DATA_TEXT_X, DATA_TEXT_Y, DATA_TEXT_W, _INTL("{1}", data_text))
   end

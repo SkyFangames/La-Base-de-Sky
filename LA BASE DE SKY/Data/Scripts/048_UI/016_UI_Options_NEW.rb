@@ -11,13 +11,13 @@ class PokemonSystem
   attr_accessor :frame
   attr_accessor :textskin
   attr_accessor :language
-  attr_accessor :runstyle
-  
-  attr_reader :skip_move_learning
-  attr_reader :main_volume
-  attr_reader :bgmvolume
-  attr_reader :sevolume
-  attr_reader :pokemon_cry_volume
+
+  attr_reader :skip_texts
+  attr_reader   :skip_move_learning
+  attr_reader   :main_volume
+  attr_reader   :bgmvolume
+  attr_reader   :sevolume
+  attr_reader   :pokemon_cry_volume
   
   attr_accessor :textinput
   attr_reader   :bgmvolume
@@ -34,22 +34,23 @@ class PokemonSystem
   attr_accessor :autotile_animations
 
   def initialize
-    @battlestyle        = 0     # Battle style (0=switch, 1=set)
-    @runstyle           = 0     # Default movement speed (0=walk, 1=run)
-    @sendtoboxes        = 0     # Send to Boxes (0=manual, 1=automatic)
-    @givenicknames      = 0     # Give nicknames (0=give, 1=don't give)
-    @skip_move_learning = 1  # Skip move learning (0=Sí, 1=No)
-    @textinput          = 0     # Text input mode (0=cursor, 1=keyboard)
-    @language           = 0     # Language (see also Settings::LANGUAGES)
-    @main_volume        = 100
-    @bgmvolume          = 80    # Volume of background music and ME
-    @sevolume           = 100   # Volume of sound effects (except cries)
-    @pokemon_cry_volume = 100
-    @textspeed          = 1     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
-    @battlescene        = 0     # Battle effects (animations) (0=on, 1=off)
-    @textskin           = 0     # Speech frame
-    @frame              = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
-    @screensize         = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
+    @battlestyle         = 0     # Battle style (0=switch, 1=set)
+    @runstyle            = 0     # Default movement speed (0=walk, 1=run)
+    @sendtoboxes         = 0     # Send to Boxes (0=manual, 1=automatic)
+    @givenicknames       = 0     # Give nicknames (0=give, 1=don't give)
+    @skip_move_learning  = 1     # Skip move learning (0=Sí, 1=No)
+    @textinput           = 0     # Text input mode (0=cursor, 1=keyboard)
+    @skip_texts          = 1     # Skip text (0=Sí, 1=No)
+    @language            = 0     # Language (see also Settings::LANGUAGES)
+    @main_volume         = 100
+    @bgmvolume           = 80    # Volume of background music and ME
+    @sevolume            = 100   # Volume of sound effects (except cries)
+    @pokemon_cry_volume  = 100
+    @textspeed           = 1     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
+    @battlescene         = 0     # Battle effects (animations) (0=on, 1=off)
+    @textskin            = 0     # Speech frame
+    @frame               = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
+    @screensize          = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
     @vsync               = vsync_initial_value?
     @autotile_animations = 0
   end
@@ -219,6 +220,15 @@ class PokemonSystem
     return if @screensize == value && !@force_set_options
     @screensize = value
     pbSetResizeFactor(@screensize)
+  end
+
+  def skip_texts
+    return @skip_texts || 1
+  end
+
+  def skip_texts=(value)
+    return if @skip_texts == value && !@force_set_options
+    @skip_texts = value
   end
 
   # def controls
@@ -1100,7 +1110,7 @@ PageHandlers.add(:options_menu, :plugins, {
 
 MenuHandlers.add(:options_menu, :text_speed, {
   "page"        => :gameplay,
-  "name"        => _INTL("Velocidad de Texto"),
+  "name"        => _INTL("Velocidad de texto"),
   "order"       => 10,
   "type"        => :array,
   "parameters"  => [_INTL("Len"), _INTL("Med"), _INTL("Ráp"), _INTL("Inst")],
@@ -1120,7 +1130,7 @@ MenuHandlers.add(:options_menu, :text_speed, {
 
 MenuHandlers.add(:options_menu, :battle_style, {
   "page"        => :gameplay,
-  "name"        => _INTL("Estilo de Combate"),
+  "name"        => _INTL("Estilo de combate"),
   "order"       => 20,
   "type"        => :array,
   "parameters"  => [_INTL("Cambio"), _INTL("Fijo")],
@@ -1131,7 +1141,7 @@ MenuHandlers.add(:options_menu, :battle_style, {
 
 MenuHandlers.add(:options_menu, :movement_style, {
   "page"        => :gameplay,
-  "name"        => _INTL("Mov. por Defecto"),
+  "name"        => _INTL("Mov. por defecto"),
   "order"       => 30,
   "type"        => :array,
   "parameters"  => [_INTL("Andar"), _INTL("Correr")],
@@ -1155,11 +1165,11 @@ MenuHandlers.add(:options_menu, :send_to_boxes, {
 
 MenuHandlers.add(:options_menu, :give_nicknames, {
   "page"        => :gameplay,
-  "name"        => _INTL("Dar Motes"),
+  "name"        => _INTL("Motes al capturar"),
   "order"       => 50,
   "type"        => :array,
   "parameters"  => [_INTL("Dar"), _INTL("No dar")],
-  "description" => _INTL("Elige si puedes dar un mote a un Pokémon cuando lo obtienes."),
+  "description" => _INTL("Elige si poner mote a un Pokémon cuando lo obtienes."),
   "get_proc"    => proc { next $PokemonSystem.givenicknames },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.givenicknames = value }
 })
@@ -1175,10 +1185,22 @@ MenuHandlers.add(:options_menu, :text_input_style, {
   "set_proc"    => proc { |value, _screen| $PokemonSystem.textinput = value }
 })
 
+MenuHandlers.add(:options_menu, :jump_texts, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Saltar textos"),
+  "order"       => 70,
+  "type"        => :array,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "description" => _INTL("Elige si quieres saltar rápido los textos pulsando la Z."),
+  "condition"   => proc { next Settings::ENABLE_SKIP_TEXT },
+  "get_proc"    => proc { next $PokemonSystem.skip_texts },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.skip_texts = value }
+})
+
 MenuHandlers.add(:options_menu, :language, {
   "page"        => :gameplay,
   "name"        => _INTL("Idioma"),
-  "order"       => 70,
+  "order"       => 80,
   "type"        => (Settings::LANGUAGES.length == 2) ? :array : :array_one,
   "parameters"  => Settings::LANGUAGES.map { |lang| lang[0] },
   "description" => _INTL("Elige el idioma del juego."),
@@ -1191,7 +1213,7 @@ MenuHandlers.add(:options_menu, :language, {
 
 MenuHandlers.add(:options_menu, :main_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Volumen General"),
+  "name"        => _INTL("Volumen general"),
   "order"       => 10,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1202,7 +1224,7 @@ MenuHandlers.add(:options_menu, :main_volume, {
 
 MenuHandlers.add(:options_menu, :bgm_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Música de Fondo"),
+  "name"        => _INTL("Música de fondo"),
   "order"       => 20,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1213,7 +1235,7 @@ MenuHandlers.add(:options_menu, :bgm_volume, {
 
 MenuHandlers.add(:options_menu, :se_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Efectos de Sonido"),
+  "name"        => _INTL("Efectos de sonido"),
   "order"       => 30,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1228,7 +1250,7 @@ MenuHandlers.add(:options_menu, :se_volume, {
 
 MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Volumen Gritos Pkmn"),
+  "name"        => _INTL("Volumen gritos Pkmn."),
   "order"       => 40,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1245,7 +1267,7 @@ MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
 
 MenuHandlers.add(:options_menu, :battle_animations, {
   "page"        => :graphics,
-  "name"        => _INTL("Efectos de Batalla"),
+  "name"        => _INTL("Efectos de combate"),
   "order"       => 20,
   "type"        => :array,
   "parameters"  => [_INTL("Sí"), _INTL("No")],
@@ -1256,7 +1278,7 @@ MenuHandlers.add(:options_menu, :battle_animations, {
 
 MenuHandlers.add(:options_menu, :speech_frame, {
   "page"        => :graphics,
-  "name"        => _INTL("Marco de Diálogo"),
+  "name"        => _INTL("Marco de diálogo"),
   "order"       => 30,
   "type"        => :number_type,
   "parameters"  => 1..Settings::SPEECH_WINDOWSKINS.length,
@@ -1272,7 +1294,7 @@ MenuHandlers.add(:options_menu, :speech_frame, {
 
 MenuHandlers.add(:options_menu, :menu_frame, {
   "page"        => :graphics,
-  "name"        => _INTL("Marco de Menú"),
+  "name"        => _INTL("Marco de menú"),
   "order"       => 40,
   "type"        => :number_type,
   "parameters"  => 1..Settings::MENU_WINDOWSKINS.length,
@@ -1288,7 +1310,7 @@ MenuHandlers.add(:options_menu, :menu_frame, {
 
 MenuHandlers.add(:options_menu, :screen_size, {
   "page"        => :graphics,
-  "name"        => _INTL("Tamaño de Ventana"),
+  "name"        => _INTL("Tamaño de ventana"),
   "order"       => 50,
   "type"        => :array,
   "parameters"  => [_INTL("S"), _INTL("M"), _INTL("L"), _INTL("XL"), _INTL("Completa")],

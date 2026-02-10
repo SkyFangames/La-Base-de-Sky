@@ -953,15 +953,19 @@ class PokemonPokedex_Scene
   end
 
   def setIconBitmap(species)
-    gender, form, shiny = $player.pokedex.last_form_seen(species)
+    if species && $player.seen?(species)
+      gender, form, shiny = $player.pokedex.last_form_seen(species)
+    else
+      gender, form, shiny = 0, 0, false
+    end
     @sprites["icon"].setSpeciesBitmap(species, gender, form, shiny)
     if Settings::SHOW_SILHOUETTES_IN_DEX
       # species_id = (species) ? GameData::Species.get_species_form(species, form).id : nil
       # @sprites["icon"].pbSetDisplay([112, 196, 224, 216], species_id)
-      if !$player.seen?(@sprites["pokedex"].species)
-        @sprites["icon"].tone = Tone.new(-255,-255,-255,255)
+      if species && !$player.seen?(species)
+        @sprites["icon"].show_as_silhouette = true
       else
-        @sprites["icon"].tone = Tone.new(0,0,0,0)
+        @sprites["icon"].show_as_silhouette = false
       end
     end
   end

@@ -606,10 +606,11 @@ module Settings
   # Este numero deberia ser mayor a NUM_STORAGE_BOXES
   MAX_STORAGE_BOXES_EXTEND = 70
 
-  
+  # Elige si quieres que se puedan liberar Huevos del juego.
+  CAN_RELEASE_EGGS = false
+
   # Si quieres usar la nueva interfaz de opciones (true) o la clásica (false).
   USE_NEW_OPTIONS_UI = true
-
 
   # Si las capturas de pantalla se guardan en la carpeta "Saves" junto a las
   # partidas guardadas (true) o en la carpeta "Screenshots" del juego (false).

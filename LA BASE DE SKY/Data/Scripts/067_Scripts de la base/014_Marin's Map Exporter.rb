@@ -30,13 +30,13 @@ def pbExportAMap
   s = Sprite.new(vp)
   s.bitmap = Bitmap.new(Graphics.width, Graphics.height)
   s.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0,0,0))
-  mapid = pbListScreen(_INTL("Export Map"),MapLister.new(pbDefaultMap))
+  mapid = pbListScreen(_INTL("Exportar Mapa"),MapLister.new(pbDefaultMap))
   if mapid > 0
     player = $game_map.map_id == mapid
     if player
-      cmds = ["Exportar", "[  ] Eventos", "[  ] Jugador", "Cancelar"]
+      cmds = [_INTL("Exportar"), _INTL("[  ] Eventos"), _INTL("[  ] Jugador"), _INTL("Cancelar")]
     else
-      cmds = ["Exportar", "[  ] Eventos", "Cancelar"]
+      cmds = [_INTL("Exportar"), _INTL("[  ] Eventos"), _INTL("Cancelar")]
     end
     cmd = 0
     loop do
@@ -59,15 +59,15 @@ def pbExportAMap
         break
       elsif cmd == 1
         if cmds[1].split("")[1] == " "
-          cmds[1] = "[X] Eventos"
+          cmds[1] = _INTL("[X] Eventos")
         else
-          cmds[1] = "[  ] Eventos"
+          cmds[1] = _INTL("[  ] Eventos")
         end
       elsif cmd == 2 && player
         if cmds[2].split("")[1] == " "
-          cmds[2] = "[X] Jugador"
+          cmds[2] = _INTL("[X] Jugador")
         else
-          cmds[2] = "[  ] Jugador"
+          cmds[2] = _INTL("[  ] Jugador")
         end
       elsif cmd == 3 || cmd == 2 && !player || cmd == -1
         break

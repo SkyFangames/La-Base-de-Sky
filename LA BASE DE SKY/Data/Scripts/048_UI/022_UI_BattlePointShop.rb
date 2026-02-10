@@ -142,7 +142,6 @@ end
 #===============================================================================
 class BattlePointShop_Scene
 
-  QTY_WINDOW_Y_OFFSET= -102
   SCROLL_MAP_START_DIRECTION    = 6   # Scroll right when opening mart
   SCROLL_MAP_START_DISTANCE     = 5
   SCROLL_MAP_START_SPEED        = 5

@@ -107,28 +107,28 @@ class BaseSearcher
   # @param item [Object] The item to get the name from.
   # @return [String] The item's name.
   def get_item_name(item)
-    raise NotImplementedError, "#{self.class} must implement #get_item_name"
+    raise NotImplementedError, "#{self.class} debe implementar #get_item_name"
   end
 
   # Gets the list to search through.
   # @abstract
   # @return [Array] The searchable list.
   def get_search_list
-    raise NotImplementedError, "#{self.class} must implement #get_search_list"
+    raise NotImplementedError, "#{self.class} debe implementar #get_search_list"
   end
 
   # Gets the current index in the list.
   # @abstract
   # @return [Integer] The current index.
   def get_current_index
-    raise NotImplementedError, "#{self.class} must implement #get_current_index"
+    raise NotImplementedError, "#{self.class} debe implementar #get_current_index"
   end
 
   # Refreshes the display with the new index.
   # @abstract
   # @param index [Integer] The index to display.
   def refresh_display(index)
-    raise NotImplementedError, "#{self.class} must implement #refresh_display"
+    raise NotImplementedError, "#{self.class} debe implementar #refresh_display"
   end
 
   # Gets the prompt text for the search box.

@@ -16,7 +16,7 @@ class Window_PokemonItemStorage < Window_DrawableCommand
   def initialize(bag, x, y, width, height)
     @bag = bag
     @sortIndex = -1
-    @adapter = PokemonMartAdapter.new
+    @adapter = PokemonItemMartAdapter.new
     super(x, y, width, height)
     self.windowskin = nil
   end

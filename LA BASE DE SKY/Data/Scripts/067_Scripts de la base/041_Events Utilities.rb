@@ -7,22 +7,35 @@
 #====================================================================================
 #
 # Comandos soportados como parte del nombre de evento:
-#   sizeblock(x,y)                -> Define un área de colisión en el evento sin
+#  sizeblock(x,y)                 -> Define un área de colisión en el evento sin
 #                                    necesidad de asignar un gráfico.
 #
-# Comandos soportados como Comentarios:
-#   s:Hitbox/Rx,Ry               -> Define un radio de colisión alrededor del evento
+# Comandos soportados como Comentarios en el evento:
+#  s:Hitbox/Rx,Ry                -> Define un radio de colisión alrededor del evento
 #                                   e igualmente permite la interacción con él.
-#   s:Offset/X,Y                 -> Desplaza el gráfico visualmente (en píxeles).
-#   s:Offset_shadow/X,Y          -> Desplaza el gráfico de la sombra (en píxeles).
-#   s:Float                      -> Activa una animación de levitación suave.
-#   s:doppelganger               -> Cambia al gráfico actual del jugador.
-#   s:pokemon_event/Nombre       -> Cambiará el gráfico al del Pokémon especificado.
-#   s:pokemon_event_shiny/Nombre -> Lo mismo, pero su versión Shiny.
+#  s:Offset/X,Y                  -> Desplaza el gráfico visualmente (en píxeles).
+#  s:Offset_shadow/X,Y           -> Desplaza el gráfico de la sombra (en píxeles).
+#  s:Float                       -> Activa una animación de levitación suave.
+#  s:doppelganger                -> Cambia al gráfico actual del jugador.
+#  s:pokemon_event/Nombre        -> Cambiará el gráfico al del Pokémon especificado.
+#  s:pokemon_event_shiny/Nombre  -> Lo mismo, pero su versión Shiny.
 #                                   Ambos inlcuyen que al interactuar suene su cry.
-#   s:Custom/RUTA                -> Carga un gráfico en específico para el ow usando
-#                                   una ruta dentro de Graphics.
+#  s:Custom/RUTA                 -> Carga un gráfico en específico para el ow usando
+#                                   una ruta dentro de Graphics. La imagen será 
+#                                   dividida en un 4x4 para que sean los lados del ow.
 #                                   Ejemplo: s:Custom/Pictures/introBoy
+#  s:Custom_full/RUTA            -> Carga un gráfico en específico para el ow usando
+#                                   una ruta dentro de Graphics. La imagen será 
+#                                   cargada de forma completa.
+#                                   Ejemplo: s:Custom_full/Pictures/introBoy
+#  s:Spritesheet_FRAMES_VEL/RUTA -> Carga un gráfico en específico para el ow usando
+#                                   una ruta dentro de Graphics. Esta imagen será 
+#                                   tomada como un spritesheet horizontal y divido 
+#                                   en la cantidad de segmentos(FRAMES) que ocupes. 
+#                                   El parámetro de la velocidad(VEL) puede ser
+#                                   omitido (por defecto será 4).
+#                                   Ejemplo: s:Spritesheet_8_4/Pictures/molino
+#                                            s:Spritesheet_8/Pictures/molino
 #====================================================================================
 
 class Game_Event < Game_Character
@@ -33,6 +46,8 @@ class Game_Event < Game_Character
   attr_accessor :cry_species
   attr_reader :float_offset
   attr_accessor :shadow_offset_x, :shadow_offset_y
+  attr_accessor :is_full_image
+  attr_accessor :custom_frames, :current_spritesheet_frame, :custom_speed
 
   #-----------------------------------------------------------------------------
   # PROTECCIÓN DE ALIAS
@@ -65,6 +80,10 @@ class Game_Event < Game_Character
     @hitbox_ry = 0
     @block_width = 1
     @block_height = 1
+    @is_full_image = false
+    @custom_frames = 0
+    @current_spritesheet_frame = 0
+    @spritesheet_timer = 0
     @visual_offset_x = 0
     @visual_offset_y = 0
     @is_floating = false
@@ -72,6 +91,10 @@ class Game_Event < Game_Character
     @shadow_offset_x = 0
     @shadow_offset_y = 0
     @cry_species = nil
+    @custom_frames = 0
+    @custom_speed = 0
+    @current_spritesheet_frame = 0
+    @spritesheet_timer = 0
     zik_ext_initialize(map_id, event, map)
   end
 
@@ -154,6 +177,23 @@ class Game_Event < Game_Character
       elsif cmd_text.match(/^s:Custom\/(.+)/i)
         filename = $1.strip
         @character_name = "../#{filename}"  
+      
+      # --- CUSTOM FULL ---  
+      elsif cmd_text.match(/^s:Custom_full\/(.+)/i)
+        filename = $1.strip
+        @character_name = "../#{filename}"
+        @is_full_image = true
+        @direction_fix = true
+        @step_anime = false 
+        
+      # --- SPRITESHEET ---
+      elsif cmd_text.match(/^s:Spritesheet_(\d+)(?:_(\d+))?\/(.+)/i)
+        @custom_frames = $1.to_i
+        @custom_speed = $2 ? $2.to_i : 0 
+        filename = $3.strip       
+        @character_name = "../#{filename}"
+        @step_anime = true
+        @direction_fix = true
       end
     end
   end
@@ -185,13 +225,13 @@ class Game_Event < Game_Character
     y = zik_ext_screen_y + @visual_offset_y
     
     if @is_floating
-      timer = Graphics.frame_count + (@id * 7)
-      @float_offset = (Math.sin(timer / 15.0) * 5).round
+      time_factor = (System.uptime * 4.0) + (@id * 0.5)   
+      @float_offset = (Math.sin(time_factor) * 5).round
       y -= @float_offset 
     else
       @float_offset = 0
     end
-    
+
     return y
   end
 
@@ -208,5 +248,45 @@ class Game_Event < Game_Character
     effective_height = (@block_height > 1) ? @block_height : (@height || 1)
     return x.between?(@x, @x + effective_width - 1) &&
            y.between?(@y - effective_height + 1, @y)
+  end
+end
+
+#===============================================================================
+# Parche para Sprite_Character
+#===============================================================================
+class Sprite_Character
+  alias_method :zik_full_update_charset_frame, :update_charset_frame unless method_defined?(:zik_full_update_charset_frame)
+
+  def update_charset_frame
+    bmp = (@charbitmapAnimated && @charbitmap) ? @charbitmap.bitmap : @charbitmap
+    return unless bmp
+
+    # IMAGEN COMPLETA
+    if @character.respond_to?(:is_full_image) && @character.is_full_image
+      self.src_rect.set(0, 0, bmp.width, bmp.height)
+      self.ox = bmp.width / 2
+      self.oy = bmp.height
+
+    # SPRITESHEET
+    elsif @character.respond_to?(:custom_frames) && @character.custom_frames.to_i > 0
+      cw = bmp.width / @character.custom_frames
+      ch = bmp.height
+
+      if @character.custom_speed.to_i > 0
+        target_frames = @character.custom_speed
+      else
+        target_frames = (7 - @character.move_speed) * 3
+        target_frames = 4 if target_frames <= 0
+      end
+
+      duration_per_frame = target_frames / 60.0
+      current_frame = (System.uptime / duration_per_frame).to_i % @character.custom_frames 
+      sx = current_frame * cw
+      self.src_rect.set(sx, 0, cw, ch)
+      self.ox = cw / 2
+      self.oy = ch
+    else
+      zik_full_update_charset_frame
+    end
   end
 end

@@ -549,7 +549,7 @@ Description = Un hueso de gran valor arqueológico que puede alcanzar un alto pr
 Name = Real de cobre
 NamePlural = Reales de cobre
 Pocket = 1
-Price = 0
+Price = 2000
 Flags = Fling_30
 Description = Moneda de cobre de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -557,7 +557,7 @@ Description = Moneda de cobre de más de tres mil años de antigüedad. Muy valo
 Name = Real de plata
 NamePlural = Reales de plata
 Pocket = 1
-Price = 0
+Price = 10000
 Flags = Fling_30
 Description = Moneda de plata de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -565,7 +565,7 @@ Description = Moneda de plata de más de tres mil años de antigüedad. Muy valo
 Name = Real de oro
 NamePlural = Reales de oro
 Pocket = 1
-Price = 60000
+Price = 20000
 Flags = Fling_30
 Description = Moneda de oro de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -1089,7 +1089,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 10
 Flags = Fling_30
-Description = Objeto de un solo uso. Aumenta la Def. Esp. del Pokémon que la lleva si este recibe un ataque de tipo Agua.
+Description = Aumenta la Def. Esp. del Pokémon que la lleva si este recibe un ataque de tipo Agua. Es de un solo uso.
 #-------------------------------
 [SNOWBALL]
 Name = Bola de Nieve
@@ -1098,7 +1098,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 10
 Flags = Fling_30
-Description = Objeto de un solo uso. Aumenta el Ataque del Pokémon que lo lleva si este recibe un ataque de tipo Hielo.
+Description = Aumenta el Ataque del Pokémon que lo lleva si este recibe un ataque de tipo Hielo. Es de un solo uso.
 #-------------------------------
 [WEAKNESSPOLICY]
 Name = Seguro Debilidad
@@ -1134,7 +1134,7 @@ Pocket = 1
 Price = 300
 BPPrice = 10
 Flags = Fling_30
-Description = Si lo lleva un Pokémon, sube la Velocidad al ser intimidado. De un solo uso.
+Description = Si lo lleva un Pokémon, sube la Velocidad al ser intimidado. Es de un solo uso.
 #-------------------------------
 [ROOMSERVICE]
 Name = Servicio Raro
@@ -1647,8 +1647,8 @@ Flags = Fling_30
 Description = Película metálica que fortalece los ataques de tipo Acero. Debe llevarlo un Pokémon.
 #-------------------------------
 [SILKSCARF]
-Name = Pañuelo Seda
-NamePlural = Pañuelos Seda
+Name = Pañuelo de Seda
+NamePlural = Pañuelos de Seda
 Pocket = 1
 Price = 3000
 SellPrice = 500
@@ -3279,7 +3279,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 20 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 20 PS de un Pokémon.
 #-------------------------------
 [SUPERPOTION]
 Name = Superpoción
@@ -3289,7 +3289,7 @@ Price = 700
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 60 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 60 PS de un Pokémon.
 #-------------------------------
 [HYPERPOTION]
 Name = Hiperpoción
@@ -3299,7 +3299,7 @@ Price = 1500
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 120 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 120 PS de un Pokémon.
 #-------------------------------
 [MAXPOTION]
 Name = Poción Máxima
@@ -3310,7 +3310,7 @@ BPPrice = 2
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura todos los PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura todos los PS de un Pokémon.
 #-------------------------------
 [FULLRESTORE]
 Name = Restaura Todo
@@ -3339,7 +3339,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que libera a un Pokémon de las garras del sueño.
+Description = Medicina en espray que libera a un Pokémon de las garras del sueño.
 #-------------------------------
 [ANTIDOTE]
 Name = Antídoto
@@ -3349,7 +3349,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que contrarresta los efectos del veneno en un Pokémon.
+Description = Medicina en espray que contrarresta los efectos del veneno en un Pokémon.
 #-------------------------------
 [BURNHEAL]
 Name = Antiquemadura
@@ -3359,7 +3359,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing    
-Description = Medicina en spray que cura las quemaduras a un Pokémon.
+Description = Medicina en espray que cura las quemaduras a un Pokémon.
 #-------------------------------
 [PARALYZEHEAL]
 Name = Antiparalizante
@@ -3369,7 +3369,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura a un Pokémon paralizado.
+Description = Medicina en espray que cura a un Pokémon paralizado.
 #-------------------------------
 [ICEHEAL]
 Name = Antihielo
@@ -3379,7 +3379,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que descongela a un Pokémon.
+Description = Medicina en espray que descongela a un Pokémon.
 #-------------------------------
 [FULLHEAL]
 Name = Cura Total
@@ -3389,7 +3389,7 @@ Price = 400
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura todos los problemas de estado de un Pokémon.
+Description = Medicina en espray que cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [PEWTERCRUNCHIES]
 Name = Rokikos
@@ -3500,7 +3500,7 @@ Price = 100
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Zumo de bayas 100% natural que restaura 20 PS de un Pokémon.
+Description = Zumo de bayas 100% natural que restaura 20 PS de un Pokémon. Si se equipa el Pokémon lo usará automáticamente.
 #-------------------------------
 [SWEETHEART]
 Name = Corazón Dulce
@@ -3554,8 +3554,8 @@ Flags = Fling_30,Healing
 Description = Leche de alto valor nutritivo que restaura 100 PS de un Pokémon.
 #-------------------------------
 [ENERGYPOWDER]
-Name = Polvoenergía
-NamePlural = Polvoenergías
+Name = Polvo Energía
+NamePlural = Polvos Energía
 Pocket = 2
 Price = 500
 FieldUse = OnPokemon
@@ -3979,7 +3979,7 @@ Price = 20
 BPPrice = 50
 FieldUse = OnPokemon
 Flags = Fling_10
-Description = Menta que cambia la naturaleza de tu Pokémon a seria (neutra).
+Description = Menta que cambia la naturaleza de tu Pokémon a Seria (neutra).
 #-------------------------------
 [ABILITYCAPSULE]
 Name = Cápsula Habilidad
@@ -7213,8 +7213,8 @@ Flags = KeyItem
 Description = Dispositivo que ofrece información sobre los Pokémon salvajes del lugar en el que estés.
 #-------------------------------
 [VIAL]
-Name = Pokévial
-NamePlural = Pokévial
+Name = Curaportátil
+NamePlural = Curaportátiles
 Pocket = 8
 Price = 0
 FieldUse = Direct
@@ -7222,8 +7222,8 @@ Flags = KeyItem
 Description = Aparato de usos limitados que permite curar a todo tu equipo. Se recarga en Centros Pokémon.
 #-------------------------------
 [EMPTYVIAL]
-Name = Pokévial
-NamePlural = Pokévial
+Name = Curaportátil
+NamePlural = Curaportátiles
 Pocket = 8
 Price = 0
 FieldUse = Direct
