@@ -146,23 +146,24 @@ class Battle::Scene
     return ret
   end
 
-  def update_zygarde_move(battler, idxBattler, cw)
-    # After toggling, change Zygarde's move based on the NEW registration state
-    if battler.isSpecies?(:ZYGARDE) && [2, 3].include?(battler.form)
-      newMode = (@battle.pbRegisteredMegaEvolution?(idxBattler)) ? 2 : 1
-      battler.pokemon.moves.each_with_index do |move, i|
-        new_move_id = nil
-        if newMode == 2 && move.id == :COREENFORCER
-          move.id = :NIHILLIGHT
-        elsif newMode == 1 && move.id == :NIHILLIGHT
-          move.id = :COREENFORCER
-        end
-      end
-      battler.refresh_moves
+
+  def fight_action_handler(battler, idxBattler, cw)
+    newMode = (@battle.pbRegisteredMegaEvolution?(idxBattler)) ? 2 : 1
+    if MultipleForms.hasFunction?(battler.pokemon, "getMegaMoves")
+      megaMoves = MultipleForms.call("getMegaMoves", battler.pokemon)
+      newMode == 2 ? battler.display_mega_moves : battler.display_base_moves(true) 
       cw.refresh(true) # Refresh button names too
       return true
     end
     return false
+  end
+
+  def fight_cancel_handler(battler, idxBattler, cw)
+    newMode = (@battle.pbRegisteredMegaEvolution?(idxBattler)) ? 2 : 1
+    return false if newMode == 1   # Not cancelling Mega Evolution
+    battler.display_base_moves
+    cw.refresh(true) # Refresh button names too
+    return true
   end
 
   #=============================================================================
@@ -233,13 +234,14 @@ class Battle::Scene
         needRefresh = true
       elsif Input.trigger?(Input::BACK)   # Cancel fight menu
         pbPlayCancelSE
+        fight_cancel_handler(battler, idxBattler, cw)
         break if yield (-1)
         needRefresh = true
       elsif Input.trigger?(Input::ACTION)   # Toggle Mega Evolution
         if megaEvoPossible
           pbPlayDecisionSE
           break if yield (-2)
-          needFullRefresh = update_zygarde_move(battler, idxBattler, cw)
+          needFullRefresh = fight_action_handler(battler, idxBattler, cw)
           needRefresh = true
         end
       elsif Input.trigger?(Input::SPECIAL)   # Shift

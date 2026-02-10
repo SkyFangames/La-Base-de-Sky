@@ -499,6 +499,7 @@ MultipleForms.register(:ZYGARDE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
   },
+  "getMegaMoves" => proc { |_pkmn| next { :COREENFORCER => :NIHILLIGHT }  },
   "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     if pkmn.fainted? || endBattle
       pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
