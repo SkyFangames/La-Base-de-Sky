@@ -66,6 +66,10 @@ class UI::OptionsVisuals
         elsif !hash["description"].nil?
           opt[:description] = _INTL(hash["description"])
         end
+        # Translate Option Choices when language changes
+        if opt[:type] == :array && hash["parameters"].is_a?(Array)
+          opt[:parameters] = hash["parameters"].map { |val| _INTL(val) }
+        end
       end
     end
 

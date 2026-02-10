@@ -1,10 +1,11 @@
 #===============================================================================
-# _INTL Override
-# Replaces the global _INTL function so every hardcoded string in the engine
-# and plugins is looked up in translations.csv at runtime.
+# _INTL and _MAPINTL Override
+# Replaces the global _INTL and _MAPINTL functions so every string — both
+# hardcoded in scripts and written in RPG Maker events — is looked up in
+# translations.csv at runtime.
 #
 # CSV Format: TEXT;LANG1;LANG2;...
-# - TEXT  = original hardcoded string (case-sensitive key)
+# - TEXT  = original string (case-sensitive key)
 # - LANG* = translation columns (any language codes, read from header)
 #
 # The active language is determined by TranslationSystem.current_language.
@@ -116,18 +117,19 @@ module AdvancedTranslation
       lines[1..-1].each do |line|
         next if line.strip.empty?
 
-        parts = line.strip.split(';', header.length)
+        # Use chomp to preserve significant leading/trailing spaces in fields
+        parts = line.chomp.split(';', header.length)
         next if parts.length < 2
 
-        text_key = parts[0]&.strip
-        next if !text_key || text_key.empty?
+        text_key = parts[0]
+        next if !text_key || text_key.strip.empty?
         text_key = unescape_string(text_key)
 
         entry = {}
         @@lang_columns.each_with_index do |lang_code, i|
-          val = parts[i + 1]&.strip
+          val = parts[i + 1]
           val = unescape_string(val) if val
-          entry[lang_code] = (val && !val.empty?) ? val : text_key
+          entry[lang_code] = (val && !val.strip.empty?) ? val : text_key
         end
 
         @@translation_map[text_key] = entry
@@ -145,5 +147,12 @@ end
 AdvancedTranslation.setup_original_intl
 
 def _INTL(*args)
+  AdvancedTranslation.intl(*args)
+end
+
+# Override _MAPINTL so RPG Maker event texts (Show Text, Show Choices)
+# are also translated through our CSV.
+# The first argument is the map_id (ignored), the rest is text + params.
+def _MAPINTL(_mapid, *args)
   AdvancedTranslation.intl(*args)
 end

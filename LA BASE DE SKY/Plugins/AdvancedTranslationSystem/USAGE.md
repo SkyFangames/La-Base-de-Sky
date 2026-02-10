@@ -13,7 +13,7 @@
 
 ## Translation System
 
-The translation system overrides the global `_INTL()` function so that every hardcoded string in the engine and plugins is looked up in `translations.csv` at runtime. Languages are fully dynamic — the system reads whatever language columns you define in the CSV header.
+The translation system overrides the global `_INTL()` and `_MAPINTL()` functions so that every string — both hardcoded in scripts and written in RPG Maker events (Show Text, Show Choices) — is looked up in `translations.csv` at runtime. Languages are fully dynamic — the system reads whatever language columns you define in the CSV header.
 
 ### Translations CSV Format
 
@@ -60,6 +60,13 @@ pbConfirmMessage(_INTL("¿Quieres guardar?"))
 2. The translation for the active language column is returned
 3. If the active language column is empty, the first language column is used
 4. If the key isn't found in the CSV at all, the original string is returned unchanged
+
+#### `_MAPINTL()` — RPG Maker Event Translation
+Overridden so that RPG Maker event texts (Show Text, Show Choices) are also translated through the CSV. The first argument (map ID) is ignored; the rest works like `_INTL`:
+
+```ruby
+_MAPINTL(map_id, "¡Bienvenido al mundo Pokémon!")
+```
 
 #### `pbTranslate()` — Alternative Name
 Same functionality, different name. Useful in contexts where `_INTL` isn't available:
@@ -126,7 +133,9 @@ TEXT;ES;EN
 
 **File:** `Plugins/AdvancedTranslationSystem/find_missing_translations.rb`
 
-A standalone Ruby script that scans your entire codebase for `_INTL()` calls and reports which ones are missing from `translations.csv`.
+A standalone Ruby script that scans your entire codebase for translatable strings and reports which ones are missing from `translations.csv`.
+
+**Important:** This file is safe to keep inside `Plugins/`. It is guarded by `if __FILE__ == $0` so the game engine will not execute it when loading plugins.
 
 ### Running the Tool
 
@@ -139,16 +148,17 @@ ruby Plugins/AdvancedTranslationSystem/find_missing_translations.rb
 
 1. **Loads existing translations** — Reads the TEXT column from `translations.csv`
 2. **Scans all `.rb` files** — Searches `Plugins/` and `Data/Scripts/` for every `_INTL("...")` and `_INTL('...')` call
-3. **Compares** — Case-sensitive comparison between found strings and existing CSV entries
-4. **Generates report** — Creates `missing_translations.csv` with all untranslated strings
+3. **Scans map event data** — Reads all `Data/Map*.rxdata` files and extracts Show Text (code 101/401) and Show Choices (code 102) strings
+4. **Compares** — Case-sensitive comparison between found strings and existing CSV entries
+5. **Generates report** — Creates `missing_translations.csv` with all untranslated strings
 
 ### Output
 
 The tool prints a summary to the console:
 ```
-Total _INTL strings found: 1523
-Already in CSV:            1436
-MISSING from CSV:          87
+Total translatable strings: 1523
+Already in CSV:             1436
+MISSING from CSV:           87
 ```
 
 And generates `missing_translations.csv`:
@@ -170,6 +180,10 @@ Pokémon;;
 - Handles **multi-line strings** — `_INTL("line1\nline2")` is detected correctly
 - Handles **escaped quotes** — `_INTL("It's a \"test\"")` is parsed properly
 - Handles **both quote styles** — Double-quoted and single-quoted strings
+- **Scans RPG Maker map events** — Extracts Show Text and Show Choices from `.rxdata` files
+- **Joins continuation lines** — Multi-line Show Text messages (code 401) are joined automatically
+- **Skips escape-only messages** — Messages containing only RPG Maker escape codes are ignored
 - **Preserves significant whitespace** — Leading/trailing spaces in keys are not stripped
 - **Unescapes for comparison** — `\n` in CSV is compared against actual newlines in code
-- **Shows file locations** — Each missing string shows where it was found (file:line)
+- **Shows file locations** — Each missing string shows where it was found (file:line or Map/Event/Page)
+- **Safe to keep in Plugins/** — Guarded by `if __FILE__ == $0` so the game engine ignores it

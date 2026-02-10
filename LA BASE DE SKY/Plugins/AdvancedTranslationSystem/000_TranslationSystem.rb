@@ -64,14 +64,15 @@ module TranslationSystem
         next if line.strip.empty?
         line = line.encode('UTF-8', 'UTF-8', invalid: :replace, undef: :replace, replace: '')
 
-        fields = line.strip.split(';', header.length)
+        # Use chomp to preserve significant leading/trailing spaces in fields
+        fields = line.chomp.split(';', header.length)
         next if fields[0].nil? || fields[0].strip.empty?
 
-        text_key = unescape_string(fields[0].strip)
+        text_key = unescape_string(fields[0])
 
         @@translations[text_key] = {}
         @@languages.each_with_index do |lang, i|
-          text = unescape_string(fields[i + 1].to_s.strip)
+          text = unescape_string(fields[i + 1].to_s)
           @@translations[text_key][lang] = text
         end
       end
