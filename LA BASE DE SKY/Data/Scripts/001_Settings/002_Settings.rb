@@ -9,6 +9,15 @@ module Settings
   # Esta es la versión de tu juego. El formato debe ser MAYOR.MENOR.PARCHE.
   GAME_VERSION = "1.0.0"
 
+
+  # El ANCHO por defecto de la pantalla en píxeles (en escala 1.0).
+  SCREEN_WIDTH  = 512
+  # El ALTO de la pantalla en píxelex (en escala 1.0).
+  SCREEN_HEIGHT = 384
+  # El tamaño de la pantalla por defecto. 
+  #   * Posibles valores: 0.5, 1.0, 1.5 y 2.0.
+  SCREEN_SCALE  = 1.0
+
   # Esto indica de qué generación son las mecánicas que se apliquen en tu juego.
   # Esto se usa en batallas, scripts y otras secciones que son usadas dentro y
   # fuera de batalla, como por ejemplo perder vida por veneno fuera de comabte.
@@ -401,20 +410,40 @@ module Settings
   # Asigna gráficos de carteles de ubicación a estilos de texto (números). Estos se usan en
   # la clase LocationWindow para mostrar el texto de manera apropiada para el gráfico que se
   # está utilizando. El estilo :none está reservado para el estilo "sin gráfico". Un nombre de archivo
-  # puede ser en su lugar un array de [nombre de archivo, color base del texto, color de sombra del texto].
+  # para cada tipo de cartel puede ser un array de Hash con los diferentes graficos de ese estilo, cada hash puede contener las siguientes claves:
+  # { :graphic => nombre de archivo(nombre del archivo que debe estar en Graphics/UI/Location), -- OBLIGATORIO 
+  #   :text_color => color base del texto, -- OBLIGATORIO
+  #   :shadow_color => color de sombra del texto, -- OBLIGATORIO
+  #   :zoomx => zoom horizontal (int o float), -- OPCIONAL, por defecto 1
+  #   :zoomy => zoom vertical (int o float),  -- OPCIONAL, por defecto 1
+  #   :graphic_offset => desplazamiento del gráfico (array [x, y]), -- OPCIONAL, por defecto [0, 0]
+  #   :text_offset => desplazamiento del texto con respecto al grafico (array [x, y]), -- OPCIONAL, por defecto [0, 0]
+  #   :center_text => centrar el texto (boolean true / false) -- OPCIONAL, por defecto false
+  # }
+  # Tambien podria ser un array de nombres de archivo, en cuyo caso se usaría el mismo estilo de texto para todos los gráficos de ese estilo.
+  # Los valores para los estilos en los que solo se ingresa el grafico están definidos en la clase LocationWindow, y se pueden modificar editando esa clase.
   LOCATION_SIGN_GRAPHIC_STYLES = {
-    :dp       => [["DP", Color.new(72, 80, 72), Color.new(144, 160, 160)]],
-    :hgss     => [["HGSS cave",    Color.new(232, 232, 232), Color.new(120, 144, 160)],
-                  ["HGSS city",    Color.new(56, 64, 72),    Color.new(152, 152, 144)],
-                  ["HGSS default", Color.new(48, 64, 72),    Color.new(144, 144, 96)],
-                  ["HGSS forest",  Color.new(232, 232, 232), Color.new(120, 176, 144)],
-                  ["HGSS lake",    Color.new(40, 48, 56),    Color.new(104, 144, 192)],
-                  ["HGSS park",    Color.new(40, 48, 56),    Color.new(120, 136, 152)],
-                  ["HGSS route",   Color.new(48, 64, 72),    Color.new(136, 136, 104)],
-                  ["HGSS sea",     Color.new(216, 240, 248), Color.new(24, 96, 144)],
-                  ["HGSS town",    Color.new(48, 56, 64),    Color.new(144, 120, 80)]],
+    :dp       => [ { :graphic => "DP",           
+                     :text_color => Color.new(72, 80, 72),    :shadow_color => Color.new(144, 160, 160), 
+                     :text_offset => [8, -10] }],
+    :hgss     => [ { :graphic => "HGSS cave",    :text_color => Color.new(232, 232, 232), :shadow_color => Color.new(120, 144, 160), :center_text => true },
+                   { :graphic => "HGSS city",    :text_color => Color.new(56, 64, 72),    :shadow_color => Color.new(152, 152, 144), :center_text => true },
+                   { :graphic => "HGSS default", :text_color => Color.new(48, 64, 72),    :shadow_color => Color.new(144, 144, 96),  :center_text => true },
+                   { :graphic => "HGSS forest",  :text_color => Color.new(232, 232, 232), :shadow_color => Color.new(120, 176, 144), :center_text => true },
+                   { :graphic => "HGSS lake",    :text_color => Color.new(40, 48, 56),    :shadow_color => Color.new(104, 144, 192), :center_text => true },
+                   { :graphic => "HGSS park",    :text_color => Color.new(40, 48, 56),    :shadow_color => Color.new(120, 136, 152), :center_text => true },
+                   { :graphic => "HGSS route",   :text_color => Color.new(48, 64, 72),    :shadow_color => Color.new(136, 136, 104), :center_text => true },
+                   { :graphic => "HGSS sea",     :text_color => Color.new(216, 240, 248), :shadow_color => Color.new(24, 96, 144),   :center_text => true },
+                   { :graphic => "HGSS town",    :text_color => Color.new(48, 56, 64),    :shadow_color => Color.new(144, 120, 80),  :center_text => true } 
+                  ],
     :platinum => ["Pt cave", "Pt city", "Pt default", "Pt forest", "Pt lake",
-                  "Pt park", "Pt route", "Pt sea", "Pt town"]
+                  "Pt park", "Pt route", "Pt sea", "Pt town"],
+    :oras     => [{ :graphic => "ORAS", :text_color => Color.new(255, 255, 255), :shadow_color => Color.new(0, 0, 0, 128), 
+                    :text_offset => [0, 0], :graphic_offset => [0, 0], :zoomx => 2, :zoomy => 2,
+                    :center_text => true }],
+    :xy       => [{ :graphic => "XY",   :text_color => Color.new(255, 255, 255), :shadow_color => Color.new(0, 0, 0, 128), 
+                    :text_offset => [60, 10], :graphic_offset => [Settings::SCREEN_WIDTH / 4 - 20, Settings::SCREEN_HEIGHT - 100], :zoomx => 2, :zoomy => 2,
+                    :center_text => true }],
   }
 
 
@@ -513,16 +542,6 @@ module Settings
   # Animación que aparece cuando el jugador termina de dar un paso sobre agua
   # quieta (muestra una ondulación de agua).
   WATER_RIPPLE_ANIMATION_ID    = 8
-
-  #=============================================================================
-
-  # El ANCHO por defecto de la pantalla en píxeles (en escala 1.0).
-  SCREEN_WIDTH  = 512
-  # El ALTO de la pantalla en píxelex (en escala 1.0).
-  SCREEN_HEIGHT = 384
-  # El tamaño de la pantalla por defecto. 
-  #   * Posibles valores: 0.5, 1.0, 1.5 y 2.0.
-  SCREEN_SCALE  = 1.0
 
   #=============================================================================
 

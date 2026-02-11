@@ -7,9 +7,12 @@ class LocationWindow
 
   def initialize(name, graphic_name = nil, animate = true, viewport = nil)
     initialize_viewport(viewport)
+    @graphic_offset = [0, 0]
+    @window_offset = [0, 0]
     initialize_graphic(graphic_name)
     initialize_text_window(name)
     apply_style(graphic_name)
+    setup_initial_positions
     @current_map = $game_map.map_id
     @timer_start = System.uptime
     @delayed = !$game_temp.fly_destination.nil?
@@ -30,14 +33,14 @@ class LocationWindow
     @graphic = Sprite.new(@viewport)
     @graphic.bitmap = RPG::Cache.ui("Location/#{graphic_name}")
     @graphic.x = 0
-    @graphic.y = (@animate) ? -@graphic.height : 0
+    @graphic.y = 0
   end
 
   def initialize_text_window(name)
     @window = Window_AdvancedTextPokemon.new(name)
     @window.resizeToFit(name, Graphics.width)
     @window.x        = 0
-    @window.y        = (@animate) ? -@window.height : 0
+    @window.y        = 0
     @window.z        = 1
     @window.viewport = @viewport
   end
@@ -52,12 +55,20 @@ class LocationWindow
     style = :none
     base_color = nil
     shadow_color = nil
+    zoom_x = 1
+    zoom_y = 1
+    center_text = false
     Settings::LOCATION_SIGN_GRAPHIC_STYLES.each_pair do |val, filenames|
       filenames.each do |filename|
-        if filename.is_a?(Array)
-          next if filename[0] != graphic_name
-          base_color = filename[1]
-          shadow_color = filename[2]
+        if filename.is_a?(Hash)
+          next if !filename.key?(:graphic) || filename[:graphic] != graphic_name
+          base_color = filename[:text_color] if filename.key?(:text_color)
+          shadow_color = filename[:shadow_color] if filename.key?(:shadow_color)
+          zoom_x = filename[:zoomx] || 1 
+          zoom_y = filename[:zoomy] || 1
+          @window_offset = filename[:text_offset] || [0, 0]
+          @graphic_offset = filename[:graphic_offset] || [0, 0]
+          center_text = filename[:center_text] || false
         else
           next if filename != graphic_name
         end
@@ -70,12 +81,12 @@ class LocationWindow
     # Apply the style
     @y_distance = @graphic&.height || @window.height
     @window.back_opacity = 0
+    @graphic.zoom_x = zoom_x if zoom_x
+    @graphic.zoom_y = zoom_y if zoom_y
     case style
     when :dp
       @window.baseColor = base_color if base_color
       @window.shadowColor = shadow_color if shadow_color
-      @window.text = @window.text   # Because the text colors were changed
-      @window_offset = [8, -10]
       @graphic&.dispose
       @graphic = Window_AdvancedTextPokemon.new("")
       @graphic.setSkin("Graphics/UI/Location/#{graphic_name}")
@@ -84,21 +95,52 @@ class LocationWindow
       @graphic.x        = 0
       @graphic.y        = (@animate) ? -@graphic.height : @graphic_offset[1]
       @graphic.z        = 0
+      @graphic.zoom_x = zoom_x if zoom_x
+      @graphic.zoom_y = zoom_y if zoom_y
       @graphic.viewport = @viewport
       @y_distance = @graphic.height
     when :hgss
       @window.baseColor = base_color if base_color
       @window.shadowColor = shadow_color if shadow_color
       @window.width = @graphic.width
-      @window.text = "<ac>" + @window.text
     when :platinum
       @window.baseColor = base_color || Color.black
       @window.shadowColor = shadow_color || Color.new(144, 144, 160)
-      @window.text = @window.text   # Because the text colors were changed
-      @window_offset = [10, 16]
+      @window_offset ||= [10, 16]
+    when :oras
+      @window.baseColor = base_color || Color.white
+      @window.shadowColor = shadow_color || Color.new(0, 0, 0, 128)
+    when :xy
+      @window.baseColor = base_color || Color.white
+      @window.shadowColor = shadow_color || Color.new(0, 0, 0, 128)
     end
-    @window.x = @window_offset[0]
-    @window.y = @window_offset[1] if !@animate
+    @window.text = @window.text   # Because the text colors were changed
+    @window.text = "<ac>" + @window.text if center_text
+  end
+
+  def setup_initial_positions
+    # Determine animation direction based on graphic position
+    @animate_from_bottom = @graphic && (@graphic_offset[1] > Graphics.height / 2)
+    
+    if @animate
+      if @animate_from_bottom
+        initial_y_offset = @y_distance
+      else
+        initial_y_offset = -@y_distance
+      end
+    else
+      initial_y_offset = 0
+    end
+    
+    # Position graphic
+    if @graphic
+      @graphic.x = @graphic_offset[0]
+      @graphic.y = @graphic_offset[1] + initial_y_offset
+    end
+    
+    # Position window relative to graphic (text_offset is relative to graphic_offset)
+    @window.x = @graphic_offset[0] + @window_offset[0]
+    @window.y = @graphic_offset[1] + @window_offset[1] + initial_y_offset
   end
 
   def disposed?
@@ -124,16 +166,39 @@ class LocationWindow
       dispose
       return
     end
+    
+    # Calculate animation offset
     if System.uptime - @timer_start >= APPEAR_TIME + LINGER_TIME
-      y_pos = lerp(0, -@y_distance, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
-      @window.y = y_pos + @window_offset[1]
-      @graphic&.y = y_pos + @graphic_offset[1]
-      dispose if y_pos <= -@y_distance
+      # Disappearing
+      if @animate_from_bottom
+        y_offset = lerp(0, @y_distance, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
+        if y_offset >= @y_distance
+          dispose
+          return
+        end
+      else
+        y_offset = lerp(0, -@y_distance, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
+        if y_offset <= -@y_distance
+          dispose
+          return
+        end
+      end
     else
-      y_pos = lerp(-@y_distance, 0, APPEAR_TIME, @timer_start, System.uptime)
-      @window.y = y_pos + @window_offset[1]
-      @graphic&.y = y_pos + @graphic_offset[1]
+      # Appearing
+      if @animate_from_bottom
+        y_offset = lerp(@y_distance, 0, APPEAR_TIME, @timer_start, System.uptime)
+      else
+        y_offset = lerp(-@y_distance, 0, APPEAR_TIME, @timer_start, System.uptime)
+      end
     end
+    
+    # Apply positions (text is positioned relative to graphic)
+    if @graphic
+      @graphic.x = @graphic_offset[0]
+      @graphic.y = @graphic_offset[1] + y_offset
+    end
+    @window.x = @graphic_offset[0] + @window_offset[0]
+    @window.y = @graphic_offset[1] + @window_offset[1] + y_offset
   end
 end
 
