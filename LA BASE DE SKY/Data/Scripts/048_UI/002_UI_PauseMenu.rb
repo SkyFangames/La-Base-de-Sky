@@ -45,6 +45,16 @@ class PokemonPauseMenu_Scene
     @sprites["helpwindow"].visible = false
   end
 
+  def pbShowLocationSign
+    return if Settings::DISABLE_LOCATION_SIGNS
+    # Location window
+    map_name = $game_map.name
+    location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
+    @sprites["location"] = LocationWindow.new(map_name, location_sign_graphic, false, @viewport)
+    # Delete any location window currently being displayed
+    $scene.spriteset.usersprites.each { |sprite| sprite.dispose if sprite.is_a?(LocationWindow) }
+  end
+
   def pbShowCommands(commands)
     ret = -1
     cmdwindow = @sprites["cmdwindow"]
@@ -94,6 +104,8 @@ class PokemonPauseMenu
 
   def pbShowInfo; end
 
+  def pbShowLocationSign; end
+
   def pbStartPokemonMenu
     if !$player
       if $DEBUG
@@ -105,6 +117,7 @@ class PokemonPauseMenu
     @scene.pbStartScene
     # Show extra info window if relevant
     pbShowInfo
+    @scene.pbShowLocationSign
     # Get all commands
     command_list = []
     commands = []

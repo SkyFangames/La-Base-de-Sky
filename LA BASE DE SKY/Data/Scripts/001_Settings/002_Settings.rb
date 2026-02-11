@@ -376,15 +376,44 @@ module Settings
 
   #=============================================================================
   
-  # Par de IDs de mapas, en los que el mensaje con el nombre de la zona no se 
-  # muestra al cambiar de un mapa a otro (y viceversa). Útil para rutas largas
-  # que las separas en diferentes mapas.
-  #   Ej.: [4,5,16,17,42,43] hace que los mapas 4 y 5 estén conectados, el 16 
-  # con el 17 también, y el 42 con el 43. De todos modos, esto no te hace falta
-  # si los dos mapas se llaman exactamente igual, puesto que en esos casos no
-  # se ve tampoco el nombre al cambiar entre ellos (y no hace falta ponerlos
-  # aquí).
-  NO_SIGNPOSTS = []
+  #-----------------------------------------------------------------------------
+  # Location signpost.
+  #-----------------------------------------------------------------------------
+
+  # Si quieres desactivar completamente los carteles de ubicación, pon esto en true.
+  DISABLE_LOCATION_SIGNS = false
+
+  # Pares de IDs de mapas, donde no se muestran los carteles de ubicación al moverse de uno
+  # de los mapas en un par al otro (y viceversa). Útil para rutas/ciudades largas que se extienden
+  # a través de múltiples mapas.
+  #   e.g. [4,5,16,17,42,43] serán los pares de mapas 4,5 y 16,17 y 42,43.
+  # Moverse entre dos mapas que tienen el mismo nombre exacto no mostrará el
+  # cartel de ubicación de todos modos, por lo que no necesitas listar esos mapas aquí.
+  NO_LOCATION_SIGNS = []
+
+  # El nombre de archivo de un gráfico de cartel de ubicación que se usará si los metadatos del mapa
+  # no definen uno. Pon esto en nil para usar el windowskin de menú predeterminado.
+  DEFAULT_LOCATION_SIGN_GRAPHIC = "HGSS default"
+  
+  # Asigna gráficos de carteles de ubicación a estilos de texto (números). Estos se usan en
+  # la clase LocationWindow para mostrar el texto de manera apropiada para el gráfico que se
+  # está utilizando. El estilo :none está reservado para el estilo "sin gráfico". Un nombre de archivo
+  # puede ser en su lugar un array de [nombre de archivo, color base del texto, color de sombra del texto].
+  LOCATION_SIGN_GRAPHIC_STYLES = {
+    :dp       => [["DP", Color.new(72, 80, 72), Color.new(144, 160, 160)]],
+    :hgss     => [["HGSS cave",    Color.new(232, 232, 232), Color.new(120, 144, 160)],
+                  ["HGSS city",    Color.new(56, 64, 72),    Color.new(152, 152, 144)],
+                  ["HGSS default", Color.new(48, 64, 72),    Color.new(144, 144, 96)],
+                  ["HGSS forest",  Color.new(232, 232, 232), Color.new(120, 176, 144)],
+                  ["HGSS lake",    Color.new(40, 48, 56),    Color.new(104, 144, 192)],
+                  ["HGSS park",    Color.new(40, 48, 56),    Color.new(120, 136, 152)],
+                  ["HGSS route",   Color.new(48, 64, 72),    Color.new(136, 136, 104)],
+                  ["HGSS sea",     Color.new(216, 240, 248), Color.new(24, 96, 144)],
+                  ["HGSS town",    Color.new(48, 56, 64),    Color.new(144, 120, 80)]],
+    :platinum => ["Pt cave", "Pt city", "Pt default", "Pt forest", "Pt lake",
+                  "Pt park", "Pt route", "Pt sea", "Pt town"]
+  }
+
 
   #=============================================================================
 

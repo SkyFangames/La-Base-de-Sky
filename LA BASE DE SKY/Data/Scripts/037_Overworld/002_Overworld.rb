@@ -319,22 +319,46 @@ EventHandlers.add(:on_map_or_spriteset_change, :show_darkness,
 )
 
 # Show location signpost.
-EventHandlers.add(:on_map_or_spriteset_change, :show_location_window,
+# EventHandlers.add(:on_map_or_spriteset_change, :show_location_window,
+#   proc { |scene, map_changed|
+#     next if !scene || !scene.spriteset
+#     next if !map_changed || !$game_map.metadata&.announce_location
+#     nosignpost = false
+#     if $PokemonGlobal.mapTrail[1]
+#       (Settings::NO_SIGNPOSTS.length / 2).times do |i|
+#         nosignpost = true if Settings::NO_SIGNPOSTS[2 * i] == $PokemonGlobal.mapTrail[1] &&
+#                              Settings::NO_SIGNPOSTS[(2 * i) + 1] == $game_map.map_id
+#         nosignpost = true if Settings::NO_SIGNPOSTS[(2 * i) + 1] == $PokemonGlobal.mapTrail[1] &&
+#                              Settings::NO_SIGNPOSTS[2 * i] == $game_map.map_id
+#         break if nosignpost
+#       end
+#       nosignpost = true if $game_map.name == pbGetMapNameFromId($PokemonGlobal.mapTrail[1])
+#     end
+#     scene.spriteset.addUserSprite(LocationWindow.new($game_map.name)) if !nosignpost
+#   }
+# )
+
+# Show location sign.
+EventHandlers.add(:on_map_or_spriteset_change, :show_location_sign,
   proc { |scene, map_changed|
     next if !scene || !scene.spriteset
     next if !map_changed || !$game_map.metadata&.announce_location
-    nosignpost = false
+    next if Settings::DISABLE_LOCATION_SIGNS
+    no_sign = false
     if $PokemonGlobal.mapTrail[1]
-      (Settings::NO_SIGNPOSTS.length / 2).times do |i|
-        nosignpost = true if Settings::NO_SIGNPOSTS[2 * i] == $PokemonGlobal.mapTrail[1] &&
-                             Settings::NO_SIGNPOSTS[(2 * i) + 1] == $game_map.map_id
-        nosignpost = true if Settings::NO_SIGNPOSTS[(2 * i) + 1] == $PokemonGlobal.mapTrail[1] &&
-                             Settings::NO_SIGNPOSTS[2 * i] == $game_map.map_id
-        break if nosignpost
+      (Settings::NO_LOCATION_SIGNS.length / 2).times do |i|
+        no_sign = true if Settings::NO_LOCATION_SIGNS[2 * i] == $PokemonGlobal.mapTrail[1] &&
+                             Settings::NO_LOCATION_SIGNS[(2 * i) + 1] == $game_map.map_id
+        no_sign = true if Settings::NO_LOCATION_SIGNS[(2 * i) + 1] == $PokemonGlobal.mapTrail[1] &&
+                             Settings::NO_LOCATION_SIGNS[2 * i] == $game_map.map_id
+        break if no_sign
       end
-      nosignpost = true if $game_map.name == pbGetMapNameFromId($PokemonGlobal.mapTrail[1])
+      no_sign = true if $game_map.name == pbGetMapNameFromId($PokemonGlobal.mapTrail[1])
     end
-    scene.spriteset.addUserSprite(LocationWindow.new($game_map.name)) if !nosignpost
+    next if no_sign
+    map_name = $game_map.name
+    location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
+    scene.spriteset.addUserSprite(LocationWindow.new(map_name, location_sign_graphic))
   }
 )
 
