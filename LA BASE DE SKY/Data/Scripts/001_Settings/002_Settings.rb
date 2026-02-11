@@ -383,6 +383,9 @@ module Settings
   # Si quieres desactivar completamente los carteles de ubicación, pon esto en true.
   DISABLE_LOCATION_SIGNS = false
 
+  # Si quieres que el cartel de ubicación se muestre también en el menú de pausa, pon esto en true.
+  SHOW_LOCATION_SIGN_IN_PAUSE_MENU = true
+
   # Pares de IDs de mapas, donde no se muestran los carteles de ubicación al moverse de uno
   # de los mapas en un par al otro (y viceversa). Útil para rutas/ciudades largas que se extienden
   # a través de múltiples mapas.

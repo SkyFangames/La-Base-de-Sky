@@ -47,6 +47,7 @@ class PokemonPauseMenu_Scene
 
   def pbShowLocationSign
     return if Settings::DISABLE_LOCATION_SIGNS
+    return if !Settings::SHOW_LOCATION_SIGN_IN_PAUSE_MENU
     # Location window
     map_name = $game_map.name
     location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
