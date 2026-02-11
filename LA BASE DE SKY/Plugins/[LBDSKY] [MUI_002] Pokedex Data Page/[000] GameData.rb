@@ -250,9 +250,9 @@ module GameData
       # Determines the full description by combining method-specific details.
       if !nil_or_empty?(@description)
         desc2 = _INTL(@description, param_name, param_name2)
-        full_desc = _INTL("{1} {2}.", desc, desc2)
+        full_desc = _INTL("{1} {2}", desc, desc2)
       else
-        full_desc = _INTL("{1}.", desc)
+        full_desc = _INTL("{1}", desc)
       end
       return full_desc
     end
@@ -301,8 +301,8 @@ GameData::Evolution.each do |evo|
   when :HasMoveType                            then evo.description = _INTL("sabiendo un movimiento tipo {1}")
   when :HasInParty                             then evo.description = _INTL("teniendo a {1} en el equipo")
   when :Location                               then evo.description = _INTL("estando en {1}")
-  when :LocationFlag                           then evo.description = _INTL("mientras {1}")
-  when :Region                                 then evo.description = _INTL("estando el la región {1}")
+  when :LocationFlag                           then evo.description = _INTL("estando {1}")
+  when :Region                                 then evo.description = _INTL("estando en la región {1}")
   when :TradeSpecies                           then evo.description = _INTL("por {1}")
   when :BattleDealCriticalHit                  then evo.description = _INTL("causando {1} o más golpes críticos")
   when :EventAfterDamageTaken                  then evo.description = _INTL("tras perder al menos 49 PS")
