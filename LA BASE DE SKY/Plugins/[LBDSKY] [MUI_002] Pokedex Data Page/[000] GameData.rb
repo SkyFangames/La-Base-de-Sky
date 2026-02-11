@@ -179,12 +179,12 @@ module GameData
         end
         prefix = ""
         if [:Type, :Item, :Species].include?(@parameter)
-          prefix = ' ' #(par.starts_with_vowel?) ? "an " : "a "
+          prefix = '' #(par.starts_with_vowel?) ? "an " : "a "
         end
         param = c[2] + par + c[0] if !c.empty?
-        param_name = _INTL("{1}{2}", prefix, param)
+        param_name = "#{prefix}#{param}" 
         param = c[2] + par2 + c[0] if !c.empty? && par2
-        param_name2 = _INTL("{1}", param)
+        param_name2 = "#{param}" 
       when Integer
         case @id
         when :Region
