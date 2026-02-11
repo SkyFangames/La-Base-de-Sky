@@ -1760,6 +1760,7 @@ module Compiler
     commonEvents = load_data("Data/CommonEvents.rxdata")
     Console.echo_li(_INTL("Procesando eventos comunes..."))
     commonEvents.length.times do |key|
+      changed = true if fix_event_scripts(commonEvents[key])
       newevent = fix_event_use(commonEvents[key], 0, mapData)
       if newevent
         commonEvents[key] = newevent
@@ -1769,7 +1770,7 @@ module Compiler
     save_data(commonEvents, "Data/CommonEvents.rxdata") if changed
     Console.echo_done(true)
     if change_record.length > 0 || changed
-      Console.echo_warn(_INTL("Se han alterado los datos RMXP. Cierra RMXP para asegurarte de que los cambios se aplican."))
+      Console.echo_warn(_INTL("Se han alterado los datos RMXP. Cierra RMXP sin darle a guardar para asegurarte de que los cambios se aplican."))
     end
   end
 end
