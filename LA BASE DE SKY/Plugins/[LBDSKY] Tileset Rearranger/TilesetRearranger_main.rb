@@ -49,7 +49,7 @@ class TilesetRearranger
     @sprites = {}
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize("",
        TILESET_OFFSET_X + TILESET_WIDTH, 0, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 128, @viewport)
-    @sprites["help_text"] = Window_UnformattedTextPokemon.newWithSize(_INTL("Choose tileset to load"),
+    @sprites["help_text"] = Window_UnformattedTextPokemon.newWithSize(_INTL("Elegir tileset a cargar"),
        TILESET_OFFSET_X + TILESET_WIDTH, SCREEN_HEIGHT - 64, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 64, @viewport)
     @sprites["scroll_bar"] = BitmapSprite.new(SCROLL_BAR_WIDTH, SCREEN_HEIGHT, @viewport)
     @sprites["tileset"] = BitmapSprite.new(TILESET_WIDTH, NUM_ROWS_VISIBLE * TILE_SIZE, @viewport)
