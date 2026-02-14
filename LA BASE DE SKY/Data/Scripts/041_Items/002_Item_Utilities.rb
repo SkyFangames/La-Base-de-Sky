@@ -435,26 +435,30 @@ def pbChooseItem(var = 0, *args)
   return ret
 end
 
-def pbChooseApricorn(var = 0)
+def pbChooseItemWithProc(var = 0, proc_to_execute = nil)
   ret = nil
   pbFadeOutIn do
     scene = PokemonBag_Scene.new
     screen = PokemonBagScreen.new(scene, $bag)
-    ret = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_apricorn? })
+    ret = screen.pbChooseItemScreen(proc_to_execute)
   end
   $game_variables[var] = ret || :NONE if var > 0
   return ret
 end
 
+def pbChooseApricorn(var = 0)
+  ret = nil
+  return pbChooseItemWithProc(var, proc { |item| GameData::Item.get(item).is_apricorn? })
+end
+
 def pbChooseFossil(var = 0, exclude = [])
   ret = nil
-  pbFadeOutIn do
-    scene = PokemonBag_Scene.new
-    screen = PokemonBagScreen.new(scene, $bag)
-    ret = screen.pbChooseItemScreen(proc { |item| GameData::Item.get(item).is_fossil? && !exclude.include?(item) })
-  end
-  $game_variables[var] = ret || :NONE if var > 0
-  return ret
+  return pbChooseItemWithProc(var, proc { |item| GameData::Item.get(item).is_fossil? && !exclude.include?(item) })
+end
+
+def pbChoosePokeBall(var = 0)
+  ret = nil
+  return pbChooseItemWithProc(var, proc { |item| GameData::Item.get(item).is_poke_ball? })
 end
 
 # Shows a list of items to choose from, with the chosen item's ID being stored
