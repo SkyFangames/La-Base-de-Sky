@@ -8,6 +8,9 @@ class Battle::Scene
   MESSAGE_WINDOW_X            = 16
   MESSAGE_WINDOW_Y_OFFSET     = 2
   MESSAGE_WINDOW_WIDTH_MARGIN = 32
+  COMMAND_MENU_Z              = 200
+  FIGHT_MENU_Z                = 200
+  TARGET_MENU_Z               = 200
 
   def initialize
     @battle     = nil
@@ -48,11 +51,11 @@ class Battle::Scene
     msgWindow.letterbyletter = true
     @sprites["messageWindow"] = msgWindow
     # Create command window
-    @sprites["commandWindow"] = CommandMenu.new(@viewport, 200)
+    @sprites["commandWindow"] = CommandMenu.new(@viewport, COMMAND_MENU_Z)
     # Create fight window
-    @sprites["fightWindow"] = FightMenu.new(@viewport, 200)
+    @sprites["fightWindow"] = FightMenu.new(@viewport, FIGHT_MENU_Z)
     # Create targeting window
-    @sprites["targetWindow"] = TargetMenu.new(@viewport, 200, @battle.sideSizes)
+    @sprites["targetWindow"] = TargetMenu.new(@viewport, TARGET_MENU_Z, @battle.sideSizes)
     pbShowWindow(MESSAGE_BOX)
     # The party lineup graphics (bar and balls) for both sides
     2.times do |side|

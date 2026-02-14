@@ -624,6 +624,8 @@ class Battle::Scene::BattlerSprite < RPG::Sprite
   # being chosen as a target. Set to nil to prevent blinking.
   TARGET_BLINKING_DURATION = 0.3
 
+  BATTLER_BASE_Z = 50
+
   def initialize(viewport, sideSize, index, battleAnimations)
     super(viewport)
     @pkmn             = nil
@@ -681,9 +683,9 @@ class Battle::Scene::BattlerSprite < RPG::Sprite
     return if !@_iconBitmap
     pbSetOrigin
     if @index.even?
-      self.z = 50 + (5 * @index / 2)
+      self.z = BATTLER_BASE_Z + (5 * @index / 2)
     else
-      self.z = 50 - (5 * (@index + 1) / 2)
+      self.z = BATTLER_BASE_Z - (5 * (@index + 1) / 2)
     end
     # Set original position
     p = Battle::Scene.pbBattlerPosition(@index, @sideSize)
