@@ -165,7 +165,7 @@ class PokemonSummary_Scene
   EGG_DATE_Y          = 86
   EGG_TEXT_X          = 232
   EGG_TEXT_Y          = 118
-  EGG_TEXT_WIDTH      = 268
+  EGG_MEMO_WIDTH      = 268
   
   # --- Imágenes ---
   IMG_BALL_X          = 8
