@@ -106,7 +106,7 @@ class LocationWindow
     when :platinum
       @window.baseColor = base_color || Color.black
       @window.shadowColor = shadow_color || Color.new(144, 144, 160)
-      @window_offset ||= [10, 16]
+      @window_offset = [10, 16] if @window_offset == [0, 0]
     when :oras
       @window.baseColor = base_color || Color.white
       @window.shadowColor = shadow_color || Color.new(0, 0, 0, 128)
