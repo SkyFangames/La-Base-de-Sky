@@ -31,6 +31,7 @@ class Battle::Scene::PokemonDataBox < Sprite
   FOE_BOX_X           = -16
   FOE_BOX_Y           = 36
   FOE_BASE_X          = 16
+  DATABOX_BASE_Z      = 150
 
   # Side size offsets
   SIDE_2_X_OFFSETS          = [-12, 12, 0, 0]
@@ -46,8 +47,12 @@ class Battle::Scene::PokemonDataBox < Sprite
   EXP_BAR_Y         = 74
   HP_NUMBERS_X      = 80
   HP_NUMBERS_Y      = 52
+  HP_NUMBERS_WIDTH  = 124
+  HP_NUMBERS_HEIGHT = 16
   HP_PERCENT_X      = 131
-  HP_PERCENT_Y      = 61  
+  HP_PERCENT_Y      = 61
+  HP_PERCENT_WIDTH  = 124
+  HP_PERCENT_HEIGHT = 16 
   # Drawing coordinates
   NAME_X            = 8
   NAME_Y            = 12
@@ -147,11 +152,11 @@ class Battle::Scene::PokemonDataBox < Sprite
     @hpBarBitmap   = AnimatedBitmap.new("Graphics/UI/Battle/overlay_hp")
     @expBarBitmap  = AnimatedBitmap.new("Graphics/UI/Battle/overlay_exp")
     # Create sprite to draw HP numbers on
-    @hpNumbers = BitmapSprite.new(124, 16, viewport)
+    @hpNumbers = BitmapSprite.new(HP_NUMBERS_WIDTH, HP_NUMBERS_HEIGHT, viewport)
     # pbSetSmallFont(@hpNumbers.bitmap)
     @sprites["hpNumbers"] = @hpNumbers
 
-    @hpPercent = BitmapSprite.new(124, 16, viewport)
+    @hpPercent = BitmapSprite.new(HP_PERCENT_WIDTH, HP_PERCENT_HEIGHT, viewport)
     pbSetSmallFont(@hpPercent.bitmap)
     @sprites["hpPercent"] = @hpPercent
     # Create sprite wrapper that displays HP bar
@@ -167,7 +172,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @contents = Bitmap.new(@databoxBitmap.width, @databoxBitmap.height)
     self.bitmap  = @contents
     self.visible = false
-    self.z       = 150 + ((@battler.index / 2) * 5)
+    self.z       = DATABOX_BASE_Z + ((@battler.index / 2) * 5)
     pbSetSystemFont(self.bitmap)
   end
 
