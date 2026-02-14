@@ -8,9 +8,12 @@ class Battle::Scene
   MESSAGE_WINDOW_X            = 16
   MESSAGE_WINDOW_Y_OFFSET     = 2
   MESSAGE_WINDOW_WIDTH_MARGIN = 32
+  MESSAGE_BOX_Z               = 195
+  MESSAGE_WINDOW_Z            = 200
   COMMAND_MENU_Z              = 200
   FIGHT_MENU_Z                = 200
   TARGET_MENU_Z               = 200
+  PARTY_BAR_Z                 = 120
 
   def initialize
     @battle     = nil
@@ -38,13 +41,13 @@ class Battle::Scene
     # Create message box graphic
     messageBox = pbAddSprite("messageBox", 0, Graphics.height - MESSAGE_BOX_HEIGHT,
                              "Graphics/UI/Battle/overlay_message", @viewport)
-    messageBox.z = 195
+    messageBox.z = MESSAGE_BOX_Z
     # Create message window (displays the message)
     msgWindow = Window_AdvancedTextPokemon.newWithSize(
       "", MESSAGE_WINDOW_X, Graphics.height - MESSAGE_BOX_HEIGHT + MESSAGE_WINDOW_Y_OFFSET,
       Graphics.width - MESSAGE_WINDOW_WIDTH_MARGIN, MESSAGE_BOX_HEIGHT, @viewport
     )
-    msgWindow.z              = 200
+    msgWindow.z              = MESSAGE_WINDOW_Z
     msgWindow.opacity        = 0
     msgWindow.baseColor      = MESSAGE_BASE_COLOR
     msgWindow.shadowColor    = MESSAGE_SHADOW_COLOR
@@ -61,12 +64,12 @@ class Battle::Scene
     2.times do |side|
       partyBar = pbAddSprite("partyBar_#{side}", 0, 0,
                              "Graphics/UI/Battle/overlay_lineup", @viewport)
-      partyBar.z       = 120
+      partyBar.z       = PARTY_BAR_Z
       partyBar.mirror  = true if side == 0   # Player's lineup bar only
       partyBar.visible = false
       NUM_BALLS.times do |i|
         ball = pbAddSprite("partyBall_#{side}_#{i}", 0, 0, nil, @viewport)
-        ball.z       = 121
+        ball.z       = PARTY_BAR_Z + 1
         ball.visible = false
       end
       # Ability splash bars
