@@ -1005,13 +1005,15 @@ class UI::Options < UI::BaseScreen
       # Convert old option types to new format
       type = convert_option_type(hash["type"])
       
+      raw_params = hash["parameters"]
+      final_params = raw_params.is_a?(Proc) ? raw_params.call : raw_params
       option_data = {
         :option      => option,
         :page        => page,
         :name        => name,
         :description => description,
         :type        => type,
-        :parameters  => hash["parameters"],
+        :parameters  => final_params,
         :on_select   => hash["on_select"],
         :get_proc    => hash["get_proc"],
         :set_proc    => hash["set_proc"],
