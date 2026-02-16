@@ -11,23 +11,37 @@
 #                                    necesidad de asignar un gráfico.
 #
 # Comandos soportados como Comentarios en el evento:
-#  s:Hitbox/Rx,Ry                -> Define un radio de colisión alrededor del evento
+#  s:Hitbox/X,Y                  -> Define un area de colisión usando de base el 
+#                                   evento e igualmente permite la interacción
+#                                   con él.  
+#                                   
+#  s:Hitbox_radius/Rx,Ry         -> Define un radio de colisión alrededor del evento
 #                                   e igualmente permite la interacción con él.
+#                                   No es necesario anmbos valores, con uno basta.
+#
 #  s:Offset/X,Y                  -> Desplaza el gráfico visualmente (en píxeles).
+#
 #  s:Offset_shadow/X,Y           -> Desplaza el gráfico de la sombra (en píxeles).
+#
 #  s:Float                       -> Activa una animación de levitación suave.
+#
 #  s:doppelganger                -> Cambia al gráfico actual del jugador.
+#
 #  s:pokemon_event/Nombre        -> Cambiará el gráfico al del Pokémon especificado.
+#
 #  s:pokemon_event_shiny/Nombre  -> Lo mismo, pero su versión Shiny.
 #                                   Ambos inlcuyen que al interactuar suene su cry.
+#
 #  s:Custom/RUTA                 -> Carga un gráfico en específico para el ow usando
 #                                   una ruta dentro de Graphics. La imagen será 
 #                                   dividida en un 4x4 para que sean los lados del ow.
 #                                   Ejemplo: s:Custom/Pictures/introBoy
+#
 #  s:Custom_full/RUTA            -> Carga un gráfico en específico para el ow usando
 #                                   una ruta dentro de Graphics. La imagen será 
 #                                   cargada de forma completa.
 #                                   Ejemplo: s:Custom_full/Pictures/introBoy
+#
 #  s:Spritesheet_FRAMES_VEL/RUTA -> Carga un gráfico en específico para el ow usando
 #                                   una ruta dentro de Graphics. Esta imagen será 
 #                                   tomada como un spritesheet horizontal y divido 
@@ -40,6 +54,7 @@
 
 class Game_Event < Game_Character
   attr_reader :hitbox_rx, :hitbox_ry
+  attr_reader :hitbox_cx, :hitbox_hy
   attr_reader :block_width, :block_height
   attr_accessor :visual_offset_x, :visual_offset_y
   attr_accessor :is_floating
@@ -78,6 +93,8 @@ class Game_Event < Game_Character
   def initialize(map_id, event, map = nil)
     @hitbox_rx = 0
     @hitbox_ry = 0
+    @hitbox_cx = 0
+    @hitbox_hy = 0
     @block_width = 1
     @block_height = 1
     @is_full_image = false
@@ -125,6 +142,8 @@ class Game_Event < Game_Character
     # Resetear valores de comentarios
     @hitbox_rx = 0
     @hitbox_ry = 0
+    @hitbox_cx = 0
+    @hitbox_hy = 0
     @visual_offset_x = 0
     @visual_offset_y = 0
     @is_floating = false
@@ -139,10 +158,17 @@ class Game_Event < Game_Character
       cmd_text = command.parameters[0]
       next if cmd_text.nil?
 
-      # --- HITBOX (Radio) ---
-      if cmd_text.match(/^s:Hitbox\/(\d+),(\d+)/i)
-        @hitbox_rx = $1.to_i
-        @hitbox_ry = $2.to_i
+      # --- HITBOX RADIUS ---
+      if cmd_text.match(/^s:Hitbox_radius\/(\d+)(?:,(\d+))?/i)
+        val_x = $1.to_i
+        val_y = $2 ? $2.to_i : val_x
+        @hitbox_rx = val_x
+        @hitbox_ry = val_y
+
+      # --- HITBOX ---
+      elsif cmd_text.match(/^s:Hitbox\/(\d+),(\d+)/i)
+        @hitbox_cx = $1.to_i
+        @hitbox_hy = $2.to_i
       
       # --- OFFSET ---
       elsif cmd_text.match(/^s:Offset\/([-\d]+),([-\d]+)/i)
@@ -236,14 +262,19 @@ class Game_Event < Game_Character
   end
 
   def at_coordinate?(x, y)
-    # Prioridad 1: HITBOX
+    # Prioridad 1: HITBOX RADIUS
     if @hitbox_rx > 0 || @hitbox_ry > 0
       return x.between?(@x - @hitbox_rx, @x + @hitbox_rx) &&
              y.between?(@y - @hitbox_ry, @y + @hitbox_ry)
     end
+
+    # Prioridad 2: HITBOX
+    if @hitbox_cx > 0 || @hitbox_hy > 0
+      return x.between?(@x - @hitbox_cx, @x + @hitbox_cx) &&
+             y.between?(@y - @hitbox_hy, @y)
+    end
   
-    # Prioridad 2: SIZEBLOCK
-    # Usamos block_width o block_height si es mayor a 1, si no, usamos el de Essentials.
+    # Prioridad 3: SIZEBLOCK
     effective_width = (@block_width > 1) ? @block_width : (@width || 1)
     effective_height = (@block_height > 1) ? @block_height : (@height || 1)
     return x.between?(@x, @x + effective_width - 1) &&
