@@ -50,6 +50,11 @@ class UIControls::ColorPicker < UIControls::BaseControl
     @color_bitmap.y = self.y
   end
 
+  def visible=(value)
+    super
+    @color_bitmap.visible = self.visible
+  end
+
   def value=(new_value)
     return if @value == new_value
     @value = new_value

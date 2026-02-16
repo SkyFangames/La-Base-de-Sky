@@ -1,0 +1,360 @@
+#===============================================================================
+#
+#===============================================================================
+class AnimationPlayer::Emitter
+  attr_accessor :slowdown
+
+  # These properties are used by individual ParticleSprites spawned by this
+  # emitter, and aren't used by the emitter itself so don't need updating here.
+  PARTICLE_PROPERTIES = [:frame, :blending, :flip, :z, :zoom_x, :zoom_y,
+                         :angle, :visible, :opacity, :color, :tone]
+
+  def initialize(viewport, particle, fps)
+    @viewport = viewport
+    @particle = particle
+    @fps = fps
+    @processes = []
+    @emitter_processes = []
+    @particle_sprites = []
+    initialize_values
+    @next_emission = -1   # Time in seconds of the next emission
+    @time_between_emissions = 1.0 / (@particle[:emitter_rate] || GameData::Animation::PARTICLE_DEFAULT_VALUES[:emitter_rate])
+  end
+
+  def initialize_values
+    @values = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES.clone
+  end
+
+  def dispose
+    @particle_sprites.each { |particle| particle&.dispose }
+    @particle_sprites.clear
+  end
+
+  #-----------------------------------------------------------------------------
+
+  # If the particle's focus is :user_and_target, this will return the user's
+  # index.
+  def index_of_particle_focus(target_idx = -1)
+    ret = -1
+    if GameData::Animation::FOCUS_TYPES_WITH_USER.include?(@particle[:focus])
+      ret = @user.index
+    elsif GameData::Animation::FOCUS_TYPES_WITH_TARGET.include?(@particle[:focus])
+      ret = target_idx
+    end
+    return ret
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def set_user_and_targets(user, targets)
+    @user = user
+    @targets = targets
+  end
+
+  def set_sprites(sprites)
+    @sprites = sprites
+  end
+
+  def set_battler_filenames(battler_filenames)
+    @battler_filenames = battler_filenames
+  end
+
+  def set_focus_coords(user_coords, target_coords)
+    @user_coords = user_coords
+    @target_coords = target_coords
+  end
+
+  #-----------------------------------------------------------------------------
+
+  # start_time is in seconds.
+  def add_set_process(property, start_time, value)
+    add_move_process(property, start_time, 0, value, :none)
+  end
+
+  # start_time and duration are in seconds.
+  def add_move_process(property, start_time, duration, value, interpolation = :linear)
+    # First nil is progress (nil = not started, true = running, false = finished)
+    # Second nil is start value (set when the process starts running)
+    @processes.push([property, start_time, duration, value, interpolation, nil, nil])
+  end
+
+  def delete_processes(property)
+    @processes.delete_if { |process| process[0] == property }
+  end
+
+  # start_time is in seconds.
+  def add_emitter_set_process(property, start_time, value)
+    add_emitter_move_process(property, start_time, 0, value, :none)
+  end
+
+  # start_time and duration are in seconds.
+  def add_emitter_move_process(property, start_time, duration, value, interpolation = :linear)
+    # First nil is progress (nil = not started, true = running, false = finished)
+    # Second nil is start value (set when the process starts running)
+    @emitter_processes.push([property, start_time, duration, value, interpolation, nil, nil])
+  end
+
+  # Sets the initial properties of all sprites, and marks all processes as not
+  # yet started.
+  def reset_processes
+    dispose   # This doesn't dispose self, only the ParticleSprites
+    initialize_values
+    @emitter_processes.each { |process| process[5] = nil }
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def emit_new_particles(elapsed_time)
+    return if @next_emission < 0
+    loop do
+      break if @next_emission > elapsed_time   # In the future
+      if emitting_at?(@next_emission)
+        if GameData::Animation::FOCUS_TYPES_WITH_TARGET.include?(@particle[:focus]) && !@target_coords.empty?
+          # One sprite per target
+          one_per_side = [:target_side_foreground, :target_side_background].include?(@particle[:focus])
+          sides_covered = []
+          @target_coords.each_with_index do |target, i|
+            next if !target
+            next if one_per_side && sides_covered.include?(i % 2)
+            (@particle[:emitter_intensity] || 1).times do
+              create_particle_sprite(i)
+            end
+            sides_covered.push(i % 2)
+          end
+        else
+          # One sprite
+          (@particle[:emitter_intensity] || 1).times do
+            create_particle_sprite
+          end
+        end
+      end
+      @next_emission += @time_between_emissions * @slowdown
+    end
+    @next_emission = -1 if !@values[:emitting]
+  end
+
+  def emitting_at?(time)
+    # TODO: Ideally this would simulate the :emitting processes and determine
+    #       the return value exactly. Can simulate it during initialisation to
+    #       create a set of time ranges, then this method can just return
+    #       whether time is within any of those ranges.
+    return @values[:emitting]
+  end
+
+  #-----------------------------------------------------------------------------
+
+  # @next_emission is the time the sprite is being emitted.
+  def create_particle_sprite(target_idx = -1)
+    particle_sprite = AnimationPlayer::ParticleSprite.new
+    particle_sprite.slowdown = @slowdown
+    particle_sprite.emitter_params[:type] = @particle[:emitter_type]
+    particle_sprite.emitter_params[:start_time] = @next_emission
+    @particle_sprites.push(particle_sprite)
+    create_particle_sprite_assign_sprite(particle_sprite, target_idx)
+    create_particle_sprite_set_coordinates(particle_sprite, target_idx)
+    create_particle_sprite_set_flips(particle_sprite, target_idx)
+    create_particle_sprite_set_movement_values(particle_sprite, target_idx)
+    create_particle_sprite_set_base_property_offsets(particle_sprite, target_idx)
+    create_particle_sprite_add_commands(particle_sprite, target_idx)
+  end
+
+  def create_particle_sprite_assign_sprite(particle_sprite, target_idx = -1)
+    # Get/create a sprite
+    sprite = nil
+    is_battler_sprite = false
+    case @particle[:name]
+    when "User"
+      sprite = @sprites["pokemon_#{@user.index}"]
+      is_battler_sprite = true
+    when "Target"
+      sprite = @sprites["pokemon_#{target_idx}"]
+      is_battler_sprite = true
+    when "SE"
+      # Intentionally no sprite created
+    else
+      sprite = Sprite.new(@viewport)
+    end
+    return if sprite.nil?
+    # Apply sprite to particle sprite
+    particle_sprite.set_sprite(sprite, is_battler_sprite)
+    # Set sprite's graphic and ox/oy
+    if !is_battler_sprite
+      AnimationPlayer::Helper.set_bitmap_and_origin(
+        @particle, sprite, @user&.index, target_idx,
+        @battler_filenames[@user&.index || -1], @battler_filenames[target_idx]
+      )
+    end
+  end
+
+  # Calculate x/y/z focus values and additional x/y modifier and pass them all
+  # to particle_sprite.
+  def create_particle_sprite_set_coordinates(particle_sprite, target_idx = -1)
+    focus_xy = AnimationPlayer::Helper.get_xy_focus(
+      @particle, @user&.index, target_idx, @user_coords, @target_coords[target_idx]
+    )
+    offset_xy = AnimationPlayer::Helper.get_xy_offset(@particle, particle_sprite.sprite)
+    focus_z = AnimationPlayer::Helper.get_z_focus(@particle, @user&.index, target_idx)
+    particle_sprite.focus_xy = focus_xy
+    particle_sprite.offset_xy = offset_xy
+    particle_sprite.focus_z = focus_z
+  end
+
+  # Set whether properties should be modified if the particle's target is on the
+  # opposing side.
+  def create_particle_sprite_set_flips(particle_sprite, target_idx = -1)
+    relative_to_index = index_of_particle_focus(target_idx)
+    return if relative_to_index < 0 || relative_to_index.even?   # No focus/focus on player's side
+    return if @particle[:focus] == :user_and_target
+    particle_sprite.foe_invert_x = @particle[:foe_invert_x]
+    particle_sprite.foe_invert_y = @particle[:foe_invert_y]
+    particle_sprite.foe_flip     = @particle[:foe_flip]
+  end
+
+  def create_particle_sprite_set_movement_values(particle_sprite, target_idx = -1)
+    [
+      [:emit_speed, :speed],
+      [:emit_angle, :angle],
+      [:emit_gravity, :gravity],
+      [:emit_period, :period],
+      [:emit_radius, :radius],
+      [:emit_radius_z, :radius_z]
+    ].each do |property|
+      val = @values[property[0]]
+      val_range = @values[(property[0].to_s + "_range").to_sym]
+      val += rand(-val_range, val_range) if val_range > 0
+      particle_sprite.emitter_params[property[1]] = val
+    end
+    # Period
+    particle_sprite.emitter_params[:period] /= 100.0 if particle_sprite.emitter_params[:period] > 0
+    # X/Y speed
+    speed = particle_sprite.emitter_params[:speed]
+    angle = particle_sprite.emitter_params[:angle]
+    speed_x = speed * Math.cos(angle * Math::PI / 180)
+    speed_y = -speed * Math.sin(angle * Math::PI / 180)
+    particle_sprite.emitter_params[:speed_x] = speed_x
+    particle_sprite.emitter_params[:speed_y] = speed_y
+  end
+
+  def create_particle_sprite_set_base_property_offsets(particle_sprite, target_idx = -1)
+    # X, Y
+    start_x = @values[:x]
+    start_x_range = @values[:emit_x_range]
+    start_x += rand(-start_x_range, start_x_range) if start_x_range > 0
+    particle_sprite.set_base_property_offset(:x, start_x)
+    start_y = @values[:y]
+    start_y_range = @values[:emit_y_range]
+    start_y += rand(-start_y_range, start_y_range) if start_y_range > 0
+    particle_sprite.set_base_property_offset(:y, start_y)
+    # Angle
+    relative_to_index = index_of_particle_focus(target_idx)
+    if relative_to_index >= 0
+      if (@particle[:angle_override] || :none) == :initial_angle_to_focus
+        particle_sprite.property_offsets[:angle] = AnimationPlayer::Helper.initial_angle_between(
+          [particle_sprite.property_offsets[:x], particle_sprite.property_offsets[:y]],
+          particle_sprite.focus_xy, particle_sprite.offset_xy
+        )
+      else
+        particle_sprite.set_base_property_offset(:angle, @particle[:angle_override])
+      end
+    end
+    # Randomization of properties
+    if (@particle[:random_angle_range] || 0) > 0
+      ang = rand(-@particle[:random_angle_range], @particle[:random_angle_range])
+      particle_sprite.property_offsets[:angle] = ang
+    end
+    particle_sprite.random_invert_angle = true if @particle[:random_invert_angle] && rand(2) == 0
+    particle_sprite.random_invert_flip = true if @particle[:random_invert_flip] && rand(2) == 0
+  end
+
+  # NOTE: @processes assume the first keyframe is 0.
+  def create_particle_sprite_add_commands(particle_sprite, target_idx = -1)
+    # Find earliest command and add a "make visible" command then
+    if !particle_sprite.is_battler_sprite?
+      if AnimationPlayer::Helper.get_first_command_frame(@particle, PARTICLE_PROPERTIES) >= 0
+        particle_sprite.add_set_process(:visible, @next_emission, true)
+      end
+      # Apply random frame
+      if @particle[:random_frame_max] && @particle[:random_frame_max] > 0
+        particle_sprite.add_set_process(:frame, @next_emission, rand(@particle[:random_frame_max] + 1))
+      end
+    end
+    # Add all commands
+    @processes.each do |cmd|
+      if cmd[2] > 0
+        particle_sprite.add_move_process(cmd[0], @next_emission + cmd[1], cmd[2], cmd[3], cmd[4] || :linear)
+      elsif particle_sprite.sprite
+        particle_sprite.add_set_process(cmd[0], @next_emission + cmd[1], cmd[3])
+      end
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def start_process(process)
+    return if !process[5].nil?
+    process[6] = @values[process[0]]
+    process[5] = true
+  end
+
+  def update_process_value(process, elapsed_time)
+    # SetXYZ
+    if process[2] == 0
+      @values[process[0]] = process[3]
+      process[5] = false   # Mark process as finished
+      # Change last emission time if appropriate
+      @next_emission = process[1] if process[0] == :emitting && @values[process[0]]
+      return
+    end
+    # MoveXYZ
+    case process[0]
+    when :color
+      new_val = []
+      4.times do |i|   # R, G, B, A
+        start_val = process[6][2 * i, 2].to_i(16)
+        end_val = process[3][2 * i, 2].to_i(16)
+        val = AnimationPlayer::Helper.interpolate(
+          process[4], start_val, end_val, process[2],
+          process[1], elapsed_time
+        )
+        new_val.push(sprintf("%02X", val))
+      end
+      @values[process[0]] = new_val.join
+    when :tone
+      new_val = []
+      4.times do |i|   # R, G, B, G
+        start_val = process[6][3 * i, 3].to_i(16)
+        end_val = process[3][3 * i, 3].to_i(16)
+        val = AnimationPlayer::Helper.interpolate(
+          process[4], start_val, end_val, process[2],
+          process[1], elapsed_time
+        )
+        new_val.push((val >= 0 ? "+" : "-") + sprintf("%02X", val.abs))
+      end
+      @values[process[0]] = new_val.join
+    else
+      @values[process[0]] = AnimationPlayer::Helper.interpolate(
+        process[4], process[6], process[3], process[2],
+        process[1], elapsed_time
+      )
+    end
+    # Mark process as finished (if it has)
+    process[5] = false if elapsed_time >= process[1] + process[2]
+  end
+
+  # elapsed_time is in seconds since the start of the animation.
+  def update(elapsed_time)
+    # Update emitter property values
+    changed_properties = []
+    @emitter_processes.each do |process|
+      next if process[1] > elapsed_time   # Not due to start yet
+      next if process[5] == false   # Process has already fully happened
+      start_process(process)
+      update_process_value(process, elapsed_time)
+      changed_properties.push(process[0])   # Record property as having changed
+    end
+    # Check whether new particles need to be emitted, and do so
+    emit_new_particles(elapsed_time)
+    # Update all particles/sprites
+    @particle_sprites.each { |particle| particle.update(elapsed_time) }
+  end
+end

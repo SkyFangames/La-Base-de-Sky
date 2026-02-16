@@ -3,6 +3,7 @@
 [Move,MACHPUNCH]
 Name = Essentials
 NoUser = true
+Credit = Maruno
 <Target>
     FoeInvertX = true
     MoveX = 14,1,-2
@@ -80,14 +81,19 @@ NoUser = true
 <Spark spawner>
     Graphic = Fighting/Mach Punch spark
     Focus = Target
-    Spawner = RandomDirection
-    SpawnQuantity = 12
+    Emitter = Straight
+    EmitterRate = 80
+    SetEmitSpeed = 0,300
+    SetEmitSpeedRange = 0,75
+    SetEmitAngleRange = 0,180
+    SetEmitting = 4,true
     SetZ = 5,4
     SetZoomX = 5,50
     SetZoomY = 5,50
     SetOpacity = 5,0
     MoveOpacity = 5,1,255
     SetFrame = 7,1
+    SetEmitting = 7,false
     MoveZoomX = 9,6,0
     MoveZoomY = 9,6,0
     SetVisible = 15,false

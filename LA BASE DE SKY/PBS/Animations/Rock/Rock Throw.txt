@@ -1,0 +1,78 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[Move,ROCKTHROW]
+Name = Essentials
+NoUser = true
+Credit = Maruno
+<Target>
+    SetY = 5,2
+    MoveY = 5,1,-2
+    MoveY = 6,2,2
+    MoveY = 8,2,-2
+    MoveY = 10,2,2
+    MoveY = 12,2,-2
+    MoveY = 14,2,2
+    MoveY = 16,2,-2
+    MoveY = 18,2,2
+    MoveY = 20,2,-2
+    MoveY = 22,2,2
+    MoveY = 24,2,-2
+    MoveY = 26,2,2
+    MoveY = 28,1,0
+<Falling rock>
+    Graphic = Rock/Rock Throw rock
+    Focus = Target
+    SetY = 0,-128
+    SetZ = 0,10
+    SetOpacity = 0,0
+    SetColor = 0,70602080
+    SetTone = 0,-18-18-18+00
+    MoveOpacity = 0,1,255
+    MoveY = 0,5,64
+    MoveAngle = 0,5,180
+    SetVisible = 5,false
+<Bouncing rock>
+    Graphic = Rock/Rock Throw rock
+    Focus = Target
+    Emitter = Projectile
+    SetY = 5,64
+    SetZ = 5,10
+    SetAngle = 5,180
+    SetColor = 5,70602080
+    SetTone = 5,-18-18-18+00
+    SetEmitting = 5,true
+    SetEmitSpeed = 5,700
+    SetEmitSpeedRange = 5,50
+    SetEmitAngle = 5,90
+    SetEmitAngleRange = 5,15
+    SetEmitGravity = 5,3000
+    MoveAngle = 5,11,360
+    SetEmitting = 6,false
+    MoveOpacity = 11,5,0
+    SetVisible = 16,false
+<Rubble spawner>
+    Graphic = Rock/Rock Throw rock
+    Focus = Target
+    Emitter = Projectile
+    EmitterRate = 80
+    RandomAngleRange = 180
+    RandomInvertAngle = true
+    RandomInvertFlip = true
+    SetEmitSpeed = 0,300
+    SetEmitSpeedRange = 0,75
+    SetEmitAngle = 0,90
+    SetEmitAngleRange = 0,120
+    SetEmitGravity = 0,500
+    SetFlip = 5,true
+    SetY = 5,64
+    SetZ = 5,5
+    SetZoomX = 5,30
+    SetZoomY = 5,30
+    SetColor = 5,70602080
+    SetEmitting = 5,true
+    MoveAngle = 5,14,90
+    SetEmitting = 7,false
+    MoveOpacity = 13,6,0
+    SetVisible = 19,false
+<SE>
+    Play = 5,Rock/Rock Throw

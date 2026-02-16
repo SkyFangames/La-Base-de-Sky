@@ -177,6 +177,18 @@ module Compiler
     end
     # Go through each particle in turn
     hash[:particles].each do |particle|
+      # Ensure the emitter-exclusive commands are only on emitter particles
+      if !particle[:emitter_type] || particle[:emitter_type] == :none
+        particle.keys.each do |property|
+          next if ![:emitting,
+                    :emit_x_range, :emit_y_range,
+                    :emit_speed, :emit_speed_range,
+                    :emit_angle, :emit_angle_range,
+                    :emit_gravity, :emit_gravity_range].include?(property)
+          raise _INTL("La partícula \"{1}\" no es un emisor pero tiene un comando de tipo \"Emit\".",
+                      particle[:name]) + "\n" + FileLineData.linereport
+        end
+      end
       # Ensure the "Play"-type commands are exclusive to the "SE" particle, and
       # that the "SE" particle has no other commands
       if particle[:name] == "SE"
@@ -339,7 +351,6 @@ module Compiler
                       blend[2], FileLineData.linereport)
         end
       end
-
     end
   end
 

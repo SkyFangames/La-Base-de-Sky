@@ -3,6 +3,7 @@
 [Move,DEFENSECURL]
 Name = Essentials
 NoTarget = true
+Credit = Maruno
 <User>
 <Ball>
     Graphic = Normal/Defense Curl ball

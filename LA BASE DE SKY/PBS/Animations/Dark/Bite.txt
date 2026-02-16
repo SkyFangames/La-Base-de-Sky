@@ -3,6 +3,7 @@
 [Move,BITE]
 Name = Essentials
 NoUser = true
+Credit = Maruno
 <Target>
     FoeInvertX = true
     MoveX = 7,1,-2

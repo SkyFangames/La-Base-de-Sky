@@ -3,6 +3,7 @@
 [Move,TAILWHIP]
 Name = Essentials
 NoTarget = true
+Credit = Maruno
 <User>
     MoveX = 0,2,32,EaseOut
     MoveY = 0,2,16,EaseIn

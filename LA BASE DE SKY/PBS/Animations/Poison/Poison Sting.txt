@@ -1,0 +1,72 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[Move,POISONSTING]
+Name = Essentials
+Credit = Maruno
+<User>
+    FoeInvertX = true
+    FoeInvertY = true
+    MoveX = 0,2,32
+    MoveY = 0,2,-16
+    MoveX = 4,2,0
+    MoveY = 4,2,0
+<Target>
+    MoveX = 7,1,-2
+    MoveColor = 7,6,A000E0A0
+    MoveX = 8,2,2
+    MoveX = 10,1,0
+    MoveColor = 14,6,00000000
+<Stinger>
+    Graphic = Poison/Poison Sting stinger
+    Focus = UserAndTarget
+    AngleOverride = AlwaysPointAtFocus
+    RandomAngleRange = 0
+    SetZ = 3,-1
+    SetZoomX = 3,50
+    SetColor = 3,E040C880
+    MoveX = 3,4,200
+    MoveY = 3,4,-200
+    MoveZ = 3,4,-50
+    SetVisible = 7,false
+<Hit>
+    Graphic = Poison/Poison Sting hit
+    Focus = Target
+    RandomAngleRange = 0
+    SetZ = 7,10
+    SetZoomX = 7,0
+    SetZoomY = 7,0
+    MoveZoomX = 7,6,75
+    MoveZoomY = 7,6,75
+    MoveColor = 9,1,FF00FFFF
+    MoveOpacity = 11,2,0
+    SetVisible = 13,false
+<Blob emitter>
+    Graphic = Poison/Poison Sting blob
+    Focus = Target
+    Emitter = Straight
+    EmitterRate = 10
+    RandomAngleRange = 0
+    RandomInvertFlip = true
+    SetY = 7,64
+    SetZ = 7,5
+    SetZoomX = 7,50
+    SetZoomY = 7,50
+    SetOpacity = 7,0
+    SetColor = 7,C000C0B0
+    SetEmitting = 7,true
+    SetEmitXRange = 7,64
+    SetEmitYRange = 7,8
+    SetEmitSpeed = 7,160
+    SetEmitAngle = 7,90
+    MoveOpacity = 7,6,255
+    MoveZoomX = 16,12,0
+    MoveZoomY = 16,12,0
+    MoveOpacity = 16,12,0
+    SetEmitting = 23,false
+    SetVisible = 28,false
+<SE>
+    Play = 3,Poison/Poison Sting whoosh
+    Play = 7,Poison/Poison Sting hit,,140
+    Play = 11,Poison/Poison Sting bubble,80,90
+    Play = 16,Poison/Poison Sting bubble,80,90
+    Play = 21,Poison/Poison Sting bubble,80,90

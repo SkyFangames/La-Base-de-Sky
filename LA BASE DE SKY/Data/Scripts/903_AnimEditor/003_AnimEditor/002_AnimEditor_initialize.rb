@@ -241,6 +241,7 @@ class AnimationEditor
 
     anim_properties.add_underlined_label(:other_label, _INTL("Otro"))
     anim_properties.add_labelled_number_text_box(:fps, _INTL("FPS"), 1, 100, 20)
+    anim_properties.add_labelled_text_box(:credit, _INTL("Créditos"), "")
 
     anim_properties.add_fitted_button(:close, _INTL("Cerrar"))
     anim_properties.visible = false
@@ -262,21 +263,24 @@ class AnimationEditor
     part_properties.add_labelled_checkbox(:foe_flip, _INTL("Voltear sprite"), false)
 
     part_properties.add_underlined_label(:property_override_label, _INTL("Sobrescribir propiedades"))
+    angle_overrides = {}
+    # TODO: Is this okay using the in-PBS name of the override type?
+    GameData::Animation::ANGLE_OVERRIDES.each_pair { |name, key| angle_overrides[key] = name }
+    part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Angle override"), angle_overrides, :none)
+
+    part_properties.add_underlined_label(:property_randomize_label, _INTL("Aleatorización de propiedades"))
     part_properties.add_labelled_number_text_box(:random_frame_max, _INTL("Fotograma aleatorio (máx)"), 0, 99, 0)
-    part_properties.add_labelled_dropdown_list(:angle_override, _INTL("Ángulo inteligente"), {
-      :none                   => _INTL("Ninguno"),
-      :initial_angle_to_focus => _INTL("Ángulo inicial al enfoque"),
-      :always_point_at_focus  => _INTL("Apuntar siempre al enfoque")
-    }, :none)
+    part_properties.add_labelled_number_text_box(:random_angle_range, _INTL("Desplazamiento de ángulo aleatorio"), 0, 180, 0)
+    part_properties.add_labelled_checkbox(:random_invert_angle, _INTL("Invertir ángulo aleatoriamente"), false)
+    part_properties.add_labelled_checkbox(:random_invert_flip, _INTL("Invertir volteo aleatoriamente"), false)
 
     part_properties.add_underlined_label(:emitter_label, _INTL("Propiedades del emisor"))
-    part_properties.add_labelled_dropdown_list(:spawner, _INTL("Tipo de emisor"), {
-      :none                        => _INTL("Ninguno"),
-      :random_direction            => _INTL("Dirección aleatoria"),
-      :random_direction_gravity    => _INTL("Dirección aleatoria con gravedad"),
-      :random_up_direction_gravity => _INTL("Dirección aleatoria hacia arriba con gravedad")
-    }, :none)
-    part_properties.add_labelled_number_text_box(:spawn_quantity, _INTL("Cantidad emitida"), 1, 99, 1)
+    emitter_types = {}
+    # TODO: Is this okay using the in-PBS name of the emitter type?
+    GameData::Animation::EMITTER_TYPES.each_pair { |name, key| emitter_types[key] = name }
+    part_properties.add_labelled_dropdown_list(:emitter_type, _INTL("Tipo de emisor"), emitter_types, :none)
+    part_properties.add_labelled_number_text_box(:emitter_rate, _INTL("Emisiones/segundo"), 1, 500, 20)
+    part_properties.add_labelled_number_text_box(:emitter_intensity, _INTL("Sprites/emisión"), 1, 20, 1)
 
     part_properties.add_fitted_button(:duplicate, _INTL("Duplicar esta partícula"))
     part_properties.add_fitted_button(:delete, _INTL("Eliminar esta partícula"))

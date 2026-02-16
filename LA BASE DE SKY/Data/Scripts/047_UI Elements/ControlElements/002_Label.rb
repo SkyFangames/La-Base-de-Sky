@@ -1,5 +1,5 @@
 #===============================================================================
-# TODO: Allow underlining the text without also centring it.
+
 #===============================================================================
 class UIControls::Label < UIControls::BaseControl
   attr_reader :text

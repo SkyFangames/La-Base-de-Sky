@@ -2,12 +2,6 @@
 # Methods used by both AnimationPlayer and AnimationEditor::Canvas.
 #===============================================================================
 module AnimationPlayer::Helper
-  PROPERTIES_SET_BY_SPAWNER = {
-    :random_direction            => [:x, :y],
-    :random_direction_gravity    => [:x, :y],
-    :random_up_direction_gravity => [:x, :y]
-  }
-  GRAVITY_STRENGTH = 500
   BATTLE_MESSAGE_BAR_HEIGHT = 96   # NOTE: You shouldn't need to change this.
 
   module_function
@@ -16,23 +10,33 @@ module AnimationPlayer::Helper
   def get_duration(particles)
     ret = 0
     particles.each do |particle|
-      particle.each_pair do |property, value|
-        next if !value.is_a?(Array) || value.empty?
-        max = value.last[0] + value.last[1]   # Keyframe + duration
-        # Particle spawners can delay their particles; account for this
-        if (particle[:spawner] || :none) != :none
-          max += get_particle_delay(particle, (particle[:spawn_quantity] || 1) - 1)
+      if (particle[:emitter_type] || :none) == :none
+        particle.each_pair do |property, value|
+          next if !value.is_a?(Array) || value.empty?
+          max = get_last_command_frame(particle)
+          ret = max if ret < max
         end
-        ret = max if ret < max
+      else   # Emitter
+        if particle[:emitting]
+          particle_start = get_first_command_frame(particle, AnimationPlayer::Emitter::PARTICLE_PROPERTIES)
+          particle_end = get_last_command_frame(particle, AnimationPlayer::Emitter::PARTICLE_PROPERTIES)
+          max = 0
+          particle[:emitting].each do |cmd|
+            max = cmd[0] + cmd[1] if max < cmd[0] + cmd[1]
+          end
+          ret = [ret, max + (particle_end - particle_start)].max
+        end
       end
     end
     return ret
   end
 
   # Returns the frame that the particle has its earliest command.
-  def get_first_command_frame(particle)
+  # whitelist_properties is used by emitters.
+  def get_first_command_frame(particle, whitelist_properties = nil)
     ret = -1
     particle.each_pair do |property, cmds|
+      next if whitelist_properties && !whitelist_properties.include?(property)
       next if !cmds.is_a?(Array) || cmds.empty?
       cmds.each do |cmd|
         ret = cmd[0] if ret < 0 || ret > cmd[0]
@@ -42,24 +46,16 @@ module AnimationPlayer::Helper
   end
 
   # Returns the frame that the particle has (the end of) its latest command.
-  def get_last_command_frame(particle)
+  def get_last_command_frame(particle, whitelist_properties = nil)
     ret = -1
     particle.each_pair do |property, cmds|
+      next if whitelist_properties && !whitelist_properties.include?(property)
       next if !cmds.is_a?(Array) || cmds.empty?
       cmds.each do |cmd|
         ret = cmd[0] + cmd[1] if ret < cmd[0] + cmd[1]
       end
     end
     return ret
-  end
-
-  # For spawner particles
-  def get_particle_delay(particle, instance)
-    case particle[:spawner] || :none
-    when :random_direction, :random_direction_gravity, :random_up_direction_gravity
-      return instance / 4
-    end
-    return 0
   end
 
   #-----------------------------------------------------------------------------
@@ -181,16 +177,20 @@ module AnimationPlayer::Helper
     y1 = 0
     x2 = (focus.length == 2) ? focus[1][0] : focus[0][0]
     y2 = (focus.length == 2) ? focus[1][1] : focus[0][1]
-    [:x, :y].each do |property|
-      next if !particle[property]
-      particle[property].each do |cmd|
-        break if cmd[1] > 0
-        if property == :x
-          x1 = cmd[2]
-        else
-          y1 = cmd[2]
+    if particle.is_a?(Array)
+      x1, x2 = particle
+    else
+      [:x, :y].each do |property|
+        next if !particle[property]
+        particle[property].each do |cmd|
+          break if cmd[1] > 0
+          if property == :x
+            x1 = cmd[2]
+          else
+            y1 = cmd[2]
+          end
+          break
         end
-        break
       end
     end
     if focus
@@ -285,7 +285,7 @@ module AnimationPlayer::Helper
         ret += (end_val - start_val) * (1 - (((-2 * x) + 2) * ((-2 * x) + 2) / 2))
       end
       return ret.round
-    when :gravity   # Used by particle spawner
+    when :gravity   # Used by particle emitter
       # end_val is [initial speed, gravity]
       # s = ut + 1/2 at^2
       t = now - start_time

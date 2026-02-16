@@ -12,14 +12,28 @@ class AnimationEditor
   # properties that can be interpolated are here, and not :color or :tone
   # because those have string values.
   PROPERTY_RANGES = {   # Min, max
-    :x       => [ -999,  999],
-    :y       => [ -999,  999],
-    :z       => [  -50,   50],
-    :zoom_x  => [    0, 1000],
-    :zoom_y  => [    0, 1000],
-    :angle   => [-9999, 9999],
-    :opacity => [    0,  255],
-    :frame   => [    0,   99]
+    :x                   => [ -999,  999],
+    :y                   => [ -999,  999],
+    :z                   => [  -50,   50],
+    :zoom_x              => [    0, 1000],
+    :zoom_y              => [    0, 1000],
+    :angle               => [-9999, 9999],
+    :opacity             => [    0,  255],
+    :frame               => [    0,   99],
+    :emit_x_range        => [    0,  999],
+    :emit_y_range        => [    0,  999],
+    :emit_speed          => [-9999, 9999],
+    :emit_speed_range    => [    0, 9999],
+    :emit_angle          => [-9999, 9999],
+    :emit_angle_range    => [    0,  180],
+    :emit_gravity        => [-9999, 9999],
+    :emit_gravity_range  => [    0, 9999],
+    :emit_period         => [    1, 9999],
+    :emit_period_range   => [    0, 9999],
+    :emit_radius         => [    0, 9999],
+    :emit_radius_range   => [    0, 9999],
+    :emit_radius_z       => [    0,   50],
+    :emit_radius_z_range => [    0,   50]
   }
 
   #-----------------------------------------------------------------------------

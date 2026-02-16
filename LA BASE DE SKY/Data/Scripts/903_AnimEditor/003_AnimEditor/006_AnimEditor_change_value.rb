@@ -384,6 +384,10 @@ class AnimationEditor
     end
   end
 
+  # TODO: If :emitter_type is changed from :none to an emitter type, and the
+  #       ListedParticle for this particle needs to create new group rows for
+  #       the emitter properties, those rows will not have their expand arrow
+  #       until the particle properties pop-up window is closed.
   def apply_changed_particle_properties_value(property, value)
     idx_particle = (value.is_a?(Array)) ? value[0] : particle_index
     value = value[1] if value.is_a?(Array)
@@ -396,8 +400,8 @@ class AnimationEditor
         # TODO: Ideally enable/disable the :frame row's control for this
         #       particle depending on whether the graphic is a spritesheet (i.e.
         #       isn't one of the below special names and is wide enough compared
-        #       to its height). Also this_particle.delete(:frame) if the graphic
-        #       isn't a spritesheet.
+        #       to its height), or hide/show that row entirely. Also
+        #       this_particle.delete(:frame) if the graphic isn't a spritesheet.
         if ["USER", "USER_OPP", "USER_BACK", "USER_FRONT",
             "TARGET", "TARGET_OPP" "TARGET_FRONT", "TARGET_BACK",].include?(new_file)
           this_particle.delete(:frame)
@@ -407,13 +411,6 @@ class AnimationEditor
         refresh_component(:particle_properties, idx_particle)
         refresh_component(:canvas)
       end
-    when :spawn_quantity
-      new_cmds = AnimationEditor::ParticleDataHelper.set_property(
-        @anim[:particles][idx_particle], property, value
-      )
-      @components[:timeline].change_particle_commands(idx_particle)
-      @components[:play_controls].duration = @components[:timeline].duration
-      refresh
     when :duplicate
       p_index = idx_particle
       AnimationEditor::ParticleDataHelper.duplicate_particle(@anim[:particles], p_index)
@@ -435,8 +432,10 @@ class AnimationEditor
                 # when :graphic_name
                 # when :focus
                 # when :random_frame_max
-                # when :spawner
+                # when :emitter_type
                 # when :angle_override
+                # when :random_invert_angle
+                # when :random_invert_flip
                 # when :foe_invert_x
                 # when :foe_invert_y
                 # when :foe_flip

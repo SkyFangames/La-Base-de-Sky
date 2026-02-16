@@ -3,6 +3,7 @@
 [Move,BULKUP]
 Name = Essentials
 NoTarget = true
+Credit = Maruno
 <User>
     MoveZoomX = 0,7,150
     MoveZoomY = 0,7,50

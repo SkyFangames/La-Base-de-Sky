@@ -165,7 +165,7 @@ class UIControls::List < UIControls::BaseControl
          )
       end
       txt = (val.is_a?(Array)) ? val[1] : val.to_s
-      old_text_color = self.bitmap.font.color
+      old_text_color = self.bitmap.font.color.clone
       if txt[/^\\c\[([0-9]+)\]/i]
         text_colors = [
           [  0, 112, 248], [120, 184, 232],   # 1  Blue

@@ -3,6 +3,7 @@
 [Move,GROWTH]
 Name = Essentials
 NoTarget = true
+Credit = Maruno
 <User>
     SetColor = 0,F8F8F800
     MoveZoomX = 0,4,115

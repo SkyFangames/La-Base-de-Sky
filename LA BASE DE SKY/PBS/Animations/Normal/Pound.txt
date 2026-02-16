@@ -2,6 +2,7 @@
 #-------------------------------
 [Move,POUND]
 Name = Essentials
+Credit = Maruno
 <User>
 <Target>
     FoeInvertX = true
@@ -25,14 +26,21 @@ Name = Essentials
 <Spark spawner>
     Graphic = Normal/Pound spark
     Focus = Target
-    Spawner = RandomDirectionGravity
-    SpawnQuantity = 7
+    Emitter = Projectile
+    EmitterRate = 80
     SetZ = 0,5
     SetZoomX = 0,50
     SetZoomY = 0,50
     SetOpacity = 0,0
     SetColor = 0,F8F880FF
+    SetEmitting = 0,true
+    SetEmitSpeed = 0,300
+    SetEmitSpeedRange = 0,75
+    SetEmitAngle = 0,90
+    SetEmitAngleRange = 0,120
+    SetEmitGravity = 0,500
     MoveOpacity = 0,1,255
+    SetEmitting = 2,false
     MoveZoomX = 4,9,0
     MoveZoomY = 4,9,0
     MoveOpacity = 4,9,0

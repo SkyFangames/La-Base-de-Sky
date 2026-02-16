@@ -23,6 +23,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     draw_box = true
     bg_color = get_color_of(:property_background)
     text = "Sin nombre"
+    groups = (is_emitter?) ? EMITTER_PROPERTY_GROUPS : PROPERTY_GROUPS
     if row == :main
       level = 0
       if @particle[:name] == "SE"
@@ -32,12 +33,12 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
         bg_color = focus_color(@particle[:focus])
       end
       text = @particle[:name] || "Sin nombre"
-    elsif PROPERTY_GROUPS.keys.include?(row)
+    elsif groups.keys.include?(row)
       level = 1
       arrow = @groups_expanded[row] ? 2 : 1
       draw_box = false
       text = group_name(row)
-    elsif PROPERTY_GROUPS[:main] && PROPERTY_GROUPS[:main].include?(row)   # Properties
+    elsif groups[:main] && groups[:main].include?(row)   # Properties
       # Treated as level 2
       text = GameData::Animation.property_display_name(row) + ":"
     else   # Properties
@@ -62,15 +63,16 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     top_level_x = (LIST_BOX_TOP_LEVEL_X - 1) / 2   # 9
     upper_seg_height = ROW_HEIGHT / 2   # 12
     lower_seg_height = FULL_ROW_HEIGHT - upper_seg_height   # 13
+    groups = (is_emitter?) ? EMITTER_PROPERTY_GROUPS : PROPERTY_GROUPS
     # Top level vertical line
-    if !group || group != PROPERTY_GROUPS.keys.last
+    if !group || group != groups.keys.last
       # Top level top half of vertical line
       if row != :main
         sprite.bitmap.fill_rect(top_level_x, 0,
                                 1, upper_seg_height, line_color)
       end
       # Top level bottom half of vertical line
-      if row != PROPERTY_GROUPS.keys.last
+      if row != groups.keys.last
         sprite.bitmap.fill_rect(top_level_x, upper_seg_height,
                                 1, lower_seg_height, line_color)
       end
@@ -82,8 +84,8 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
         sprite.bitmap.fill_rect(top_level_x + LIST_BOX_INDENT_X, 0,
                                 1, upper_seg_height, line_color)
       end
-      if (PROPERTY_GROUPS.has_key?(row) && @groups_expanded[row]) ||
-         (group && group != :main && row != PROPERTY_GROUPS[group].last)
+      if (groups.has_key?(row) && @groups_expanded[row]) ||
+         (group && group != :main && row != groups[group].last)
         # Second level bottom half of vertical line
         sprite.bitmap.fill_rect(top_level_x + LIST_BOX_INDENT_X, upper_seg_height,
                                 1, lower_seg_height, line_color)
@@ -91,7 +93,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     end
     # Horizontal line
     if row != :main
-      if PROPERTY_GROUPS.has_key?(row)   # Group
+      if groups.has_key?(row)   # Group
         sprite.bitmap.fill_rect(top_level_x, upper_seg_height - 1,
                                 LIST_BOX_INDENT_X + 1, 1, line_color)
       else   # Property
@@ -108,10 +110,12 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
 
   def create_list_expand_arrow(row)
     return if @particle[:name] == "SE"
-    return if row != :main && !PROPERTY_GROUPS.has_key?(row)
+    return if @rows[row][LIST_ARROW]
+    groups = (is_emitter?) ? EMITTER_PROPERTY_GROUPS : PROPERTY_GROUPS
+    return if row != :main && !groups.has_key?(row)
     ctrl = UIControls::ClickableBitmap.new(@list_viewport, @bitmaps[:collapsed_arrow], @bitmaps[:expanded_arrow])
     ctrl.x = (LIST_BOX_TOP_LEVEL_X - LIST_ARROW_SIZE) / 2
-    ctrl.x += LIST_BOX_INDENT_X if row != :main && PROPERTY_GROUPS.has_key?(row)
+    ctrl.x += LIST_BOX_INDENT_X if row != :main && groups.has_key?(row)
     ctrl.z = 1
     ctrl.set_interactive_rects
     @rows[row][LIST_ARROW] = ctrl
@@ -120,6 +124,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   #-----------------------------------------------------------------------------
 
   def create_list_control(row)
+    return if @rows[row][LIST_CONTROL]
     return if !row_is_property?(row) && row != :main
     ctrl = nil
     ctrl_width = AnimationEditor::Timeline::LIST_WIDTH - CONTROL_X - 2
@@ -139,11 +144,15 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
       ctrl.set_interactive_rects
       @rows[row][LIST_CONTROL] = ctrl
       return
-    when :x, :y, :z, :zoom_x, :zoom_y, :angle, :opacity, :frame
+    when :x, :y, :z, :zoom_x, :zoom_y, :angle, :opacity, :frame,
+         :emit_x_range, :emit_y_range, :emit_speed, :emit_speed_range,
+         :emit_angle, :emit_angle_range, :emit_gravity, :emit_gravity_range,
+         :emit_period, :emit_period_range, :emit_radius, :emit_radius_range,
+         :emit_radius_z, :emit_radius_z_range
       vals = AnimationEditor::PROPERTY_RANGES[row] || [0, 0]
       default = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[row] || 0
       ctrl = UIControls::NumberTextBox.new(ctrl_width, ctrl_height, @list_viewport, *vals, default)
-    when :flip
+    when :flip, :emitting
       ctrl = UIControls::Checkbox.new(ctrl_width, ctrl_height, @list_viewport, false)
     when :visible
       ctrl = UIControls::Checkbox.new(ctrl_width, ctrl_height, @list_viewport, true)
@@ -191,7 +200,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   end
 
   def draw_timeline_bg_sprite(row)
-    return if PROPERTY_GROUPS.has_key?(row) && row != :main
+    return if (PROPERTY_GROUPS.has_key?(row) || EMITTER_PROPERTY_GROUPS.has_key?(row)) && row != :main
     sprite = create_timeline_bg_sprite(row)
     sprite.bitmap.clear
     keyframe_spacing = AnimationEditor::Timeline::KEYFRAME_SPACING
@@ -204,6 +213,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     end
     # Get visibilities of particle for each keyframe
     visible_cmds = @visibilities
+    visible_cmds = @emitter_visibilities if is_emitter? && AnimationPlayer::Emitter::PARTICLE_PROPERTIES.include?(row)
     # Draw background for visible parts of the particle, one keyframe at a time
     each_visible_keyframe do |i|
       draw_x = TIMELINE_LEFT_SPACING + (i * keyframe_spacing) - @timeline_ox
@@ -227,7 +237,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
         if i == @duration - 1 || (i < @duration - 1 && visible_cmds[i + 1] != 1)
           sprite.bitmap.fill_rect(draw_x + keyframe_spacing, 0, 1, ROW_HEIGHT, outline_color)
         end
-      when 2   # Particle is a spawner and delays its particles into this frame
+      when 2   # Particle is an emitter and delays its particles into this frame
         next if row != :main
         # Draw dotted outline
         keyframe_spacing.times do |j|

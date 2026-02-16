@@ -154,7 +154,6 @@ class UIControls::SEPicker < UIControls::BaseControl
                              @button_rect.width, @button_rect.height,
                              get_color_of(:line))
     # Draw button graphic
-    # TODO: This could really do with a better design.
     btmp_graphic = %w(
       . . . . . . . . . . . . . . . .
       . . . . . . . . . . . . X . . .

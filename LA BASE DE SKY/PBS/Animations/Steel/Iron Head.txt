@@ -1,0 +1,89 @@
+﻿# See the documentation on the wiki to learn how to edit this file.
+#-------------------------------
+[Move,IRONHEAD]
+Name = Essentials
+Credit = Maruno
+<User>
+    FoeInvertX = true
+    FoeInvertY = true
+    MoveX = 0,1,32
+    MoveY = 0,1,-16
+    MoveX = 8,1,0
+    MoveY = 8,1,0
+<Target>
+    FoeInvertX = true
+    MoveX = 9,1,-4
+    MoveX = 10,2,4
+    MoveX = 12,2,-4
+    MoveX = 14,2,4
+    MoveX = 16,1,0
+<Hit>
+    Graphic = Steel/Iron Head hit
+    Focus = Target
+    RandomAngleRange = 0
+    SetZ = 4,10
+    SetZoomX = 4,200
+    SetZoomY = 4,200
+    SetOpacity = 4,0
+    MoveOpacity = 4,2,255
+    MoveZoomX = 4,4,0
+    MoveZoomY = 4,4,0
+    MoveZoomX = 8,4,125,EaseOut
+    MoveZoomY = 8,4,125,EaseOut
+    MoveOpacity = 10,4,0
+    SetVisible = 14,false
+<Debris emitter 1>
+    Graphic = Steel/Iron Head rock
+    Focus = Target
+    Emitter = Projectile
+    EmitterRate = 160
+    RandomAngleRange = 180
+    RandomInvertAngle = true
+    RandomInvertFlip = true
+    SetZ = 8,5
+    SetZoomX = 8,75
+    SetZoomY = 8,75
+    SetOpacity = 8,0
+    SetEmitting = 8,true
+    SetEmitSpeed = 8,250
+    SetEmitSpeedRange = 8,75
+    SetEmitAngleRange = 8,180
+    SetEmitGravity = 8,400
+    MoveOpacity = 8,1,255
+    MoveZoomX = 8,12,25
+    MoveZoomY = 8,12,25
+    MoveAngle = 8,12,90
+    SetEmitting = 9,false
+    MoveOpacity = 10,10,0,EaseIn
+    SetColor = 14,FFFFFFB4
+    MoveColor = 14,6,00000000
+    SetVisible = 20,false
+<Debris emitter 2>
+    Graphic = Steel/Iron Head rock
+    Focus = Target
+    Emitter = Projectile
+    EmitterRate = 160
+    RandomAngleRange = 180
+    RandomInvertAngle = true
+    RandomInvertFlip = true
+    SetZ = 8,5
+    SetZoomX = 8,75
+    SetZoomY = 8,75
+    SetOpacity = 8,0
+    SetEmitting = 8,true
+    SetEmitSpeed = 8,250
+    SetEmitSpeedRange = 8,75
+    SetEmitAngleRange = 8,180
+    SetEmitGravity = 8,400
+    MoveOpacity = 8,1,255
+    MoveZoomX = 8,12,10
+    MoveZoomY = 8,12,10
+    MoveAngle = 8,12,90
+    SetEmitting = 9,false
+    MoveOpacity = 10,10,0,EaseIn
+    SetColor = 14,FFFFFFB4
+    MoveColor = 14,6,00000000
+    SetVisible = 20,false
+<SE>
+    Play = 0,Steel/Iron Head hit,80
+    Play = 8,Steel/Iron Head rubble,80,90

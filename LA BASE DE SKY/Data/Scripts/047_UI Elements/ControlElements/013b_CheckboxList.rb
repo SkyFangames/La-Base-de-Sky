@@ -29,7 +29,9 @@ class UIControls::CheckboxList < UIControls::List
   # Returns an array of Booleans.
   def value
     return nil if @selected.none? { |val| val == true }
-    return @selected[0...@options.length].map { |val| !!val }
+    ret = []
+    @options.each_with_index { |option, i| ret[option[0]] = !!@selected[i] }
+    return ret
   end
 
   def select_all

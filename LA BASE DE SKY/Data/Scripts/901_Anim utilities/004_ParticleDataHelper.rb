@@ -92,13 +92,13 @@ module AnimationEditor::ParticleDataHelper
 
   # Used to determine which keyframes the particle is visible in, which is
   # indicated in the timeline by a colored bar. 0=not visible, 1=visible,
-  # 2=visible because of spawner delay.
+  # 2=visible because of emitter delay.
   # NOTE: Particles are assumed to be not visible at the start of the
   #       animation, and automatically become visible when the particle has
   #       its first command. This does not apply to the "User" and "Target"
   #       particles, which start the animation visible. They do NOT become
   #       invisible automatically after their last command.
-  def get_timeline_particle_visibilities(particle, duration)
+  def get_timeline_particle_visibilities(particle, duration, whitelist_properties = nil)
     if !GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES.include?(:visible)
       raise _INTL("No se pudo obtener el valor predeterminado para la propiedad {1} para la partícula {2}.",
                   property, particle[:name])
@@ -106,35 +106,41 @@ module AnimationEditor::ParticleDataHelper
     value = GameData::Animation::PARTICLE_KEYFRAME_DEFAULT_VALUES[:visible] ? 1 : 0
     value = 1 if ["User", "Target", "SE"].include?(particle[:name])
     ret = []
-    if !["User", "Target", "SE"].include?(particle[:name])
-      earliest = duration
-      particle.each_pair do |prop, value|
-        next if !value.is_a?(Array) || value.empty?
-        earliest = value[0][0] if value[0][0] < earliest
-      end
-      ret[earliest] = 1
-    end
-    if particle[:visible]
-      particle[:visible].each { |cmd| ret[cmd[0]] = (cmd[2]) ? 1 : 0 }
-    end
-    duration.times do |i|
-      value = ret[i] if !ret[i].nil?
-      ret[i] = value
-    end
-    qty = particle[:spawn_quantity] || 1 if particle[:spawner] && particle[:spawner] != :none
-    if (particle[:spawner] || :none) != :none
-      qty = particle[:spawn_quantity] || 1
-      delay = AnimationPlayer::Helper.get_particle_delay(particle, qty - 1)
-      if delay > 0
-        count = -1
-        duration.times do |i|
-          if ret[i] == 1   # Visible
-            count = 0
-          elsif ret[i] == 0 && count >= 0 && count < delay   # Not visible and within delay
-            ret[i] = 2
-            count += 1
-          end
+    if (particle[:emitter_type] || :none) == :none || whitelist_properties
+      if !["User", "Target", "SE"].include?(particle[:name])
+        earliest = duration
+        particle.each_pair do |prop, value|
+          next if whitelist_properties && !whitelist_properties.include?(prop)
+          next if !value.is_a?(Array) || value.empty?
+          earliest = value[0][0] if value[0][0] < earliest
         end
+        ret[earliest] = 1
+      end
+      if particle[:visible]
+        particle[:visible].each { |cmd| ret[cmd[0]] = (cmd[2]) ? 1 : 0 }
+      end
+      duration.times do |i|
+        value = ret[i] if !ret[i].nil?
+        ret[i] = value
+      end
+    else   # Emitter
+      earliest = duration
+      if particle[:emitting]
+        particle[:emitting].each { |cmd| ret[cmd[0]] = (cmd[2]) ? 1 : 0 }
+      end
+      particle_start = AnimationPlayer::Helper.get_first_command_frame(particle, AnimationPlayer::Emitter::PARTICLE_PROPERTIES)
+      particle_end = AnimationPlayer::Helper.get_last_command_frame(particle, AnimationPlayer::Emitter::PARTICLE_PROPERTIES)
+      particle_dur = particle_end - particle_start
+      end_emit = -1
+      duration.times do |i|
+        end_emit = i if value == 1 && ret[i] == 0
+        value = ret[i] if !ret[i].nil?
+        if end_emit >= 0 && i < end_emit + particle_dur
+          value = 2 if value == 0
+        else
+          value = 0 if value == 2
+        end
+        ret[i] = value
       end
     end
     return ret

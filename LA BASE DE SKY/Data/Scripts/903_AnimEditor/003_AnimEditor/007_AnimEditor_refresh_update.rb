@@ -81,6 +81,7 @@ class AnimationEditor
     ctrls.get_control(:has_target).value = !@anim[:no_target]
     ctrls.get_control(:usable).value = !(@anim[:ignore] || false)
     ctrls.get_control(:fps).value = @anim[:fps] || 20
+    ctrls.get_control(:credit).value = @anim[:credit] || "Anon"
   end
 
   def refresh_particle_property_options(idx_particle = nil)
@@ -127,11 +128,13 @@ class AnimationEditor
       GameData::Animation::FOCUS_TYPES_WITH_TARGET.each { |f| focus_values.delete(f) }
     end
     ctrls.get_control(:focus).options = focus_values
-    # Spawner quantity
-    if !this_particle[:spawner] || this_particle[:spawner] == :none
-      ctrls.get_control(:spawn_quantity).disable
+    # Emitter quantity
+    if !this_particle[:emitter_type] || this_particle[:emitter_type] == :none
+      ctrls.get_control(:emitter_rate).disable
+      ctrls.get_control(:emitter_intensity).disable
     else
-      ctrls.get_control(:spawn_quantity).enable
+      ctrls.get_control(:emitter_rate).enable
+      ctrls.get_control(:emitter_intensity).enable
     end
     # Angle override
     if GameData::Animation::FOCUS_TYPES_WITH_USER.include?(this_particle[:focus]) ||
@@ -174,10 +177,10 @@ class AnimationEditor
   def refresh_command_batch_editor_options
     editor = @components[:command_batch_editor]
     # Set list of particles and deselect them all
-    particle_names = @anim[:particles].map { |part| part[:name] }
-    # TODO: Ensure the SE particle is always last. Else make particle_names a
-    #       hash and make CheckboxList support a hash.
-    particle_names.delete("SE")
+    particle_names = []
+    @anim[:particles].each_with_index do |particle, i|
+      particle_names.push([i, particle[:name]]) if particle[:name] != "SE"
+    end
     editor.get_control(:particles).options = particle_names
     editor.get_control(:particles).deselect_all
     # Set keyframe range to cover entire animation
@@ -232,7 +235,7 @@ class AnimationEditor
       else
         component.get_control(:move_particle_up).enable
       end
-      if cur_index < 0 || cur_index >= @anim[:particles].length - 1 || @anim[:particles][cur_index][:name] == "SE"
+      if cur_index < 0 || cur_index >= @anim[:particles].length - 2 || @anim[:particles][cur_index][:name] == "SE"
         component.get_control(:move_particle_down).disable
       else
         component.get_control(:move_particle_down).enable

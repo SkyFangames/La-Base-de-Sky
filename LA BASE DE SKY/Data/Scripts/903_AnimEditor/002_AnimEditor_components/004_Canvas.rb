@@ -155,7 +155,7 @@ class AnimationEditor::Canvas < Sprite
     return false if index < 0 || index >= @anim[:particles].length
     particle = @anim[:particles][index]
     return false if !particle || particle[:name] == "SE"
-    return false if particle[:spawner] && particle[:spawner] != :none
+    return false if (particle[:emitter_type] || :none) != :none
     return true
   end
 
@@ -458,6 +458,7 @@ class AnimationEditor::Canvas < Sprite
     return spr, frame
   end
 
+  # TODO: Make a version of this method for whether the particle is an emitter.
   def refresh_sprite(index, target_idx = -1)
     particle = @anim[:particles][index]
     return if !show_particle_sprite?(index)
