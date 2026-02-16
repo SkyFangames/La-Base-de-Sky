@@ -36,7 +36,7 @@ if Settings::USE_NEW_EXP_SHARE
 		"order"       => 40,
 		"type"        => Settings::USE_NEW_OPTIONS_UI ? :array : EnumOption,
 		"condition"   => proc { next expshare_enabled? },
-		"parameters"  => [_INTL("Sí"), _INTL("No")],
+		"parameters"  => proc { [_INTL("Sí"), _INTL("No")] },
 		"description" => _INTL("Si quieres que los Pokémon capturados tengan el repartir experiencia activado."),
 		"get_proc"    => proc { next $PokemonSystem.expshareon },
 		"set_proc"    => proc { |value, _scene| $PokemonSystem.expshareon = value }
