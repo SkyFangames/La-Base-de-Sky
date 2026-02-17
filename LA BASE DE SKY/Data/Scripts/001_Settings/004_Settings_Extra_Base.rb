@@ -301,6 +301,10 @@ MAPAS_SIN_SONIDO_HIERBA = []
 # a menos que el jugador esté cerca (dentro del rango de visión), pon esta constante en true.
 MUTE_GRASS_RUSTLE_OUT_OF_SIGHT = true
 
+# Nombres de eventos que al moverse no deben reproducir la animación ni el sonido de caminar por la hierba, incluso si el jugador está cerca.
+GRASS_RUSTLE_EXCLUDED_EVENT_NAMES = ["airborne"]
+
+
 
 ################################################################################
 # LISTADO DE POKÉMON CON FORMAS REGIONALES

@@ -146,7 +146,7 @@ EventHandlers.add(:on_step_taken, :pick_up_soot,
 EventHandlers.add(:on_step_taken, :grass_rustling,
   proc { |event|
     next if !$scene.is_a?(Scene_Map)
-    next if event.respond_to?("name") && event.name[/airborne/i]
+    next if event.respond_to?("name") && GRASS_RUSTLE_EXCLUDED_EVENT_NAMES.any? { |name| event.name[/#{name}/i] }
     event.each_occupied_tile do |x, y|
       next if !$map_factory.getTerrainTagFromCoords(event.map.map_id, x, y, true).shows_grass_rustle
       # Only show animation if it's the player or if the tile is visible on screen
