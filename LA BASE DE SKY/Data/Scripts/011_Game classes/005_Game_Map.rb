@@ -357,6 +357,21 @@ class Game_Map
     self.display_x += distance
   end
 
+  def tile_visible_by_player?(x, y)
+    # Calculate actual visible screen bounds based on camera position
+    # display_x/y are in subpixel units: REAL_RES_X/Y = TILE_WIDTH/HEIGHT * X/Y_SUBPIXELS
+    # This makes the code resolution-independent for games with different screen sizes or tile sizes
+    screen_x = (self.display_x / Game_Map::REAL_RES_X.to_f).floor
+    screen_y = (self.display_y / Game_Map::REAL_RES_Y.to_f).floor
+    tiles_wide = (Graphics.width / Game_Map::TILE_WIDTH.to_f).ceil + 1
+    tiles_high = (Graphics.height / Game_Map::TILE_HEIGHT.to_f).ceil + 1
+    
+    # if tile is outside the visible screen area
+    return false if x < screen_x || x >= screen_x + tiles_wide || 
+                    y < screen_y || y >= screen_y + tiles_high
+    return true
+  end
+
   # speed is:
   #   1: moves 1 tile in 1.6 seconds
   #   2: moves 1 tile in 0.8 seconds

@@ -149,8 +149,13 @@ EventHandlers.add(:on_step_taken, :grass_rustling,
     next if event.respond_to?("name") && event.name[/airborne/i]
     event.each_occupied_tile do |x, y|
       next if !$map_factory.getTerrainTagFromCoords(event.map.map_id, x, y, true).shows_grass_rustle
+      # Only show animation if it's the player or if the tile is visible on screen
+      if event != $game_player && MUTE_GRASS_RUSTLE_OUT_OF_SIGHT
+        next if !$game_map.tile_visible_by_player?(x, y)
+      end
       spriteset = $scene.spriteset(event.map_id)
-      spriteset&.addUserAnimation(Settings::GRASS_ANIMATION_ID, x, y, true, 1)
+      animation = MAPAS_SIN_SONIDO_HIERBA.include?(event.map_id) ? Settings::GRASS_MUTED_ANIMATION_ID : Settings::GRASS_ANIMATION_ID
+      spriteset&.addUserAnimation(animation, x, y, true, 1)
     end
   }
 )

@@ -543,6 +543,9 @@ module Settings
   # quieta (muestra una ondulación de agua).
   WATER_RIPPLE_ANIMATION_ID    = 8
 
+  # Animación que aparece cuando el jugador anda por la hierba (grass rustling) - SIN SONIDO.
+  GRASS_MUTED_ANIMATION_ID    = 20
+
   #=============================================================================
 
   # Lista de los posibles idiomas del juego. Cada uno es una lista que contiene

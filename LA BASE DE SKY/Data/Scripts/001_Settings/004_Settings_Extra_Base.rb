@@ -289,6 +289,20 @@ MAPAS_SIN_REFLEJO = []
 
 
 ################################################################################
+# MAPAS SIN SONIDO DE HIERBA
+# IDs de los mapas en los que no quieres que el personaje ni eventos hagan sonido
+# al caminar por la hierba.
+# Ejemplo: MAPAS_SIN_SONIDO_HIERBA = [12,157,536]
+################################################################################
+
+MAPAS_SIN_SONIDO_HIERBA = []
+
+# Si deseas que cuando un evento camina por la hierba la animación y su sonido no se reproduzcan
+# a menos que el jugador esté cerca (dentro del rango de visión), pon esta constante en true.
+MUTE_GRASS_RUSTLE_OUT_OF_SIGHT = true
+
+
+################################################################################
 # LISTADO DE POKÉMON CON FORMAS REGIONALES
 # Los Pokémon que estén en el listado de abajo son los que el cambia formas
 # podrá cambiar
