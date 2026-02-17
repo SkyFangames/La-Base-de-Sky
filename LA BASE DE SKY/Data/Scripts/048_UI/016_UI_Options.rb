@@ -72,7 +72,7 @@ if !Settings::USE_NEW_OPTIONS_UI
         # Check the vsync value
         vsync_value = config['vsync']
         return vsync_value == true ? 0 : 1
-      rescue HTTPLite::JSON::ParserError => e
+      rescue MKXPError => e
         echoln "Error parsing JSON: #{e.message}"
       end
     end
