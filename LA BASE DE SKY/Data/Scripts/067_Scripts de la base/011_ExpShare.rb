@@ -42,16 +42,59 @@ if Settings::USE_NEW_EXP_SHARE
 		"set_proc"    => proc { |value, _scene| $PokemonSystem.expshareon = value }
 	})
 
-
-
-	MenuHandlers.add(:party_menu, :expshare, {
+    MenuHandlers.add(:party_menu, :expshare, {
 		"name"      => _INTL("Repartir Exp."),
 		"order"     => 70,
 		"condition" => proc { next expshare_enabled? },
 		"effect"    => proc { |screen, party, party_idx|
 			pokemon = party[party_idx]
-			var_msg = pokemon.expshare ? _INTL("desactivar") : _INTL("activar")
-			pokemon.expshare = !pokemon.expshare if pbConfirmMessage(_INTL("¿Quieres {1} el Repartir Experiencia en este Pokémon?", var_msg))
+			
+			txt_individual = pokemon.expshare ? _INTL("Desactivar a {1}", pokemon.name) : _INTL("Activar a {1}", pokemon.name)
+			txt_individual_msg = pokemon.expshare ? _INTL("desactivado") : _INTL("activado")
+			txt_all_on     = _INTL("Activar a todos")
+			txt_all_off    = _INTL("Desactivar a todos")
+			txt_cancel     = _INTL("Cancelar")
+			commands = []
+			cmd_individual = -1
+			cmd_all_on     = -1
+			cmd_all_off    = -1
+			cmd_cancel     = -1
+
+			if !pokemon.egg?
+				commands.push(txt_individual)
+				cmd_individual = commands.length - 1
+			end
+
+			commands.push(txt_all_on)
+			cmd_all_on = commands.length - 1
+			commands.push(txt_all_off)
+			cmd_all_off = commands.length - 1
+			commands.push(txt_cancel)
+			cmd_cancel = commands.length - 1
+			cmd = screen.pbShowCommands(_INTL("¿Qué hacer?"), commands, 0)
+			
+
+			if cmd >= 0
+				if cmd == cmd_individual
+					pokemon.expshare = !pokemon.expshare
+					screen.scene.pbRefresh
+					screen.pbDisplay( _INTL("Se ha {1} el Repartir Exp. en {2}.", txt_individual_msg, pokemon.name))						
+				elsif cmd == cmd_all_on
+					party.each do |pkmn| 
+						pkmn.expshare = true if !pkmn.egg? 
+					end
+					screen.scene.pbRefresh
+					screen.pbDisplay(_INTL("Se ha activado el Repartir Exp. para todo el equipo."))					
+				elsif cmd == cmd_all_off
+					party.each { |pkmn| pkmn.expshare = false }
+					screen.scene.pbRefresh
+					screen.pbDisplay(_INTL("Se ha desactivado el Repartir Exp. para todo el equipo."))
+				elsif cmd == cmd_cancel
+					# No hace nada (Inserte meme del gato)
+				end
+			end
+			
+			next true
 		}   
 	})
 
