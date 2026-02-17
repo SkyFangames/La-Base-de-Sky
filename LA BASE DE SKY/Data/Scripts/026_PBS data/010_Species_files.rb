@@ -37,22 +37,25 @@ module GameData
     def self.check_egg_graphic_file(path, species, form, suffix = "")
       species_data = self.get_species_form(species, form)
       return nil if species_data.nil?
+      
       if form > 0
         ret = pbResolveBitmap(sprintf("%s%s_%d%s", path, species_data.species, form, suffix))
         return ret if ret
       end
+      
       ret = pbResolveBitmap(sprintf("%s%s%s", path, species_data.species, suffix))
-      if !ret
-        baby_species = species_data.get_baby_species
-        if form > 0
-          ret = pbResolveBitmap(sprintf("%s%s_%d%s", path, baby_species, form, suffix)) if baby_species
-          return ret if ret
-        else
-          ret = pbResolveBitmap(sprintf("%s%s%s", path, baby_species, suffix)) if baby_species
-          return ret if ret
-        end
-      end 
-      return pbResolveBitmap(sprintf("%s%s%s", path, species_data.species, suffix))
+      return ret if ret
+      
+      # Try baby species as fallback
+      baby_species = species_data.get_baby_species
+      return nil unless baby_species
+      
+      if form > 0
+        ret = pbResolveBitmap(sprintf("%s%s_%d%s", path, baby_species, form, suffix))
+        return ret if ret
+      end
+      
+      pbResolveBitmap(sprintf("%s%s%s", path, baby_species, suffix))
     end
 
     def self.front_sprite_filename(species, form = 0, gender = 0, shiny = false, shadow = false)
