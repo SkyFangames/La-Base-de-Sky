@@ -106,6 +106,20 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   TYPE_ICON_Y_OFFSET  = 1
   MOVE_NAME_WIDTH     = 230
 
+  # Color del punto rojo (puedes cambiarlo a otro color)
+  NEW_MOVE_INDICATOR_COLOR = Color.new(255, 60, 60)  # Rojo
+  
+  # Radio del punto en píxeles
+  NEW_MOVE_INDICATOR_RADIUS = 6
+  
+  # Mostrar borde blanco alrededor del punto
+  NEW_MOVE_INDICATOR_BORDER = true
+  
+  # Color del borde
+  NEW_MOVE_INDICATOR_BORDER_COLOR = Color.new(255, 255, 255)  # Blanco
+  INDICATOR_OFFSET_X = 105
+  INDICATOR_OFFSET_Y = 45
+
   def initialize(pokemon, moves)
     @pokemon   = pokemon
     @moves     = moves
@@ -113,6 +127,13 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
     @index     = 0
     super()
     refresh_cursor
+    # Mark initial move as seen
+    if Settings::SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER && !@moves.empty?
+      initial_move = @moves[@index]
+      if initial_move && !@pokemon.seen_move?(initial_move[0])
+        $PokemonGlobal.add_seen_move(@pokemon.species, initial_move[0])
+      end
+    end
   end
 
   def initialize_bitmaps
@@ -200,6 +221,21 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
       draw_text(_INTL("PP"), x + PP_LABEL_X_OFFSET, y + PP_LABEL_Y_OFFSET, theme: :black)
       draw_text(sprintf("%d/%d", move_data.total_pp, move_data.total_pp), x + PP_VALUE_X_OFFSET, y + PP_VALUE_Y_OFFSET, align: :right, theme: :black)
     end
+
+    # Draw indicator for unseen moves
+    if Settings::SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER && !@pokemon.seen_move?(move[0])
+      indicator_x = x + INDICATOR_OFFSET_X
+      indicator_y = y + INDICATOR_OFFSET_Y
+      
+      # Draw border circle if enabled
+      if NEW_MOVE_INDICATOR_BORDER
+        border_radius = NEW_MOVE_INDICATOR_RADIUS + 2
+        @sprites[:overlay].bitmap.bmp_circle(NEW_MOVE_INDICATOR_BORDER_COLOR, border_radius, indicator_x, indicator_y, false)
+      end
+      
+      # Draw main indicator circle
+      @sprites[:overlay].bitmap.bmp_circle(NEW_MOVE_INDICATOR_COLOR, NEW_MOVE_INDICATOR_RADIUS, indicator_x, indicator_y, false)
+    end
   end
 
   def draw_move_properties
@@ -244,6 +280,13 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
 
   def refresh_on_index_changed(old_index)
     pbPlayCursorSE if old_index != @index && defined?(old_index)
+    # Mark move as seen when cursor passes over it
+    if Settings::SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER && old_index != @index
+      current_move = @moves[@index]
+      if current_move && !@pokemon.seen_move?(current_move[0])
+        $PokemonGlobal.add_seen_move(@pokemon.species, current_move[0])
+      end
+    end
     # Change @top_index to keep @index in the middle of the visible list (or as
     # close to it as possible)
     middle_range_top = (VISIBLE_MOVES / 2) - ((VISIBLE_MOVES + 1) % 2)

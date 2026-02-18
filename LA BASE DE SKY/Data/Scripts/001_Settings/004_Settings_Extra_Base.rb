@@ -192,6 +192,12 @@ module Settings
   
   # Mostrar MTs y MOs en el recordador
   SHOW_MTS_MOS_IN_MOVE_RELEARNER = true
+
+  # Mostrar indicador para movimientos no vistos en el recordador
+  # Esto es para cuando un Pokémon puede aprender un movimiento que el jugador no ha visto antes
+  # Ya sea porque es un movimiento que el Pokémon solo aprende por recordador
+  # o porque el jugador tiene la opción de saltarse el aprendizaje por nivel.
+  SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER = false
   
   # Cerrar el recordador luego de cada ataque
   CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE = false
