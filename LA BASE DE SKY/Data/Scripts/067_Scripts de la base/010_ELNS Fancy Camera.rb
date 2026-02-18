@@ -248,7 +248,7 @@ class Game_Player < Game_Character
       when :surf_fishing
         new_charset = pbGetPlayerCharset(meta.surf_fish_charset)
       when :diving, :diving_fast, :diving_jumping, :diving_stopped
-        self.move_speed = 3 if !@move_route_forcing
+        self.move_speed = speed if !@move_route_forcing
         new_charset = pbGetPlayerCharset(meta.dive_charset)
       when :surfing, :surfing_fast, :surfing_jumping, :surfing_stopped
         if !@move_route_forcing
@@ -280,7 +280,7 @@ class Game_Player < Game_Character
       end
       if @bumping
         pbCameraSpeed(1) if FancyCamera::INCREASE_WHEN_RUNNING
-        self.move_speed = 3
+        self.move_speed = speed
       end
       @character_name = new_charset if new_charset
     end
