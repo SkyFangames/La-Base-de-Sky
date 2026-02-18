@@ -344,13 +344,6 @@ module Battle::DebugMixin
   end
 
   def pbBattlePokemonDebug(pkmn, battler = nil)
-    # Get all commands
-    commands = CommandMenuList.new
-    MenuHandlers.each_available(:battle_pokemon_debug_menu) do |option, hash, name|
-      next if battler && hash["usage"] == :pokemon
-      next if !battler && hash["usage"] == :battler
-      commands.add(option, hash, name)
-    end
     # Setup windows
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     viewport.z = 99999
@@ -369,8 +362,31 @@ module Battle::DebugMixin
     sprites["dummywindow"].height = 0
     # Main loop
     need_refresh = true
+    need_rebuild_commands = true
     cmd = 0
+    commands = nil
+    current_menu = nil
     loop do
+      # Rebuild commands if needed (after actions that might change availability)
+      if need_rebuild_commands
+        old_current_menu = current_menu
+        commands = CommandMenuList.new
+        MenuHandlers.each_available(:battle_pokemon_debug_menu, pkmn, battler, self) do |option, hash, name|
+          next if battler && hash["usage"] == :pokemon
+          next if !battler && hash["usage"] == :battler
+          commands.add(option, hash, name)
+        end
+        # Restore the current submenu if it still exists
+        if old_current_menu && commands.hasSubMenu?(old_current_menu)
+          commands.currentList = old_current_menu
+        else
+          current_menu = nil
+        end
+        # Clamp cmd to valid range (in case menu items were removed)
+        cmd = [cmd, commands.list.length - 1].min if commands.list.length > 0
+        cmd = 0 if cmd < 0
+        need_rebuild_commands = false
+      end
       if need_refresh
         if battler
           sprites["infowindow"].text = pbBattleDebugBattlerInfo(battler)
@@ -385,6 +401,7 @@ module Battle::DebugMixin
         parent = commands.getParent
         if parent   # Go up a level
           commands.currentList = parent[0]
+          current_menu = parent[0]
           cmd = parent[1]
         else   # Exit
           break
@@ -393,10 +410,12 @@ module Battle::DebugMixin
         real_cmd = commands.getCommand(cmd)
         if commands.hasSubMenu?(real_cmd)
           commands.currentList = real_cmd
+          current_menu = real_cmd
           cmd = 0
         else
           MenuHandlers.call(:battle_pokemon_debug_menu, real_cmd, "effect", pkmn, battler, self)
           need_refresh = true
+          need_rebuild_commands = true
         end
       end
     end

@@ -475,7 +475,7 @@ MenuHandlers.add(:pokemon_debug_menu, :forget_move, {
   "parent" => :moves,
   "effect" => proc { |pkmn, pkmnid, heldpoke, settingUpBattle, screen|
     moveindex = screen.pbChooseMove(pkmn, _INTL("Elige un movimiento para olvidarlo."))
-    if moveindex >= 0
+    if moveindex >= 0 && !pkmn.moves.empty? && moveindex < pkmn.moves.length && pkmn.moves[moveindex]
       movename = pkmn.moves[moveindex].name
       pkmn.forget_move_at_index(moveindex)
       screen.pbDisplay(_INTL("{1} olvidó {2}.", pkmn.name, movename))
