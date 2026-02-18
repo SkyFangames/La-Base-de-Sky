@@ -1211,6 +1211,18 @@ MenuHandlers.add(:options_menu, :language, {
   "set_proc"    => proc { |value, _screen| $PokemonSystem.language = value }
 })
 
+MenuHandlers.add(:options_menu, :skip_move_learning, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Saltar aprender Movs."),
+  "order"       => 81,
+  "type"        => EnumOption,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "description" => _INTL("Elige si quieres saltarte el aprendizaje de movimientos al subir de nivel.\nPuedes aprenderlos más tarde desde el recordador de movimientos."),
+  "condition"   => proc { next Settings::ALLOW_SKIPPING_MOVE_LEARNING },
+  "get_proc"    => proc { next $PokemonSystem.skip_move_learning },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.skip_move_learning = value }
+})
+
 #-------------------------------------------------------------------------------
 
 MenuHandlers.add(:options_menu, :main_volume, {
