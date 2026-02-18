@@ -489,176 +489,134 @@ def pbChooseItemFromList(message, variable, *args)
 end
 
 
+# Helper method to store old stats
+def pbStoreOldStats(pkmn)
+  {
+    level: pkmn.level,
+    total_hp: pkmn.totalhp,
+    attack: pkmn.attack,
+    defense: pkmn.defense,
+    special_attack: pkmn.spatk,
+    special_defense: pkmn.spdef,
+    speed: pkmn.speed
+  }
+end
+
+# Helper method to display stat changes
+def pbDisplayStatChanges(pkmn, old_stats, scene, gained_level = true)
+  total_hp_diff = pkmn.totalhp - old_stats[:total_hp]
+  attack_diff = pkmn.attack - old_stats[:attack]
+  defense_diff = pkmn.defense - old_stats[:defense]
+  special_attack_diff = pkmn.spatk - old_stats[:special_attack]
+  special_defense_diff = pkmn.spdef - old_stats[:special_defense]
+  speed_diff = pkmn.speed - old_stats[:speed]
+  
+  if gained_level
+    pbTopRightWindow(_INTL("PS Máx.<r>+{1}\nAtaque<r>+{2}\nDefensa<r>+{3}\nAt. Esp<r>+{4}\nDef. Esp<r>+{5}\nVelocidad<r>+{6}",
+                           total_hp_diff, attack_diff, defense_diff, special_attack_diff, special_defense_diff, speed_diff), scene)
+  else
+    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
+                           total_hp_diff, attack_diff, defense_diff, special_attack_diff, special_defense_diff, speed_diff), scene)
+  end
+  
+  pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
+                         pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
+end
+
+# Helper method to handle post level-up actions (move learning and evolution)
+def pbHandlePostLevelUp(pkmn, old_level, scene)
+  # Learn new moves upon level up
+  if $PokemonSystem.skip_move_learning == 1
+    movelist = pkmn.getMoveList
+    movelist.each do |i|
+      next if i[0] <= old_level || i[0] > pkmn.level
+      $PokemonGlobal.add_seen_move(pkmn.species, i[1])
+      pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
+    end
+  end
+  
+  # Check for evolution
+  new_species = pkmn.check_evolution_on_level_up
+  if new_species
+    pbFadeOutInWithMusic do
+      evo = PokemonEvolutionScene.new
+      evo.pbStartScreen(pkmn, new_species)
+      evo.pbEvolution
+      evo.pbEndScreen
+      scene&.pbRefresh if scene.is_a?(PokemonPartyScreen)
+    end
+  end
+end
+
+# Helper method to display messages consistently
+def pbDisplayMessage(scene, message)
+  if scene.is_a?(PokemonPartyScreen)
+    scene.pbDisplay(message)
+  else
+    pbMessage(message)
+  end
+end
+
+#===============================================================================
+# Change a Pokémon's Level.
+#===============================================================================
 def pbChangeLevel(pkmn, new_level, scene)
   new_level = new_level.clamp(1, GameData::GrowthRate.max_level)
   if pkmn.level == new_level
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("No tendría ningún efecto.", pkmn.name))
-    else
-      pbMessage(_INTL("No tendría ningún efecto.", pkmn.name))
-    end
+    pbDisplayMessage(scene, _INTL("No tendría ningún efecto.", pkmn.name))
     return
   end
-  old_level           = pkmn.level
-  old_total_hp        = pkmn.totalhp
-  old_attack          = pkmn.attack
-  old_defense         = pkmn.defense
-  old_special_attack  = pkmn.spatk
-  old_special_defense = pkmn.spdef
-  old_speed           = pkmn.speed
+  
+  old_stats = pbStoreOldStats(pkmn)
   pkmn.level = new_level
   pkmn.calc_stats
-  pkmn.hp = 1 if new_level > old_level && pkmn.species_data.base_stats[:HP] == 1
+  pkmn.hp = 1 if new_level > old_stats[:level] && pkmn.species_data.base_stats[:HP] == 1
   scene&.pbRefresh
-  if old_level > new_level
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
-    else
-      pbMessage(_INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
-    end
-    total_hp_diff        = pkmn.totalhp - old_total_hp
-    attack_diff          = pkmn.attack - old_attack
-    defense_diff         = pkmn.defense - old_defense
-    special_attack_diff  = pkmn.spatk - old_special_attack
-    special_defense_diff = pkmn.spdef - old_special_defense
-    speed_diff           = pkmn.speed - old_speed
-    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
-                           total_hp_diff, attack_diff, defense_diff, special_attack_diff, special_defense_diff, speed_diff), scene)
-    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
-                           pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
+  
+  if old_stats[:level] > new_level
+    pbDisplayMessage(scene, _INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
+    pbDisplayStatChanges(pkmn, old_stats, scene, false)
   else
     pkmn.changeHappiness("vitamin")
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("¡{1} ha subido al Nv. {2}!", pkmn.name, pkmn.level))
-    else
-      pbMessage(_INTL("¡{1} ha subido al Nv. {2}!", pkmn.name, pkmn.level))
-    end
-    total_hp_diff        = pkmn.totalhp - old_total_hp
-    attack_diff          = pkmn.attack - old_attack
-    defense_diff         = pkmn.defense - old_defense
-    special_attack_diff  = pkmn.spatk - old_special_attack
-    special_defense_diff = pkmn.spdef - old_special_defense
-    speed_diff           = pkmn.speed - old_speed
-    pbTopRightWindow(_INTL("PS Máx.<r>+{1}\nAtaque<r>+{2}\nDefensa<r>+{3}\nAt. Esp<r>+{4}\nDef. Esp<r>+{5}\nVelocidad<r>+{6}",
-                           total_hp_diff, attack_diff, defense_diff, special_attack_diff, special_defense_diff, speed_diff), scene)
-    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
-                           pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
-    # Learn new moves upon level up
-    if $PokemonSystem.skip_move_learning == 1
-      movelist = pkmn.getMoveList
-      movelist.each do |i|
-        next if i[0] <= old_level || i[0] > pkmn.level
-        pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
-      end
-    end
-    # Check for evolution
-    new_species = pkmn.check_evolution_on_level_up
-    if new_species
-      pbFadeOutInWithMusic do
-        evo = PokemonEvolutionScene.new
-        evo.pbStartScreen(pkmn, new_species)
-        evo.pbEvolution
-        evo.pbEndScreen
-        scene&.pbRefresh if scene.is_a?(PokemonPartyScreen)
-      end
-    end
+    pbDisplayMessage(scene, _INTL("¡{1} ha subido al Nv. {2}!", pkmn.name, pkmn.level))
+    pbDisplayStatChanges(pkmn, old_stats, scene, true)
+    pbHandlePostLevelUp(pkmn, old_stats[:level], scene)
   end
 end
 
 #===============================================================================
 # Change a Pokémon's Experience amount.
 #===============================================================================
-def pbChangeExp(pkmn, new_exp, screen)
+def pbChangeExp(pkmn, new_exp, scene)
   new_exp = new_exp.clamp(0, pkmn.growth_rate.maximum_exp)
   if pkmn.exp == new_exp
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("No tendría ningún efecto.", pkmn.name))
-    else
-      pbMessage(_INTL("No tendría ningún efecto.", pkmn.name))
-    end
+    pbDisplayMessage(scene, _INTL("No tendría ningún efecto.", pkmn.name))
     return
   end
-  old_level           = pkmn.level
-  old_total_hp        = pkmn.totalhp
-  old_attack          = pkmn.attack
-  old_defense         = pkmn.defense
-  old_special_attack  = pkmn.spatk
-  old_special_defense = pkmn.spdef
-  old_speed           = pkmn.speed
+  
+  old_stats = pbStoreOldStats(pkmn)
+  difference = (new_exp - pkmn.exp).abs
+  
   if pkmn.exp > new_exp   # Loses Exp
-    difference = pkmn.exp - new_exp
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("¡{1} ha bajado {2} puntos de experiencia!", pkmn.name, difference))
-    else
-      pbMessage(_INTL("¡{1} ha bajado {2} puntos de experiencia!", pkmn.name, difference))
-    end
+    pbDisplayMessage(scene, _INTL("¡{1} ha bajado {2} puntos de experiencia!", pkmn.name, difference))
     pkmn.exp = new_exp
     pkmn.calc_stats
-    scene.pbRefresh
-    return if pkmn.level == old_level
-    # Level changed
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
-    else
-      pbMessage(_INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
-    end
-    total_hp_diff        = pkmn.totalhp - old_total_hp
-    attack_diff          = pkmn.attack - old_attack
-    defense_diff         = pkmn.defense - old_defense
-    special_attack_diff  = pkmn.spatk - old_special_attack
-    special_defense_diff = pkmn.spdef - old_special_defense
-    speed_diff           = pkmn.speed - old_speed
-    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
-                           total_hp_diff, attack_diff, defense_diff, special_attack_diff, special_defense_diff, speed_diff), scene)
-    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
-                           pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
+    scene&.pbRefresh
+    return if pkmn.level == old_stats[:level]
+    
+    pbDisplayMessage(scene, _INTL("¡{1} ha bajado al Nv. {2}!", pkmn.name, pkmn.level))
+    pbDisplayStatChanges(pkmn, old_stats, scene, false)
   else   # Gains Exp
-    difference = new_exp - pkmn.exp
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("¡{1} ha ganado {2} puntos de experiencia!", pkmn.name, difference))
-    else
-      pbMessage(_INTL("¡{1} ha ganado {2} puntos de experiencia!", pkmn.name, difference))
-    end
+    pbDisplayMessage(scene, _INTL("¡{1} ha ganado {2} puntos de experiencia!", pkmn.name, difference))
     pkmn.exp = new_exp
     pkmn.changeHappiness("vitamin")
     pkmn.calc_stats
-    scene.pbRefresh
-    return if pkmn.level == old_level
-    # Level changed
-    if scene.is_a?(PokemonPartyScreen)
-      scene.pbDisplay(_INTL("¡{1} ha subido al Nv. {2}!", pkmn.name, pkmn.level))
-    else
-      pbMessage(_INTL("¡{1} ha subido al Nv. {2}!", pkmn.name, pkmn.level))
-    end
-    total_hp_diff        = pkmn.totalhp - old_total_hp
-    attack_diff          = pkmn.attack - old_attack
-    defense_diff         = pkmn.defense - old_defense
-    special_attack_diff  = pkmn.spatk - old_special_attack
-    special_defense_diff = pkmn.spdef - old_special_defense
-    speed_diff           = pkmn.speed - old_speed
-    pbTopRightWindow(_INTL("PS Máx.<r>+{1}\nAtaque<r>+{2}\nDefensa<r>+{3}\nAt. Esp<r>+{4}\nDef. Esp<r>+{5}\nVelocidad<r>+{6}",
-                           total_hp_diff, attack_diff, defense_diff, special_attack_diff, special_defense_diff, speed_diff), scene)
-    pbTopRightWindow(_INTL("PS Máx.<r>{1}\nAtaque<r>{2}\nDefensa<r>{3}\nAt. Esp<r>{4}\nDef. Esp<r>{5}\nVelocidad<r>{6}",
-                           pkmn.totalhp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed), scene)
-    # Learn new moves upon level up
-    if $PokemonSystem.skip_move_learning == 1
-      movelist = pkmn.getMoveList
-      movelist.each do |i|
-        next if i[0] <= old_level || i[0] > pkmn.level
-        pbLearnMove(pkmn, i[1], true) { scene.pbUpdate }
-      end
-    end
-    # Check for evolution
-    new_species = pkmn.check_evolution_on_level_up
-    if new_species
-      pbFadeOutInWithMusic do
-        evo = PokemonEvolutionScene.new
-        evo.pbStartScreen(pkmn, new_species)
-        evo.pbEvolution
-        evo.pbEndScreen
-        scene.pbRefresh if scene.is_a?(PokemonPartyScreen)
-      end
-    end
+    scene&.pbRefresh
+    return if pkmn.level == old_stats[:level]
+    
+    pbDisplayMessage(scene, _INTL("¡{1} ha subido al Nv. {2}!", pkmn.name, pkmn.level))
+    pbDisplayStatChanges(pkmn, old_stats, scene, true)
+    pbHandlePostLevelUp(pkmn, old_stats[:level], scene)
   end
 end
 

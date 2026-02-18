@@ -1,3 +1,28 @@
+#-------------------------------------------------------------------------------
+# Initializes Mirror Herb step counter.
+#-------------------------------------------------------------------------------
+class PokemonGlobalMetadata
+  attr_accessor :mirrorherb_steps
+  attr_accessor :seen_moves
+  alias paldea_initialize initialize
+  def initialize
+    @mirrorherb_steps = 0
+    @seen_moves = {}
+    paldea_initialize
+  end
+
+  def add_seen_move(pokemon, move_id)
+    @seen_moves ||= {}
+    @seen_moves[pokemon] ||= []
+    @seen_moves[pokemon].push(move_id)
+  end
+
+  def seen_move?(pokemon, move_id)
+    return false if !@seen_moves || !@seen_moves[pokemon]
+    return @seen_moves[pokemon].include?(move_id)
+  end
+end
+
 #===============================================================================
 # Instances of this class are individual Pokémon.
 # The player's party Pokémon are stored in the array $player.party.
@@ -739,6 +764,7 @@ class Pokemon
     first_move_index = 0 if first_move_index < 0
     (first_move_index...knowable_moves.length).each do |i|
       @moves.push(Pokemon::Move.new(knowable_moves[i]))
+      $PokemonGlobal.add_seen_move(self.species, knowable_moves[i])
     end
   end
 
@@ -756,8 +782,13 @@ class Pokemon
     end
     # Move is not already known; learn it
     @moves.push(Pokemon::Move.new(move_data.id))
+    $PokemonGlobal.add_seen_move(self.species, move_data.id)
     # Delete the first known move if self now knows more moves than it should
     @moves.shift if numMoves > MAX_MOVES
+  end
+
+  def seen_move?(move_id)
+    return $PokemonGlobal.seen_move?(self.species, move_id)
   end
 
   # Deletes the given move from the Pokémon.
@@ -1472,18 +1503,6 @@ def change_pokemon_gender(recheck_form = true)
   pokemon = pbGetPokemon(1)
   pokemon.changeGender(recheck_form)
   return true
-end
-
-#-------------------------------------------------------------------------------
-# Initializes Mirror Herb step counter.
-#-------------------------------------------------------------------------------
-class PokemonGlobalMetadata
-  attr_accessor :mirrorherb_steps
-  alias paldea_initialize initialize
-  def initialize
-    @mirrorherb_steps = 0
-    paldea_initialize
-  end
 end
 
 #-------------------------------------------------------------------------------
