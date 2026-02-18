@@ -336,3 +336,13 @@ CURRENT_SPECIES_BLACKLIST = [:FLOETTE_5]
 SHOW_SPRITES_IN_FORM_CHANGER = true
 
 
+################################################################################
+# ESCALERAS LATERALES
+# RECUERDA que los eventos de la escalera se deben llamar "Stairs".
+# Configuraciones parra las escaleras laterales
+################################################################################
+SMOOTH_SCROLLING = true
+SPEED_REDUCTION_ON_STAIRS = 0.85
+# Nombres de eventos que al iniciar su movimiento deben activar la función de escaleras laterales
+STAIR_EVENT_NAMES = ["Stairs", "Slope"] 
+$DisableScrollCounter = 0

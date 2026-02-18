@@ -176,6 +176,7 @@ class Game_Player < Game_Character
         return if pbEndSurf(x_offset, y_offset)
         # General movement
         turn_generic(dir, true)
+        yield if block_given?
         if !$game_temp.encounter_triggered
           @move_initial_x = @x
           @move_initial_y = @y
@@ -199,6 +200,14 @@ class Game_Player < Game_Character
       EventHandlers.trigger(:on_player_change_direction)
       $game_temp.encounter_triggered = false if !keep_enc_indicator
     end
+  end
+
+  def move_down(turn_enabled = true)
+    move_generic(2, turn_enabled) { moving_vertically(1) }
+  end
+  
+  def move_up(turn_enabled = true)
+    move_generic(8, turn_enabled) { moving_vertically(-1) }
   end
 
   def jump(x_plus, y_plus)
@@ -392,6 +401,9 @@ class Game_Player < Game_Character
   # Front Event Starting Determinant
   def check_event_trigger_there(triggers)
     result = false
+
+    # Player is in side stairs event
+    return result if on_stair?
     # If event is running
     return result if $game_system.map_interpreter.running?
     # Calculate front event coordinates
@@ -431,6 +443,7 @@ class Game_Player < Game_Character
   # Touch Event Starting Determinant
   def check_event_trigger_touch(dir)
     result = false
+    return result if on_stair?
     return result if $game_system.map_interpreter.running?
     # All event loops
     x_offset = (dir == 4) ? -1 : (dir == 6) ? 1 : 0
