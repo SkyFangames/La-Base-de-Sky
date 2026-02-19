@@ -152,14 +152,16 @@ class Battle::Scene
       bg.z      = 0
       bg.mirror = true
     end
-    2.times do |side|
-      baseX, baseY = Battle::Scene.pbBattlerPosition(side)
-      base = pbAddSprite("base_#{side}", baseX, baseY,
-                         (side == 0) ? playerBase : enemyBase, @viewport)
-      base.z = 3
-      if base.bitmap
-        base.ox = base.bitmap.width / 2
-        base.oy = (side == 0) ? base.bitmap.height : base.bitmap.height / 2
+    if Settings::SHOW_BATTLE_BASES
+      2.times do |side|
+        baseX, baseY = Battle::Scene.pbBattlerPosition(side)
+        base = pbAddSprite("base_#{side}", baseX, baseY,
+                          (side == 0) ? playerBase : enemyBase, @viewport)
+        base.z = 3
+        if base.bitmap
+          base.ox = base.bitmap.width / 2
+          base.oy = (side == 0) ? base.bitmap.height : base.bitmap.height / 2
+        end
       end
     end
     cmdBarBG = pbAddSprite("cmdBar_bg", 0, Graphics.height - MESSAGE_BOX_HEIGHT, messageBG, @viewport)

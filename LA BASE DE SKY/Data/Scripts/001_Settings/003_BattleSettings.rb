@@ -24,6 +24,9 @@ module Settings
     # El fondo se mueve a los lados al inicio de la batalla, junto con las bases laterales y el/los entrenador(es)/Pokémon. 
     # Si esto es true, el fondo no se moverá (las bases/entrenadores/Pokémon sí lo harán).
     DISABLE_SLIDING_BACKGROUND = false
+
+    # Mostrar las bases de batalla (true) o no (false). Ten en cuenta que esto no afecta a los fondos de batalla, solo a las bases.
+    SHOW_BATTLE_BASES = true
   
     #=============================================================================
 
