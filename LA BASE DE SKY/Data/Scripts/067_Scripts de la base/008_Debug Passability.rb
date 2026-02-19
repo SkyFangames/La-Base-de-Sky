@@ -48,17 +48,17 @@ class Debug_Passability
     $passa_event_size=16 if ($passa_event_size>32 || $passa_field_size<1)
     $passa_event_size_outline=2 if ($passa_event_size_outline>32 || $passa_event_size_outline<1)
     $passa_opacity=200 if ($passa_opacity>255 || $passa_opacity<1)
-    
+
     # Calcular área visible alrededor del jugador
     player_x = $game_player.x
     player_y = $game_player.y
-    
+
     # Límites del área a dibujar
     min_x = [0, player_x - RENDER_DISTANCE].max
     max_x = [$game_map.width - 1, player_x + RENDER_DISTANCE].min
     min_y = [0, player_y - RENDER_DISTANCE].max  
     max_y = [$game_map.height - 1, player_y + RENDER_DISTANCE].min
-    
+
     # Creating bitmap and sprite con tamaño completo del mapa
     # Verificar si están disposed y recrearlos si es necesario
     if $passa_bitmap && !$passa_bitmap.disposed?
@@ -88,55 +88,84 @@ class Debug_Passability
     $passa_terrain = []
     $passa_data = nil
     $map_id = nil
-    
+
     # Filling the fields SOLO EN EL ÁREA VISIBLE
     for xval in min_x..max_x
       for yval in min_y..max_y
         x=16+xval*32
-        y=16+yval*32
-        
-        if isEvent?(xval,yval)
-          $passa_bitmap.fill_rect(x+16-($passa_event_size/2),
-          y+16-($passa_event_size/2),$passa_event_size,
-          $passa_event_size,$passa_event_color)
-          $passa_bitmap.fill_rect(x+16-($passa_event_size/2),
-          y+16-($passa_event_size/2),$passa_event_size,
-          $passa_event_size_outline,$passa_event_color2)
-          $passa_bitmap.fill_rect(x+16-($passa_event_size/2),
-          y+16-($passa_event_size/2)+$passa_event_size-$passa_event_size_outline,
-          $passa_event_size,$passa_event_size_outline,$passa_event_color2)
-          $passa_bitmap.fill_rect(x+16-($passa_event_size/2),
-          y+16-($passa_event_size/2),$passa_event_size_outline,
-          $passa_event_size,$passa_event_color2)
-          $passa_bitmap.fill_rect(x+16-($passa_event_size/2)+$passa_event_size-$passa_event_size_outline,
-          y+16-($passa_event_size/2),$passa_event_size_outline,$passa_event_size,
-          $passa_event_color2)
-        end
-        
+        y=16+yval*32       
         if !playerPassable?(xval,yval,2) # DOWN
-          $passa_bitmap.fill_rect(x,y+32-$passa_field_size,32,
-          $passa_field_size,$passa_field_color)
+          $passa_bitmap.fill_rect(x,y+32-$passa_field_size,32,$passa_field_size,$passa_field_color)
         end
         if !playerPassable?(xval,yval,4) # LEFT
-          $passa_bitmap.fill_rect(x,y,$passa_field_size,32,
-          $passa_field_color)
+          $passa_bitmap.fill_rect(x,y,$passa_field_size,32,$passa_field_color)
         end
         if !playerPassable?(xval,yval,6) # RIGHT
-          $passa_bitmap.fill_rect(x+32-$passa_field_size,y,
-          $passa_field_size,32,$passa_field_color)
+          $passa_bitmap.fill_rect(x+32-$passa_field_size,y,$passa_field_size,32,$passa_field_color)
         end
         if !playerPassable?(xval,yval,8) # UP
-          $passa_bitmap.fill_rect(x,y,32,$passa_field_size,
-          $passa_field_color)
+          $passa_bitmap.fill_rect(x,y,32,$passa_field_size,$passa_field_color)
         end
         tileHasTerrainTag?(xval,yval) if SHOW_TERRAIN_TAGS
       end
     end
-    pbDrawTextPositions($passa_terrain_bitmap.bitmap,$passa_terrain)
-    
-    # Guardar última posición del jugador para detectar movimiento
+    draw_event_areas(min_x, max_x, min_y, max_y) if SHOW_EVENTS
+    pbDrawTextPositions($passa_terrain_bitmap.bitmap,$passa_terrain)    
     $passa_last_player_x = player_x
     $passa_last_player_y = player_y
+  end
+
+  #-----------------------------------------------------------------------------
+  # Dibuja el área del evento
+  #-----------------------------------------------------------------------------
+  def draw_event_areas(min_x, max_x, min_y, max_y)
+    margin = (32 - $passa_event_size) / 2
+    for event in $game_map.events.values
+      next if event.x < min_x || event.x > max_x || event.y < min_y || event.y > max_y
+      rect = get_event_logical_rect(event)
+      px = (rect.x * 32) + 16 + margin
+      py = (rect.y * 32) + 16 + margin
+      pw = (rect.width * 32) - (margin * 2)
+      ph = (rect.height * 32) - (margin * 2)
+      $passa_bitmap.fill_rect(px, py, pw, ph, $passa_event_color)
+      outline = $passa_event_size_outline
+      $passa_bitmap.fill_rect(px, py, pw, outline, $passa_event_color2)          # Arriba
+      $passa_bitmap.fill_rect(px, py + ph - outline, pw, outline, $passa_event_color2) # Abajo
+      $passa_bitmap.fill_rect(px, py, outline, ph, $passa_event_color2)          # Izquierda
+      $passa_bitmap.fill_rect(px + pw - outline, py, outline, ph, $passa_event_color2) # Derecha
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # Calcula el Rectángulo Lógico (en Tiles)
+  #-----------------------------------------------------------------------------
+  def get_event_logical_rect(event)
+    # HITBOX RADIUS
+    if event.respond_to?(:hitbox_rx) && (event.hitbox_rx > 0 || event.hitbox_ry > 0)
+      rx = event.hitbox_rx
+      ry = event.hitbox_ry
+      if event.respond_to?(:hitbox_rotate) && event.hitbox_rotate && (event.direction == 4 || event.direction == 6)
+        rx, ry = ry, rx
+      end
+      
+      return Rect.new(event.x - rx, event.y - ry, (rx * 2) + 1, (ry * 2) + 1)
+    end
+
+    # HITBOX
+    if event.respond_to?(:hitbox_cx) && (event.hitbox_cx > 0 || event.hitbox_hy > 0)
+      cx = event.hitbox_cx
+      hy = event.hitbox_hy
+      if event.respond_to?(:hitbox_rotate) && event.hitbox_rotate && (event.direction == 4 || event.direction == 6)
+        return Rect.new(event.x - hy, event.y - cx, hy + 1, (cx * 2) + 1)
+      else
+        return Rect.new(event.x - cx, event.y - hy, (cx * 2) + 1, hy + 1)
+      end
+    end
+
+    # SIZEBLOCK
+    bw = (event.respond_to?(:block_width) && event.block_width > 1) ? event.block_width : (event.width || 1)
+    bh = (event.respond_to?(:block_height) && event.block_height > 1) ? event.block_height : (event.height || 1)
+    return Rect.new(event.x, event.y - bh + 1, bw, bh)
   end
 
   # Method which returns the passability of a field.
@@ -176,7 +205,7 @@ class Debug_Passability
   def isEvent?(x,y)
     return false if !SHOW_EVENTS
     for event in $game_map.events.values
-      if ( (x==event.x) && (y==event.y) )
+      if event.at_coordinate?(x, y)
         return true
       end
     end

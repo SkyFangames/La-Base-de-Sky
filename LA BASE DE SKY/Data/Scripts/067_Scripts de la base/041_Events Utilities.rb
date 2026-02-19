@@ -7,17 +7,19 @@
 #====================================================================================
 #
 # Comandos soportados como parte del nombre de evento:
-#  sizeblock(x,y)                 -> Define un área de colisión en el evento sin
-#                                    necesidad de asignar un gráfico.
+#  sizeblock(x,y)                -> Define un área de colisión en el evento sin
+#                                   necesidad de asignar un gráfico.
 #
 # Comandos soportados como Comentarios en el evento:
 #  s:Hitbox/X,Y                  -> Define un area de colisión usando de base el 
-#                                   evento e igualmente permite la interacción
-#                                   con él.  
+#  s:Hitbox_true/X,Y                evento e igualmente permite la interacción
+#                                   con él.
+#                                   Si incluye "_true", la hitbox girará con el evento.
 #                                   
 #  s:Hitbox_radius/Rx,Ry         -> Define un radio de colisión alrededor del evento
-#                                   e igualmente permite la interacción con él.
+#  s:Hitbox_radius_true/Rx,Ry       e igualmente permite la interacción con él.
 #                                   No es necesario anmbos valores, con uno basta.
+#                                   Si incluye "_true", la hitbox girará con el evento.
 #
 #  s:Offset/X,Y                  -> Desplaza el gráfico visualmente (en píxeles).
 #
@@ -26,11 +28,18 @@
 #  s:Float                       -> Activa una animación de levitación suave.
 #
 #  s:doppelganger                -> Cambia al gráfico actual del jugador.
+#                                   Puedes usar _up/down/left/right para que el evento
+#                                   aparezca en alguna posición si será estático y no
+#                                   asignas un gráfico de referencia.
+#                                   Ejemplo: s:doppelganger _up
 #
 #  s:pokemon_event/Nombre        -> Cambiará el gráfico al del Pokémon especificado.
-#
 #  s:pokemon_event_shiny/Nombre  -> Lo mismo, pero su versión Shiny.
 #                                   Ambos inlcuyen que al interactuar suene su cry.
+#                                   Puedes usar _up/down/left/right para que el evento
+#                                   aparezca en alguna posición si será estático y no
+#                                   asignas un gráfico de referencia.
+#                                   Ejemplo: s:pokemon_event_up/Nombre
 #
 #  s:Custom/RUTA                 -> Carga un gráfico en específico para el ow usando
 #                                   una ruta dentro de Graphics. La imagen será 
@@ -55,6 +64,7 @@
 class Game_Event < Game_Character
   attr_reader :hitbox_rx, :hitbox_ry
   attr_reader :hitbox_cx, :hitbox_hy
+  attr_accessor :hitbox_rotate
   attr_reader :block_width, :block_height
   attr_accessor :visual_offset_x, :visual_offset_y
   attr_accessor :is_floating
@@ -144,10 +154,13 @@ class Game_Event < Game_Character
     @hitbox_ry = 0
     @hitbox_cx = 0
     @hitbox_hy = 0
+    @hitbox_rotate = false
     @visual_offset_x = 0
     @visual_offset_y = 0
     @is_floating = false
     @float_offset = 0
+    @is_full_image = false
+    @custom_frames = 0
     @cry_species = nil
 
     return unless @page && @list
@@ -159,16 +172,18 @@ class Game_Event < Game_Character
       next if cmd_text.nil?
 
       # --- HITBOX RADIUS ---
-      if cmd_text.match(/^s:Hitbox_radius\/(\d+)(?:,(\d+))?/i)
-        val_x = $1.to_i
-        val_y = $2 ? $2.to_i : val_x
+      if cmd_text.match(/^s:Hitbox_radius(_true)?\/(\d+)(?:,(\d+))?/i)
+        @hitbox_rotate = !!$1
+        val_x = $2.to_i
+        val_y = $3 ? $3.to_i : val_x
         @hitbox_rx = val_x
         @hitbox_ry = val_y
 
       # --- HITBOX ---
-      elsif cmd_text.match(/^s:Hitbox\/(\d+),(\d+)/i)
-        @hitbox_cx = $1.to_i
-        @hitbox_hy = $2.to_i
+      elsif cmd_text.match(/^s:Hitbox(_true)?\/(\d+),(\d+)/i)
+        @hitbox_rotate = !!$1
+        @hitbox_cx = $2.to_i
+        @hitbox_hy = $3.to_i
       
       # --- OFFSET ---
       elsif cmd_text.match(/^s:Offset\/([-\d]+),([-\d]+)/i)
@@ -185,24 +200,52 @@ class Game_Event < Game_Character
         @is_floating = true
 
       # --- POKÉMON EVENT ---
-      elsif cmd_text.match(/^s:pokemon_event_shiny\/(.+)/i)
-        filename = $1.strip
+      elsif cmd_text.match(/^s:pokemon_event_shiny(?:_(up|down|left|right))?\/(.+)/i)
+        forced_dir = $1
+        filename = $2.strip       
         @character_name = "Followers shiny/#{filename}"
         @cry_species = filename
+        @is_full_image = false
+        if forced_dir
+          dir_map = { "down" => 2, "left" => 4, "right" => 6, "up" => 8 }
+          new_dir = dir_map[forced_dir.downcase]
+          @direction = new_dir
+          @original_direction = new_dir
+          @prelock_direction = 0
+        end
 
-      elsif cmd_text.match(/^s:pokemon_event\/(.+)/i)
-        filename = $1.strip
+      elsif cmd_text.match(/^s:pokemon_event(?:_(up|down|left|right))?\/(.+)/i)
+        forced_dir = $1
+        filename = $2.strip       
         @character_name = "Followers/#{filename}"
         @cry_species = filename
+        @is_full_image = false
+        if forced_dir
+          dir_map = { "down" => 2, "left" => 4, "right" => 6, "up" => 8 }
+          new_dir = dir_map[forced_dir.downcase]
+          @direction = new_dir
+          @original_direction = new_dir
+          @prelock_direction = 0
+        end
 
       #---- DOPPELGANGER ---
-      elsif cmd_text.match(/^s:doppelganger/i)
+      elsif cmd_text.match(/^s:doppelganger(?:_(up|down|left|right))/i)
+        forced_dir = $1    
         @character_name = $game_player.character_name
+        @is_full_image = false
+        if forced_dir
+          dir_map = { "down" => 2, "left" => 4, "right" => 6, "up" => 8 }
+          new_dir = dir_map[forced_dir.downcase]
+          @direction = new_dir
+          @original_direction = new_dir
+          @prelock_direction = 0
+        end
       
       # --- CUSTOM ---
       elsif cmd_text.match(/^s:Custom\/(.+)/i)
         filename = $1.strip
-        @character_name = "../#{filename}"  
+        @character_name = "../#{filename}"
+        @is_full_image = false 
       
       # --- CUSTOM FULL ---  
       elsif cmd_text.match(/^s:Custom_full\/(.+)/i)
@@ -264,14 +307,24 @@ class Game_Event < Game_Character
   def at_coordinate?(x, y)
     # Prioridad 1: HITBOX RADIUS
     if @hitbox_rx > 0 || @hitbox_ry > 0
-      return x.between?(@x - @hitbox_rx, @x + @hitbox_rx) &&
-             y.between?(@y - @hitbox_ry, @y + @hitbox_ry)
+      if @hitbox_rotate && (@direction == 4 || @direction == 6) # Horizontal
+        return x.between?(@x - @hitbox_ry, @x + @hitbox_ry) &&
+               y.between?(@y - @hitbox_rx, @y + @hitbox_rx)
+      else
+        return x.between?(@x - @hitbox_rx, @x + @hitbox_rx) &&
+               y.between?(@y - @hitbox_ry, @y + @hitbox_ry)
+      end
     end
 
     # Prioridad 2: HITBOX
     if @hitbox_cx > 0 || @hitbox_hy > 0
-      return x.between?(@x - @hitbox_cx, @x + @hitbox_cx) &&
-             y.between?(@y - @hitbox_hy, @y)
+      if @hitbox_rotate && (@direction == 4 || @direction == 6) # Horizontal
+        return y.between?(@y - @hitbox_cx, @y + @hitbox_cx) &&
+               x.between?(@x - @hitbox_hy, @x)
+      else
+        return x.between?(@x - @hitbox_cx, @x + @hitbox_cx) &&
+               y.between?(@y - @hitbox_hy, @y)
+      end
     end
   
     # Prioridad 3: SIZEBLOCK
@@ -317,6 +370,7 @@ class Sprite_Character
       self.ox = cw / 2
       self.oy = ch
     else
+      self.ox = @cw / 2 if @cw
       zik_full_update_charset_frame
     end
   end
