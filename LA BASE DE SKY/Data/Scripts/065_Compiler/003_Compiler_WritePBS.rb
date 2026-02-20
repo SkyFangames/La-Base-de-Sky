@@ -905,7 +905,7 @@ module Compiler
     write_dungeon_parameters
     write_phone
     echoln ""
-    Console.echo_h2(_INTL("Successfully rewrote all PBS files"), text: :green)
+    Console.echo_h2(_INTL("Se han reescrito correctamente todos los archivos PBS"), text: :green)
   end
 end
 
