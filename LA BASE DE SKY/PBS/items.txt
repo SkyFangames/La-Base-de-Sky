@@ -7191,7 +7191,6 @@ FieldUse = OnPokemon
 Flags = KeyItem
 Description = Extraño meteorito proveniente del espacio. Permite cambiar de forma a Deoxys.
 #-------------------------------
-#-------------------------------
 # OBJETOS CUSTOM
 #-------------------------------
 [INFREPEL]
