@@ -261,7 +261,7 @@ class Game_Character
 
   def passable?(x, y, dir, strict = false)
     if on_middle_of_stair?
-      new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+      new_y = y + (dir == 2 ? 1 : dir == 8 ? -1 : 0)
       if new_y > self.y
         return stair_y_position > 0
       elsif new_y < self.y
@@ -355,19 +355,19 @@ class Game_Character
   end
 
   def screen_y_ground
-    real_y = @real_y.to_f
+    real_y = @real_y.to_f    
     if on_stair?
       if @real_x / Game_Map::X_SUBPIXELS.to_f <= @stair_start_x * Game_Map::TILE_WIDTH &&
-          @stair_end_x < @stair_start_x
+         @stair_end_x < @stair_start_x        
         distance = (@stair_start_x - @stair_end_x) * Game_Map::REAL_RES_X -
-           2.0 * @stair_begin_offset * Game_Map::X_SUBPIXELS
+                   2.0 * @stair_begin_offset * Game_Map::X_SUBPIXELS
         rpos = @real_x - @stair_end_x * Game_Map::REAL_RES_X - @stair_begin_offset * Game_Map::X_SUBPIXELS
-        fraction = 1 - rpos / distance.to_f
+        fraction = (distance == 0) ? 1 : (1 - rpos / distance.to_f)
         if fraction >= 0 && fraction <= 1
           diff = fraction * (@stair_end_y - @stair_start_y) * Game_Map::REAL_RES_Y
           real_y += diff
           if self.is_a?(Game_Player)
-            if SMOOTH_SCROLLING
+            if defined?(SMOOTH_SCROLLING) && SMOOTH_SCROLLING
               @view_offset_y += diff - (@stair_last_increment || 0)
             else
               $game_map.scroll_down(diff - (@stair_last_increment || 0))
@@ -386,22 +386,22 @@ class Game_Character
           @move_initial_y = endy
           @y = endy
           @real_y = endy * Game_Map::REAL_RES_Y
-          @view_offset_y = 0 if SMOOTH_SCROLLING && self.is_a?(Game_Player)
+          @view_offset_y = 0 if defined?(SMOOTH_SCROLLING) && SMOOTH_SCROLLING && self.is_a?(Game_Player)          
           clear_stair_data
           pbWait(0.05) if self.is_a?(Game_Player)
           return calc_screen_y_ground
         end
       elsif @real_x / Game_Map::X_SUBPIXELS.to_f >= @stair_start_x * Game_Map::TILE_WIDTH &&
-          @stair_end_x > @stair_start_x
+            @stair_end_x > @stair_start_x
         distance = (@stair_end_x - @stair_start_x) * Game_Map::REAL_RES_X -
-            2.0 * @stair_begin_offset * Game_Map::X_SUBPIXELS
-        rpos = @stair_start_x * Game_Map::REAL_RES_X - @real_x + @stair_begin_offset * Game_Map::X_SUBPIXELS
-        fraction = rpos / distance.to_f
+                   2.0 * @stair_begin_offset * Game_Map::X_SUBPIXELS
+        rpos = @stair_start_x * Game_Map::REAL_RES_X - @real_x + @stair_begin_offset * Game_Map::X_SUBPIXELS       
+        fraction = (distance == 0) ? 0 : (rpos / distance.to_f)
         if fraction <= 0 && fraction >= -1
           diff = fraction * (@stair_start_y - @stair_end_y) * Game_Map::REAL_RES_Y
           real_y += diff
           if self.is_a?(Game_Player)
-            if SMOOTH_SCROLLING
+            if defined?(SMOOTH_SCROLLING) && SMOOTH_SCROLLING
               @view_offset_y += diff - (@stair_last_increment || 0)
             else
               $game_map.scroll_down(diff - (@stair_last_increment || 0))
@@ -420,7 +420,7 @@ class Game_Character
           @move_initial_y = endy
           @y = endy
           @real_y = endy * Game_Map::REAL_RES_Y
-          @view_offset_y = 0 if SMOOTH_SCROLLING && self.is_a?(Game_Player)
+          @view_offset_y = 0 if defined?(SMOOTH_SCROLLING) && SMOOTH_SCROLLING && self.is_a?(Game_Player)          
           clear_stair_data
           pbWait(0.05) if self.is_a?(Game_Player)
           return calc_screen_y_ground
@@ -1157,27 +1157,25 @@ class Game_Character
   #-----------------------------------------------------------------------------
 
   def update
-    if self == $game_player && SMOOTH_SCROLLING && on_stair?
-      # Game_Player#update called; now disable Game_Map#scroll_*
+    if self == $game_player && defined?(SMOOTH_SCROLLING) && SMOOTH_SCROLLING && on_stair?
       $DisableScrollCounter = 2
-    else
-      return if $game_temp.in_menu
-      time_now = System.uptime
-      @last_update_time = time_now if !@last_update_time || @last_update_time > time_now
-      @delta_t = time_now - @last_update_time
-      @last_update_time = time_now
-      return if @delta_t > 0.25   # Was in a menu; delay movement
-      @moved_last_frame = @moved_this_frame
-      @stopped_last_frame = @stopped_this_frame
-      @moved_this_frame = false
-      @stopped_this_frame = false
-      # Update command
-      update_command
-      # Update movement
-      (moving? || jumping?) ? update_move : update_stop
-      # Update animation
-      update_pattern
     end
+    return if $game_temp.in_menu
+    time_now = System.uptime
+    @last_update_time = time_now if !@last_update_time || @last_update_time > time_now
+    @delta_t = time_now - @last_update_time
+    @last_update_time = time_now
+    return if @delta_t > 0.25
+    @moved_last_frame = @moved_this_frame
+    @stopped_last_frame = @stopped_this_frame
+    @moved_this_frame = false
+    @stopped_this_frame = false
+    # Update command
+    update_command
+    # Update movement
+    (moving? || jumping?) ? update_move : update_stop
+    # Update animation
+    update_pattern
   end
 
   def update_command
@@ -1268,31 +1266,30 @@ class Game_Character
   end
 
   def update_pattern
-    if self == $game_player && $DisableScrollCounter == 2
+    if self == $game_player && defined?($DisableScrollCounter) && $DisableScrollCounter == 2
       $DisableScrollCounter = 1
-    else
-      return if @lock_pattern
-  #    return if @jumping_on_spot   # Don't animate if jumping on the spot
-      # Character has stopped moving, return to original pattern
-      if @moved_last_frame && !@moved_this_frame && !@step_anime
-        @pattern = @original_pattern
-        @anime_count = 0
-        return
-      end
-      # Character has started to move, change pattern immediately
-      if !@moved_last_frame && @moved_this_frame && !@step_anime
-        @pattern = (@pattern + 1) % 4 if @walk_anime
-        @anime_count = 0
-        return
-      end
-      # Calculate how many frames each pattern should display for, i.e. the time
-      # it takes to move half a tile (or a whole tile if cycling). We assume the
-      # game uses square tiles.
-      pattern_time = pattern_update_speed / 4   # 4 frames per cycle in a charset
-      return if @anime_count < pattern_time
-      # Advance to the next animation frame
-      @pattern = (@pattern + 1) % 4
-      @anime_count -= pattern_time
     end
+    return if @lock_pattern
+  # return if @jumping_on_spot   # Don't animate if jumping on the spot
+    # Character has stopped moving, return to original pattern
+    if @moved_last_frame && !@moved_this_frame && !@step_anime
+      @pattern = @original_pattern
+      @anime_count = 0
+      return
+    end
+    # Character has started to move, change pattern immediately
+    if !@moved_last_frame && @moved_this_frame && !@step_anime
+      @pattern = (@pattern + 1) % 4 if @walk_anime
+      @anime_count = 0
+      return
+    end
+    # Calculate how many frames each pattern should display for, i.e. the time
+    # it takes to move half a tile (or a whole tile if cycling). We assume the
+    # game uses square tiles.    
+    pattern_time = pattern_update_speed / 4
+    return if @anime_count < pattern_time
+    # Advance to the next animation frame
+    @pattern = (@pattern + 1) % 4
+    @anime_count -= pattern_time
   end
 end
