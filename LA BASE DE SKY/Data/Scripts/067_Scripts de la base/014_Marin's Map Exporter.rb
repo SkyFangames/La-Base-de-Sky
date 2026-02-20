@@ -15,7 +15,7 @@
 
 # This is where the map will be exported to once it has been created.
 # If this file already exists, it is overwritten.
-ExportedMapBaseName = "MapExporter/MAPA_EXPORTADO_"
+EXPORTEDMAPBASENAME = "MapExporter/MAPA_EXPORTADO_"
 
 
 
@@ -30,13 +30,13 @@ def pbExportAMap
   s = Sprite.new(vp)
   s.bitmap = Bitmap.new(Graphics.width, Graphics.height)
   s.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0,0,0))
-  mapid = pbListScreen(_INTL("Export Map"),MapLister.new(pbDefaultMap))
+  mapid = pbListScreen(_INTL("Exportar Mapa"),MapLister.new(pbDefaultMap))
   if mapid > 0
     player = $game_map.map_id == mapid
     if player
-      cmds = ["Exportar", "[  ] Eventos", "[  ] Jugador", "Cancelar"]
+      cmds = [_INTL("Exportar"), _INTL("[  ] Eventos"), _INTL("[  ] Jugador"), _INTL("Cancelar")]
     else
-      cmds = ["Exportar", "[  ] Eventos", "Cancelar"]
+      cmds = [_INTL("Exportar"), _INTL("[  ] Eventos"), _INTL("Cancelar")]
     end
     cmd = 0
     loop do
@@ -59,15 +59,15 @@ def pbExportAMap
         break
       elsif cmd == 1
         if cmds[1].split("")[1] == " "
-          cmds[1] = "[X] Eventos"
+          cmds[1] = _INTL("[X] Eventos")
         else
-          cmds[1] = "[  ] Eventos"
+          cmds[1] = _INTL("[  ] Eventos")
         end
       elsif cmd == 2 && player
         if cmds[2].split("")[1] == " "
-          cmds[2] = "[X] Jugador"
+          cmds[2] = _INTL("[X] Jugador")
         else
-          cmds[2] = "[  ] Jugador"
+          cmds[2] = _INTL("[  ] Jugador")
         end
       elsif cmd == 3 || cmd == 2 && !player || cmd == -1
         break
@@ -143,7 +143,7 @@ class MarinMapExporter
       @result.blt($game_player.x * 32 + 16 - bmp.width / 8, ($game_player.y + 1) * 32 - bmp.height / 4,
           bmp, Rect.new(0, bmp.height / 4 * (dir / 2 - 1), bmp.width / 4, bmp.height / 4))
     end
-    @exported_file = "#{ExportedMapBaseName}#{Time.now.strftime('%d_%m_%YT%H_%M_%S')}.png"  
+    @exported_file = "#{EXPORTEDMAPBASENAME}#{Time.now.strftime('%d_%m_%YT%H_%M_%S')}.png"  
     Dir.mkdir("MapExporter") if !Dir.exists?("MapExporter")
     @result.save_to_png(@exported_file)
     Input.update

@@ -71,8 +71,8 @@ module RPG
         ret.addRef
       else
         ret = BitmapWrapper.new(32 * width, 32 * height)
-        x = ((tile_id - 384) % 8) * 32
-        y = (((tile_id - 384) / 8) - height + 1) * 32
+        x = ((tile_id - TilemapRenderer::TILESET_START_ID) % TilemapRenderer::TILESET_TILES_PER_ROW) * 32
+        y = (((tile_id - TilemapRenderer::TILESET_START_ID) / TilemapRenderer::TILESET_TILES_PER_ROW) - height + 1) * 32
         tileset = yield(filename)
         ret.blt(0, 0, tileset, Rect.new(x, y, 32 * width, 32 * height))
         tileset.dispose

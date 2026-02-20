@@ -72,7 +72,14 @@ class Pokemon
     def display_type(pkmn);     return GameData::Move.get(@id).display_type(pkmn, self);     end
     def display_category(pkmn); return GameData::Move.get(@id).display_category(pkmn, self); end
     def display_damage(pkmn);   return GameData::Move.get(@id).display_damage(pkmn, self);   end
+    def display_power(pkmn);    return GameData::Move.get(@id).display_power(pkmn, self);    end
     def display_accuracy(pkmn); return GameData::Move.get(@id).display_accuracy(pkmn, self); end
+  end
+
+  def find_move(move_id)
+    return nil if move_id.nil? || !GameData::Move.exists?(move_id)
+    move_id = GameData::Move.get(move_id).id
+    return @moves.find { |m| m.id == move_id }
   end
 end
 

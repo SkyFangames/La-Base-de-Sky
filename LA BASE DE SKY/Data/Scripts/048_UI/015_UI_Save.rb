@@ -27,7 +27,7 @@ end
 #
 #===============================================================================
 class PokemonSave_Scene
-  LOCATION_TEXT_BASE   = Color.new(32, 152, 8)   # Green
+  LOCATION_TEXT_BASE   = Color.new(32, 152, 8)    # Green
   LOCATION_TEXT_SHADOW = Color.new(144, 240, 144)
   MALE_TEXT_BASE       = Color.new(0, 112, 248)   # Blue
   MALE_TEXT_SHADOW     = Color.new(120, 184, 232)
@@ -36,9 +36,13 @@ class PokemonSave_Scene
   OTHER_TEXT_BASE      = Color.new(0, 112, 248)   # Blue
   OTHER_TEXT_SHADOW    = Color.new(120, 184, 232)
 
+  # Misc constants
+  DEFAULT_VIEWPORT_Z        = 99999
+  LOCWINDOW_MIN_WIDTH       = 228
+
   def pbStartScreen
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @viewport.z = 99999
+    @viewport.z = DEFAULT_VIEWPORT_Z
     @sprites = {}
     totalsec = $stats.play_time.to_i
     hour = totalsec / 60 / 60
@@ -67,7 +71,7 @@ class PokemonSave_Scene
     @sprites["locwindow"].viewport = @viewport
     @sprites["locwindow"].x = 0
     @sprites["locwindow"].y = 0
-    @sprites["locwindow"].width = 228 if @sprites["locwindow"].width < 228
+    @sprites["locwindow"].width = LOCWINDOW_MIN_WIDTH if @sprites["locwindow"].width < LOCWINDOW_MIN_WIDTH
     @sprites["locwindow"].visible = true
   end
 
@@ -105,7 +109,7 @@ class PokemonSaveScreen
         pbMessage(_INTL("¡AVISO!") + "\1")
         pbMessage(_INTL("Tienes ya un archivo de guardado de una partida diferente.") + "\1")
         pbMessage(_INTL("Si guardas ahora, todos los datos de la otra partida se perderán para siempre.") + "\1")
-        if !pbConfirmMessageSerious(_INTL("¿Estás seguro de que quieres guardar la partida y sobreescribir el otro archivo?"))
+        if !pbConfirmMessageSerious(_INTL("¿Estás segur{1} de que quieres guardar la partida y sobreescribir el otro archivo?", $player.female? ? 'a' : 'o'))
           pbSEPlay("GUI save choice")
           @scene.pbEndScreen
           return false

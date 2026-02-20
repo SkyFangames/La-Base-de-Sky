@@ -73,7 +73,7 @@ class Battle::Move::OHKO < Battle::Move::FixedDamageMove
       @battle.pbDisplay(_INTL("¡No afecta a {1}!", target.pbThis(true))) if show_message
       return true
     end
-    if target.hasActiveAbility?(:STURDY) && !@battle.moldBreaker
+    if target.hasActiveAbility?(:STURDY) && !target.beingMoldBroken?
       if show_message
         @battle.pbShowAbilitySplash(target)
         if Battle::Scene::USE_ABILITY_SPLASH
@@ -90,8 +90,6 @@ class Battle::Move::OHKO < Battle::Move::FixedDamageMove
   end
 
   def pbAccuracyCheck(user, target)
-    return false if target.isCommander?
-    return true if target.effects[PBEffects::GlaiveRush] > 0
     acc = @accuracy + user.level - target.level
     return @battle.pbRandom(100) < acc
   end
@@ -121,8 +119,6 @@ class Battle::Move::OHKOIce < Battle::Move::OHKO
   end
 
   def pbAccuracyCheck(user, target)
-    return false if target.isCommander?
-    return true if target.effects[PBEffects::GlaiveRush] > 0
     acc = @accuracy + user.level - target.level
     acc -= 10 if !user.pbHasType?(:ICE)
     return @battle.pbRandom(100) < acc
@@ -150,12 +146,12 @@ class Battle::Move::DamageTargetAlly < Battle::Move
       b.pbReduceHP(b.totalhp / 16, false)
     end
     if hitAlly.length == 2
-      @battle.pbDisplay(_INTL("Las chispas también alcanzarón a {1} y {2}!",
+      @battle.pbDisplay(_INTL("Las chispas también alcanzaron a {1} y {2}!",
                               @battle.battlers[hitAlly[0][0]].pbThis(true),
                               @battle.battlers[hitAlly[1][0]].pbThis(true)))
     elsif hitAlly.length > 0
       hitAlly.each do |b|
-        @battle.pbDisplay(_INTL("Las chispas también alcanzarón a {1}!",
+        @battle.pbDisplay(_INTL("Las chispas también alcanzaron a {1}!",
                                 @battle.battlers[b[0]].pbThis(true)))
       end
     end
@@ -167,7 +163,7 @@ end
 # Power increases with the user's HP. (Eruption, Water Spout)
 #===============================================================================
 class Battle::Move::PowerHigherWithUserHP < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     return [150 * user.hp / user.totalhp, 1].max
   end
 end
@@ -176,7 +172,7 @@ end
 # Power increases the less HP the user has. (Flail, Reversal)
 #===============================================================================
 class Battle::Move::PowerLowerWithUserHP < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     ret = 20
     n = 48 * user.hp / user.totalhp
     if n < 2
@@ -195,10 +191,19 @@ class Battle::Move::PowerLowerWithUserHP < Battle::Move
 end
 
 #===============================================================================
+# Power increases with the target's HP. (Hard Press)
+#===============================================================================
+class Battle::Move::PowerHigherWithTargetHP100 < Battle::Move
+  def pbBasePower(base_power, user, target)
+    return [100 * target.hp / target.totalhp, 1].max
+  end
+end
+
+#===============================================================================
 # Power increases with the target's HP. (Crush Grip, Wring Out)
 #===============================================================================
-class Battle::Move::PowerHigherWithTargetHP < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+class Battle::Move::PowerHigherWithTargetHP120 < Battle::Move
+  def pbBasePower(base_power, user, target)
     return [120 * target.hp / target.totalhp, 1].max
   end
 end
@@ -207,7 +212,7 @@ end
 # Power increases with the user's happiness. (Return)
 #===============================================================================
 class Battle::Move::PowerHigherWithUserHappiness < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     return [(user.happiness * 2 / 5).floor, 1].max
   end
 end
@@ -216,8 +221,8 @@ end
 # Power decreases with the user's happiness. (Frustration)
 #===============================================================================
 class Battle::Move::PowerLowerWithUserHappiness < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    return [((255 - user.happiness) * 2 / 5).floor, 1].max
+  def pbBasePower(base_power, user, target)
+    return [((Settings::MAX_HAPPINESS - user.happiness) * 2 / 5).floor, 1].max
   end
 end
 
@@ -226,7 +231,7 @@ end
 # (Power Trip, Stored Power)
 #===============================================================================
 class Battle::Move::PowerHigherWithUserPositiveStatStages < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     mult = 1
     GameData::Stat.each_battle { |s| mult += user.stages[s.id] if user.stages[s.id] > 0 }
     return 20 * mult
@@ -238,7 +243,7 @@ end
 # (Punishment)
 #===============================================================================
 class Battle::Move::PowerHigherWithTargetPositiveStatStages < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     mult = 3
     GameData::Stat.each_battle { |s| mult += target.stages[s.id] if target.stages[s.id] > 0 }
     return [20 * mult, 200].min
@@ -249,7 +254,7 @@ end
 # Power increases the quicker the user is than the target. (Electro Ball)
 #===============================================================================
 class Battle::Move::PowerHigherWithUserFasterThanTarget < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     ret = 40
     n = user.pbSpeed / target.pbSpeed
     if n >= 4
@@ -269,7 +274,7 @@ end
 # Power increases the quicker the target is than the user. (Gyro Ball)
 #===============================================================================
 class Battle::Move::PowerHigherWithTargetFasterThanUser < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     return [[(25 * target.pbSpeed / user.pbSpeed).floor, 150].min, 1].max
   end
 end
@@ -278,7 +283,7 @@ end
 # Power increases the less PP this move has. (Trump Card)
 #===============================================================================
 class Battle::Move::PowerHigherWithLessPP < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     dmgs = [200, 80, 60, 50, 40]
     ppLeft = [@pp, dmgs.length - 1].min   # PP is reduced before the move is used
     return dmgs[ppLeft]
@@ -289,7 +294,7 @@ end
 # Power increases the heavier the target is. (Grass Knot, Low Kick)
 #===============================================================================
 class Battle::Move::PowerHigherWithTargetWeight < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     ret = 20
     weight = target.pbWeight
     if weight >= 2000
@@ -311,7 +316,7 @@ end
 # Power increases the heavier the user is than the target. (Heat Crash, Heavy Slam)
 #===============================================================================
 class Battle::Move::PowerHigherWithUserHeavierThanTarget < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     ret = 40
     n = (user.pbWeight / target.pbWeight).floor
     if n >= 5
@@ -341,8 +346,8 @@ class Battle::Move::PowerHigherWithConsecutiveUse < Battle::Move
     user.effects[PBEffects::FuryCutter] = (oldVal >= maxMult) ? maxMult : oldVal + 1
   end
 
-  def pbBaseDamage(baseDmg, user, target)
-    return baseDmg << (user.effects[PBEffects::FuryCutter] - 1)
+  def pbBasePower(base_power, user, target)
+    return base_power << (user.effects[PBEffects::FuryCutter] - 1)
   end
 end
 
@@ -360,8 +365,27 @@ class Battle::Move::PowerHigherWithConsecutiveUseOnUserSide < Battle::Move
     user.pbOwnSide.effects[PBEffects::EchoedVoiceUsed] = true
   end
 
-  def pbBaseDamage(baseDmg, user, target)
-    return baseDmg * user.pbOwnSide.effects[PBEffects::EchoedVoiceCounter]   # 1-5
+  def pbBasePower(base_power, user, target)
+    return base_power * user.pbOwnSide.effects[PBEffects::EchoedVoiceCounter]   # 1-5
+  end
+end
+
+#===============================================================================
+# Power is multiplied by the number of times Pokémon has been hit. (Rage Fist)
+#===============================================================================
+class Battle::Move::PowerHigherWithTimesHit < Battle::Move
+  def pbBasePower(base_power, user, target)
+    return base_power * (1 + [@battle.hitsTakenCounts[user.idxOwnSide][user.pokemonIndex], 6].min)
+  end
+end
+
+#===============================================================================
+# Power is multiplied by the number of times a Pokémon on the user's side has
+# fainted. (Last Respects)
+#===============================================================================
+class Battle::Move::PowerHigherWithFaintedAllies < Battle::Move
+  def pbBasePower(base_power, user, target)
+    return base_power * (1 + [@battle.sideFaintCounts[user.idxOwnSide], 100].min)
   end
 end
 
@@ -373,7 +397,7 @@ class Battle::Move::RandomPowerDoublePowerIfTargetUnderground < Battle::Move
   def hitsDiggingTargets?; return true; end
 
   def pbOnStartUse(user, targets)
-    baseDmg = [10, 30, 50, 70, 90, 110, 150]
+    base_power = [10, 30, 50, 70, 90, 110, 150]
     magnitudes = [
       4,
       5, 5,
@@ -384,11 +408,11 @@ class Battle::Move::RandomPowerDoublePowerIfTargetUnderground < Battle::Move
       10
     ]
     magni = magnitudes[@battle.pbRandom(magnitudes.length)]
-    @magnitudeDmg = baseDmg[magni - 4]
-    @battle.pbDisplay(_INTL("¡Magnitud {1}!", magni))
+    @magnitudeDmg = base_power[magni - 4]
+    @battle.pbDisplay(_INTL("Magnitud {1}!", magni))
   end
 
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     return @magnitudeDmg
   end
 
@@ -400,12 +424,61 @@ class Battle::Move::RandomPowerDoublePowerIfTargetUnderground < Battle::Move
 end
 
 #===============================================================================
+# Power is increased by 50% in sunny weather. (Hydro Steam)
+#===============================================================================
+class Battle::Move::IncreasePowerInSun < Battle::Move
+  # NOTE: No code needed here. Effect is coded in def pbCalcDamageMultipliers.
+end
+
+#===============================================================================
+# Power is increased by 50% if Electric Terrain applies. (Psyblade)
+#===============================================================================
+class Battle::Move::IncreasePowerInElectricTerrain < Battle::Move
+  def pbBasePower(base_power, user, target)
+    base_power = (base_power * 1.5).floor if @battle.field.terrain == :Electric && target.affectedByTerrain?
+    return base_power
+  end
+end
+
+#===============================================================================
+# Damage is increased by 33% if the move is super-effective. (Electro Drift)
+#===============================================================================
+class Battle::Move::IncreasePowerIfSuperEffective < Battle::Move
+  def pbModifyDamage(damageMult, user, target)
+    damageMult = damageMult * 4 / 3 if Effectiveness.super_effective?(target.damageState.typeMod)
+    return damageMult
+  end
+end
+
+#===============================================================================
+# Power is doubled 30% of the time. (Fickle Beam)
+#===============================================================================
+class Battle::Move::DoublePower30PercentChance < Battle::Move
+  def pbOnStartUse(user, targets)
+    @double_power = @battle.pbRandom(100) < 30
+    if @double_power
+      @battle.pbDisplay(_INTL("¡{1} va con todo por este ataque!", user.pbThis))
+    end
+  end
+
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if @double_power
+    return base_power
+  end
+
+  def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
+    hitNum = 1 if @double_power
+    super
+  end
+end
+
+#===============================================================================
 # Power is doubled if the target's HP is down to 1/2 or less. (Brine)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetHPLessThanHalf < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if target.hp <= target.totalhp / 2
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if target.hp <= target.totalhp / 2
+    return base_power
   end
 end
 
@@ -416,9 +489,9 @@ end
 class Battle::Move::DoublePowerIfUserPoisonedBurnedParalyzed < Battle::Move
   def damageReducedByBurn?; return Settings::MECHANICS_GENERATION <= 5; end
 
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if user.poisoned? || user.burned? || user.paralyzed?
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if user.poisoned? || user.burned? || user.paralyzed?
+    return base_power
   end
 end
 
@@ -426,12 +499,12 @@ end
 # Power is doubled if the target is asleep. Wakes the target up. (Wake-Up Slap)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetAsleepCureTarget < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if target.asleep? &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      baseDmg *= 2
+      base_power *= 2
     end
-    return baseDmg
+    return base_power
   end
 
   def pbEffectAfterAllHits(user, target)
@@ -446,12 +519,26 @@ end
 # Power is doubled if the target is poisoned. (Venoshock)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetPoisoned < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if target.poisoned? &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      baseDmg *= 2
+      base_power *= 2
     end
-    return baseDmg
+    return base_power
+  end
+end
+
+#===============================================================================
+# Power is doubled if the target is poisoned, and then poisons the target.
+# (Barb Barrage)
+#===============================================================================
+class Battle::Move::DoublePowerIfTargetPoisonedPoisonTarget < Battle::Move::PoisonTarget
+  def pbBasePower(base_power, user, target)
+    if target.poisoned? &&
+       (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
+      base_power *= 2
+    end
+    return base_power
   end
 end
 
@@ -460,12 +547,12 @@ end
 # (Smelling Salts)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetParalyzedCureTarget < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if target.paralyzed? &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      baseDmg *= 2
+      base_power *= 2
     end
-    return baseDmg
+    return base_power
   end
 
   def pbEffectAfterAllHits(user, target)
@@ -480,12 +567,26 @@ end
 # Power is doubled if the target has a status problem. (Hex)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetStatusProblem < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if target.pbHasAnyStatus? &&
        (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
-      baseDmg *= 2
+      base_power *= 2
     end
-    return baseDmg
+    return base_power
+  end
+end
+
+#===============================================================================
+# Power is doubled if the target has a status problem, and then burns the
+# target. (Infernal Parade)
+#===============================================================================
+class Battle::Move::DoublePowerIfTargetStatusProblemBurnTarget < Battle::Move::BurnTarget
+  def pbBasePower(base_power, user, target)
+    if target.pbHasAnyStatus? &&
+       (target.effects[PBEffects::Substitute] == 0 || ignoresSubstitute?(user))
+      base_power *= 2
+    end
+    return base_power
   end
 end
 
@@ -493,9 +594,9 @@ end
 # Power is doubled if the user has no held item. (Acrobatics)
 #===============================================================================
 class Battle::Move::DoublePowerIfUserHasNoItem < Battle::Move
-  def pbBaseDamageMultiplier(damageMult, user, target)
-    damageMult *= 2 if !user.item || user.effects[PBEffects::GemConsumed]
-    return damageMult
+  def pbBasePowerMultiplier(power_mult, user, target)
+    power_mult *= 2 if !user.item || user.effects[PBEffects::GemConsumed]
+    return power_mult
   end
 end
 
@@ -533,12 +634,12 @@ end
 class Battle::Move::DoublePowerIfTargetInSky < Battle::Move
   def hitsFlyingTargets?; return true; end
 
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if target.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSky",
-                                            "TwoTurnAttackInvulnerableInSkyParalyzeTarget",
-                                            "TwoTurnAttackInvulnerableInSkyTargetCannotAct") ||
-                    target.effects[PBEffects::SkyDrop] >= 0
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if target.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSky",
+                                               "TwoTurnAttackInvulnerableInSkyParalyzeTarget",
+                                               "TwoTurnAttackInvulnerableInSkyTargetCannotAct") ||
+                       target.effects[PBEffects::SkyDrop] >= 0
+    return base_power
   end
 end
 
@@ -546,9 +647,9 @@ end
 # Power is doubled if Electric Terrain applies. (Rising Voltage)
 #===============================================================================
 class Battle::Move::DoublePowerInElectricTerrain < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if @battle.field.terrain == :Electric && target.affectedByTerrain?
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if @battle.field.terrain == :Electric && target.affectedByTerrain?
+    return base_power
   end
 end
 
@@ -556,9 +657,9 @@ end
 # Power is doubled if the user's last move failed. (Stomping Tantrum)
 #===============================================================================
 class Battle::Move::DoublePowerIfUserLastMoveFailed < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if user.lastRoundMoveFailed
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if user.lastRoundMoveFailed
+    return base_power
   end
 end
 
@@ -566,10 +667,10 @@ end
 # Power is doubled if a user's teammate fainted last round. (Retaliate)
 #===============================================================================
 class Battle::Move::DoublePowerIfAllyFaintedLastTurn < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     lrf = user.pbOwnSide.effects[PBEffects::LastRoundFainted]
-    baseDmg *= 2 if lrf >= 0 && lrf == @battle.turnCount - 1
-    return baseDmg
+    base_power *= 2 if lrf >= 0 && lrf == @battle.turnCount - 1
+    return base_power
   end
 end
 
@@ -578,9 +679,9 @@ end
 # (Avalanche, Revenge)
 #===============================================================================
 class Battle::Move::DoublePowerIfUserLostHPThisTurn < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if user.lastAttacker.include?(target.index)
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if user.lastAttacker.include?(target.index)
+    return base_power
   end
 end
 
@@ -588,9 +689,9 @@ end
 # Power is doubled if the target has already lost HP this round. (Assurance)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetLostHPThisTurn < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if target.tookDamageThisRound
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if target.tookDamageThisRound
+    return base_power
   end
 end
 
@@ -598,9 +699,9 @@ end
 # Power is doubled if any of the user's stats were lowered this round. (Lash Out)
 #===============================================================================
 class Battle::Move::DoublePowerIfUserStatsLoweredThisTurn < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if user.statsLoweredThisRound
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if user.statsLoweredThisRound
+    return base_power
   end
 end
 
@@ -608,13 +709,13 @@ end
 # Power is doubled if the target has already moved this round. (Payback)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetActed < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if @battle.choices[target.index][0] != :None &&
        ((@battle.choices[target.index][0] != :UseMove &&
        @battle.choices[target.index][0] != :Shift) || target.movedThisRound?)
-      baseDmg *= 2
+      base_power *= 2
     end
-    return baseDmg
+    return base_power
   end
 end
 
@@ -623,12 +724,12 @@ end
 # switched in this round. (Bolt Beak, Fishious Rend)
 #===============================================================================
 class Battle::Move::DoublePowerIfTargetNotActed < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if @battle.choices[target.index][0] == :None ||   # Switched in
        ([:UseMove, :Shift].include?(@battle.choices[target.index][0]) && !target.movedThisRound?)
-      baseDmg *= 2
+      base_power *= 2
     end
-    return baseDmg
+    return base_power
   end
 end
 
@@ -695,7 +796,8 @@ class Battle::Move::UserEnduresFaintingThisTurn < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# Weakens Electric attacks. (Mud Sport)
+# Weakens Electric attacks. Lasts for 5 rounds (Gen 6+) or as long as the user
+# is in battle (Gen 5-). (Mud Sport)
 #===============================================================================
 class Battle::Move::StartWeakenElectricMoves < Battle::Move
   def pbMoveFailed?(user, targets)
@@ -722,7 +824,8 @@ class Battle::Move::StartWeakenElectricMoves < Battle::Move
 end
 
 #===============================================================================
-# Weakens Fire attacks. (Water Sport)
+# Weakens Fire attacks. Lasts for 5 rounds (Gen 6+) or as long as the user
+# is in battle (Gen 5-). (Water Sport)
 #===============================================================================
 class Battle::Move::StartWeakenFireMoves < Battle::Move
   def pbMoveFailed?(user, targets)
@@ -771,7 +874,8 @@ class Battle::Move::StartWeakenPhysicalDamageAgainstUserSide < Battle::Move
 end
 
 #===============================================================================
-# For 5 rounds, lowers power of special attacks against the user's side. (Light Screen)
+# For 5 rounds, lowers power of special attacks against the user's side.
+# (Light Screen)
 #===============================================================================
 class Battle::Move::StartWeakenSpecialDamageAgainstUserSide < Battle::Move
   def canSnatch?; return true; end
@@ -799,7 +903,7 @@ class Battle::Move::StartWeakenDamageAgainstUserSideIfHail < Battle::Move
   def canSnatch?; return true; end
 
   def pbMoveFailed?(user, targets)
-    if user.effectiveWeather != :Hail
+    if ![:Hail, :Snowstorm].include?(user.effectiveWeather)
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
@@ -851,7 +955,8 @@ class Battle::Move::RemoveScreens < Battle::Move
 end
 
 #===============================================================================
-# User is protected against moves with the "B" flag this round. (Detect, Protect)
+# User is protected against moves with the "CanProtect" flag this round.
+# Contributes to Protect's counter. (Detect, Protect)
 #===============================================================================
 class Battle::Move::ProtectUser < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -861,9 +966,9 @@ class Battle::Move::ProtectUser < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# User is protected against moves with the "B" flag this round. If a Pokémon
-# makes contact with the user while this effect applies, that Pokémon is
-# poisoned. (Baneful Bunker)
+# User is protected against moves with the "CanProtect" flag this round. If a
+# Pokémon makes contact with the user while this effect applies, that Pokémon is
+# poisoned. Contributes to Protect's counter. (Baneful Bunker)
 #===============================================================================
 class Battle::Move::ProtectUserBanefulBunker < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -873,8 +978,22 @@ class Battle::Move::ProtectUserBanefulBunker < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# User is protected against damaging moves this round. Decreases the Attack of
-# the user of a stopped contact move by 2 stages. (King's Shield)
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon is burned.
+# Contributes to Protect's counter. (Burning Bulwark)
+#===============================================================================
+class Battle::Move::ProtectUserFromDamagingMovesBurningBulwark < Battle::Move::ProtectMove
+  def initialize(battle, move)
+    super
+    @effect = PBEffects::BurningBulwark
+  end
+end
+
+#===============================================================================
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon's Attack is
+# lowered by 2 stages (or 1 in Gen 8+). Contributes to Protect's counter.
+# (King's Shield)
 #===============================================================================
 class Battle::Move::ProtectUserFromDamagingMovesKingsShield < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -884,10 +1003,9 @@ class Battle::Move::ProtectUserFromDamagingMovesKingsShield < Battle::Move::Prot
 end
 
 #===============================================================================
-# For the rest of this round, the user avoids all damaging moves that would hit
-# it. If a move that makes contact is stopped by this effect, decreases the
-# Defense of the Pokémon using that move by 2 stages. Contributes to Protect's
-# counter. (Obstruct)
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon's Defense is
+# lowered by 2 stages. Contributes to Protect's counter. (Obstruct)
 #===============================================================================
 class Battle::Move::ProtectUserFromDamagingMovesObstruct < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -897,8 +1015,21 @@ class Battle::Move::ProtectUserFromDamagingMovesObstruct < Battle::Move::Protect
 end
 
 #===============================================================================
-# User is protected against moves that target it this round. Damages the user of
-# a stopped contact move by 1/8 of its max HP. (Spiky Shield)
+# User is protected against damaging moves this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon's Speed is
+# lowered by 1 stage. Contributes to Protect's counter. (Silk Trap)
+#===============================================================================
+class Battle::Move::ProtectUserFromDamagingMovesSilkTrap < Battle::Move::ProtectMove
+  def initialize(battle, move)
+    super
+    @effect = PBEffects::SilkTrap
+  end
+end
+
+#===============================================================================
+# User is protected against moves that target it this round. If a Pokémon makes
+# contact with the user while this effect applies, that Pokémon takes damage
+# equal to 1/8 of its max HP. Contributes to Protect's counter. (Spiky Shield)
 #===============================================================================
 class Battle::Move::ProtectUserFromTargetingMovesSpikyShield < Battle::Move::ProtectMove
   def initialize(battle, move)
@@ -908,7 +1039,7 @@ class Battle::Move::ProtectUserFromTargetingMovesSpikyShield < Battle::Move::Pro
 end
 
 #===============================================================================
-# This round, the user's side is unaffected by damaging moves. (Mat Block)
+# User's side is protected against damaging moves this round. (Mat Block)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromDamagingMovesIfUserFirstTurn < Battle::Move
   def canSnatch?; return true; end
@@ -929,7 +1060,8 @@ class Battle::Move::ProtectUserSideFromDamagingMovesIfUserFirstTurn < Battle::Mo
 end
 
 #===============================================================================
-# User's side is protected against status moves this round. (Crafty Shield)
+# User's side is protected against targeting status moves this round.
+# (Crafty Shield)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromStatusMoves < Battle::Move
   def pbMoveFailed?(user, targets)
@@ -948,7 +1080,7 @@ class Battle::Move::ProtectUserSideFromStatusMoves < Battle::Move
 end
 
 #===============================================================================
-# User's side is protected against moves with priority greater than 0 this round.
+# User's side is protected against moves with priority higher than 0 this round.
 # (Quick Guard)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromPriorityMoves < Battle::Move::ProtectMove
@@ -962,8 +1094,8 @@ class Battle::Move::ProtectUserSideFromPriorityMoves < Battle::Move::ProtectMove
 end
 
 #===============================================================================
-# User's side is protected against moves that target multiple battlers this round.
-# (Wide Guard)
+# User's side is protected against moves that target multiple battlers this
+# round. (Wide Guard)
 #===============================================================================
 class Battle::Move::ProtectUserSideFromMultiTargetDamagingMoves < Battle::Move::ProtectMove
   def canSnatch?; return true; end
@@ -980,12 +1112,12 @@ end
 #===============================================================================
 class Battle::Move::RemoveProtections < Battle::Move
   def pbEffectAgainstTarget(user, target)
-    target.effects[PBEffects::BurningBulwark]         = false
-    target.effects[PBEffects::SilkTrap]         	    = false
     target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::BurningBulwark]         = false
     target.effects[PBEffects::KingsShield]            = false
     target.effects[PBEffects::Obstruct]               = false
     target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SilkTrap]               = false
     target.effects[PBEffects::SpikyShield]            = false
     target.pbOwnSide.effects[PBEffects::CraftyShield] = false
     target.pbOwnSide.effects[PBEffects::MatBlock]     = false
@@ -1025,12 +1157,12 @@ class Battle::Move::HoopaRemoveProtectionsBypassSubstituteLowerUserDef1 < Battle
   end
 
   def pbEffectAgainstTarget(user, target)
-    target.effects[PBEffects::BurningBulwark]         = false
-    target.effects[PBEffects::SilkTrap]         	    = false
     target.effects[PBEffects::BanefulBunker]          = false
+    target.effects[PBEffects::BurningBulwark]         = false
     target.effects[PBEffects::KingsShield]            = false
     target.effects[PBEffects::Obstruct]               = false
     target.effects[PBEffects::Protect]                = false
+    target.effects[PBEffects::SilkTrap]               = false
     target.effects[PBEffects::SpikyShield]            = false
     target.pbOwnSide.effects[PBEffects::CraftyShield] = false
     target.pbOwnSide.effects[PBEffects::MatBlock]     = false
@@ -1067,6 +1199,7 @@ class Battle::Move::RecoilThirdOfDamageDealtParalyzeTarget < Battle::Move::Recoi
   end
 
   def pbAdditionalEffect(user, target)
+    return if !target.affectedByAdditionalEffects?
     return if target.damageState.substitute
     target.pbParalyze(user) if target.pbCanParalyze?(user, false, self)
   end
@@ -1082,6 +1215,7 @@ class Battle::Move::RecoilThirdOfDamageDealtBurnTarget < Battle::Move::RecoilMov
   end
 
   def pbAdditionalEffect(user, target)
+    return if !target.affectedByAdditionalEffects?
     return if target.damageState.substitute
     target.pbBurn(user) if target.pbCanBurn?(user, false, self)
   end
@@ -1094,6 +1228,15 @@ end
 class Battle::Move::RecoilHalfOfDamageDealt < Battle::Move::RecoilMove
   def pbRecoilDamage(user, target)
     return (target.damageState.totalHPLost / 2.0).round
+  end
+end
+
+#===============================================================================
+# User takes recoil damage equal to 1/2 of is maximum HP. (Chloroblast)
+#===============================================================================
+class Battle::Move::RecoilHalfOfTotalHP < Battle::Move::RecoilMove
+  def pbRecoilDamage(user, target)
+    return (user.totalhp / 2.0).round
   end
 end
 
@@ -1130,19 +1273,11 @@ class Battle::Move::CategoryDependsOnHigherDamagePoisonTarget < Battle::Move::Po
   def pbOnStartUse(user, targets)
     target = targets[0]
     return if !target
-    max_stage = Battle::Battler::STAT_STAGE_MAXIMUM
-    stageMul = Battle::Battler::STAT_STAGE_MULTIPLIERS
-    stageDiv = Battle::Battler::STAT_STAGE_DIVISORS
-    # Calculate user's effective attacking values
-    attack_stage         = user.stages[:ATTACK] + max_stage
-    real_attack          = (user.attack.to_f * stageMul[attack_stage] / stageDiv[attack_stage]).floor
-    special_attack_stage = user.stages[:SPECIAL_ATTACK] + max_stage
-    real_special_attack  = (user.spatk.to_f * stageMul[special_attack_stage] / stageDiv[special_attack_stage]).floor
-    # Calculate target's effective defending values
-    defense_stage         = target.stages[:DEFENSE] + max_stage
-    real_defense          = (target.defense.to_f * stageMul[defense_stage] / stageDiv[defense_stage]).floor
-    special_defense_stage = target.stages[:SPECIAL_DEFENSE] + max_stage
-    real_special_defense  = (target.spdef.to_f * stageMul[special_defense_stage] / stageDiv[special_defense_stage]).floor
+    # Calculate effective attacking/defending values
+    real_attack          = user.stat_with_stages(:ATTACK)
+    real_special_attack  = user.stat_with_stages(:SPECIAL_ATTACK)
+    real_defense         = target.stat_with_stages(:DEFENSE)
+    real_special_defense = target.stat_with_stages(:SPECIAL_DEFENSE)
     # Perform simple damage calculation
     physical_damage = real_attack.to_f / real_defense
     special_damage = real_special_attack.to_f / real_special_defense
@@ -1175,22 +1310,9 @@ class Battle::Move::CategoryDependsOnHigherDamageIgnoreTargetAbility < Battle::M
   def specialMove?(thisType = nil);  return (@calcCategory == 1); end
 
   def pbOnStartUse(user, targets)
-    # Calculate user's effective attacking value
-    max_stage = Battle::Battler::STAT_STAGE_MAXIMUM
-    stageMul = Battle::Battler::STAT_STAGE_MULTIPLIERS
-    stageDiv = Battle::Battler::STAT_STAGE_DIVISORS
-    atk        = user.attack
-    atkStage   = user.stages[:ATTACK] + max_stage
-    realAtk    = (atk.to_f * stageMul[atkStage] / stageDiv[atkStage]).floor
-    spAtk      = user.spatk
-    spAtkStage = user.stages[:SPECIAL_ATTACK] + max_stage
-    realSpAtk  = (spAtk.to_f * stageMul[spAtkStage] / stageDiv[spAtkStage]).floor
-    # Determine move's category
-    @calcCategory = (realAtk > realSpAtk) ? 0 : 1
-    
-    if @battle.moldBreaker && targets[0].hasActiveItem?(:ABILITYSHIELD)
-      @battle.moldBreaker = false
-    end
+    real_attack         = user.stat_with_stages(:ATTACK)
+    real_special_attack = user.stat_with_stages(:SPECIAL_ATTACK)
+    @calcCategory = (real_attack > real_special_attack) ? 0 : 1
   end
 end
 
@@ -1284,12 +1406,67 @@ class Battle::Move::IgnoreTargetDefSpDefEvaStatStages < Battle::Move
 end
 
 #===============================================================================
+# This move ignores target's Defense, Special Defense and evasion stat changes.
+# It also ignores the target's Fairy-type immunity to Dragon-type. (Nihil Light)
+#===============================================================================
+class Battle::Move::IgnoreTargetStatStagesNormalEffectiveAgainstFairy < Battle::Move::IgnoreTargetDefSpDefEvaStatStages
+  def pbCalcTypeModSingle(moveType, defType, user, target)
+    if Effectiveness.ineffective_type?(moveType, defType) &&
+       moveType == :DRAGON && defType == :FAIRY
+      return Effectiveness::NORMAL_EFFECTIVE_MULTIPLIER
+    end
+    return super
+  end
+end
+
+#===============================================================================
 # This move's type is the same as the user's first type. (Revelation Dance)
 #===============================================================================
 class Battle::Move::TypeIsUserFirstType < Battle::Move
   def pbBaseType(user)
     userTypes = user.pbTypes(true)
     return userTypes[0] || @type
+  end
+end
+
+#===============================================================================
+# This move's type is the same as the user's second type, only if the user is
+# Ogerpon. (Ivy Cudgel)
+#===============================================================================
+class Battle::Move::TypeDependsOnUserOgerponForm < Battle::Move
+  def pbBaseType(user)
+    if user.isSpecies?(:OGERPON)
+      case user.form
+      when 1
+        return :WATER if GameData::Type.exists?(:WATER)
+      when 2
+        return :FIRE if GameData::Type.exists?(:FIRE)
+      when 3
+        return :ROCK if GameData::Type.exists?(:ROCK)
+      end
+    end
+    return @type
+  end
+end
+
+#===============================================================================
+# This move's type is the same as the user's second type, only if the user is
+# Tauros. It also ends the opposing side's Light Screen, Reflect and
+# Aurora Break. (Raging Bull)
+#===============================================================================
+class Battle::Move::TypeDependsOnUserTaurosFormRemoveScreens < Battle::Move::RemoveScreens
+  def pbBaseType(user)
+    if user.isSpecies?(:TAUROS)
+      case user.form
+      when 1
+        return :FIGHTING if GameData::Type.exists?(:FIGHTING)
+      when 2
+        return :FIRE if GameData::Type.exists?(:FIRE)
+      when 3
+        return :WATER if GameData::Type.exists?(:WATER)
+      end
+    end
+    return @type
   end
 end
 
@@ -1302,7 +1479,7 @@ class Battle::Move::TypeDependsOnUserIVs < Battle::Move
     return hp[0]
   end
 
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     return super if Settings::MECHANICS_GENERATION >= 6
     hp = pbHiddenPower(user.pokemon)
     return hp[1]
@@ -1373,7 +1550,7 @@ class Battle::Move::TypeAndPowerDependOnUserBerry < Battle::Move
     return ret
   end
 
-  def pbBaseDamage(baseDmg, user, target)
+  def pbBasePower(base_power, user, target)
     if user.item.id
       GameData::Item.get(user.item.id).flags.each do |flag|
         return [$~[1].to_i, 10].max if flag[/^NaturalGift_(?:\w+)_(\d+)$/i]
@@ -1417,28 +1594,8 @@ class Battle::Move::TypeDependsOnUserPlate < Battle::Move
       :PIXIEPLATE  => :FAIRY
     }
   end
-  
-  def pbOnStartUse(user, targets)
-    if user.hasLegendPlateJudgment? && !targets.empty?
-      target = nil
-      targets.each do |b|
-        next if !b || b.fainted? || b.isCommander?
-        target = b
-      end
-      newType   = @battle.pbGetBestTypeJudgment(user, target, self, user.legendPlateType)
-      newForm   = GameData::Type.get(newType).icon_position
-      typeName  = GameData::Type.get(newType).name
-      @calcType = newType
-      if user.form != newForm
-        @battle.scene.pbArceusTransform(user.index, newType)
-        user.pbChangeForm(newForm,
-        _INTL("{1} se transformó al tipo {2}!", user.pbThis, typeName))
-      end
-    end
-  end
 
   def pbBaseType(user)
-    return user.legendPlateType if user.hasLegendPlateJudgment?
     ret = :NORMAL
     if user.item_id && user.itemActive?
       typ = @itemTypes[user.item_id]
@@ -1543,9 +1700,9 @@ end
 # Power is doubled in weather. Type changes depending on the weather. (Weather Ball)
 #===============================================================================
 class Battle::Move::TypeAndPowerDependOnWeather < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if user.effectiveWeather != :None
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if user.effectiveWeather != :None
+    return base_power
   end
 
   def pbBaseType(user)
@@ -1557,7 +1714,7 @@ class Battle::Move::TypeAndPowerDependOnWeather < Battle::Move
       ret = :WATER if GameData::Type.exists?(:WATER)
     when :Sandstorm
       ret = :ROCK if GameData::Type.exists?(:ROCK)
-    when :Hail
+    when :Hail, :Snowstorm
       ret = :ICE if GameData::Type.exists?(:ICE)
     when :ShadowSky
       ret = :NONE
@@ -1580,9 +1737,9 @@ end
 # type and animation depends on the terrain. (Terrain Pulse)
 #===============================================================================
 class Battle::Move::TypeAndPowerDependOnTerrain < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 2 if @battle.field.terrain != :None && user.affectedByTerrain?
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power *= 2 if @battle.field.terrain != :None && user.affectedByTerrain?
+    return base_power
   end
 
   def pbBaseType(user)
@@ -1625,7 +1782,7 @@ class Battle::Move::TargetMovesBecomeElectric < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Electrify] = true
-    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Electrico!", target.pbThis(true)))
+    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Eléctrico!", target.pbThis(true)))
   end
 end
 
@@ -1648,132 +1805,5 @@ class Battle::Move::NormalMovesBecomeElectric < Battle::Move
     return if @battle.field.effects[PBEffects::IonDeluge]
     @battle.field.effects[PBEffects::IonDeluge] = true
     @battle.pbDisplay(_INTL("¡Una lluvia de electrones cae sobre el terreno de combate!"))
-  end
-end
-
-#===============================================================================
-# User takes recoil damage equal to 1/2 of its total HP. (Chloroblast)
-#===============================================================================
-class Battle::Move::RecoilHalfOfTotalHP < Battle::Move::RecoilMove
-  def pbRecoilDamage(user, target)
-    return (user.totalhp / 2.0).ceil
-  end
-end
-
-#===============================================================================
-# Raging Bull
-#===============================================================================
-# Ends Light Screen, Reflect and Aurora Veil on the target's side.
-# If used by Tauros, the type of the move changes to reflect Tauros's type.
-#-------------------------------------------------------------------------------
-class Battle::Move::TypeIsUserSecondTypeRemoveScreens < Battle::Move::RemoveScreens
-  def pbBaseType(user)
-    return @type if !user.isSpecies?(:TAUROS)
-    userTypes = user.pokemon.types
-    return userTypes[1] || userTypes[0] || @type
-  end
-  
-  def pbShowAnimation(id, user, targets, hitNum = 0, showAnimation = true)
-	case pbBaseType(user)
-	when :FIGHTING then hitNum = 1
-	when :FIRE     then hitNum = 2
-	when :WATER    then hitNum = 3
-	else                hitNum = 0
-	end
-    super
-  end
-end
-
-#===============================================================================
-# Rage Fist
-#===============================================================================
-# Power is increased by 50 for each time the user has been hit this battle.
-#-------------------------------------------------------------------------------
-class Battle::Move::IncreasePowerEachTimeHit < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    bonus = 50 * user.num_times_hit
-    return [baseDmg + bonus, 350].min
-  end
-end
-
-#===============================================================================
-# Collision Course, Electro Drift
-#===============================================================================
-# Damage is increased if the move would deal super effective damage.
-#-------------------------------------------------------------------------------
-class Battle::Move::IncreasePowerSuperEffective < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg *= 4 / 3.0 if Effectiveness.super_effective?(target.damageState.typeMod)
-    return baseDmg
-  end
-end
-
-#===============================================================================
-# Silk Trap
-#===============================================================================
-# User is protected against damaging moves this round. Decreases the Speed of
-# the user of a stopped contact move by 1 stage.
-#-------------------------------------------------------------------------------
-class Battle::Move::ProtectUserFromDamagingMovesSilkTrap < Battle::Move::ProtectMove
-  def initialize(battle, move)
-    super
-    @effect = PBEffects::SilkTrap
-  end
-end
-
-#===============================================================================
-# Burning Bulwark
-#===============================================================================
-# The user protects itself. Foes who make contact will become burned.
-#-------------------------------------------------------------------------------
-class Battle::Move::ProtectUserBurningBulwark < Battle::Move::ProtectMove
-  def initialize(battle, move)
-    super
-    @effect = PBEffects::BurningBulwark
-  end
-end
-
-
-#===============================================================================
-# Hard Press
-#===============================================================================
-# Deals damage based on the target's remaining HP.
-#-------------------------------------------------------------------------------
-class Battle::Move::PowerHigherWithTargetHP100PowerRange < Battle::Move
-  def pbBaseDamage(baseDmg, user, target)
-    return [100 * target.hp / target.totalhp, 1].max
-  end
-end
-
-#===============================================================================
-# Supercell Slam
-#===============================================================================
-# If attack misses, user takes crash damage of 1/2 of max HP.
-# This move is NOT affected by Gravity.
-#-------------------------------------------------------------------------------
-class Battle::Move::CrashDamageIfFails < Battle::Move::CrashDamageIfFailsUnusableInGravity
-  def unusableInGravity?; return false; end
-end
-  
-#===============================================================================
-# Upper Hand
-#===============================================================================
-# Fails if the target isn't using a priority move.
-#-------------------------------------------------------------------------------
-class Battle::Move::FlinchTargetFailsIfTargetNotUsingPriorityMove < Battle::Move::FlinchTarget
-  def pbMoveFailed?(user, targets)
-	hasPriority = false
-    targets.each do |b|
-      next if b.movedThisRound?
-      choices = @battle.choices[b.index]
-      next if !choices[2].damagingMove?
-	  next if !choices[4] || choices[4] <= 0 || choices[4] > @priority
-      hasPriority = true
-    end
-    if !hasPriority
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
-    return false
   end
 end

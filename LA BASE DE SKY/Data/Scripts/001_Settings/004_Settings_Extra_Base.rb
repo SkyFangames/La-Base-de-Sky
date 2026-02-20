@@ -15,6 +15,21 @@ module Settings
   # el formato es [:IDOBJETO] por ejemplo [:SITRUSBERRY]
   RESTORE_HELD_ITEMS_BLACKLIST = []
 
+  # Esta es la lista de bayas por si las quieres añadir en los corchetes.
+=begin 
+  :CHERIBERRY, :CHESTOBERRY, :PECHABERRY, :RAWSTBERRY,
+  :ASPEARBERRY, :LEPPABERRY, :ORANBERRY, :PERSIMBERRY, :LUMBERRY, :SITRUSBERRY,
+  :FIGYBERRY, :WIKIBERRY, :MAGOBERRY, :AGUAVBERRY, :IAPAPABERRY, :RAZZBERRY,
+  :BLUKBERRY, :NANABBERRY, :WEPEARBERRY, :PINAPBERRY, :POMEGBERRY, :KELPSYBERRY,
+  :QUALOTBERRY, :HONDEWBERRY, :GREPABERRY, :TAMATOBERRY, :CORNNBERRY, :MAGOSTBERRY,
+  :RABUTABERRY, :NOMELBERRY, :SPELONBERRY, :PAMTREBERRY, :WATMELBERRY, :DURINBERRY,
+  :BELUEBERRY, :OCCABERRY, :PASSHOBERRY, :WACANBERRY, :RINDOBERRY, :YACHEBERRY,
+  :CHOPLEBERRY, :KEBIABERRY, :SHUCABERRY, :COBABERRY, :PAYAPABERRY, :TANGABERRY,
+  :CHARTIBERRY, :KASIBBERRY, :HABANBERRY, :COLBURBERRY, :BABIRIBERRY, :ROSELIBERRY,
+  :CHILANBERRY, :LIECHIBERRY, :GANLONBERRY, :SALACBERRY, :PETAYABERRY, :APICOTBERRY,
+  :LANSATBERRY, :STARFBERRY, :ENIGMABERRY, :MICLEBERRY, :CUSTAPBERRY, :JABOCABERRY,
+  :ROWAPBERRY, :KEEBERRY, :MARANGABERRY
+=end
   
   ################################################################################
   #  CONFIGURACIÓN DEL DELUXE BATTLE SCRIPT
@@ -32,17 +47,28 @@ module Settings
   # Activa o desactiva la animación de Reversión Primigenia utilizada por este plugin.
   SHOW_PRIMAL_ANIM = true
 
-  # Activa el nuevo repartir experiencia que se puede activar para cada pokemon del equipo.
+  # Activa el nuevo repartir experiencia que se puede activar para cada pokémon del equipo.
   USE_NEW_EXP_SHARE = true
 
-  ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida
+  ## HABILITAR EL REAPATIR EXPERIENCIA desde el inicio de la partida, sin necesidad de dar ningun objeto
+  ## o de activar el $player.has_exp_all, si desean activar el expshare para todos los pokémon, con alguno
+  ## de los 2 metodos mencionados anteriormente, deben dejar esta variable en false.
   EXPSHARE_ENABLED = true
 
 
+  ################################################################################
+  #  CONFIGURACIÓN DE POKÉMON
+  ################################################################################
+  # Elige si quieres que las formas de la línea evolutiva de Spewpa dependan de el ID del jugador.
+  LINEA_DE_SPEWPA_POR_ID = true
+
+  # Elige si quieres que las formas regionales dependan de la región en la que esté el jugador.
+  REGIONAL_FORMS_DEPEND_ON_MAP_REGION = true
+
   
-################################################################################
-#  CONFIGURACIÓN DEL ENHANCED BATTLE UI
-################################################################################
+  ################################################################################
+  #  CONFIGURACIÓN DEL ENHANCED BATTLE UI
+  ################################################################################
   # Almacena la ruta para los gráficos utilizados por este plugin.
   BATTLE_UI_GRAPHICS_PATH = "Graphics/Plugins/Enhanced Battle UI/"
   
@@ -53,6 +79,10 @@ module Settings
   # 2 => Show prompt, but hide after 2 seconds.
   #-----------------------------------------------------------------------------
   UI_PROMPT_DISPLAY = 2
+
+  # Cuando en el grafico Graphics/Plugins/Enhanced Battle UI/command_prompts.png
+  # ya están incluidos los textos de los prompts (A: , S: ), poner esta constante en true.
+  PROMPT_TEXT_INCLUDED_IN_GRAPHICS = true
   
 
   #-----------------------------------------------------------------------------
@@ -67,11 +97,19 @@ module Settings
   # especies nuevas.
   SHOW_TYPE_EFFECTIVENESS_FOR_NEW_SPECIES = false
 
+  # Cuando un Pokémon es debilitado todos sus sprites se veran grisados
+  # Al curarlo vuelven a su color original
+  GREY_OUT_FAINTED = true
+  
+  ################################################################################
+  #  POKÉDEX AVANZADA
+  ################################################################################
 
+  # Si está en true hace que en las dexes verifique tambien si has visto formas alternativas
+  # esto es util si quieres hacer una dex solo de formas regionales o megas
+  REGIONAL_DEXES_INCLUDE_ALTERNATE_FORMS = true
 
-################################################################################
-#  POKÉDEX AVANZADA
-################################################################################
+  #-----------------------------------------------------------------------------
   # Ruta de gráficos para la página de datos de la Pokédex.
   #-----------------------------------------------------------------------------
   # Almacena la ruta para los gráficos utilizados por este plugin.
@@ -90,22 +128,26 @@ module Settings
   # Si agregan paginas nuevas a la pokédex en medio, cambiar esto
   ADVANCED_DEX_PAGE = 4
 
-  # # Mostrar Siluetas para los Pokemon no vistos en la dex
-  SHOW_SILHOUETTES_IN_DEX = true
+  # # Mostrar Siluetas para los Pokémon no vistos en la dex
+  SHOW_SILHOUETTES_IN_DEX = false
+
+  # Mostrar cambios de stats respecto a los juegos oficiales
+  # Para esto se utiliza la PokeAPI, si no hay internet no hará nada
+  SHOW_STAT_CHANGES_WITH_POKEAPI = false
 
 
-  
-################################################################################
-#  TURBO
-################################################################################
-# Habilitar o deshabilitar opciones del menú, habilitado por defecto.
+    
+  ################################################################################
+  #  TURBO
+  ################################################################################
+  # Habilitar o deshabilitar opciones del menú, habilitado por defecto.
   SPEED_OPTIONS = true
   
   
   
-################################################################################
-#  ENHANCED POKEMON UI
-################################################################################
+  ################################################################################
+  #  ENHANCED POKÉMON UI
+  ################################################################################
   # Ruta de gráficos
   # Almacena la ruta para los gráficos utilizados por este plugin.
   POKEMON_UI_GRAPHICS_PATH = "Graphics/Plugins/Enhanced Pokemon UI/"
@@ -150,36 +192,48 @@ module Settings
   
   # Mostrar MTs y MOs en el recordador
   SHOW_MTS_MOS_IN_MOVE_RELEARNER = true
+
+  # Mostrar indicador para movimientos no vistos en el recordador
+  # Esto es para cuando un Pokémon puede aprender un movimiento que el jugador no ha visto antes
+  # Ya sea porque es un movimiento que el Pokémon solo aprende por recordador
+  # o porque el jugador tiene la opción de saltarse el aprendizaje por nivel.
+  SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER = false
   
   # Cerrar el recordador luego de cada ataque
   CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE = false
+
+  # Usar nombres default para el jugador en lugar del nombre de usuario del sistema
+  # Si esta constante está en true, se usarán los nombres de las constantes
+  # MALE_PLAYER_NAME y FEMALE_PLAYER_NAME definidas más abajo. 
+  # En caso contrario, se usará el nombre de usuario del sistema como nombre del jugador.
+  USE_DEFAULT_PLAYER_NAMES = false
+  MALE_PLAYER_NAME = "Rojo"
+  FEMALE_PLAYER_NAME = "Hoja"
+
+  # Es el número de switch que usa la Fancy Camera. Debes encender este switch
+  # para activar la cámara fancy.
+  CAMERA_FANCY = 59
 end
 
 
-# Poner a verdadero para poder usar la cámara elegante con las nuevas funciones.
-# Es el número del Switch
-CAMERA_FANCY = 59
-
-
-
 #===============================================================================
-# Pantalla de la Bolsa con Equipo interactivo: Ajustes
+# Pantalla de la Mochila con Equipo
 #===============================================================================
 module BagScreenWiInParty
-# Si deseas que tu pantalla de la Bolsa tenga un panorama desplazable (true o 
-# false):
+  # Si deseas que tu pantalla de la Mochila tenga un panorama desplazable (true o 
+  # false):
   PANORAMA = true
  
-# Color de fondo de la interfaz:
- # 0 para solo naranja (estilo de generaciones más recientes);
- # 1 para un color diferente según el género del jugador (estilo BW);
- # 2 para un color diferente para cada bolsillo (estilo HGSS).
+  # Color de fondo de la interfaz:
+  # 0 para solo naranja (estilo de generaciones más recientes);
+  # 1 para un color diferente según el género del jugador (estilo BW);
+  # 2 para un color diferente para cada bolsillo (estilo HGSS).
   BGSTYLE = 0
 
-# Si deseas que aparezca un icono de Pokérus y/o un icono brillante, respectivamente
-# (true o false):
-  SHINYICON = true
+  # Si deseas que aparezca un icono de Pokérus y/o de shiny, respectivamente
+  # (true o false):
   PKRSICON  = true
+  SHINYICON = true
 end
 
 
@@ -202,8 +256,8 @@ CAN_MULTI_SELECT = true
 CAN_MASS_RELEASE = true
 
 # Si se pueden "dejar" Pokémon en una caja
-# Esto te permite almacenar rápidamente Pokémon en una caja haciendo clic en el botón
-# de uso en el encabezado de la página mientras mueves un Pokémon agarrado
+# Esto te permite almacenar rápidamente Pokémon en una caja haciendo clic en el
+# encabezado de la caja mientras tienes un Pokémon agarrado
 CAN_BOX_POUR     = true
 
 
@@ -241,6 +295,24 @@ MAPAS_SIN_REFLEJO = []
 
 
 ################################################################################
+# MAPAS SIN SONIDO DE HIERBA
+# IDs de los mapas en los que no quieres que el personaje ni eventos hagan sonido
+# al caminar por la hierba.
+# Ejemplo: MAPAS_SIN_SONIDO_HIERBA = [12,157,536]
+################################################################################
+
+MAPAS_SIN_SONIDO_HIERBA = []
+
+# Si deseas que cuando un evento camina por la hierba la animación y su sonido no se reproduzcan
+# a menos que el jugador esté cerca (dentro del rango de visión), pon esta constante en true.
+MUTE_GRASS_RUSTLE_OUT_OF_SIGHT = true
+
+# Nombres de eventos que al moverse no deben reproducir la animación ni el sonido de caminar por la hierba, incluso si el jugador está cerca.
+GRASS_RUSTLE_EXCLUDED_EVENT_NAMES = ["airborne"]
+
+
+
+################################################################################
 # LISTADO DE POKÉMON CON FORMAS REGIONALES
 # Los Pokémon que estén en el listado de abajo son los que el cambia formas
 # podrá cambiar
@@ -248,9 +320,11 @@ MAPAS_SIN_REFLEJO = []
 REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NINETALES,:DIGLETT,:DUGTRIO,
                     :MEOWTH,:PERSIAN,:GEODUDE,:GRAVELER,:GOLEM,:PONYTA,:RAPIDASH,:SLOWPOKE,:SLOWBRO,:FARFETCHD,:GRIMER,:MUK,
                     :EXEGGUTOR,:MAROWAK,:WEEZING,:MRMIME,:ARTICUNO,:ZAPDOS,:MOLTRES,:SLOWKING,:CORSOLA,
-                    :ZIGZAGOON,:LINOONE, :DARUMAKA,:DARMANITAN,:YAMASK,:STUNFISK,:LYCANROC, :GROWLITHE,:ARCANINE,
-                    :VOLTORB,:ELECTRODE,:TAUROS,:CYNDAQUIL,:QUILAVA,:TYPHLOSION,:WOOPER,:QWILFISH,:SNEASEL,:OSHAWOTT,:DEWOTT,:SAMUROTT,
-                    :PETILIL,:LILLIGANT,:ZORUA,:ZOROARK,:RUFFLET,:BRAVIARY,:GOOMY,:SLIGGOO,:GOODRA,:BERGMITE,:AVALUGG,:ROWLET,:DARTRIX,:DECIDUEYE]
+                    :ZIGZAGOON,:LINOONE,:DARUMAKA,:DARMANITAN,:YAMASK,:STUNFISK,:LYCANROC, :GROWLITHE,:ARCANINE,
+                    :VOLTORB,:ELECTRODE,:TAUROS,:TYPHLOSION,:WOOPER,:QWILFISH,:SNEASEL,:SAMUROTT,
+                    :LILLIGANT,:ZORUA,:ZOROARK,:BRAVIARY,:SLIGGOO,:GOODRA,:BERGMITE,:AVALUGG,:DECIDUEYE,
+                    :PIKACHU, :URSALUNA, :FLABEBE, :FLOETTE, :FLORGES, :SHELLOS, :GASTRODON, :BURMY, :WORMADAM,
+                    :ORICORIO, :BASCULIN, :SQUAWKABILLY, :VIVILLON]
 
 #######################################################################################
 # LISTADO DE FORMAS DE POKÉMON NO PERMITIDAS
@@ -259,4 +333,22 @@ REGIONAL_SPECIES = [:RATTATA,:RATICATE,:RAICHU,:SANDSHREW,:SANDSLASH,:VULPIX,:NI
 ########################################################################################
 FORMS_BLACKLIST = {:DARMANITAN => [1, 3]}
 
+# Este listado es para que el cambia formas permita cambiar a esa especie pero no a una forma especifica
+# Por ejemplo, si quieres que el cambia formas permita cambiar a Floette pero no cambiarlo a la form Flor Eterna
+CURRENT_SPECIES_BLACKLIST = [:FLOETTE_5]
 
+# Habilitar o deshabilitar la visualización de sprites en el cambiador de formas
+# Al posarse sobre una opción en el cambia formas, se mostrará el sprite del Pokémon con esa forma
+SHOW_SPRITES_IN_FORM_CHANGER = true
+
+
+################################################################################
+# ESCALERAS LATERALES
+# RECUERDA que los eventos de la escalera se deben llamar "Stairs".
+# Configuraciones parra las escaleras laterales
+################################################################################
+SMOOTH_SCROLLING = true
+SPEED_REDUCTION_ON_STAIRS = 0.85
+# Nombres de eventos que al iniciar su movimiento deben activar la función de escaleras laterales
+STAIR_EVENT_NAMES = ["Stairs", "Slope"] 
+$DisableScrollCounter = 0

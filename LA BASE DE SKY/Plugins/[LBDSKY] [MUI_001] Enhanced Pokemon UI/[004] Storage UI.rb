@@ -2,6 +2,12 @@
 # Storage UI edits.
 #===============================================================================
 class PokemonStorageScene
+
+  SHINY_LEAF_X = 158
+  SHINY_LEAF_Y = 50
+  IV_RATING_X = 8
+  IV_RATING_Y = 198
+   
   def pbUpdateOverlay(selection, party = nil)
     if !@sprites["plugin_overlay"]
       @sprites["plugin_overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @boxsidesviewport)
@@ -15,8 +21,8 @@ class PokemonStorageScene
     buttonshadow = Color.new(80, 80, 80)
     pbDrawTextPositions(
       overlay,
-      [[_INTL("Equipo: {1}", (@storage.party.length rescue 0)), 270, 334, :center, buttonbase, buttonshadow, :outline],
-       [_INTL("Salir"), 447, 334, :center, buttonbase, buttonshadow, :outline]]
+      [[_INTL("Equipo: {1}", (@storage.party.length rescue 0)), TEAM_TEXT_X, TEAM_TEXT_Y, :center, buttonbase, buttonshadow, :outline],
+       [_INTL("Salir"), EXIT_TEXT_X, EXIT_TEXT_Y, :center, buttonbase, buttonshadow, :outline]]
     )
     pokemon = nil
     if @screen.pbHeldPokemon
@@ -35,43 +41,44 @@ class PokemonStorageScene
     nonshadow = Color.new(224, 224, 224)
     pokename = pokemon.name
     textstrings = [
-      [pokename, 10, 14, :left, base, shadow]
+      [pokename, POKENAME_TEXT_X, POKENAME_TEXT_Y, :left, base, shadow]
     ]
     if !pokemon.egg?
       imagepos = []
       if pokemon.male?
-        textstrings.push([_INTL("♂"), 148, 14, :left, Color.new(24, 112, 216), Color.new(136, 168, 208)])
+        textstrings.push([_INTL("♂"), GENDER_ICON_TEXT_X, GENDER_ICON_TEXT_Y, :left, Color.new(24, 112, 216), Color.new(136, 168, 208)])
       elsif pokemon.female?
-        textstrings.push([_INTL("♀"), 148, 14, :left, Color.new(248, 56, 32), Color.new(224, 152, 144)])
+        textstrings.push([_INTL("♀"), GENDER_ICON_TEXT_X, GENDER_ICON_TEXT_Y, :left, Color.new(248, 56, 32), Color.new(224, 152, 144)])
       end
-      imagepos.push([_INTL("Graphics/UI/Storage/overlay_lv"), 6, 246])
-      textstrings.push([pokemon.level.to_s, 30, 240, :left, base, shadow])
+      imagepos.push([_INTL("Graphics/UI/Storage/overlay_lv"), LEVEL_ICON_X, LEVEL_ICON_Y])
+      textstrings.push([pokemon.level.to_s, LEVEL_NUMBER_X, LEVEL_NUMBER_Y, :left, base, shadow])
       if pokemon.ability
-        textstrings.push([pokemon.ability.name, 86, 312, :center, base, shadow])
+        textstrings.push([pokemon.ability.name, ABILITY_NAME_X, ABILITY_NAME_Y, :center, base, shadow])
       else
-        textstrings.push([_INTL("Sin habilidad"), 86, 312, :center, nonbase, nonshadow])
+        textstrings.push([_INTL("Sin habilidad"), ABILITY_NAME_X, ABILITY_NAME_Y, :center, nonbase, nonshadow])
       end
       if pokemon.item
-        textstrings.push([pokemon.item.name, 86, 348, :center, base, shadow])
+        textstrings.push([pokemon.item.name, ITEM_NAME_X, ITEM_NAME_Y, :center, base, shadow])
       else
-        textstrings.push([_INTL("Sin objeto"), 86, 348, :center, nonbase, nonshadow])
+        textstrings.push([_INTL("Sin objeto"), ITEM_NAME_X, ITEM_NAME_Y, :center, nonbase, nonshadow])
       end
       if pokemon.shiny?
-        pbDrawImagePositions(plugin_overlay, [["Graphics/Pictures/shiny", 134, 16]])
+        pbDrawImagePositions(plugin_overlay, [["Graphics/UI/shiny", SHINY_ICON_X, SHINY_ICON_Y]])
       end
-      pbDisplayShinyLeaf(pokemon, plugin_overlay, 158, 50)      if Settings::STORAGE_SHINY_LEAF
-      pbDisplayIVRatings(pokemon, plugin_overlay, 8, 198, true) if Settings::STORAGE_IV_RATINGS
+      pbDisplayShinyLeaf(pokemon, plugin_overlay, SHINY_LEAF_X, SHINY_LEAF_Y)      if Settings::STORAGE_SHINY_LEAF
+      pbDisplayIVRatings(pokemon, plugin_overlay, IV_RATING_X, IV_RATING_Y, true) if Settings::STORAGE_IV_RATINGS
       typebitmap = AnimatedBitmap.new(_INTL("Graphics/UI/types"))
       pokemon.types.each_with_index do |type, i|
         type_number = GameData::Type.get(type).icon_position
-        type_rect = Rect.new(0, type_number * 28, 64, 28)
-        type_x = (pokemon.types.length == 1) ? 52 : 18 + (70 * i)
-        overlay.blt(type_x, 272, typebitmap.bitmap, type_rect)
+        type_rect = Rect.new(0, type_number * TYPE_ICON_HEIGHT, TYPE_ICON_RECT_WIDTH, TYPE_ICON_HEIGHT)
+        type_x = (pokemon.types.length == 1) ? TYPE_ICON_X_1 : TYPE_ICON_X_2 + (TYPE_ICON_X_SPACING * i)
+        overlay.blt(type_x, TYPE_ICON_Y, typebitmap.bitmap, type_rect)
       end
-      drawMarkings(overlay, 70, 240, 128, 20, pokemon.markings)
+      drawMarkings(overlay, MARKINGS_X, MARKINGS_Y, MARKING_RECT_WIDTH, MARKING_RECT_HEIGHT, pokemon.markings)
       pbDrawImagePositions(overlay, imagepos)
     end
     pbDrawTextPositions(overlay, textstrings)
     @sprites["pokemon"].setPokemonBitmap(pokemon)
+    @sprites["pokemon"].make_grey_if_fainted = pokemon.fainted? if pokemon
   end
 end	

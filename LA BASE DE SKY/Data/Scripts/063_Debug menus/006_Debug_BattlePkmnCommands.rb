@@ -492,6 +492,9 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :forget_move, {
   "name"   => _INTL("Olvidar movimiento"),
   "parent" => :moves,
   "usage"  => :both,
+  "condition" => proc { |pkmn, battler, battle|
+    next pkmn.moves.length > 0
+  },
   "effect" => proc { |pkmn, battler, battle|
     move_names = []
     move_indices = []
@@ -504,6 +507,7 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :forget_move, {
       end
       move_indices.push(index)
     end
+    next if move_names.empty?
     cmd = pbMessage("\\ts[]" + _INTL("¿Olvidar qué movimiento?"), move_names, -1)
     next if cmd < 0
     old_move_name = pkmn.moves[move_indices[cmd]].name
@@ -517,6 +521,9 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_move_pp, {
   "name"   => _INTL("Definir PP de movimientos"),
   "parent" => :moves,
   "usage"  => :both,
+  "condition" => proc { |pkmn, battler, battle|
+    next pkmn.moves.length > 0
+  },
   "effect" => proc { |pkmn, battler, battle|
     cmd = 0
     loop do
@@ -627,8 +634,8 @@ MenuHandlers.add(:battle_pokemon_debug_menu, :set_item, {
         end
       when 1   # Remove item
         if pkmn.hasItem?
-          (battler || pkmn).item = nil
-          pkmn.mail = nil
+          pkmn.item = nil
+          battler.item = nil if battler
         end
       else
         break

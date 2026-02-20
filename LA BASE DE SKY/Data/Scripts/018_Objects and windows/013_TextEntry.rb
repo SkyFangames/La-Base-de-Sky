@@ -85,9 +85,7 @@ end
 class Window_TextEntry < SpriteWindow_Base
   def initialize(text, x, y, width, height, heading = nil, usedarkercolor = false)
     super(x, y, width, height)
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     if usedarkercolor
       @baseColor = Color.new(16, 24, 32)
       @shadowColor = Color.new(168, 184, 184)
@@ -145,6 +143,14 @@ class Window_TextEntry < SpriteWindow_Base
       return true
     end
     return false
+  end
+
+  def delete_at_cursor
+    original_cursor = @helper.cursor
+    @helper.cursor += 1
+    result = delete
+    @helper.cursor = original_cursor
+    return result
   end
 
   def update
@@ -232,40 +238,106 @@ class Window_TextEntry_Keyboard < Window_TextEntry
     end
     return if !self.active
     # Moving cursor
+    handle_input
+    old_text = self.text
+    Input.gets.each_char { |c| insert(c) }
+    refresh if self.text != old_text
+    # Input.gets.each_char { |c| insert(c) }
+  end
+
+  def handle_input
     if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-      if @helper.cursor > 0
-        @helper.cursor -= 1
-        @cursor_timer_start = System.uptime
-        @cursor_shown = true
-        self.refresh
-      end
-      return
+        if @helper.cursor > 0
+          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+            @helper.cursor -= 1
+            word = self.text[0..@helper.cursor].split(/\s+/).last
+            @helper.cursor -= word.length if word
+          else
+            @helper.cursor -= 1
+          end
+          @cursor_timer_start = System.uptime
+          @cursor_shown = true
+          self.refresh
+        end
+        return
     elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-      if @helper.cursor < self.text.scan(/./m).length
-        @helper.cursor += 1
-        @cursor_timer_start = System.uptime
-        @cursor_shown = true
-        self.refresh
+        if @helper.cursor < self.text.scan(/./m).length
+          if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+            @helper.cursor += 1
+            # Calculate distance to next word
+            word = self.text[@helper.cursor..-1].split(/\s+/).first
+            @helper.cursor += word.length if word
+          else
+            @helper.cursor += 1
+          end
+          @cursor_timer_start = System.uptime
+          @cursor_shown = true
+          self.refresh
+        end
+        return
+    elsif Input.triggerex?(:HOME)
+      @helper.cursor = 0
+      @cursor_timer_start = System.uptime
+      @cursor_shown = true
+      self.refresh
+      return
+    elsif Input.triggerex?(:END)
+      @helper.cursor = self.text.scan(/./m).length
+      @cursor_timer_start = System.uptime
+      @cursor_shown = true
+      self.refresh
+      return
+    elsif Input.triggerex?(:DELETE) || Input.repeatex?(:DELETE)
+      return if @helper.cursor >= self.text.scan(/./m).length
+      if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+        word = self.text[@helper.cursor..-1].split(/\s+/).first
+        if word
+          word += " " if word != self.text
+          word.length.times { self.delete_at_cursor }
+        else
+          self.delete_at_cursor
+        end
+      else
+        self.delete_at_cursor if @helper.cursor < self.text.scan(/./m).length
       end
+      refresh
       return
     elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
-      self.delete if @helper.cursor > 0
-      return
-    elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
+      return unless @helper.cursor > 0
+      if Input.pressex?(:LCTRL) || Input.pressex?(:RCTRL)
+        word = self.text[0..@helper.cursor].split(/\s+/).last
+        if word
+          word += " " if word != self.text
+          word.length.times { self.delete }
+        else
+          self.delete
+        end
+      else
+        self.delete if @helper.cursor > 0
+      end
+      refresh 
       return
     end
-    Input.gets.each_char { |c| insert(c) }
   end
 end
 
 # This class represents a window for text entry with a keyboard per key.
 #
-# It extends the `Window_TextEntry` class and adds functionality for handling keyboard input.
+# It extends the `Window_TextEntry_Keyboard` class and adds functionality for handling keyboard input.
 #
 # @author DPertierra
 # @version 1.0.0
 #
-class WindowTextEntryKeyboardPerKey < Window_TextEntry
+class WindowTextEntryKeyboardPerKey < Window_TextEntry_Keyboard
+  ##
+  # The callback to invoke when a key is pressed.
+  #
+  attr_accessor :on_input
+
+  ##
+  # The callback to invoke when the text changes.
+  #
+  attr_accessor :on_text_change
   # ...
 
   ##
@@ -312,50 +384,50 @@ class WindowTextEntryKeyboardPerKey < Window_TextEntry
     true
   end
 
-  def move_left
-    return unless @helper.cursor.positive?
+  # def move_left
+  #   return unless @helper.cursor.positive?
 
-    @helper.cursor -= 1
-    @cursor_timer_start = System.uptime
-    @cursor_shown = true
-    refresh
-  end
+  #   @helper.cursor -= 1
+  #   @cursor_timer_start = System.uptime
+  #   @cursor_shown = true
+  #   refresh
+  # end
 
-  def move_right
-    return unless @helper.cursor < text.scan(/./m).length
+  # def move_right
+  #   return unless @helper.cursor < text.scan(/./m).length
 
-    @helper.cursor += 1
-    @cursor_timer_start = System.uptime
-    @cursor_shown = true
-    refresh
-  end
+  #   @helper.cursor += 1
+  #   @cursor_timer_start = System.uptime
+  #   @cursor_shown = true
+  #   refresh
+  # end
 
-  def handle_input
-    # Moving cursor
-    if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
-      move_left
-    elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
-      move_right
-    elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
-      delete if @helper.cursor.positive?
-    elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
-      # return
-    else
-      Input.gets.each_char { |c| insert(c) }
-    end
-  end
+    # def handle_input
+    #   # Moving cursor
+    #   if Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT)
+    #     move_left
+    #   elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT)
+    #     move_right
+    #   elsif Input.triggerex?(:BACKSPACE) || Input.repeatex?(:BACKSPACE)
+    #     delete if @helper.cursor.positive?
+    #   elsif Input.triggerex?(:RETURN) || Input.triggerex?(:ESCAPE)
+    #     # return
+    #   else
+    #     Input.gets.each_char { |c| insert(c) }
+    #   end
+    # end
 
-  def update
-    cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i.even?
-    if cursor_to_show != @cursor_shown
-      @cursor_shown = cursor_to_show
-      refresh
-    end
+  # def update
+  #   cursor_to_show = ((System.uptime - @cursor_timer_start) / 0.35).to_i.even?
+  #   if cursor_to_show != @cursor_shown
+  #     @cursor_shown = cursor_to_show
+  #     refresh
+  #   end
 
-    return unless active
+  #   return unless active
 
-    handle_input
-  end
+  #   handle_input
+  # end
 end
 
 #===============================================================================
@@ -364,9 +436,7 @@ end
 class Window_MultilineTextEntry < SpriteWindow_Base
   def initialize(text, x, y, width, height)
     super(x, y, width, height)
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     @helper = CharacterEntryHelper.new(text)
     @firstline = 0
     @cursorLine = 0

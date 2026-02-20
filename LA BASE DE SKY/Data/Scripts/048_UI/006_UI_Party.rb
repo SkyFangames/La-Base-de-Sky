@@ -4,6 +4,11 @@
 class PokemonPartyConfirmCancelSprite < Sprite
   attr_reader :selected
 
+  # Posición del texto dentro del botón
+  TEXT_OFFSET_X        = 56
+  TEXT_OFFSET_Y_NARROW = 8 # Botón pequeño
+  TEXT_OFFSET_Y_NORMAL = 14
+
   def initialize(text, x, y, narrowbox = false, viewport = nil)
     super(viewport)
     @refreshBitmap = true
@@ -19,7 +24,8 @@ class PokemonPartyConfirmCancelSprite < Sprite
     @overlaysprite = BitmapSprite.new(@bgsprite.bitmap.width, @bgsprite.bitmap.height, viewport)
     @overlaysprite.z = self.z + 1
     pbSetSystemFont(@overlaysprite.bitmap)
-    textpos = [[text, 56, (narrowbox) ? 8 : 14, :center, Color.new(248, 248, 248), Color.new(40, 40, 40)]]
+    text_y = (narrowbox) ? TEXT_OFFSET_Y_NARROW : TEXT_OFFSET_Y_NORMAL
+    textpos = [[text, TEXT_OFFSET_X, text_y, :center, Color.new(248, 248, 248), Color.new(40, 40, 40)]]
     pbDrawTextPositions(@overlaysprite.bitmap, textpos)
     self.x = x
     self.y = y
@@ -78,8 +84,12 @@ end
 #
 #===============================================================================
 class PokemonPartyCancelSprite < PokemonPartyConfirmCancelSprite
+  # Coordenadas en pantalla
+  POS_X = 398
+  POS_Y = 328
+
   def initialize(viewport = nil)
-    super(_INTL("CANCELAR"), 398, 328, false, viewport)
+    super(_INTL("CANCELAR"), POS_X, POS_Y, false, viewport)
   end
 end
 
@@ -87,8 +97,12 @@ end
 #
 #===============================================================================
 class PokemonPartyConfirmSprite < PokemonPartyConfirmCancelSprite
+  # Coordenadas en pantalla
+  POS_X = 398
+  POS_Y = 308
+
   def initialize(viewport = nil)
-    super(_INTL("CONFIRMAR"), 398, 308, true, viewport)
+    super(_INTL("CONFIRMAR"), POS_X, POS_Y, true, viewport)
   end
 end
 
@@ -96,8 +110,12 @@ end
 #
 #===============================================================================
 class PokemonPartyCancelSprite2 < PokemonPartyConfirmCancelSprite
+  # Coordenadas en pantalla
+  POS_X = 398
+  POS_Y = 346
+
   def initialize(viewport = nil)
-    super(_INTL("CANCELAR"), 398, 346, true, viewport)
+    super(_INTL("CANCELAR"), POS_X, POS_Y, true, viewport)
   end
 end
 
@@ -139,7 +157,7 @@ class PokemonPartyBlankPanel < Sprite
   def initialize(_pokemon, index, viewport = nil)
     super(viewport)
     self.x = (index % 2) * Graphics.width / 2
-    self.y = (16 * (index % 2)) + (96 * (index / 2))
+    self.y = (PokemonParty_Scene::GRID_STAGGER_Y * (index % 2)) + (PokemonParty_Scene::GRID_ROW_HEIGHT * (index / 2))
     @panelbgsprite = AnimatedBitmap.new("Graphics/UI/Party/panel_blank")
     self.bitmap = @panelbgsprite.bitmap
     @text = nil
@@ -170,11 +188,43 @@ class PokemonPartyPanel < Sprite
   attr_reader :switching
   attr_reader :text
 
+  # Posiciones de elementos gráficos
+  UI_HP_BAR_BG_X     = 96
+  UI_HP_BAR_BG_Y     = 50
+  UI_BALL_X          = 10
+  UI_BALL_Y          = 0
+  UI_POKEMON_ICON_X  = 56
+  UI_POKEMON_ICON_Y  = 40
+  UI_HELD_ITEM_X     = 62
+  UI_HELD_ITEM_Y     = 48
+  
+  # Posiciones de texto e información
+  UI_NAME_X          = 90
+  UI_NAME_Y          = 22
+  UI_LEVEL_ICON_X    = 20
+  UI_LEVEL_ICON_Y    = 70
+  UI_LEVEL_TEXT_X    = 42
+  UI_LEVEL_TEXT_Y    = 68
+  UI_GENDER_X        = 230
+  UI_GENDER_Y        = 22
+  UI_HP_TEXT_X       = 224
+  UI_HP_TEXT_Y       = 66
+  UI_HP_BAR_X        = 128
+  UI_HP_BAR_Y        = 52
+  UI_STATUS_X        = 78
+  UI_STATUS_Y        = 68
+  UI_SHINY_X         = 80
+  UI_SHINY_Y         = 48
+  UI_ANNOTATION_X    = 96
+  UI_ANNOTATION_Y    = 62
+
+  # Dimensiones y Colores
   TEXT_BASE_COLOR    = Color.new(248, 248, 248)
   TEXT_SHADOW_COLOR  = Color.new(40, 40, 40)
   HP_BAR_WIDTH       = 96
   STATUS_ICON_WIDTH  = 44
   STATUS_ICON_HEIGHT = 16
+
 
   def initialize(pokemon, index, viewport = nil)
     super(viewport)
@@ -182,7 +232,7 @@ class PokemonPartyPanel < Sprite
     @active = (index == 0)   # true = rounded panel, false = rectangular panel
     @refreshing = true
     self.x = (index % 2) * Graphics.width / 2
-    self.y = (16 * (index % 2)) + (96 * (index / 2))
+    self.y = (PokemonParty_Scene::GRID_STAGGER_Y * (index % 2)) + (PokemonParty_Scene::GRID_ROW_HEIGHT * (index / 2)) 
     @panelbgsprite = ChangelingSprite.new(0, 0, viewport)
     @panelbgsprite.z = self.z
     if @active   # Rounded panel
@@ -331,31 +381,31 @@ class PokemonPartyPanel < Sprite
     else
       @hpbgsprite.change_bitmap(:APTO)
     end
-    @hpbgsprite.x     = self.x + 96
-    @hpbgsprite.y     = self.y + 50
+    @hpbgsprite.x     = self.x + UI_HP_BAR_BG_X
+    @hpbgsprite.y     = self.y + UI_HP_BAR_BG_Y
     @hpbgsprite.color = self.color
   end
 
   def refresh_ball_graphic
     return if !@ballsprite || @ballsprite.disposed?
     @ballsprite.change_bitmap((self.selected) ? :sel : :desel)
-    @ballsprite.x     = self.x + 10
-    @ballsprite.y     = self.y
+    @ballsprite.x     = self.x + UI_BALL_X
+    @ballsprite.y     = self.y + UI_BALL_Y
     @ballsprite.color = self.color
   end
 
   def refresh_pokemon_icon
     return if !@pkmnsprite || @pkmnsprite.disposed?
-    @pkmnsprite.x        = self.x + 60
-    @pkmnsprite.y        = self.y + 40
+    @pkmnsprite.x        = self.x + UI_POKEMON_ICON_X
+    @pkmnsprite.y        = self.y + UI_POKEMON_ICON_Y
     @pkmnsprite.color    = self.color
     @pkmnsprite.selected = self.selected
   end
 
   def refresh_held_item_icon
     return if !@helditemsprite || @helditemsprite.disposed? || !@helditemsprite.visible
-    @helditemsprite.x     = self.x + 62
-    @helditemsprite.y     = self.y + 48
+    @helditemsprite.x     = self.x + UI_HELD_ITEM_X
+    @helditemsprite.y     = self.y + UI_HELD_ITEM_Y
     @helditemsprite.color = self.color
   end
 
@@ -373,18 +423,18 @@ class PokemonPartyPanel < Sprite
 
   def draw_name
     pbDrawTextPositions(@overlaysprite.bitmap,
-                        [[@pokemon.name, 96, 22, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
+                        [[@pokemon.name, UI_NAME_X, UI_NAME_Y, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
   end
 
   def draw_level
     return if @pokemon.egg?
     # "Lv" graphic
     pbDrawImagePositions(@overlaysprite.bitmap,
-                         [[_INTL("Graphics/UI/Party/overlay_lv"), 20, 70, 0, 0, 22, 14]])
+                         [[_INTL("Graphics/UI/Party/overlay_lv"), UI_LEVEL_ICON_X, UI_LEVEL_ICON_Y, 0, 0, 22, 14]])
     # Level number
     pbSetSmallFont(@overlaysprite.bitmap)
     pbDrawTextPositions(@overlaysprite.bitmap,
-                        [[@pokemon.level.to_s, 42, 68, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
+                        [[@pokemon.level.to_s, UI_LEVEL_TEXT_X, UI_LEVEL_TEXT_Y, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
     pbSetSystemFont(@overlaysprite.bitmap)
   end
 
@@ -394,7 +444,7 @@ class PokemonPartyPanel < Sprite
     base_color   = (@pokemon.male?) ? Color.new(24, 146, 240) : Color.new(249, 93, 210)
     shadow_color = (@pokemon.male?) ? Color.new(13, 73, 119) : Color.new(128, 20, 90)
     pbDrawTextPositions(@overlaysprite.bitmap,
-                        [[gender_text, 224, 22, :left, base_color, shadow_color]])
+                        [[gender_text, UI_GENDER_X, UI_GENDER_Y, :left, base_color, shadow_color]])
   end
 
   def draw_hp
@@ -402,7 +452,7 @@ class PokemonPartyPanel < Sprite
     # HP numbers
     hp_text = sprintf("% 3d /% 3d", @pokemon.hp, @pokemon.totalhp)
     pbDrawTextPositions(@overlaysprite.bitmap,
-                        [[hp_text, 224, 66, :right, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
+                        [[hp_text, UI_HP_TEXT_X, UI_HP_TEXT_Y, :right, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
     # HP bar
     if @pokemon.able?
       w = @pokemon.hp * HP_BAR_WIDTH / @pokemon.totalhp.to_f
@@ -412,7 +462,7 @@ class PokemonPartyPanel < Sprite
       hpzone = 1 if @pokemon.hp <= (@pokemon.totalhp / 2).floor
       hpzone = 2 if @pokemon.hp <= (@pokemon.totalhp / 4).floor
       hprect = Rect.new(0, hpzone * 8, w, 8)
-      @overlaysprite.bitmap.blt(128, 52, @hpbar.bitmap, hprect)
+      @overlaysprite.bitmap.blt(UI_HP_BAR_X, UI_HP_BAR_Y, @hpbar.bitmap, hprect)
     end
   end
 
@@ -428,19 +478,19 @@ class PokemonPartyPanel < Sprite
     end
     return if status < 0
     statusrect = Rect.new(0, STATUS_ICON_HEIGHT * status, STATUS_ICON_WIDTH, STATUS_ICON_HEIGHT)
-    @overlaysprite.bitmap.blt(78, 68, @statuses.bitmap, statusrect)
+    @overlaysprite.bitmap.blt(UI_STATUS_X, UI_STATUS_Y, @statuses.bitmap, statusrect)
   end
 
   def draw_shiny_icon
     return if @pokemon.egg? || !@pokemon.shiny?
     pbDrawImagePositions(@overlaysprite.bitmap,
-                         [["Graphics/UI/shiny", 80, 48, 0, 0, 16, 16]])
+                         [["Graphics/UI/shiny", UI_SHINY_X, UI_SHINY_Y, 0, 0, 16, 16]])
   end
 
   def draw_annotation
     return if !@text || @text.length == 0
     pbDrawTextPositions(@overlaysprite.bitmap,
-                        [[@text, 96, 62, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
+                        [[@text, UI_ANNOTATION_X, UI_ANNOTATION_Y, :left, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]])
   end
 
   def refresh
@@ -476,6 +526,14 @@ end
 # Pokémon party visuals
 #===============================================================================
 class PokemonParty_Scene
+
+  # Paneles
+  GRID_STAGGER_Y    = 16
+  GRID_ROW_HEIGHT   = 96
+
+  # Ancho de la ventana de ayuda
+  HELP_WINDOW_WIDTH = 398
+
   def pbStartScene(party, starthelptext, annotations = nil, multiselect = false, can_access_storage = false)
     @sprites = {}
     @party = party
@@ -491,7 +549,7 @@ class PokemonParty_Scene
     @sprites["messagebox"].letterbyletter = true
     pbBottomLeftLines(@sprites["messagebox"], 2)
     @sprites["storagetext"] = Window_UnformattedTextPokemon.new(
-      @can_access_storage ? _INTL("[Especial]: Cajas del PC") : ""
+      @can_access_storage ? _INTL("[D]: Cajas del PC") : ""
     )
     @sprites["storagetext"].x           = 0
     @sprites["storagetext"].y           = Graphics.height - @sprites["messagebox"].height - 16
@@ -624,7 +682,7 @@ class PokemonParty_Scene
     helpwindow = @sprites["helpwindow"]
     pbBottomLeftLines(helpwindow, 1)
     helpwindow.text = helptext
-    helpwindow.width = 398
+    helpwindow.width = HELP_WINDOW_WIDTH
     helpwindow.visible = true
   end
 
@@ -730,7 +788,8 @@ class PokemonParty_Scene
       screen = PokemonBagScreen.new(scene, bag)
       ret = screen.pbChooseItemScreen(proc { |item|
         itm = GameData::Item.get(item)
-        next false if !pbCanUseOnPokemon?(itm)
+        next false if !pbCanUseItemOnPokemon?(itm)
+        next false if !pbItemHasEffectOnPokemon?(itm, pokemon)
         next false if pokemon.hyper_mode && !GameData::Item.get(item)&.is_scent?
         if itm.is_machine?
           move = itm.move
@@ -1472,7 +1531,7 @@ MenuHandlers.add(:party_menu_item, :move, {
       else
         screen.pbDisplay(_INTL("{1} ya tiene equipado {2}.", newpkmn.name, newitemname) + "\1")
       end
-      next if !screen.pbConfirm(_INTL("Would you like to switch the two items?"))
+      next if !screen.pbConfirm(_INTL("¿Quieres intercambiar estos dos objetos?"))
       newpkmn.item = item
       pkmn.item = newitem
       screen.scene.pbClearSwitching
@@ -1522,6 +1581,88 @@ def pbChoosePokemon(variableNumber, nameVarNumber, ableProc = nil, allowIneligib
   else
     pbSet(nameVarNumber, "")
   end
+end
+
+# Choose a Pokémon from party or PC storage.
+# Stores result in variable _variableNumber_ as an array [box, index] where:
+# - box = -1 for party Pokémon, box >= 0 for PC box number
+# - index = position within party or box
+# Stores the chosen Pokémon's name in variable _nameVarNumber_
+# Result is nil if no Pokémon was chosen
+def pbChoosePokemonFromPartyOrPC(variableNumber, nameVarNumber, ableProc = nil, allowIneligible = false)
+  chosen = nil
+  chosen_pokemon = nil
+  
+  pbFadeOutIn do
+    $game_temp.in_storage = true
+    storage_scene = PokemonStorageScene.new
+    storage_screen = PokemonStorageScreen.new(storage_scene, $PokemonStorage)
+    storage_scene.pbStartBox(storage_screen, 0)
+    
+    loop do
+      selected = storage_scene.pbSelectBox($PokemonStorage.party)
+      
+      if selected && selected[0] == -3   # Close box
+        if pbConfirmMessage(_INTL("¿Salir del PC?"))
+          pbSEPlay("PC close")
+          break
+        end
+        next
+      end
+      
+      if selected.nil?
+        next if pbConfirmMessage(_INTL("¿Continuar operaciones?"))
+        break
+      elsif selected[0] == -4   # Box name
+        storage_screen.pbBoxCommands
+      else
+        pokemon = $PokemonStorage[selected[0], selected[1]]
+        next if !pokemon
+        
+        commands = [
+          _INTL("Seleccionar"),
+          _INTL("Datos"),
+        ]
+        commands.push(_INTL("Debug")) if $DEBUG
+        commands.push(_INTL("Cancelar"))
+        
+        helptext = _INTL("Has elegido a {1}.", pokemon.name)
+        command = storage_screen.pbShowCommands(helptext, commands)
+        
+        case command
+        when 0   # Select
+          # If there's an ability check, verify it
+          if ableProc && !ableProc.call(pokemon) && !allowIneligible
+            pbMessage(_INTL("Este Pokémon no puede ser elegido."))
+            next
+          end
+          
+          chosen = selected
+          chosen_pokemon = pokemon
+          break
+        when 1   # Summary
+          storage_screen.pbSummary(selected, nil)
+        when 2   # Debug
+          if $DEBUG
+            storage_screen.pbPokemonDebug(pokemon, selected)
+          end
+        end
+      end
+    end
+    
+    storage_scene.pbCloseBox
+    $game_temp.in_storage = false
+  end
+  
+  # Store results
+  pbSet(variableNumber, chosen)
+  if chosen_pokemon
+    pbSet(nameVarNumber, chosen_pokemon.name)
+  else
+    pbSet(nameVarNumber, "")
+  end
+  
+  return chosen_pokemon
 end
 
 def pbChooseNonEggPokemon(variableNumber, nameVarNumber)

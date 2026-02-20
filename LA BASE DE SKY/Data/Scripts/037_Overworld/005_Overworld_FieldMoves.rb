@@ -1,5 +1,5 @@
 #===============================================================================
-# Hidden move handlers
+# Hidden move handlers.
 #===============================================================================
 module HiddenMoveHandlers
   CanUseMove     = MoveHandlerHash.new
@@ -12,6 +12,11 @@ module HiddenMoveHandlers
 
   def self.hasHandler(item)
     return !CanUseMove[item].nil? && !UseMove[item].nil?
+  end
+
+  def self.eachHandler
+    ret = CanUseMove.keys & UseMove.keys
+    ret.each { |key| yield key }
   end
 
   # Returns whether move can be used
@@ -64,7 +69,7 @@ def pbCheckHiddenMoveBadge(badge = -1, showmsg = true)
 end
 
 #===============================================================================
-# Hidden move animation
+# Hidden move animation.
 #===============================================================================
 def pbHiddenMoveAnimation(pokemon)
   return false if !pokemon
@@ -171,7 +176,7 @@ def pbHiddenMoveAnimation(pokemon)
 end
 
 #===============================================================================
-# Cut
+# Cut.
 #===============================================================================
 def pbCut
   move = :CUT
@@ -227,7 +232,7 @@ def pbSmashEvent(event)
 end
 
 #===============================================================================
-# Dig
+# Dig.
 #===============================================================================
 HiddenMoveHandlers::CanUseMove.add(:DIG, proc { |move, pkmn, showmsg|
   escape = ($PokemonGlobal.escapePoint rescue nil)
@@ -272,7 +277,7 @@ HiddenMoveHandlers::UseMove.add(:DIG, proc { |move, pokemon|
 })
 
 #===============================================================================
-# Dive
+# Dive.
 #===============================================================================
 def pbDive
   map_metadata = $game_map.metadata
@@ -488,7 +493,6 @@ def pbFlyToNewLocation(pkmn = nil, move = :FLY)
     $game_temp.player_new_x         = $game_temp.fly_destination[1]
     $game_temp.player_new_y         = $game_temp.fly_destination[2]
     $game_temp.player_new_direction = 2
-    $game_temp.fly_destination = nil
     pbDismountBike
     $scene.transfer_player
     $game_map.autoplay
@@ -497,6 +501,7 @@ def pbFlyToNewLocation(pkmn = nil, move = :FLY)
     pbWait(0.25)
   end
   pbEraseEscapePoint
+  $game_temp.fly_destination = nil
   return true
 end
 
@@ -514,7 +519,7 @@ HiddenMoveHandlers::UseMove.add(:FLY, proc { |move, pkmn|
 })
 
 #===============================================================================
-# Headbutt
+# Headbutt.
 #===============================================================================
 def pbHeadbuttEffect(event = nil)
   pbSEPlay("Headbutt")
@@ -580,7 +585,7 @@ HiddenMoveHandlers::UseMove.add(:HEADBUTT, proc { |move, pokemon|
 })
 
 #===============================================================================
-# Rock Smash
+# Rock Smash.
 #===============================================================================
 def pbRockSmashRandomEncounter
   if $PokemonEncounters.encounter_triggered?(:RockSmash, false, false)

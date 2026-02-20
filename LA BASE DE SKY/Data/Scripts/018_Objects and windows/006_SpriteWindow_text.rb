@@ -6,11 +6,11 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
   attr_reader :text
   attr_reader :baseColor
   attr_reader :shadowColor
-  # Letter-by-letter mode.  This mode is not supported in this class.
+  # Letter-by-letter mode. This mode is not supported in this class.
   attr_accessor :letterbyletter
 
   def text=(value)
-    @text = value
+    @text = value || ""
     refresh
   end
 
@@ -30,9 +30,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
     pbSetSystemFont(self.contents)
     @text = text
     @letterbyletter = false # Not supported in this class
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     resizeToFit(text)
   end
 
@@ -88,9 +86,7 @@ class Window_UnformattedTextPokemon < SpriteWindow_Base
     oldshadowg = @shadowColor.green
     oldshadowb = @shadowColor.blue
     oldshadowa = @shadowColor.alpha
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     if oldbaser != @baseColor.red || oldbaseg != @baseColor.green ||
        oldbaseb != @baseColor.blue || oldbasea != @baseColor.alpha ||
        oldshadowr != @shadowColor.red || oldshadowg != @shadowColor.green ||
@@ -142,9 +138,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     self.contents = Bitmap.new(1, 1)
     pbSetSystemFont(self.contents)
     self.resizeToFit(text, Graphics.width)
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor          = colors[0]
-    @shadowColor        = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     self.text           = text
     @starting           = false
   end
@@ -250,7 +244,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     oldstarting = @starting
     @starting = true
     self.width  = (width < 0) ? Graphics.width : width
-    self.height = dims[1] + self.borderY
+    self.height = dims[1] + self.borderY + 2   # TEXT OFFSET
     @starting = oldstarting
     redrawText
   end
@@ -266,9 +260,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     oldshadowg = @shadowColor.green
     oldshadowb = @shadowColor.blue
     oldshadowa = @shadowColor.alpha
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     if redrawText &&
        (oldbaser != @baseColor.red || oldbaseg != @baseColor.green ||
        oldbaseb != @baseColor.blue || oldbasea != @baseColor.alpha ||
@@ -276,6 +268,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
        oldshadowb != @shadowColor.blue || oldshadowa != @shadowColor.alpha)
       setText(self.text)
     end
+    @pausesprite&.dispose
+    @pausesprite = nil
   end
 
   def setTextToFit(text, maxwidth = -1)
@@ -406,25 +400,26 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     return if !busy?
     return if @textchars[@curchar] == "\n"
     resume
-    visiblelines = (self.height - self.borderY) / @lineHeight
-    loop do
-      curcharSkip(true)
-      break if @curchar >= @fmtchars.length    # End of message
-      if @textchars[@curchar] == "\1"          # Pause message
+    if curcharSkip(true)
+      visiblelines = (self.height - self.borderY) / @lineHeight
+      if @textchars[@curchar] == "\n" && @linesdrawn >= visiblelines - 1
+        @scroll_timer_start = System.uptime
+      elsif @textchars[@curchar] == "\1"
         @pausing = true if @curchar < @numtextchars - 1
         self.startPause
         refresh
-        break
       end
-      break if @textchars[@curchar] != "\n"    # Skip past newlines only
-      break if @linesdrawn >= visiblelines - 1   # No more empty lines to continue to
-      @linesdrawn += 1
     end
   end
 
   def allocPause
     return if @pausesprite
-    @pausesprite = AnimatedSprite.create("Graphics/UI/pause_arrow", 4, 3)
+    arrow_filename = "Graphics/Windowskins/pause_arrow"
+    if @windowskin_name
+      try_arrow_filename = "Graphics/Windowskins/#{File.basename(@windowskin_name, ".*")}_arrow"
+      arrow_filename = try_arrow_filename if pbResolveBitmap(try_arrow_filename)
+    end
+    @pausesprite = AnimatedSprite.create(arrow_filename, 4, 3)
     @pausesprite.z       = 100000
     @pausesprite.visible = false
   end
@@ -533,6 +528,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
     delta_t = time_now - @display_last_updated
     @display_last_updated = time_now
     visiblelines = (self.height - self.borderY) / @lineHeight
+    @lastchar = -1 if !@lastchar
     show_more_characters = false
     # Pauses and new lines
     if @textchars[@curchar] == "\1"   # Waiting
@@ -554,7 +550,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
           show_more_characters = true
         end
       else   # New line but the next line can be shown without scrolling to it
-        @linesdrawn += 1
+        @linesdrawn += 1 if @lastchar < @curchar
         show_more_characters = true
       end
     elsif @curchar <= @numtextchars   # Displaying more text
@@ -566,6 +562,7 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
       @scroll_timer_start = nil
       @linesdrawn = 0
     end
+    @lastchar = @curchar
     # Keep displaying more text
     if show_more_characters
       @display_timer += delta_t
@@ -575,8 +572,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
         elsif @textchars[@curchar] == "\1"
           @pausing = true if @curchar < @numtextchars - 1
           self.startPause
+          refresh
         end
-        refresh
       end
     end
   end
@@ -612,8 +609,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
       ret = true
       @curchar += 1
       break if @textchars[@curchar] == "\n" ||   # newline
-               @textchars[@curchar] == "\1" ||   # pause
-               @textchars[@curchar] == "\2" ||   # letter-by-letter break
+               @textchars[@curchar] == "\1" ||   # pause: "\!"
+               @textchars[@curchar] == "\2" ||   # letter-by-letter break: "\wt[]", "\wtnp[]", "\.", "\|"
                @textchars[@curchar].nil?
     end
     return ret
@@ -636,9 +633,7 @@ class Window_InputNumberPokemon < SpriteWindow_Base
     super(0, 0, 32, 32)
     self.width = (digits_max * 24) + 8 + self.borderX
     self.height = 32 + self.borderY
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     @index = digits_max - 1
     self.active = true
     refresh
@@ -901,7 +896,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::JUMPUP)
+      elsif Input.repeat?(Input::JUMPUP) || (defined?(Input::QUICK_UP) && Input.repeat?(Input::QUICK_UP))
         if @index > 0
           oldindex = @index
           @index = [self.index - self.page_item_max, 0].max
@@ -911,7 +906,7 @@ class SpriteWindow_Selectable < SpriteWindow_Base
             update_cursor_rect
           end
         end
-      elsif Input.repeat?(Input::JUMPDOWN)
+      elsif Input.repeat?(Input::JUMPDOWN) || (defined?(Input::QUICK_DOWN) && Input.repeat?(Input::QUICK_DOWN))
         if @index < @item_max - 1
           oldindex = @index
           @index = [self.index + self.page_item_max, @item_max - 1].min
@@ -1040,6 +1035,222 @@ module UpDownArrowMixin
 end
 
 #===============================================================================
+# Hover image mixin for command windows with images
+#===============================================================================
+module HoverImageMixin
+  def initHoverImage
+    @hover_image = Sprite.new(self.viewport)
+    @hover_image.z = self.z + 100
+    @hover_image.visible = false
+    @hover_background = Sprite.new(self.viewport)
+    @hover_background.z = self.z + 99
+    @hover_background.visible = false
+    @hover_animated_bitmap = nil
+    @current_image_path = nil
+    @command_images ||= []
+    @command_show_background ||= []
+  end
+
+  def parseCommandsWithImages(commands)
+    @commands = []
+    @command_images = []
+    @command_show_background = []
+    commands.each do |cmd|
+      if cmd.is_a?(Array)
+        @commands.push(cmd[0])
+        @command_images.push(cmd[1]) if cmd.length > 1 && cmd[1]
+        @command_show_background.push(cmd[2]) if cmd.length > 2
+      else
+        @commands.push(cmd)
+      end
+    end
+  end
+
+  def disposeHoverImage
+    if @hover_image
+      @hover_image.bitmap.dispose if @hover_image.bitmap && !@hover_animated_bitmap
+      @hover_image.dispose
+      @hover_image = nil
+    end
+    if @hover_background
+      @hover_background.bitmap.dispose if @hover_background.bitmap
+      @hover_background.dispose
+      @hover_background = nil
+    end
+    @hover_animated_bitmap.dispose if @hover_animated_bitmap&.respond_to?(:dispose)
+    @hover_animated_bitmap = nil
+  end
+
+  def updateHoverImage
+    return unless self.active && self.visible && @command_images && @command_images.length > 0
+    
+    initHoverImage unless @hover_image
+    image_source = @command_images[self.index]
+    show_background = @command_show_background && @command_show_background[self.index]
+    
+    if image_source && self.index >= 0 && self.index < @command_images.length
+      if @current_image_path != image_source || @current_show_background != show_background
+        setHoverImage(image_source, show_background)
+      end
+      updateHoverImagePosition if @hover_image.visible
+    else
+      @hover_image.visible = false
+      @hover_background.visible = false if @hover_background
+      @current_image_path = nil
+      @current_show_background = nil
+    end
+  end
+
+  private
+
+  def setHoverImage(source, show_background = false)
+    return unless isValidImageSource?(source)
+    
+    clearHoverBitmap
+    # Keep reference to AnimatedBitmap or DeluxeBitmapWrapper to prevent garbage collection
+    if source.is_a?(AnimatedBitmap) || (defined?(DeluxeBitmapWrapper) && source.is_a?(DeluxeBitmapWrapper))
+      @hover_animated_bitmap = source
+    end
+    @hover_image.bitmap = copyBitmap(extractBitmap(source))
+    @current_image_path = source
+    @current_show_background = show_background
+    @hover_image.visible = true
+    
+    # Create or hide background
+    if show_background && @hover_background
+      createHoverBackground(@hover_image.bitmap.width, @hover_image.bitmap.height)
+      @hover_background.visible = true
+    elsif @hover_background
+      @hover_background.visible = false
+    end
+    
+    updateHoverImagePosition
+  rescue => e
+    puts "Error loading hover image: #{e.message}"
+    @hover_image.visible = false
+    @hover_background.visible = false if @hover_background
+    @current_image_path = nil
+    @current_show_background = nil
+  end
+
+  def isValidImageSource?(source)
+    source.is_a?(Bitmap) || source.is_a?(AnimatedBitmap) || 
+    (defined?(DeluxeBitmapWrapper) && source.is_a?(DeluxeBitmapWrapper)) ||
+    (source.is_a?(String) && File.exist?(source))
+  end
+
+  def extractBitmap(source)
+    case source
+    when AnimatedBitmap then source.bitmap
+    when Bitmap then source
+    when String then Bitmap.new(source)
+    else
+      # Handle DeluxeBitmapWrapper if defined
+      if defined?(DeluxeBitmapWrapper) && source.is_a?(DeluxeBitmapWrapper)
+        source.bitmap
+      end
+    end
+  end
+
+  def copyBitmap(bitmap)
+    return nil unless bitmap && !bitmap.disposed?
+    copy = Bitmap.new(bitmap.width, bitmap.height)
+    copy.blt(0, 0, bitmap, Rect.new(0, 0, bitmap.width, bitmap.height))
+    copy
+  end
+
+  def clearHoverBitmap
+    if @hover_image.bitmap && !@hover_animated_bitmap
+      @hover_image.bitmap.dispose
+    end
+    @hover_image.bitmap = nil
+  end
+
+  def createHoverBackground(img_width, img_height)
+    # Dispose old background bitmap if it exists
+    @hover_background.bitmap.dispose if @hover_background.bitmap
+    
+    # Get the system windowskin path
+    windowskin_path = MessageConfig.pbGetSystemFrame
+    
+    # Try to use windowskin if available
+    if windowskin_path && windowskin_path != "" && pbResolveBitmap(windowskin_path)
+      # Load windowskin to check dimensions
+      temp_skin = Bitmap.new(windowskin_path)
+      
+      # Determine border size based on windowskin dimensions
+      # VX windowskin: 128x128 with 16px borders
+      # XP windowskin: 192x128 with 16px borders
+      if temp_skin.width == 128 && temp_skin.height == 128
+        border_size = 16
+        slice = Rect.new(16, 16, 96, 96)  # 128 - 16 - 16 = 96
+      elsif temp_skin.width == 192 && temp_skin.height == 128
+        border_size = 16
+        slice = Rect.new(16, 16, 160, 96)  # 192 - 16 - 16 = 160, 128 - 16 - 16 = 96
+      else
+        # Unknown format, use safe defaults
+        border_size = 16
+        slice = Rect.new(16, 16, temp_skin.width - 32, temp_skin.height - 32)
+      end
+      temp_skin.dispose
+      
+      @hover_padding = border_size
+      bg_width = img_width + (border_size * 2)
+      bg_height = img_height + (border_size * 2)
+      
+      # Create the background using 9-slice scaling
+      rect = Rect.new(0, 0, bg_width, bg_height)
+      @hover_background.bitmap = Bitmap.smartWindow(slice, rect, windowskin_path)
+    else
+      # Fallback: Create simple background bitmap with border
+      @hover_padding = 8
+      bg_width = img_width + (@hover_padding * 2)
+      bg_height = img_height + (@hover_padding * 2)
+      
+      @hover_background.bitmap = Bitmap.new(bg_width, bg_height)
+      
+      # Draw a semi-transparent box with a border
+      base_color = Color.new(0, 0, 0, 160)
+      border_color = Color.new(255, 255, 255, 200)
+      
+      # Fill background
+      @hover_background.bitmap.fill_rect(0, 0, bg_width, bg_height, base_color)
+      
+      # Draw border
+      border_width = 2
+      @hover_background.bitmap.fill_rect(0, 0, bg_width, border_width, border_color) # Top
+      @hover_background.bitmap.fill_rect(0, bg_height - border_width, bg_width, border_width, border_color) # Bottom
+      @hover_background.bitmap.fill_rect(0, 0, border_width, bg_height, border_color) # Left
+      @hover_background.bitmap.fill_rect(bg_width - border_width, 0, border_width, bg_height, border_color) # Right
+    end
+  end
+
+  def updateHoverImagePosition
+    @hover_image.viewport = self.viewport
+    
+    # Position background if visible (render background first, then center image on it)
+    if @hover_background && @hover_background.visible
+      padding = @hover_padding || 16
+      @hover_background.z = self.z + 99
+      @hover_background.viewport = self.viewport
+      # Position background to the left of the command window
+      @hover_background.x = self.x - @hover_background.bitmap.width - 8
+      @hover_background.y = self.y + (self.height / 2) - (@hover_background.bitmap.height / 2)
+      
+      # Center image inside the background
+      @hover_image.z = self.z + 100
+      @hover_image.x = @hover_background.x + padding
+      @hover_image.y = @hover_background.y + padding
+    else
+      # No background, position image directly
+      @hover_image.z = self.z + 100
+      @hover_image.x = self.x - @hover_image.bitmap.width - 8
+      @hover_image.y = self.y + (self.height / 2) - (@hover_image.bitmap.height / 2)
+    end
+  end
+end
+
+#===============================================================================
 #
 #===============================================================================
 class SpriteWindow_SelectableEx < SpriteWindow_Selectable
@@ -1069,9 +1280,7 @@ class Window_DrawableCommand < SpriteWindow_SelectableEx
       RPG::Cache.retain("Graphics/UI/sel_arrow")
     end
     @index = 0
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
   end
 
@@ -1119,9 +1328,7 @@ class Window_DrawableCommand < SpriteWindow_SelectableEx
   def setSkin(skin)
     super(skin)
     privRefresh(true)
-    colors = getDefaultTextColors(self.windowskin)
-    @baseColor   = colors[0]
-    @shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
   end
 
   def drawCursor(index, rect)
@@ -1162,21 +1369,21 @@ end
 #
 #===============================================================================
 class Window_CommandPokemon < Window_DrawableCommand
+  include HoverImageMixin
   attr_reader :commands
 
   def initialize(commands, width = nil)
     @starting = true
-    @commands = []
     dims = []
     super(0, 0, 32, 32)
-    getAutoDims(commands, dims, width)
+    @commands = []
+    parseCommandsWithImages(commands)
+    getAutoDims(@commands, dims, width)
     self.width = dims[0]
     self.height = dims[1]
-    @commands = commands
+    initHoverImage
     self.active = true
-    colors = getDefaultTextColors(self.windowskin)
-    self.baseColor = colors[0]
-    self.shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
     @starting = false
   end
@@ -1201,6 +1408,11 @@ class Window_CommandPokemon < Window_DrawableCommand
     return ret
   end
 
+  def dispose
+    disposeHoverImage
+    super
+  end
+
   def index=(value)
     super
     refresh if !@starting
@@ -1210,6 +1422,11 @@ class Window_CommandPokemon < Window_DrawableCommand
     @commands = value
     @item_max = commands.length
     self.update_cursor_rect
+    self.refresh
+  end
+
+  def command_images=(value)
+    @command_images = value
     self.refresh
   end
 
@@ -1246,6 +1463,11 @@ class Window_CommandPokemon < Window_DrawableCommand
     pbDrawShadowText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
                      rect.width, rect.height, @commands[index], self.baseColor, self.shadowColor)
   end
+  
+  def update
+    super
+    updateHoverImage
+  end
 end
 
 #===============================================================================
@@ -1258,21 +1480,22 @@ end
 #
 #===============================================================================
 class Window_AdvancedCommandPokemon < Window_DrawableCommand
+  include HoverImageMixin
   attr_reader :commands
-
+  attr_reader :command_images
+  
   def initialize(commands, width = nil)
     @starting = true
-    @commands = []
     dims = []
     super(0, 0, 32, 32)
-    getAutoDims(commands, dims, width)
+    @commands = []
+    parseCommandsWithImages(commands)
+    getAutoDims(@commands, dims, width)
     self.width = dims[0]
     self.height = dims[1]
-    @commands = commands
+    initHoverImage
     self.active = true
-    colors = getDefaultTextColors(self.windowskin)
-    self.baseColor = colors[0]
-    self.shadowColor = colors[1]
+    @baseColor, @shadowColor = getDefaultTextColors(self.windowskin)
     refresh
     @starting = false
   end
@@ -1297,6 +1520,11 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
     return ret
   end
 
+  def dispose
+    disposeHoverImage
+    super
+  end
+
   def index=(value)
     super
     refresh if !@starting
@@ -1306,6 +1534,11 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
     @commands = value
     @item_max = commands.length
     self.update_cursor_rect
+    self.refresh
+  end
+
+  def command_images=(value)
+    @command_images = value
     self.refresh
   end
 
@@ -1395,10 +1628,15 @@ class Window_AdvancedCommandPokemon < Window_DrawableCommand
       pbDrawShadowText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
                        rect.width, rect.height, @commands[index], self.baseColor, self.shadowColor)
     else
-      chars = getFormattedText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0),
-                               rect.width, rect.height, @commands[index], rect.height, true, true)
+      chars = getFormattedText(self.contents, rect.x, rect.y + (self.contents.text_offset_y || 0) + 2,   # TEXT OFFSET
+                               rect.width, rect.height, @commands[index], rect.height, true, true, false, self)
       drawFormattedChars(self.contents, chars)
     end
+  end
+
+  def update
+    super
+    updateHoverImage
   end
 end
 
@@ -1407,4 +1645,3 @@ end
 #===============================================================================
 class Window_AdvancedCommandPokemonEx < Window_AdvancedCommandPokemon
 end
-

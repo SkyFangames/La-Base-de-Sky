@@ -1,12 +1,34 @@
 #===============================================================================
+#  Luka's Scripting Utilities
+#
 #  SpriteHash - wrapper for handling RMXP sprite hashes
 #===============================================================================
 class SpriteHash
-  #---------------------------------------------------------------------------
-  attr_reader :hash, :viewport
-  #---------------------------------------------------------------------------
-  #  class method to get bitmap from path or other bitmapable object
-  #---------------------------------------------------------------------------
+  # @return [SpriteHash::SpriteCollection]
+  attr_reader :hash
+  # @return [Viewport]
+  attr_reader :viewport
+
+  attr_reader :x
+  attr_reader :y
+  attr_reader :z
+  attr_reader :visible
+  attr_reader :opacity
+
+  # @param viewport [Viewport]
+  def initialize(viewport = nil)
+    @viewport = viewport
+    @sprites  = {}
+    @hash     = SpriteCollection.new(@sprites)
+    @x = 0
+    @y = 0
+    @z = 0
+    @visible = true
+    @opacity = 255
+  end
+
+  # Class method to get bitmap from path or other bitmapable object
+  # @param path [String]
   def self.bitmap(path)
     return path if path.is_a?(Bitmap)
     return Sprites::Bitmap.new(path.width, path.height) if path.is_a?(Rect)
@@ -19,9 +41,9 @@ class SpriteHash
     LUTS::ErrorMessages::ImageNotFound.new(path).raise
     ::Bitmap.new(2, 2)
   end
-  #---------------------------------------------------------------------------
-  #  downloads a bitmap and returns it
-  #---------------------------------------------------------------------------
+
+  # Downloads a bitmap and returns it
+  # @param url [String]
   def self.online_bitmap(url)
     file_name = url.split('/').last
     pbDownloadToFile(url, file_name)
@@ -32,31 +54,13 @@ class SpriteHash
 
     bitmap
   end
-  #---------------------------------------------------------------------------
-  #  downloads a bitmap and returns it
-  #---------------------------------------------------------------------------
-  def online_bitmap(url)
-    file_name = url.split('/').last
-    pbDownloadToFile(url, file_name)
-    return nil unless File.safe_data?(file_name)
 
-    bitmap = self.class.bitmap(file_name)
-    File.delete(file_name)
-
-    bitmap
-  end
-  #---------------------------------------------------------------------------
-  #  class constructor
-  #---------------------------------------------------------------------------
-  def initialize(viewport = nil)
-    @viewport = viewport
-    @sprites  = {}
-    @hash     = SpriteCollection.new(@sprites)
-  end
-  #---------------------------------------------------------------------------
-  #  add new sprite to sprite hash
-  #---------------------------------------------------------------------------
-  def add(key, options = {})
+  # Adds new sprite to sprite hash
+  # @param key [Symbol]
+  # @param options [Hash]
+  # @param block [Proc]
+  # @return [Sprites::Base]
+  def add(key, options = {}, &block)
     if options.key?(:object)
       @sprites[key] = options[:object]
       return @hash.add(key)
@@ -81,71 +85,136 @@ class SpriteHash
     end
 
     @hash.add(key)
+    block.call(@sprites[key]) if block_given?
     @sprites[key]
   end
 
-  def add_raw(key, object)
+  # Adds sprite already instanciated elsewhere
+  # @param key [Symbol]
+  # @param object [Object]
+  # @param block [Proc]
+  # @return [Object]
+  def add_raw(key, object, &block)
     @sprites[key] = object
+    block.call(@sprites[key]) if block_given?
+    @sprites[key]
   end
-  #---------------------------------------------------------------------------
-  #  get sprite from sprite hash based on key
-  #---------------------------------------------------------------------------
+
+  # @return [Object] sprite from sprite hash based on key
   def [](key)
     @sprites[key]
   end
-  #---------------------------------------------------------------------------
-  #  get all available sprite keys
-  #---------------------------------------------------------------------------
+  
+  # Sets an object in specified key to the specified value
+  def []=(key, value)
+  key = key.to_sym if key.respond_to?(:to_sym) && !key.is_a?(Numeric)
+    add(key, value)
+  end
+  
+
+  # @return [Array<Symbol>] all available sprite keys
   def keys
     @sprites.keys
   end
 
+  def size
+    return @sprites.keys.size
+  end
+
+  def length; return self.size; end
+  def count;  return self.size; end
+
+  # @param key [Symbol]
+  # @return [Boolean]
   def key?(key)
     @sprites.keys.include?(key)
   end
-  #---------------------------------------------------------------------------
-  #  iterate through sprite hash with code block
-  #---------------------------------------------------------------------------
-  def each(&block)
-    return unless block
 
-    @sprites.each do |key, value|
-      block.call(key, value)
+  # Iterates through sprite hash with code block
+  # @param block [Proc]
+  def each(&block)
+    return unless block_given?
+
+    @sprites.each do |key, sprite|
+      block.call(key, sprite)
     end
   end
-  #---------------------------------------------------------------------------
-  #  update all sprites in sprite hash
-  #---------------------------------------------------------------------------
-  def update
-    @sprites.each { |_k, sprite| sprite.update }
+
+  # Iterates through each sprite in hash
+  # @param block [Proc]
+  def each_sprite(&block)
+    return unless block_given?
+
+    @sprites.each_value do |sprite|
+      block.call(sprite)
+    end
   end
-  #---------------------------------------------------------------------------
-  #  set viewport across all sprites
-  #---------------------------------------------------------------------------
+
+  # Iterates through each key in hash
+  # @param block [Proc]
+  def each_key(&block)
+    return unless block_given?
+
+    @sprites.each_key do |key|
+      block.call(key)
+    end
+  end
+
+  # Selects only evaluated blocks
+  # @param block [Proc]
+  # @return [Array<Object>]
+  def select(&block)
+    return @sprites unless block_given?
+
+    @sprites.select do |key, sprite|
+      block.call(key, sprite)
+    end
+  end
+
+  # Rejects only evaluated blocks
+  # @param block [Proc]
+  # @return [Array<Object>]
+  def reject(&block)
+    return @sprites unless block_given?
+
+    @sprites.reject do |key, sprite|
+      block.call(key, sprite)
+    end
+  end
+
+  # Update all sprites in sprite hash
+  def update
+    @sprites.each_value(&:update)
+  end
+
+  # Sets viewport across all sprites
+  # @param val [Viewport]
   def viewport=(val)
     @viewport = val
-    @sprites.each { |_k, sprite| sprite.viewport = @viewport }
+    @sprites.each_value { |sprite| sprite.viewport = @viewport }
   end
-  #---------------------------------------------------------------------------
-  #  disposes all available sprites
-  #---------------------------------------------------------------------------
+
+  # Disposes all available sprites
+  # @param options [Hash]
   def dispose(options = {})
     @sprites.keys.reject { |key| Array(options[:except]).include?(key) }.each do |key|
       next if options[:only] && !Array(options[:only]).include?(key)
+      next if @sprites[key]&.disposed?
 
       @sprites[key].dispose
       @sprites.delete(key)
     end
   end
 
+  # @return [Boolean]
   def disposed?
     @sprites.keys.empty?
   end
-  #---------------------------------------------------------------------------
-  #  set value for all sprites in hash
-  #---------------------------------------------------------------------------
+
+  # Set value for all sprites in hash
+  # @param options [Hash]
   def set(options = {})
-    @sprites.keys.each do |key|
+    @sprites.each_key do |key|
       options.except(:type, :class).each do |option, value|
         next set_value(key, "#{option}=".to_sym, value) if @sprites[key].respond_to?("#{option}=".to_sym)
         next unless @sprites[key].respond_to?(option)
@@ -155,10 +224,91 @@ class SpriteHash
     end
   end
 
+  # Changes x on all sprites
+  def x=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].x += value - @x
+    end
+    @x = value
+  end
+  
+  # Changes y on all sprites
+  def y=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].y += value - @y
+    end
+    @y = value
+  end
+  
+  # Changes z on all sprites
+  def z=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].z += value - @z
+    end
+    @z = value
+  end
+  
+  # Changes visibility on all sprites
+  def visible=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].visible = value
+    end
+  end
+  
+  # Changes opacity on all sprites
+  def opacity=(value)
+    clear_disposed
+    for key in @sprites.keys
+      @sprites[key].opacity += value - @opacity
+    end
+    @opacity = [0,value,255].sort[1]
+  end
+  
+  # Fades out all sprites
+  def hide(frames = 16)
+    clear_disposed
+    frames.times do
+      Graphics.update
+      Input.update
+      for key in @sprites.keys
+        @sprites[key].opacity -= 255 / frames.to_f
+      end
+    end
+    @opacity = 0
+  end
+  
+  # Fades in all sprites
+  def show(frames = 16)
+    clear_disposed
+    frames.times do
+      Graphics.update
+      Input.update
+      for key in @sprites.keys
+        @sprites[key].opacity += 255 / frames.to_f
+      end
+    end
+    @opacity = 255
+  end
+
+  # Deletes all disposed sprites from the hash
+  def clear_disposed
+    for key in @sprites.keys
+      if (@sprites[key].disposed? rescue true)
+        @sprites[key] = nil
+        @sprites.delete(key)
+      end
+    end
+  end
+
   private
-  #---------------------------------------------------------------------------
-  #  create sprite instance from params
-  #---------------------------------------------------------------------------
+
+  # Creates sprite instance from params
+  # @param type [Symbol]
+  # @param klass [Class]
   def sprite_instance(type = nil, klass = nil)
     return (klass.is_a?(String) ? klass.constantize : klass).new(@viewport) if klass
     return Sprites::Base.new(@viewport) unless type
@@ -168,13 +318,15 @@ class SpriteHash
     LUTS::ErrorMessages::SpriteError.new(type.to_s.camelize).raise
     Sprites::Base.new(@viewport)
   end
-  #---------------------------------------------------------------------------
-  #  set sprite instance variable based on available methods
-  #---------------------------------------------------------------------------
+
+  # Sets sprite instance variable based on available methods
+  # @param key [Symbol]
+  # @param option [Symbol]
+  # @param value [Object]
   def set_value(key, option, value)
     return @sprites[key].send(option, value) if option.to_s.chars.last.eql?('=')
 
-    if @sprites[key].method(option).arity > 0
+    if @sprites[key].method(option).arity.positive?
       if value.is_a?(Array)
         @sprites[key].send(option, *value)
       elsif value.is_a?(Hash)
@@ -186,14 +338,16 @@ class SpriteHash
       @sprites[key].send(option)
     end
   end
-  #---------------------------------------------------------------------------
-  #  sprite hash class to implicitly define sprite accessors
-  #---------------------------------------------------------------------------
+
+  # Sprite hash class to implicitly define sprite accessors
   class SpriteCollection
+    # @param sprites [Hash]
     def initialize(sprites = nil)
       @sprites = sprites
     end
 
+    # Adds key to sprite collection
+    # @param key [Symbol]
     def add(key)
       return if key.to_s.numeric?
 
@@ -201,17 +355,20 @@ class SpriteHash
       self.class.attr_accessor(key.to_sym)
     end
 
+    # @return [Object]
     def first
       @sprites[@sprites.keys.first]
     end
 
+    # @return [Object]
     def last
       @sprites[@sprites.keys.last]
     end
 
+    # @param key [Symbol]
+    # @return [Object]
     def [](key)
       @sprites[key]
     end
   end
-  #---------------------------------------------------------------------------
 end

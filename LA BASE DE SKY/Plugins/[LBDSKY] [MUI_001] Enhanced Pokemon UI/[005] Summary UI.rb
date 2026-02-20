@@ -10,8 +10,16 @@ class PokemonSummary_Scene
     enhanced_drawPage(page)
     return if !Settings::SUMMARY_SHINY_LEAF
     overlay = @sprites["overlay"].bitmap
-    coords = (PluginManager.installed?("BW Summary Screen")) ? [Graphics.width - 18, 114] : [182, 124]
-    pbDisplayShinyLeaf(@pokemon, overlay, coords[0], coords[1])
+    
+    if PluginManager.installed?("BW Summary Screen")
+      x_pos = Graphics.width + SHINY_LEAF_BW_X
+      y_pos = SHINY_LEAF_BW_Y
+    else
+      x_pos = SHINY_LEAF_X
+      y_pos = SHINY_LEAF_Y
+    end
+    
+    pbDisplayShinyLeaf(@pokemon, overlay, x_pos, y_pos)
   end
   
   #-----------------------------------------------------------------------------
@@ -22,8 +30,7 @@ class PokemonSummary_Scene
     enhanced_drawPageOne
     return if !Settings::SUMMARY_HAPPINESS_METER
     overlay = @sprites["overlay"].bitmap
-    coords = [242, 346]
-    pbDisplayHappiness(@pokemon, overlay, coords[0], coords[1])
+    pbDisplayHappiness(@pokemon, overlay, HAPPY_METER_X, HAPPY_METER_Y)
   end
   
   #-----------------------------------------------------------------------------
@@ -34,8 +41,15 @@ class PokemonSummary_Scene
     (@statToggle) ? drawEnhancedStats : enhanced_drawPageThree
     return if !Settings::SUMMARY_IV_RATINGS
     overlay = @sprites["overlay"].bitmap
-    coords = (PluginManager.installed?("BW Summary Screen")) ? [110, 83] : [465, 83]
-    pbDisplayIVRating(@pokemon, overlay, coords[0], coords[1])
+    if PluginManager.installed?("BW Summary Screen")
+      x_pos = IV_RATINGS_BW_X
+      y_pos = IV_RATINGS_BW_Y
+    else
+      x_pos = IV_RATINGS_X
+      y_pos = IV_RATINGS_Y
+    end
+    
+    pbDisplayIVRating(@pokemon, overlay, x_pos, y_pos)
   end
 	
   def pbDisplayIVRating(*args)
@@ -91,6 +105,48 @@ class PokemonSummary_Scene
   # Legacy data menu.
   #-----------------------------------------------------------------------------
   TOTAL_LEGACY_PAGES = 3
+  LEGACY_ICON_X = 64
+  LEGACY_ICON_Y_OFFSET = 64
+  HISTORY_TEXT_X = 295
+  HISTORY_TEXT_Y_OFFSET = 38
+  NAME_Y_OFFSET = 90
+  ACHIEVE_X = 38
+  ACHIEVE_Y_OFFSET = 134
+  LEGACY_ARROW_RIGHT_X = 118
+  LEGACY_ARROW_RIGHT_Y_OFFSET = 84
+  LEGACY_ARROW_LEFT_X = 362  
+  LEGACY_ARROW_LEFT_Y_OFFSET = 84
+
+  ENHANCED_HP_X = 292
+  # Enhanced stats layout constants
+  STATS_DEFAULT_X = 248
+  STATS_FIRST_Y = 94
+  STATS_Y_SPACING = 32
+  STATS_HP_Y = 82
+  STATS_NAME_SEPARATOR_X = 424
+  STATS_EV_X = 408
+  STATS_IV_X = 456
+  STATS_TOTAL_LABEL_X = 224
+  STATS_TOTAL_VALUE_X = 434
+  STATS_REMAIN_LABEL_X = 224
+  STATS_REMAIN_VALUE_X = 444
+  STATS_HIDDENPOWER_LABEL_X = 224
+  STATS_TOTAL_Y = 290
+  STATS_REMAIN_Y = 322
+  STATS_HIDDENPOWER_Y = 354
+
+  # HP bar constants
+  HP_BAR_MAX_WIDTH = 96
+  HP_BAR_MIN_WIDTH = 1
+  HP_BAR_ROUND_UNIT = 2
+  HP_BAR_IMAGE = "Graphics/UI/Summary/overlay_hp"
+  HP_BAR_HEIGHT = 6
+
+  # Type icon constants
+  TYPE_ICON_X = 428
+  TYPE_ICON_Y = 351
+  TYPE_ICON_WIDTH = 64
+  TYPE_ICON_HEIGHT = 28
   
   def pbLegacyMenu    
     base    = Color.new(64, 64, 64)
@@ -102,8 +158,8 @@ class PokemonSummary_Scene
     legacy_overlay.clear
     ypos = 62
     index = 0
-    @sprites["legacyicon"].x = 64
-    @sprites["legacyicon"].y = ypos + 64
+    @sprites["legacyicon"].x = LEGACY_ICON_X
+    @sprites["legacyicon"].y = ypos + LEGACY_ICON_Y_OFFSET
     @sprites["legacyicon"].pokemon = @pokemon
     @sprites["legacyicon"].visible = true
     data = @pokemon.legacy_data
@@ -157,19 +213,19 @@ class PokemonSummary_Scene
             [_INTL("Total de empates o derrotas:"),      data[:loss_count]]
           ]
         end
-        textpos.push([_INTL("HISTÓRICO DE {1}", @pokemon.name.upcase), 295, ypos + 38, :center, base2, shadow2],
-                     [name, Graphics.width / 2, ypos + 90, :center, base, shadow])
+        textpos.push([_INTL("HISTÓRICO DE {1}", @pokemon.name.upcase), HISTORY_TEXT_X, ypos + HISTORY_TEXT_Y_OFFSET, :center, base2, shadow2],
+                     [name, Graphics.width / 2, ypos + NAME_Y_OFFSET, :center, base, shadow])
         addltext.each_with_index do |txt, i|
-          textY = ypos + 134 + (i * 32)
-          textpos.push([txt[0], 38, textY, :left, base, shadow])
-          textpos.push([_INTL("{1}", txt[1]), Graphics.width - 38, textY, :right, base, shadow])
+          textY = ypos + ACHIEVE_Y_OFFSET + (i * 32)
+          textpos.push([txt[0], ACHIEVE_X, textY, :left, base, shadow])
+          textpos.push([_INTL("{1}", txt[1]), Graphics.width - ACHIEVE_X, textY, :right, base, shadow])
         end
         imagepos.push([path + "bg_legacy", 0, ypos])
         if index > 0
-          imagepos.push([path + "arrows_legacy", 118, ypos + 84, 0, 0, 32, 32])
+          imagepos.push([path + "arrows_legacy", LEGACY_ARROW_RIGHT_X, ypos + LEGACY_ARROW_RIGHT_Y_OFFSET, 0, 0, 32, 32])
         end
         if index < TOTAL_LEGACY_PAGES - 1
-          imagepos.push([path + "arrows_legacy", 362, ypos + 84, 32, 0, 32, 32])
+          imagepos.push([path + "arrows_legacy", LEGACY_ARROW_LEFT_X, ypos + LEGACY_ARROW_LEFT_Y_OFFSET, 32, 0, 32, 32])
         end
         legacy_overlay.clear
         pbDrawImagePositions(legacy_overlay, imagepos)
@@ -196,10 +252,10 @@ class PokemonSummary_Scene
     textpos = []
     GameData::Stat.each_main do |s|
       case s.id
-      when :HP then xpos, ypos, align = 292, 82, :center
-      else xpos, ypos, align = 248, 94 + (32 * index), :left
+      when :HP then xpos, ypos, align = ENHANCED_HP_X, STATS_HP_Y, :center
+      else xpos, ypos, align = STATS_DEFAULT_X, STATS_FIRST_Y + (STATS_Y_SPACING * index), :left
       end
-      name = (s.id == :SPECIAL_ATTACK) ? "Sp. Atk" : (s.id == :SPECIAL_DEFENSE) ? "Sp. Def" : s.name
+      name = (s.id == :SPECIAL_ATTACK) ? _INTL("Atq. Esp.") : (s.id == :SPECIAL_DEFENSE) ? _INTL("Def. Esp.") : s.name
       statshadow = shadow
       if !@pokemon.shadowPokemon? || @pokemon.heartStage <= 3
         @pokemon.nature_for_stats.stat_changes.each do |change|
@@ -213,37 +269,37 @@ class PokemonSummary_Scene
       end
       textpos.push(
         [_INTL("{1}", name), xpos, ypos, align, base, statshadow],
-        [_INTL("|"), 424, ypos, :right, base2, shadow2],
-        [@pokemon.ev[s.id].to_s, 408, ypos, :right, base2, shadow2],
-        [@pokemon.iv[s.id].to_s, 456, ypos, :right, base2, shadow2]
+        [_INTL("|"), STATS_NAME_SEPARATOR_X, ypos, :right, base2, shadow2],
+        [@pokemon.ev[s.id].to_s, STATS_EV_X, ypos, :right, base2, shadow2],
+        [@pokemon.iv[s.id].to_s, STATS_IV_X, ypos, :right, base2, shadow2]
       )
       ev_total += @pokemon.ev[s.id]
       iv_total += @pokemon.iv[s.id]
       index += 1
     end
     textpos.push(
-      [_INTL("EV/IV Totales"), 224, 290, :left, base, shadow],
-      [sprintf("%d  |  %d", ev_total, iv_total), 434, 290, :center, base2, shadow2],
-      [_INTL("EVs restantes:"), 224, 322, :left, base2, shadow2],
-      [sprintf("%d/%d", Pokemon::EV_LIMIT - ev_total, Pokemon::EV_LIMIT), 444, 322, :center, base2, shadow2],
-      [_INTL("Tipo de Poder Oculto:"), 224, 354, :left, base2, shadow2]
+      [_INTL("EV/IV Totales"), STATS_TOTAL_LABEL_X, STATS_TOTAL_Y, :left, base, shadow],
+      [sprintf("%d  |  %d", ev_total, iv_total), STATS_TOTAL_VALUE_X, STATS_TOTAL_Y, :center, base2, shadow2],
+      [_INTL("EVs restantes:"), STATS_REMAIN_LABEL_X, STATS_REMAIN_Y, :left, base2, shadow2],
+      [sprintf("%d/%d", Pokemon::EV_LIMIT - ev_total, Pokemon::EV_LIMIT), STATS_REMAIN_VALUE_X, STATS_REMAIN_Y, :center, base2, shadow2],
+      [_INTL("Tipo de Poder Oculto:"), STATS_HIDDENPOWER_LABEL_X, STATS_HIDDENPOWER_Y, :left, base2, shadow2]
     )
     pbDrawTextPositions(overlay, textpos)
     if @pokemon.hp > 0
-      w = @pokemon.hp * 96 / @pokemon.totalhp.to_f
-      w = 1 if w < 1
-      w = ((w / 2).round) * 2
+      w = @pokemon.hp * HP_BAR_MAX_WIDTH / @pokemon.totalhp.to_f
+      w = HP_BAR_MIN_WIDTH if w < HP_BAR_MIN_WIDTH
+      w = ((w / HP_BAR_WIDTH_ROUND_UNIT).round) * HP_BAR_WIDTH_ROUND_UNIT
       hpzone = 0
       hpzone = 1 if @pokemon.hp <= (@pokemon.totalhp / 2).floor
       hpzone = 2 if @pokemon.hp <= (@pokemon.totalhp / 4).floor
       imagepos = [
-        ["Graphics/UI/Summary/overlay_hp", 360, 110, 0, hpzone * 6, w, 6]
+        [HP_BAR_IMAGE, 360, 110, 0, hpzone * HP_BAR_HEIGHT, w, HP_BAR_HEIGHT]
       ]
       pbDrawImagePositions(overlay, imagepos)
     end
     hiddenpower = pbHiddenPower(@pokemon)
     type_number = GameData::Type.get(hiddenpower[0]).icon_position
-    type_rect = Rect.new(0, type_number * 28, 64, 28)
-    overlay.blt(428, 351, @typebitmap.bitmap, type_rect)
+    type_rect = Rect.new(0, type_number * TYPE_ICON_HEIGHT, TYPE_ICON_WIDTH, TYPE_ICON_HEIGHT)
+    overlay.blt(TYPE_ICON_X, TYPE_ICON_Y, @typebitmap.bitmap, type_rect)
   end
 end

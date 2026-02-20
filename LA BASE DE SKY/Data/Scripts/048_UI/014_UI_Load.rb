@@ -11,6 +11,23 @@ class PokemonLoadPanel < Sprite
   FEMALE_TEXT_COLOR        = Color.new(240, 72, 88)
   FEMALE_TEXT_SHADOW_COLOR = Color.new(160, 64, 64)
 
+  # Panel bitmap/source sizes and layout
+  # Alto del panel de la opción "Continuar" en la imagen de fondos (en píxeles)
+  PANEL_BG_CONTINUE_HEIGHT       = 222
+  # Alto del panel para opciones "nuevas" (no continuar) en la imagen de fondos
+  PANEL_BG_NEW_HEIGHT            = 46
+  # Posición Y en la imagen de fondos donde están los paneles no-continuar
+  PANEL_BG_NONCONTINUE_SRC_Y     = 444
+  # Desplazamiento Y aplicado al usar la versión seleccionada del panel nuevo
+  PANEL_NEW_SELECTED_OFFSET_Y    = 46
+
+  # Desplazamiento horizontal del menú
+  DESPLAZ_HORIZ_MENU  = 0
+  # Desplazamiento horizontal de los datos (medallas, pokédex, tiempo) respecto al menú
+  DESPLAZ_HORIZ_DATOS = 0
+  # Desplazamiento horizontal del texto del mapa
+  DESPLAZ_TEXTO_MAPA  = 0
+
   def initialize(index, title, isContinue, trainer, stats, mapid, viewport = nil)
     super(viewport)
     @index = index
@@ -49,44 +66,44 @@ class PokemonLoadPanel < Sprite
     return if disposed?
     @refreshing = true
     if !self.bitmap || self.bitmap.disposed?
-      self.bitmap = Bitmap.new(@bgbitmap.width, 222)
+      self.bitmap = Bitmap.new(@bgbitmap.width, PANEL_BG_CONTINUE_HEIGHT)
       pbSetSystemFont(self.bitmap)
     end
     if @refreshBitmap
       @refreshBitmap = false
       self.bitmap&.clear
       if @isContinue
-        self.bitmap.blt(0, 0, @bgbitmap.bitmap, Rect.new(0, (@selected) ? 222 : 0, @bgbitmap.width, 222))
+        self.bitmap.blt(0, 0, @bgbitmap.bitmap, Rect.new(0, (@selected) ? PANEL_BG_CONTINUE_HEIGHT : 0, @bgbitmap.width, PANEL_BG_CONTINUE_HEIGHT))
       else
-        self.bitmap.blt(0, 0, @bgbitmap.bitmap, Rect.new(0, 444 + ((@selected) ? 46 : 0), @bgbitmap.width, 46))
+        self.bitmap.blt(0, 0, @bgbitmap.bitmap, Rect.new(0, PANEL_BG_NONCONTINUE_SRC_Y + ((@selected) ? PANEL_NEW_SELECTED_OFFSET_Y : 0), @bgbitmap.width, PANEL_BG_NEW_HEIGHT))
       end
       textpos = []
       if @isContinue
-        textpos.push([@title, 32, 16, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([_INTL("Medallas:"), 32, 118, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([@trainer.badge_count.to_s, 206, 118, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([_INTL("Pokédex:"), 32, 150, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([@trainer.pokedex.seen_count.to_s, 206, 150, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([_INTL("Tiempo:"), 32, 182, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@title, 32 + DESPLAZ_HORIZ_MENU, 16, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([_INTL("Medallas:"), 32 + DESPLAZ_HORIZ_MENU, 118, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@trainer.badge_count.to_s, 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 118, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([_INTL("Pokédex:"), 32 + DESPLAZ_HORIZ_MENU, 150, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@trainer.pokedex.seen_count.to_s, 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 150, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([_INTL("Tiempo:"), 32 + DESPLAZ_HORIZ_MENU, 182, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
         hour = @totalsec / 60 / 60
         min  = @totalsec / 60 % 60
         if hour > 0
-          textpos.push([_INTL("{1}h {2}m", hour, min), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+          textpos.push([_INTL("{1}h {2}m", hour, min), 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
         else
-          textpos.push([_INTL("{1}m", min), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+          textpos.push([_INTL("{1}m", min), 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
         end
         if @trainer.male?
-          textpos.push([@trainer.name, 112, 70, :left, MALE_TEXT_COLOR, MALE_TEXT_SHADOW_COLOR])
+          textpos.push([@trainer.name, 112 + DESPLAZ_HORIZ_MENU, 70, :left, MALE_TEXT_COLOR, MALE_TEXT_SHADOW_COLOR])
         elsif @trainer.female?
-          textpos.push([@trainer.name, 112, 70, :left, FEMALE_TEXT_COLOR, FEMALE_TEXT_SHADOW_COLOR])
+          textpos.push([@trainer.name, 112 + DESPLAZ_HORIZ_MENU, 70, :left, FEMALE_TEXT_COLOR, FEMALE_TEXT_SHADOW_COLOR])
         else
-          textpos.push([@trainer.name, 112, 70, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+          textpos.push([@trainer.name, 112 + DESPLAZ_HORIZ_MENU, 70, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
         end
         mapname = pbGetMapNameFromId(@mapid)
         mapname.gsub!(/\\PN/, @trainer.name)
-        textpos.push([mapname, 386, 16, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([mapname, 386 + DESPLAZ_HORIZ_MENU + DESPLAZ_TEXTO_MAPA, 16, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
       else
-        textpos.push([@title, 32, 14, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@title, 32 + DESPLAZ_HORIZ_MENU, 14, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
       end
       pbDrawTextPositions(self.bitmap, textpos)
     end
@@ -98,6 +115,36 @@ end
 #
 #===============================================================================
 class PokemonLoad_Scene
+
+  # Altura total del espacio ocupado por un panel tipo "Continuar" en el listado (incluye separación)
+  PANEL_TOTAL_HEIGHT_CONTINUE    = 224 
+  
+  # Altura total del espacio ocupado por un panel tipo "Nuevo" en el listado
+  PANEL_TOTAL_HEIGHT_NEW         = 48
+
+  # Player/party layout constants
+  # Coordenada X base donde se centra el sprite del jugador en el panel
+  PLAYER_CHAR_BASE_X = 112
+  # Coordenada Y base donde se centra el sprite del jugador en el panel
+  PLAYER_CHAR_BASE_Y = 112
+  # Divisor usado para calcular el desplazamiento del charset (charwidth / PLAYER_CHAR_DIV)
+  PLAYER_CHAR_DIV    = 8
+  # Nivel Z para el sprite del jugador (orden de dibujo)
+  PLAYER_Z           = 99999
+
+  # Coordenada X inicial para dibujar los iconos de la party (primer slot)
+  PARTY_START_X      = 334
+  # Espacio horizontal entre iconos de la party cuando se colocan en columnas
+  PARTY_X_SPACING    = 66
+  # Coordenada Y inicial para dibujar los iconos de la party
+  PARTY_START_Y      = 112
+  # Espacio vertical entre filas de iconos de la party
+  PARTY_Y_SPACING    = 50
+  # Nivel Z para los iconos de la party (orden de dibujo)
+  PARTY_Z            = 99999
+  # Número máximo de iconos de party a considerar (tamaño del array mostrado)
+  PARTY_MAX          = 6
+
   def pbStartScene(commands, show_continue, trainer, stats, map_id)
     @commands = commands
     @sprites = {}
@@ -112,7 +159,7 @@ class PokemonLoad_Scene
       @sprites["panel#{i}"].x = 48
       @sprites["panel#{i}"].y = y
       @sprites["panel#{i}"].pbRefresh
-      y += (show_continue && i == 0) ? 224 : 48
+      y += (show_continue && i == 0) ? PANEL_TOTAL_HEIGHT_CONTINUE : PANEL_TOTAL_HEIGHT_NEW
     end
     @sprites["cmdwindow"] = Window_CommandPokemon.new([])
     @sprites["cmdwindow"].viewport = @viewport
@@ -141,23 +188,23 @@ class PokemonLoad_Scene
       @sprites["panel#{newi}"].pbRefresh
       while @sprites["panel#{newi}"].y > Graphics.height - 80
         @commands.length.times do |i|
-          @sprites["panel#{i}"].y -= 48
+          @sprites["panel#{i}"].y -= PANEL_TOTAL_HEIGHT_NEW
         end
-        6.times do |i|
+        PARTY_MAX.times do |i|
           break if !@sprites["party#{i}"]
-          @sprites["party#{i}"].y -= 48
+          @sprites["party#{i}"].y -= PANEL_TOTAL_HEIGHT_NEW
         end
-        @sprites["player"].y -= 48 if @sprites["player"]
+        @sprites["player"].y -= PANEL_TOTAL_HEIGHT_NEW if @sprites["player"]
       end
       while @sprites["panel#{newi}"].y < 32
         @commands.length.times do |i|
-          @sprites["panel#{i}"].y += 48
+          @sprites["panel#{i}"].y += PANEL_TOTAL_HEIGHT_NEW
         end
-        6.times do |i|
+        PARTY_MAX.times do |i|
           break if !@sprites["party#{i}"]
-          @sprites["party#{i}"].y += 48
+          @sprites["party#{i}"].y += PANEL_TOTAL_HEIGHT_NEW
         end
-        @sprites["player"].y += 48 if @sprites["player"]
+        @sprites["player"].y += PANEL_TOTAL_HEIGHT_NEW if @sprites["player"]
       end
     end
   end
@@ -173,16 +220,16 @@ class PokemonLoad_Scene
       end
       charwidth  = @sprites["player"].bitmap.width
       charheight = @sprites["player"].bitmap.height
-      @sprites["player"].x = 112 - (charwidth / 8)
-      @sprites["player"].y = 112 - (charheight / 8)
-      @sprites["player"].z = 99999
+      @sprites["player"].x = PLAYER_CHAR_BASE_X - (charwidth / PLAYER_CHAR_DIV)
+      @sprites["player"].y = PLAYER_CHAR_BASE_Y - (charheight / PLAYER_CHAR_DIV)
+      @sprites["player"].z = PLAYER_Z
     end
     trainer.party.each_with_index do |pkmn, i|
       @sprites["party#{i}"] = PokemonIconSprite.new(pkmn, @viewport)
       @sprites["party#{i}"].setOffset(PictureOrigin::CENTER)
-      @sprites["party#{i}"].x = 334 + (66 * (i % 2))
-      @sprites["party#{i}"].y = 112 + (50 * (i / 2))
-      @sprites["party#{i}"].z = 99999
+      @sprites["party#{i}"].x = PARTY_START_X + (PARTY_X_SPACING * (i % 2))
+      @sprites["party#{i}"].y = PARTY_START_Y + (PARTY_Y_SPACING * (i / 2))
+      @sprites["party#{i}"].z = PARTY_Z
     end
   end
 
@@ -229,7 +276,7 @@ class PokemonLoadScreen
     save_data = SaveData.read_from_file(file_path)
     unless SaveData.valid?(save_data)
       if File.file?(file_path + ".bak")
-        pbMessage(_INTL("El archivo está corrupto. Se va a cargar un reespaldo."))
+        pbMessage(_INTL("El archivo está corrupto. Se va a cargar un respaldo."))
         save_data = load_save_file(file_path + ".bak")
       else
         self.prompt_save_deletion
@@ -286,7 +333,7 @@ class PokemonLoadScreen
     cmd_options      = -1
     cmd_language     = -1
     cmd_mystery_gift = -1
-    cmd_update     = -1
+    cmd_update       = -1
     cmd_debug        = -1
     cmd_quit         = -1
     show_continue = !@save_data.empty?
@@ -296,7 +343,7 @@ class PokemonLoadScreen
         commands[cmd_mystery_gift = commands.length] = _INTL("Regalo Misterioso")
       end
     end
-    commands[cmd_new_game = commands.length]  = _INTL("Juego Nuevo")
+    commands[cmd_new_game = commands.length]  = _INTL("Nueva partida")
     commands[cmd_options = commands.length]   = _INTL("Opciones")
     commands[cmd_language = commands.length]  = _INTL("Idioma") if Settings::LANGUAGES.length >= 2
     commands[cmd_update=commands.length]      = _INTL("Buscar actualizaciones") if PluginManager.installed?("Pokemon Essentials Game Updater")
@@ -321,10 +368,14 @@ class PokemonLoadScreen
       when cmd_mystery_gift
         pbFadeOutIn { pbDownloadMysteryGift(@save_data[:player]) }
       when cmd_options
-        pbFadeOutIn do
-          scene = PokemonOption_Scene.new
-          screen = PokemonOptionScreen.new(scene)
-          screen.pbStartScreen(true)
+        if Settings::USE_NEW_OPTIONS_UI
+          UI::Options.new(true).main
+        else
+          pbFadeOutIn do
+            scene = PokemonOption_Scene.new
+            screen = PokemonOptionScreen.new(scene)
+            screen.pbStartScreen(true)
+          end
         end
       when cmd_language
         @scene.pbEndScene

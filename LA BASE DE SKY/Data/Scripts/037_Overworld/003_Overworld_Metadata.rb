@@ -36,7 +36,7 @@ class PokemonGlobalMetadata
   attr_accessor :eventvars
   # Affecting the map
   attr_accessor :bridge
-  attr_accessor :repel
+  attr_accessor :repel, :repel_item
   attr_accessor :flashUsed
   attr_reader   :encounter_version
   # Map transfers
@@ -125,7 +125,7 @@ end
 
 #===============================================================================
 # This class keeps track of erased and moved events so their position
-# can remain after a game is saved and loaded.  This class also includes
+# can remain after a game is saved and loaded. This class also includes
 # variables that should remain valid only for the current map.
 #===============================================================================
 class PokemonMapMetadata
@@ -181,4 +181,3 @@ class PokemonMapMetadata
     end
   end
 end
-

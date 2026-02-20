@@ -15,8 +15,10 @@ class Battle::Scene::Animation::Intro < Battle::Scene::Animation
       makeSlideSprite("battle_bg2", 0.5, appearTime)
     end
     # Bases
-    makeSlideSprite("base_0", 1, appearTime, PictureOrigin::BOTTOM)
-    makeSlideSprite("base_1", -1, appearTime, PictureOrigin::CENTER)
+    if Settings::SHOW_BATTLE_BASES
+      makeSlideSprite("base_0", 1, appearTime, PictureOrigin::BOTTOM)
+      makeSlideSprite("base_1", -1, appearTime, PictureOrigin::CENTER)
+    end
     # Player sprite, partner trainer sprite
     @battle.player.each_with_index do |_p, i|
       makeSlideSprite("player_#{i + 1}", 1, appearTime, PictureOrigin::BOTTOM)
@@ -82,6 +84,16 @@ end
 # Makes a side's party bar and balls appear
 #===============================================================================
 class Battle::Scene::Animation::LineupAppear < Battle::Scene::Animation
+ 
+  # Layout Lineup
+  PLAYER_BAR_Y_OFFSET = 142
+  PLAYER_BALL_X_OFFSET = 44
+  PLAYER_BALL_Y_OFFSET = 30
+  FOE_BAR_Y           = 114
+  FOE_BALL_X_OFFSET   = 44
+  FOE_BALL_Y_OFFSET   = 30
+  BALL_ICON_WIDTH     = 30
+  BALL_SPACING        = 32
   BAR_DISPLAY_WIDTH = 248
 
   def initialize(sprites, viewport, side, party, partyStarts, fullAnim)
@@ -98,17 +110,17 @@ class Battle::Scene::Animation::LineupAppear < Battle::Scene::Animation
     case @side
     when 0   # Player's lineup
       barX  = Graphics.width - BAR_DISPLAY_WIDTH
-      barY  = Graphics.height - 142
-      ballX = barX + 44
-      ballY = barY - 30
+      barY  = Graphics.height - PLAYER_BAR_Y_OFFSET
+      ballX = barX + PLAYER_BALL_X_OFFSET
+      ballY = barY - PLAYER_BALL_Y_OFFSET
     when 1   # Opposing lineup
       barX  = BAR_DISPLAY_WIDTH
-      barY  = 114
-      ballX = barX - 44 - 30   # 30 is width of ball icon
-      ballY = barY - 30
+      barY  = FOE_BAR_Y
+      ballX = barX - FOE_BALL_X_OFFSET - BALL_ICON_WIDTH
+      ballY = barY - FOE_BALL_Y_OFFSET
       barX -= bar.bitmap.width
     end
-    ballXdiff = 32 * (1 - (2 * @side))
+    ballXdiff = BALL_SPACING * (1 - (2 * @side))
     bar.x       = barX
     bar.y       = barY
     bar.opacity = 255
@@ -422,7 +434,7 @@ class Battle::Scene::Animation::PokeballPlayerSendOut < Battle::Scene::Animation
     ball.setZ(0, 25)
     ball.setVisible(0, false)
     # Poké Ball tracking the player's hand animation (if trainer is visible)
-    if @showingTrainer && traSprite && traSprite.x > 0
+    if @showingTrainer && traSprite && traSprite.bitmap && traSprite.x > 0
       ball.setZ(0, traSprite.z - 1)
       ballStartX, ballStartY = ballTracksHand(ball, traSprite)
     end
@@ -694,7 +706,7 @@ class Battle::Scene::Animation::PokeballThrowCapture < Battle::Scene::Animation
     ball.setZ(0, batSprite.z + 1)
     @ballSpriteIndex = (@success) ? @tempSprites.length - 1 : -1
     # Set up trainer sprite (only visible in Safari Zone battles)
-    if @showingTrainer && traSprite && traSprite.bitmap.width >= traSprite.bitmap.height * 2
+    if @showingTrainer && traSprite && traSprite.bitmap && traSprite.bitmap.width >= traSprite.bitmap.height * 2
       trainer = addSprite(traSprite, PictureOrigin::BOTTOM)
       # Trainer animation
       ballStartX, ballStartY = trainerThrowingFrames(ball, trainer, traSprite)

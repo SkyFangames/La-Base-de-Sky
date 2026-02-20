@@ -1,5 +1,5 @@
 #===============================================================================
-# Item icon
+# Item icon.
 #===============================================================================
 class ItemIconSprite < Sprite
   attr_reader :item
@@ -111,7 +111,7 @@ class ItemIconSprite < Sprite
 end
 
 #===============================================================================
-# Item held icon (used in the party screen)
+# Item held icon (used in the party screen).
 #===============================================================================
 class HeldItemIconSprite < Sprite
   def initialize(x, y, pokemon, viewport = nil)
@@ -120,7 +120,7 @@ class HeldItemIconSprite < Sprite
     self.y = y
     @pokemon = pokemon
     @item = nil
-    self.item = @pokemon.item_id
+    self.item = @pokemon&.item_id
   end
 
   def dispose
@@ -130,7 +130,7 @@ class HeldItemIconSprite < Sprite
 
   def pokemon=(value)
     @pokemon = value
-    self.item = @pokemon.item_id
+    self.item = @pokemon&.item_id
   end
 
   def item=(value)
@@ -148,11 +148,10 @@ class HeldItemIconSprite < Sprite
 
   def update
     super
-    self.item = @pokemon.item_id
+    self.item = @pokemon&.item_id
     if @animbitmap
       @animbitmap.update
       self.bitmap = @animbitmap.bitmap
     end
   end
 end
-

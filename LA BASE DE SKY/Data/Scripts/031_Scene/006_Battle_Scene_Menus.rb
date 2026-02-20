@@ -14,6 +14,8 @@ class Battle::Scene::MenuBase
   BUTTON_HEIGHT = 46
   TEXT_BASE_COLOR   = Battle::Scene::MESSAGE_BASE_COLOR
   TEXT_SHADOW_COLOR = Battle::Scene::MESSAGE_SHADOW_COLOR
+  # Common menu dimensions
+  MENU_HEIGHT = 96
 
   def initialize(viewport = nil)
     @x          = 0
@@ -95,6 +97,7 @@ end
 # Command menu (Fight/Pokémon/Bag/Run)
 #===============================================================================
 class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
+  attr_accessor :buttons
   # If true, displays graphics from Graphics/UI/Battle/overlay_command.png
   #     and Graphics/UI/Battle/cursor_command.png.
   # If false, just displays text and the command window over the graphic
@@ -111,13 +114,24 @@ class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
     [0, 8, 1, 3]    # 4 = Bug-Catching Contest
   ]
 
+  # Layout Command
+  TEXT_OFFSET_X      = 12
+  TEXT_OFFSET_Y      = 2
+  TEXT_WIDTH         = 240
+  BUTTON_X_START     = 260
+  BUTTON_Y_OFFSET    = 6
+  BUTTON_X_OVERLAP   = 4
+  BUTTON_Y_OVERLAP   = 4
+  WINDOW_WIDTH       = 240
+  WINDOW_COL_SPACING = 4
+
   def initialize(viewport, z)
     super(viewport)
     self.x = 0
-    self.y = Graphics.height - 96
+    self.y = Graphics.height - MENU_HEIGHT
     # Create message box (shows "What will X do?")
     @msgBox = Window_UnformattedTextPokemon.newWithSize(
-      "", self.x + 12, self.y + 2, 240, Graphics.height - self.y, viewport
+      "", self.x + TEXT_OFFSET_X, self.y + TEXT_OFFSET_Y, TEXT_WIDTH, Graphics.height - self.y, viewport
     )
     @msgBox.baseColor   = TEXT_BASE_COLOR
     @msgBox.shadowColor = TEXT_SHADOW_COLOR
@@ -134,10 +148,10 @@ class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
       @buttons = Array.new(4) do |i|   # 4 command options, therefore 4 buttons
         button = Sprite.new(viewport)
         button.bitmap = @buttonBitmap.bitmap
-        button.x = self.x + Graphics.width - 260
-        button.x += (i.even? ? 0 : (@buttonBitmap.width / 2) - 4)
-        button.y = self.y + 6
-        button.y += (((i / 2) == 0) ? 0 : BUTTON_HEIGHT - 4)
+        button.x = self.x + Graphics.width - BUTTON_X_START
+        button.x += (i.even? ? 0 : (@buttonBitmap.width / 2) - BUTTON_X_OVERLAP)
+        button.y = self.y + BUTTON_Y_OFFSET
+        button.y += (((i / 2) == 0) ? 0 : BUTTON_HEIGHT - BUTTON_Y_OVERLAP)
         button.src_rect.width  = @buttonBitmap.width / 2
         button.src_rect.height = BUTTON_HEIGHT
         addSprite("button_#{i}", button)
@@ -146,10 +160,10 @@ class Battle::Scene::CommandMenu < Battle::Scene::MenuBase
     else
       # Create command window (shows Fight/Bag/Pokémon/Run)
       @cmdWindow = Window_CommandPokemon.newWithSize(
-        [], self.x + Graphics.width - 240, self.y, 240, Graphics.height - self.y, viewport
+        [], self.x + Graphics.width - WINDOW_WIDTH, self.y, WINDOW_WIDTH, Graphics.height - self.y, viewport
       )
       @cmdWindow.columns       = 2
-      @cmdWindow.columnSpacing = 4
+      @cmdWindow.columnSpacing = WINDOW_COL_SPACING
       @cmdWindow.ignore_input  = true
       addSprite("cmdWindow", @cmdWindow)
     end
@@ -198,6 +212,7 @@ end
 class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   attr_reader :battler
   attr_reader :shiftMode
+  attr_accessor :buttons
 
   GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON = false
 
@@ -217,10 +232,33 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
     TEXT_BASE_COLOR, TEXT_SHADOW_COLOR                 # Black, more than 1/2 of total PP
   ]
 
+  # Layout Figth
+  BUTTON_X_OFFSET     = 4
+  BUTTON_Y_OFFSET     = 6
+  BUTTON_X_OVERLAP    = 4
+  BUTTON_Y_OVERLAP    = 4
+  TYPE_ICON_X         = 416
+  TYPE_ICON_Y         = 20
+  MEGA_BUTTON_X       = 120
+  MEGA_BUTTON_SHIFT_X = 204
+  SHIFT_BUTTON_X      = 4
+  TEXT_Y_OFFSET       = 14
+  PP_TEXT_X           = 448
+  PP_TEXT_Y           = 56
+  
+  # Windows
+  WINDOW_X_OFFSET     = 320
+  WINDOW_WIDTH        = 320
+  WINDOW_COL_SPACING  = 4
+
+  # Pixel check coordinates for text color
+  PIXEL_CHECK_X       = 10
+  PIXEL_CHECK_Y       = 34
+
   def initialize(viewport, z)
     super(viewport)
     self.x = 0
-    self.y = Graphics.height - 96
+    self.y = Graphics.height - MENU_HEIGHT
     @battler   = nil
     @shiftMode = 0
     # NOTE: @mode is for the display of the Mega Evolution button.
@@ -232,17 +270,17 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
       @megaEvoBitmap = AnimatedBitmap.new(_INTL("Graphics/UI/Battle/cursor_mega"))
       @shiftBitmap   = AnimatedBitmap.new(_INTL("Graphics/UI/Battle/cursor_shift"))
       # Create background graphic
-      background = IconSprite.new(0, Graphics.height - 96, viewport)
+      background = IconSprite.new(0, Graphics.height - MENU_HEIGHT, viewport)
       background.setBitmap("Graphics/UI/Battle/overlay_fight")
       addSprite("background", background)
       # Create move buttons
       @buttons = Array.new(Pokemon::MAX_MOVES) do |i|
         button = Sprite.new(viewport)
         button.bitmap = @buttonBitmap.bitmap
-        button.x = self.x + 4
-        button.x += (i.even? ? 0 : (@buttonBitmap.width / 2) - 4)
-        button.y = self.y + 6
-        button.y += (((i / 2) == 0) ? 0 : BUTTON_HEIGHT - 4)
+        button.x = self.x + BUTTON_X_OFFSET
+        button.x += (i.even? ? 0 : (@buttonBitmap.width / 2) - BUTTON_X_OVERLAP)
+        button.y = self.y + BUTTON_Y_OFFSET
+        button.y += (((i / 2) == 0) ? 0 : BUTTON_HEIGHT - BUTTON_Y_OVERLAP)
         button.src_rect.width  = @buttonBitmap.width / 2
         button.src_rect.height = BUTTON_HEIGHT
         addSprite("button_#{i}", button)
@@ -263,27 +301,27 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
       # Create type icon
       @typeIcon = Sprite.new(viewport)
       @typeIcon.bitmap = @typeBitmap.bitmap
-      @typeIcon.x      = self.x + 416
-      @typeIcon.y      = self.y + 20
+      @typeIcon.x      = self.x + TYPE_ICON_X
+      @typeIcon.y      = self.y + TYPE_ICON_Y
       @typeIcon.src_rect.height = TYPE_ICON_HEIGHT
       addSprite("typeIcon", @typeIcon)
       # Create Mega Evolution button
       @megaButton = Sprite.new(viewport)
       @megaButton.bitmap = @megaEvoBitmap.bitmap
-      @megaButton.x      = self.x + 120
+      @megaButton.x      = self.x + MEGA_BUTTON_X
       @megaButton.y      = self.y - (@megaEvoBitmap.height / 2)
       @megaButton.src_rect.height = @megaEvoBitmap.height / 2
       addSprite("megaButton", @megaButton)
       # Create Shift button
       @shiftButton = Sprite.new(viewport)
       @shiftButton.bitmap = @shiftBitmap.bitmap
-      @shiftButton.x      = self.x + 4
+      @shiftButton.x      = self.x + SHIFT_BUTTON_X
       @shiftButton.y      = self.y - @shiftBitmap.height
       addSprite("shiftButton", @shiftButton)
     else
       # Create message box (shows type and PP of selected move)
       @msgBox = Window_AdvancedTextPokemon.newWithSize(
-        "", self.x + 320, self.y, Graphics.width - 320, Graphics.height - self.y, viewport
+        "", self.x + WINDOW_X_OFFSET, self.y, Graphics.width - WINDOW_X_OFFSET, Graphics.height - self.y, viewport
       )
       @msgBox.baseColor   = TEXT_BASE_COLOR
       @msgBox.shadowColor = TEXT_SHADOW_COLOR
@@ -291,10 +329,10 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
       addSprite("msgBox", @msgBox)
       # Create command window (shows moves)
       @cmdWindow = Window_CommandPokemon.newWithSize(
-        [], self.x, self.y, 320, Graphics.height - self.y, viewport
+        [], self.x, self.y, WINDOW_WIDTH, Graphics.height - self.y, viewport
       )
       @cmdWindow.columns       = 2
-      @cmdWindow.columnSpacing = 4
+      @cmdWindow.columnSpacing = WINDOW_COL_SPACING
       @cmdWindow.ignore_input  = true
       pbSetNarrowFont(@cmdWindow.contents)
       addSprite("cmdWindow", @cmdWindow)
@@ -348,7 +386,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
     @buttons.each_with_index do |button, i|
       next if !@visibility["button_#{i}"]
       x = button.x - self.x + (button.src_rect.width / 2)
-      y = button.y - self.y + 14
+      y = button.y - self.y + TEXT_Y_OFFSET
       moveNameBase = TEXT_BASE_COLOR
       if GET_MOVE_TEXT_COLOR_FROM_MOVE_BUTTON && moves[i].display_type(@battler)
         # NOTE: This takes a color from a particular pixel in the button
@@ -356,7 +394,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
         #       The pixel is at coordinates 10,34 in the button box. If you
         #       change the graphic, you may want to change the below line of
         #       code to ensure the font is an appropriate color.
-        moveNameBase = button.bitmap.get_pixel(10, button.src_rect.y + 34)
+        moveNameBase = button.bitmap.get_pixel(PIXEL_CHECK_X, button.src_rect.y + PIXEL_CHECK_Y)
       end
       textPos.push([moves[i].name, x, y, :center, moveNameBase, TEXT_SHADOW_COLOR])
     end
@@ -408,7 +446,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
       ppFraction = [(4.0 * move.pp / move.total_pp).ceil, 3].min
       textPos = []
       textPos.push([_INTL("PP: {1}/{2}", move.pp, move.total_pp),
-                    448, 56, :center, PP_COLORS[ppFraction * 2], PP_COLORS[(ppFraction * 2) + 1]])
+                    PP_TEXT_X, PP_TEXT_Y, :center, PP_COLORS[ppFraction * 2], PP_COLORS[(ppFraction * 2) + 1]])
       pbDrawTextPositions(@infoOverlay.bitmap, textPos)
     end
   end
@@ -416,7 +454,7 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
   def refreshMegaEvolutionButton
     return if !USE_GRAPHICS
     @megaButton.src_rect.y    = (@mode - 1) * @megaEvoBitmap.height / 2
-    @megaButton.x             = self.x + ((@shiftMode > 0) ? 204 : 120)
+    @megaButton.x             = self.x + ((@shiftMode > 0) ? MEGA_BUTTON_SHIFT_X : MEGA_BUTTON_X)
     @megaButton.z             = self.z - 1
     @visibility["megaButton"] = (@mode > 0)
   end
@@ -428,9 +466,10 @@ class Battle::Scene::FightMenu < Battle::Scene::MenuBase
     @visibility["shiftButton"] = (@shiftMode > 0)
   end
 
-  def refresh
+  def refresh(refresh_button_names = false)
     return if !@battler
     refreshSelection
+    refreshButtonNames if refresh_button_names
     refreshMegaEvolutionButton
     refreshShiftButton
   end
@@ -443,6 +482,7 @@ end
 #===============================================================================
 class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
   attr_accessor :mode
+  attr_accessor :buttons
 
   # Lists of which button graphics to use in different situations/types of battle.
   MODES = [
@@ -455,6 +495,16 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
   CMD_BUTTON_WIDTH_SMALL = 170
   TEXT_BASE_COLOR   = Color.new(240, 248, 224)
   TEXT_SHADOW_COLOR = Color.new(64, 64, 64)
+  
+  # Layout Target
+  BUTTON_Y_OFFSET         = 6
+  BUTTON_Y_OVERLAP        = 4
+  BUTTON_X_START_SMALL    = 170
+  BUTTON_X_START_NORMAL   = 138
+  BUTTON_OFFSETS_SMALL    = [0, 82, 166]
+  BUTTON_OFFSETS_NORMAL   = [0, 116]
+  BUTTON_OVERLAP_X_OFFSET = 4
+  TEXT_Y_OFFSET           = 14
 
   def initialize(viewport, z, sideSizes)
     super(viewport)
@@ -462,7 +512,7 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
     maxIndex = (@sideSizes[0] > @sideSizes[1]) ? (@sideSizes[0] - 1) * 2 : (@sideSizes[1] * 2) - 1
     @smallButtons = (@sideSizes.max > 2)
     self.x = 0
-    self.y = Graphics.height - 96
+    self.y = Graphics.height - MENU_HEIGHT
     @texts = []
     # NOTE: @mode is for which buttons are shown as selected.
     #       0=select 1 button (@index), 1=select all buttons with text
@@ -481,13 +531,13 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
       button.src_rect.width  = (@smallButtons) ? CMD_BUTTON_WIDTH_SMALL : @buttonBitmap.width / 2
       button.src_rect.height = BUTTON_HEIGHT
       if @smallButtons
-        button.x    = self.x + 170 - [0, 82, 166][numButtons - 1]
+        button.x    = self.x + BUTTON_X_START_SMALL - BUTTON_OFFSETS_SMALL[numButtons - 1]
       else
-        button.x    = self.x + 138 - [0, 116][numButtons - 1]
+        button.x    = self.x + BUTTON_X_START_NORMAL - BUTTON_OFFSETS_NORMAL[numButtons - 1]
       end
-      button.x += (button.src_rect.width - 4) * inc
-      button.y = self.y + 6
-      button.y += (BUTTON_HEIGHT - 4) * ((i + 1) % 2)
+      button.x += (button.src_rect.width - BUTTON_OVERLAP_X_OFFSET) * inc
+      button.y = self.y + BUTTON_Y_OFFSET
+      button.y += (BUTTON_HEIGHT - BUTTON_Y_OVERLAP) * ((i + 1) % 2)
       addSprite("button_#{i}", button)
       next button
     end
@@ -539,7 +589,7 @@ class Battle::Scene::TargetMenu < Battle::Scene::MenuBase
     @buttons.each_with_index do |button, i|
       next if !button || nil_or_empty?(@texts[i])
       x = button.x - self.x + (button.src_rect.width / 2)
-      y = button.y - self.y + 14
+      y = button.y - self.y + TEXT_Y_OFFSET
       textpos.push([@texts[i], x, y, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR])
     end
     pbDrawTextPositions(@overlay.bitmap, textpos)

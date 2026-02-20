@@ -69,6 +69,7 @@ module Game
     pbAutoplayOnSave
     $game_map.update
     $PokemonMap.updateMap
+    $PokemonStorage.check_max_boxes_changed
     $scene = Scene_Map.new
   end
 

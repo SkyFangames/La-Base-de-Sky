@@ -20,18 +20,19 @@ class PokemonSummary_Scene
     imagepos = []
     # Draws general page info.
     ballimage = sprintf("Graphics/UI/Summary/icon_ball_%s", @pokemon.poke_ball)
-    imagepos.push([ballimage, 14, 60])
+    imagepos.push([ballimage, IMG_BALL_X, IMG_BALL_Y])
+    
     pagename = UIHandlers.get_info(:summary, @page_id, :name)
     textpos = [
-      [pagename, 26, 22, :left, base, shadow],
-      [@pokemon.name, 46, 68, :left, base, shadow],
-      [_INTL("Objeto"), 66, 324, :left, base, shadow]
-    ]
+      [pagename, TEXT_PAGE_NAME_X, TEXT_PAGE_NAME_Y, :left, base, shadow],
+      [@pokemon.name, TEXT_NAME_X, TEXT_NAME_Y, :left, base, shadow],
+      [_INTL("Objeto"), TEXT_ITEM_LABEL_X, TEXT_ITEM_LABEL_Y, :left, base, shadow]
+    ] 
     if @pokemon.hasItem?
-      textpos.push([@pokemon.item.name, 16, 358, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+      textpos.push([@pokemon.item.name, TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
     else
-      textpos.push([_INTL("Ninguno"), 16, 358, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
-    end
+      textpos.push([_INTL("Ninguno"), TEXT_ITEM_NAME_X, TEXT_ITEM_NAME_Y, :left, Color.new(192, 200, 208), Color.new(208, 216, 224)])
+    end 
     # Draws additional info for non-Egg Pokemon.
     if !@pokemon.egg?
       status = -1
@@ -43,24 +44,26 @@ class PokemonSummary_Scene
         status = GameData::Status.count 
       end
       if status >= 0
-        imagepos.push(["Graphics/UI/statuses", 124, 100, 0, 16 * status, 44, 16])
+        imagepos.push(["Graphics/UI/statuses", IMG_STATUS_X, IMG_STATUS_Y, 0, 16 * status, 44, 16])
       end
       if @pokemon.pokerusStage == 2
-        imagepos.push(["Graphics/UI/Summary/icon_pokerus", 176, 100])
+        imagepos.push(["Graphics/UI/Summary/icon_pokerus", IMG_POKERUS_X, IMG_POKERUS_Y])
       end
-      imagepos.push(["Graphics/UI/shiny", 2, 134]) if @pokemon.shiny?
-      textpos.push([@pokemon.level.to_s, 46, 98, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+      imagepos.push(["Graphics/UI/shiny", IMG_SHINY_X, IMG_SHINY_Y]) if @pokemon.shiny?
+      
+      textpos.push([@pokemon.level.to_s, TEXT_LEVEL_X, TEXT_LEVEL_Y, :left, Color.new(64, 64, 64), Color.new(176, 176, 176)])
+      
       if @pokemon.male?
-        textpos.push([_INTL("♂"), 178, 68, :left, Color.new(24, 146, 240), Color.new(13, 73, 119)])
+        textpos.push([_INTL("♂"), TEXT_GENDER_X, TEXT_GENDER_Y, :left, Color.new(24, 146, 240), Color.new(13, 73, 119)])
       elsif @pokemon.female?
-        textpos.push([_INTL("♀"), 178, 68, :left, Color.new(249, 93, 210), Color.new(128, 20, 90)])
+        textpos.push([_INTL("♀"), TEXT_GENDER_X, TEXT_GENDER_Y, :left, Color.new(249, 93, 210), Color.new(128, 20, 90)])
       end
-    end
+    end  
     # Draws the page.
     pbDrawImagePositions(overlay, imagepos)
     pbDrawTextPositions(overlay, textpos)
     UIHandlers.call(:summary, @page_id, "layout", @pokemon, self)
-    drawMarkings(overlay, 84, 292)
+    drawMarkings(overlay, IMG_MARKINGS_X, IMG_MARKINGS_Y)
   end
   
   #-----------------------------------------------------------------------------
@@ -85,8 +88,11 @@ class PokemonSummary_Scene
       memo += black_text_tag + _INTL("Un misterioso Huevo Pokémon.") + "\n"
     end
     memo += "\n"
-    if !MOSTRAR_PASOS_HUEVO
-      #memo += black_text_tag + _INTL("\"El huevo eclosionará...\"") + "\n"
+    
+    # Nota: Asumo que MOSTRAR_PASOS_HUEVO es una constante global o de otro script.
+    # Si da error, cámbialo por 'true' o 'false' según prefieras.
+    mostrar_pasos = defined?(MOSTRAR_PASOS_HUEVO) ? MOSTRAR_PASOS_HUEVO : false    
+    if !mostrar_pasos
       eggstate = _INTL("Parece que va a tardar un buen rato en eclosionar.")
       eggstate = _INTL("¿Qué eclosionará de esto? No parece estar cerca de eclosionar.") if @pokemon.steps_to_hatch < 10_200
       eggstate = _INTL("Parece moverse ocasionalmente. Puede estar cerca de eclosionar.") if @pokemon.steps_to_hatch < 2550
@@ -95,9 +101,9 @@ class PokemonSummary_Scene
     else
       memo += black_text_tag + _INTL("Faltan {1} pasos para que el huevo eclosione.", @pokemon.steps_to_hatch)
     end
-    drawFormattedTextEx(@sprites["overlay"].bitmap, 232, 86, 268, memo)
+    drawFormattedTextEx(@sprites["overlay"].bitmap, EGG_DATE_X, EGG_DATE_Y, EGG_MEMO_WIDTH, memo)
   end
-
+  
   #-----------------------------------------------------------------------------
   # Rewritten so that the commands that appear in the Options menu are now
   # determined by which options are set in each page handler.
@@ -108,17 +114,25 @@ class PokemonSummary_Scene
     commands = {}
     options = UIHandlers.get_info(:summary, @page_id, :options)
     options_labels = UIHandlers.get_info(:summary, @page_id, :options_labels)
+    
+    # No permitir acciones con movimientos si la UI se abrió desde el menú de borrar movimientos
+    if @page_id == :page_moves && !@allow_learn_moves
+      options = []
+      options_labels = {}
+    end
+
+    
     options.each do |cmd|
       case cmd
       when :item
         commands[:item] = _INTL("Dar Objeto")
         commands[:take] = _INTL("Quitar Objeto") if @pokemon.hasItem?
-      when :nickname then commands[cmd] = _INTL("Mote")      if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.foreign?
+      when :nickname then commands[cmd] = _INTL("Mote")      if Settings::ALLOW_RENAMING_POKEMON_IN_SUMMARY_SCREEN && !@pokemon.foreign?
       when :pokedex  then commands[cmd] = _INTL("Ver Pokédex")  if $player.has_pokedex && $player.pokedex.unlocked?(-1)
       when :moves    then commands[cmd] = _INTL("Movimientos")   if Settings::MECHANICS_GENERATION >= 9 && !@pokemon.moves.empty?
-      when :remember then commands[cmd] = _INTL("Recordar Movimiento") if Settings::MECHANICS_GENERATION >= 9 && @pokemon.can_relearn_move?
-      when :forget   then commands[cmd] = _INTL("Olvidar Movimiento")   if Settings::MECHANICS_GENERATION >= 9 && @pokemon.moves.length > 1
-      when :tms      then commands[cmd] = _INTL("Usar MT")      if Settings::MECHANICS_GENERATION >= 9 && $bag.has_compatible_tm?(@pokemon)
+      when :remember then commands[cmd] = _INTL("Recordar Movimiento") if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && @pokemon.can_relearn_move?
+      when :forget   then commands[cmd] = _INTL("Olvidar Movimiento")   if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && @pokemon.moves.length > 1
+      when :tms      then commands[cmd] = _INTL("Usar MT")      if Settings::ALLOW_CHANGING_MOVES_IN_SUMMARY_SCREEN && $bag.has_compatible_tm?(@pokemon)
       when :mark     then commands[cmd] = _INTL("Marcas")
       when :ability  then commands[cmd] = _INTL("Ver Habilidad")
       when :legacy   then commands[cmd] = _INTL("Histórico") if (!@pokemon.egg? && defined?(show_legacy))
@@ -159,7 +173,7 @@ class PokemonSummary_Scene
     #---------------------------------------------------------------------------
     # [:nickname] Nicknames the Pokemon. (Gen 9+)
     when :nickname
-      nickname = pbEnterPokemonName(_INTL("¿Qué mote quieres para {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, "", @pokemon, true)
+      nickname = pbEnterPokemonName(_INTL("¿Mote de {1}?", @pokemon.name), 0, Pokemon::MAX_NAME_SIZE, (@pokemon.name != @pokemon.species_data.name ? @pokemon.name : "" ), @pokemon, true)
       @pokemon.name = nickname
       dorefresh = true
     #---------------------------------------------------------------------------
@@ -217,11 +231,12 @@ class PokemonSummary_Scene
         screen = PokemonBagScreen.new(scene, $bag)
         item = screen.pbChooseItemScreen(Proc.new{ |itm|
           move = GameData::Item.get(itm).move  
-          next false if !move || @pokemon.hasMove?(move) || !@pokemon.compatible_with_move?(move)
+          next false if !move || @pokemon.hasMove?(move) #|| !@pokemon.compatible_with_move?(move)
           next true
         })
       }
-      if item
+      move = GameData::Item.try_get(item)&.move
+      if item && move && @pokemon.compatible_with_move?(move) && !@pokemon.hasMove?(move)
         pbUseItemOnPokemon(item, @pokemon, self)
         dorefresh = true
       end
@@ -264,8 +279,8 @@ class PokemonSummary_Scene
         @pokemon.play_cry
         @show_back = !@show_back
         if PluginManager.installed?("[DBK] Animated Pokémon System")
+          @sprites["pokemon"].display_values = [UI_POKEMON_SPRITE_X, UI_POKEMON_SPRITE_Y, UI_SPRITE_CONSTRICT_W, UI_SPRITE_CONSTRICT_H]
           @sprites["pokemon"].setSummaryBitmap(@pokemon, @show_back)
-          @sprites["pokemon"].constrict([208, 164])
         else
           @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
         end
@@ -275,6 +290,9 @@ class PokemonSummary_Scene
       elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_skills
         pbPlayDecisionSE
         showAbilityDescription(@pokemon)
+      elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_info && @pokemon.shadowPokemon?
+        pbPlayDecisionSE
+        showShadowDescription(@pokemon)
       elsif Input.trigger?(Input::USE)
         dorefresh = pbPageCustomUse(@page_id)
         if !dorefresh
@@ -353,6 +371,4 @@ class PokemonSummary_Scene
     end
     return @partyindex
   end
-
-
 end

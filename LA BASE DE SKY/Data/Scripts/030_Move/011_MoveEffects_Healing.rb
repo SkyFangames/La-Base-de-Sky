@@ -7,10 +7,6 @@ class Battle::Move::HealUserFullyAndFallAsleep < Battle::Move::HealingMove
       @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
       return true
     end
-    if user.hasActiveAbility?(:PURIFYINGSALT)
-      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
-      return true
-    end
     return true if !user.pbCanSleep?(user, true, self, true)
     return true if super
     return false
@@ -21,7 +17,7 @@ class Battle::Move::HealUserFullyAndFallAsleep < Battle::Move::HealingMove
   end
 
   def pbEffectGeneral(user)
-    user.pbSleepSelf(_INTL("¡{1} se ha recuperado tras descansar un poco!", user.pbThis), 3)
+    user.pbSleepSelf(_INTL("¡{1} se ha recuperado tras descansar un poco!", user.pbThis), 2)
     super
   end
 end
@@ -129,7 +125,7 @@ class Battle::Move::HealUserByTargetAttackLowerTargetAttack1 < Battle::Move
     #       has Contrary and is at +6" check too for symmetry. This move still
     #       works even if the stat stage cannot be changed due to an ability or
     #       other effect.
-    if !@battle.moldBreaker && target.hasActiveAbility?(:CONTRARY)
+    if target.hasActiveAbility?(:CONTRARY) && !target.beingMoldBroken?
       if target.statStageAtMax?(@statDown[0])
         @battle.pbDisplay(_INTL("¡Pero ha fallado!")) if show_message
         return true
@@ -142,13 +138,7 @@ class Battle::Move::HealUserByTargetAttackLowerTargetAttack1 < Battle::Move
   end
 
   def pbEffectAgainstTarget(user, target)
-    # Calculate target's effective attack value
-    max_stage = Battle::Battler::STAT_STAGE_MAXIMUM
-    stageMul = Battle::Battler::STAT_STAGE_MULTIPLIERS
-    stageDiv = Battle::Battler::STAT_STAGE_DIVISORS
-    atk      = target.attack
-    atkStage = target.stages[@statDown[0]] + max_stage
-    healAmt = (atk.to_f * stageMul[atkStage] / stageDiv[atkStage]).floor
+    healAmt = target.stat_with_stages(:ATTACK)
     # Reduce target's Attack stat
     if target.pbCanLowerStatStage?(@statDown[0], user, self)
       target.pbLowerStatStage(@statDown[0], @statDown[1], user)
@@ -195,6 +185,19 @@ class Battle::Move::HealUserByHalfOfDamageDoneIfTargetAsleep < Battle::Move
     end
     return false
   end
+
+  def pbEffectAgainstTarget(user, target)
+    return if target.damageState.hpLost <= 0
+    hpGain = (target.damageState.hpLost / 2.0).round
+    user.pbRecoverHPFromDrain(hpGain, target)
+  end
+end
+
+#===============================================================================
+# User gains half the HP it inflicts as damage. Burns the target. (Matcha Gotcha)
+#===============================================================================
+class Battle::Move::HealUserByHalfOfDamageDoneBurnTarget < Battle::Move::BurnTarget
+  def healingMove?; return Settings::MECHANICS_GENERATION >= 6; end
 
   def pbEffectAgainstTarget(user, target)
     return if target.damageState.hpLost <= 0
@@ -269,17 +272,15 @@ class Battle::Move::HealUserAndAlliesQuarterOfTotalHPCureStatus < Battle::Move
       target.pbCureStatus(false)
       case old_status
       when :SLEEP
-        @battle.pbDisplay(_INTL("{1} se ha despertado.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha despertado!", target.pbThis))
       when :POISON
-        @battle.pbDisplay(_INTL("{1} se ha curado del envenenamiento.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha curado del envenenamiento!", target.pbThis))
       when :BURN
-        @battle.pbDisplay(_INTL("La quemadura de {1} se ha curado.", target.pbThis(true)))
+        @battle.pbDisplay(_INTL("¡La quemadura de {1} se ha curado!", target.pbThis(true)))
       when :PARALYSIS
-        @battle.pbDisplay(_INTL("{1} se ha curado de paralisis.", target.pbThis))
-      when :FROZEN
-        @battle.pbDisplay(_INTL("{1} se ha descongelado.", target.pbThis))
-      when :FROSTBITE
-        @battle.pbDisplay(_INTL("{1} se ha descongelado.", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha curado de la parálisis!", target.pbThis))
+      when :FROZEN, :FROSTBITE
+        @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", target.pbThis))
       end
     end
   end
@@ -401,7 +402,7 @@ class Battle::Move::StartHealUserEachTurnTrapUserInBattle < Battle::Move
 
   def pbEffectGeneral(user)
     user.effects[PBEffects::Ingrain] = true
-    @battle.pbDisplay(_INTL("!{1} echó raices!", user.pbThis))
+    @battle.pbDisplay(_INTL("!{1} echó raíces!", user.pbThis))
   end
 end
 
@@ -475,19 +476,17 @@ class Battle::Move::UserLosesHalfOfTotalHPExplosive < Battle::Move
   def worksWithNoTargets?; return true; end
 
   def pbMoveFailed?(user, targets)
-    if !@battle.moldBreaker
-      bearer = @battle.pbCheckGlobalAbility(:DAMP)
-      if bearer
-        @battle.pbShowAbilitySplash(bearer)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
-        else
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
+    bearer = @battle.pbCheckGlobalAbility(:DAMP, true)
+    if bearer
+      @battle.pbShowAbilitySplash(bearer)
+      if Battle::Scene::USE_ABILITY_SPLASH
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
+      else
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
                                   user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
-        end
-        @battle.pbHideAbilitySplash(bearer)
-        return true
       end
+      @battle.pbHideAbilitySplash(bearer)
+      return true
     end
     return false
   end
@@ -507,19 +506,17 @@ class Battle::Move::UserFaintsExplosive < Battle::Move
   def pbNumHits(user, targets); return 1;    end
 
   def pbMoveFailed?(user, targets)
-    if !@battle.moldBreaker
-      bearer = @battle.pbCheckGlobalAbility(:DAMP)
-      if bearer
-        @battle.pbShowAbilitySplash(bearer)
-        if Battle::Scene::USE_ABILITY_SPLASH
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
-        else
-          @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
-                                  user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
-        end
-        @battle.pbHideAbilitySplash(bearer)
-        return true
+    bearer = @battle.pbCheckGlobalAbility(:DAMP, true)
+    if bearer
+      @battle.pbShowAbilitySplash(bearer)
+      if Battle::Scene::USE_ABILITY_SPLASH
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2}!", user.pbThis, @name))
+      else
+        @battle.pbDisplay(_INTL("¡{1} no puede usar {2} debido a la habilidad {4} del {3} rival!",
+                                user.pbThis, @name, bearer.pbThis(true), bearer.abilityName))
       end
+      @battle.pbHideAbilitySplash(bearer)
+      return true
     end
     return false
   end
@@ -536,9 +533,9 @@ end
 # (Misty Explosion)
 #===============================================================================
 class Battle::Move::UserFaintsPowersUpInMistyTerrainExplosive < Battle::Move::UserFaintsExplosive
-  def pbBaseDamage(baseDmg, user, target)
-    baseDmg = baseDmg * 3 / 2 if @battle.field.terrain == :Misty
-    return baseDmg
+  def pbBasePower(base_power, user, target)
+    base_power = base_power * 3 / 2 if @battle.field.terrain == :Misty
+    return base_power
   end
 end
 
@@ -701,33 +698,44 @@ class Battle::Move::SetAttackerMovePPTo0IfUserFaints < Battle::Move
 end
 
 #===============================================================================
-# Matcha Gatcha
+# User revives a fainted Pokémon in their party to 50% HP. (Revival Blessing)
 #===============================================================================
-# User gains half the HP it inflicts as damage. It may also burn the target.
-#-------------------------------------------------------------------------------
-class Battle::Move::HealUserByHalfOfDamageDoneBurnTarget < Battle::Move::BurnTarget
-  def healingMove?; return Settings::MECHANICS_GENERATION >= 6; end
+class Battle::Move::RevivePokemonToHalfHP < Battle::Move
+  def pbMoveFailed?(user, targets)
+    failed = true
+    @battle.eachInTeamFromBattlerIndex(user.index) do |pkmn, party_index|
+      failed = false if pkmn.fainted?
+      break if !failed
+    end
+    if failed
+      @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
+      return true
+    end
+    return false
+  end
 
-  def pbEffectAgainstTarget(user, target)
-    return if target.damageState.hpLost <= 0
-    hpGain = (target.damageState.hpLost / 2.0).round
-    user.pbRecoverHPFromDrain(hpGain, target)
-    super
+  def pbEffectGeneral(user)
+    pkmn = nil
+    if !@battle.controlPlayer && @battle.pbOwnedByPlayer?(user.index)
+      # Player chooses the Pokémon to revive
+      @battle.scene.pbPartyScreen(user.index, false, 3) do |idxParty, party_screen|
+        pkmn = @battle.pbParty(user.idxOwnSide)[idxParty]
+        if pkmn.egg?
+          party_screen.show_message(_INTL("¡No se puede revivir un huevo!"))
+          next false
+        elsif !pkmn.fainted?
+          party_screen.show_message(_INTL("¡Este Pokémon no puede ser revivido!"))
+          next false
+        end
+        next true
+      end
+    else
+      # The AI chooses the Pokémon to revive
+      pkmn = Battle::AI.choose_pokemon_to_revive(user)
+    end
+    pkmn.hp = (pkmn.totalhp / 2).floor
+    pkmn.hp = 1 if pkmn.hp <= 0
+    pkmn.heal_status
+    @battle.pbDisplay(_INTL("¡{1} fue revivido y está listo para luchar de nuevo!", pkmn.name))
   end
 end
-
-#===============================================================================
-# Psychic Noise
-#===============================================================================
-# Applies the Heal Block effect on the target for 2 turns.
-#-------------------------------------------------------------------------------
-class Battle::Move::DisableTargetHealingMoves2Turns < Battle::Move
-  def pbAdditionalEffect(user, target)
-    return if target.effects[PBEffects::HealBlock] > 0
-    return if pbMoveFailedAromaVeil?(user, target, false)
-    target.effects[PBEffects::HealBlock] = 2
-    @battle.pbDisplay(_INTL("¡{1} no puede curarse!", target.pbThis))
-    target.pbItemStatusCureCheck
-  end
-end
-

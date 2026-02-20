@@ -341,48 +341,105 @@ class SpritePositioner
       pbFadeInAndShow(@sprites) { update }
       @starting = false
     end
+
     cw = Window_CommandPokemonEx.newEmpty(0, 0, 260, 176, @viewport)
     cw.rowHeight = 24
     pbSetSmallFont(cw.contents)
     cw.x = Graphics.width - cw.width
     cw.y = Graphics.height - cw.height
+
     allspecies = []
     GameData::Species.each do |sp|
       name = (sp.form == 0) ? sp.name : _INTL("{1} (forma {2})", sp.real_name, sp.form)
       allspecies.push([sp.id, sp.species, sp.form, name]) if name && !name.empty?
     end
+
     allspecies.sort! { |a, b| a[3] <=> b[3] }
-    commands = []
-    allspecies.each { |sp| commands.push(sp[3]) }
-    cw.commands = commands
-    cw.index    = @oldSpeciesIndex
+    current_species_list = allspecies.clone
+    refresh_list = proc do
+      commands = []
+      current_species_list.each { |sp| commands.push(sp[3]) }
+      cw.commands = commands
+    end
+    
+
+    refresh_list.call
+    if @oldSpeciesIndex && @oldSpeciesIndex < current_species_list.length
+       cw.index = @oldSpeciesIndex 
+    else
+       cw.index = 0
+    end
+    
     ret = false
     oldindex = -1
+    
     loop do
       Graphics.update
       Input.update
       cw.update
+      
       if cw.index != oldindex
         oldindex = cw.index
-        pbChangeSpecies(allspecies[cw.index][1], allspecies[cw.index][2], shiny)
-        refresh
+        if current_species_list[cw.index]
+            data = current_species_list[cw.index]
+            pbChangeSpecies(data[1], data[2], shiny)
+            refresh
+        end
       end
+      
       self.update
+      
       if Input.trigger?(Input::BACK)
         pbChangeSpecies(nil, nil)
         refresh
         break
+        
       elsif Input.trigger?(Input::USE)
-        pbChangeSpecies(allspecies[cw.index][1], allspecies[cw.index][2], shiny)
-        ret = true
+        if current_species_list[cw.index]
+            data = current_species_list[cw.index]
+            pbChangeSpecies(data[1], data[2], shiny)
+            ret = true
+        end
         break
+        
       elsif Input.trigger?(Input::SPECIAL)
         shiny = !shiny
-        pbChangeSpecies(allspecies[cw.index][1], allspecies[cw.index][2], shiny)
-        ret = true
+        if current_species_list[cw.index]
+            data = current_species_list[cw.index]
+            pbChangeSpecies(data[1], data[2], shiny)
+            ret = true
+        end
+        
+      elsif Input.triggerex?(:F) || Input.trigger?(Input::ACTION)
+        current_index = cw.index
+        SpeciesSearcher.new(current_species_list, cw, self)
+        # refresh_list.call
+        # searchTerm = pbOpenGenericListSearch
+        # if searchTerm
+        #   # Usamos la función inteligente
+        #   new_list = allspecies.select do |sp|
+        #     pbSmartMatch?(sp[3], searchTerm)
+        #   end
+          
+        #   if new_list.length > 0
+        #     current_species_list = new_list
+        #     refresh_list.call
+        #     cw.index = 0
+        #     oldindex = -1 
+        #   else
+        #     pbMessage(_INTL("No se han encontrado resultados."))
+        #   end
+        # end
       end
     end
-    @oldSpeciesIndex = cw.index
+    
+    # Guardar índice para la próxima vez
+    if current_species_list.length == allspecies.length
+      @oldSpeciesIndex = cw.index
+    else
+      @oldSpeciesIndex = 0
+    end
+    
     cw.dispose
     return ret
   end

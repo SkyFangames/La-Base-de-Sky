@@ -62,7 +62,7 @@ module GameData
         ret["PokedexForm"]    = [:pokedex_form,       "u"]
         ret["MegaStone"]      = [:mega_stone,         "e", :Item]
         ret["MegaMove"]       = [:mega_move,          "e", :Move]
-        ret["UnmegaForm"]     = [:unmega_form,        "u"]
+        ret["UnmegaForm"]     = [:unmega_form,        "i"]
         ret["MegaMessage"]    = [:mega_message,       "u"]
       end
       ret["Types"]            = [:types,              "*e", :Type]
@@ -77,7 +77,7 @@ module GameData
       ret["Happiness"]        = [:happiness,          "u"]
       ret["Abilities"]        = [:abilities,          "*e", :Ability]
       ret["HiddenAbilities"]  = [:hidden_abilities,   "*e", :Ability]
-      ret["Moves"]            = [:moves,              "*ue", nil, :Move]
+      ret["Moves"]            = [:moves,              "*ie", nil, :Move]
       ret["TutorMoves"]       = [:tutor_moves,        "*e", :Move]
       ret["EggMoves"]         = [:egg_moves,          "*e", :Move]
       ret["EggGroups"]        = [:egg_groups,         "*e", :EggGroup]
@@ -101,11 +101,12 @@ module GameData
       ret["WildItemUncommon"] = [:wild_item_uncommon, "*e", :Item]
       ret["WildItemRare"]     = [:wild_item_rare,     "*e", :Item]
       if compiling_forms
-        ret["Evolutions"]     = [:evolutions,         "*ees", :Species, :Evolution, nil]
+        ret["Evolutions"]     = [:evolutions,         "*ees", :Species, :Evolution]
+        ret["Evolution"]      = [:evolutions,         "^eeS", :Species, :Evolution]
       else
-        ret["Evolutions"]     = [:evolutions,         "*ses", nil, :Evolution, nil]
+        ret["Evolutions"]     = [:evolutions,         "*ses", nil, :Evolution]
+        ret["Evolution"]      = [:evolutions,         "^seS", nil, :Evolution]
       end
-      ret["Moves"] = [:moves, "*ie", nil, :Move]
       return ret
     end
 
@@ -123,11 +124,11 @@ module GameData
         ["CatchRate",         LimitProperty.new(255),             _INTL("Ratio de captura de esta especie (0-255).")],
         ["Happiness",         LimitProperty.new(255),             _INTL("Felicidad base de esta especie (0-255).")],
         ["Abilities",         AbilitiesProperty.new,              _INTL("Habilidades que puede tener este Pokémon (max. 2).")],
-        ["HiddenAbilities",   AbilitiesProperty.new,              _INTL("Habilidades Ocultas Secret que puede tener este Pokémon.")],
+        ["HiddenAbilities",   AbilitiesProperty.new,              _INTL("Habilidades Ocultas que puede tener este Pokémon.")],
         ["Moves",             LevelUpMovesProperty,               _INTL("Movimientos que aprende el Pokémon por nivel.")],
         ["TutorMoves",        EggMovesProperty.new,               _INTL("Movimientos que se pueden enseñar al Pokémon por MT/MO/Tutor de Movimientos.")],
         ["EggMoves",          EggMovesProperty.new,               _INTL("Movimientos que puede aprender el Pokémon mediante crianza.")],
-        ["EggGroups",         EggGroupsProperty.new,              _INTL("Grupos Huevo a los que pertenece el Pokemon con fines de crianza.")],
+        ["EggGroups",         EggGroupsProperty.new,              _INTL("Grupos Huevo a los que pertenece el Pokémon con fines de crianza.")],
         ["HatchSteps",        LimitProperty.new(99_999),          _INTL("Número de pasos hasta que eclosiona un huevo de esta especie.")],
         ["Incense",           ItemProperty,                       _INTL("Objeto que debe llevar uno de los padres para producir un huevo de esta especie.")],
         ["Offspring",         GameDataPoolProperty.new(:Species), _INTL("Todas las especies que puede ser la descendencia al criar para un huevo de esta especie (si está en blanco, el huevo sólo puede ser de esta especie).")],
@@ -140,7 +141,7 @@ module GameData
         ["Pokedex",           StringProperty,                     _INTL("Descripción del Pokémon como se muestra en la Pokédex.")],
         ["Generation",        LimitProperty.new(99_999),          _INTL("Número de la generación en la que debutó el Pokémon.")],
         ["Flags",             StringListProperty,                 _INTL("Palabras/frases que distinguen esta especie de otras.")],
-        ["WildItemCommon",    GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) comunmente llevado(s) por Pokémon salvajes de esta especie.")],
+        ["WildItemCommon",    GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) comúnmente llevado(s) por Pokémon salvajes de esta especie.")],
         ["WildItemUncommon",  GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) raramente llevado(s) por Pokémon salvajes de esta especie.")],
         ["WildItemRare",      GameDataPoolProperty.new(:Item),    _INTL("Objeto(s) muy raramente llevado(s) por Pokémon salvajes de esta especie.")],
         ["Evolutions",        EvolutionsProperty.new,             _INTL("Caminos evolutivos de esta especie.")]
@@ -165,11 +166,32 @@ module GameData
       DATA.each_value { |species| yield species if species.form == 0 }
     end
 
+    def self.each_form_for_species(this_species)
+      DATA.each_value { |species| yield species if species.species == this_species }
+    end
+
     def self.species_count
       ret = 0
       self.each_species { |species| ret += 1 }
       return ret
     end
+
+    def self.get_all_base_forms(id_only = false)
+      ret = []
+      keys = DATA.keys
+      keys.each do |key|
+        species = DATA[key]
+        next if species.mega_form? || species.has_flag?("ExcludeFromBaseForms")
+        ret << (id_only ? species.id : species)
+      end
+      return ret
+    end
+
+    def self.base_species_count
+      return get_all_base_forms.count
+    end
+
+    #---------------------------------------------------------------------------
 
     def initialize(hash)
       @id                 = hash[:id]
@@ -214,7 +236,7 @@ module GameData
       @flags              = hash[:flags]              || []
       @mega_stone         = hash[:mega_stone]
       @mega_move          = hash[:mega_move]
-      @unmega_form        = hash[:unmega_form]        || 0
+      @unmega_form        = hash[:unmega_form]        || -2
       @mega_message       = hash[:mega_message]       || 0
       @pbs_file_suffix    = hash[:pbs_file_suffix]    || ""
     end
@@ -249,6 +271,10 @@ module GameData
     def base_form
       default = default_form
       return (default >= 0) ? default : @form
+    end
+
+    def mega_form?
+      return (@unmega_form == @form && @form != base_form) || @unmega_form == -2 || @mega_stone || @mega_move ? true : false 
     end
 
     def single_gendered?
@@ -417,7 +443,9 @@ module GameData
         return 1 if !prevo_data.incense.nil?
         prevo_min_level = prevo_data.minimum_level
         evo_method_data = GameData::Evolution.get(evo[1])
-        return prevo_min_level if evo_method_data.level_up_proc.nil? && evo_method_data.id != :Shedinja
+        return prevo_min_level if evo_method_data.level_up_proc.nil? &&
+                                  evo_method_data.battle_level_up_proc.nil? &&
+                                  evo_method_data.id != :Shedinja
         any_level_up = evo_method_data.any_level_up
         return (any_level_up) ? prevo_min_level + 1 : evo[2]
       end
@@ -457,7 +485,7 @@ module GameData
         ret = ret.to_f / 10
       when "Habitat"
         ret = nil if ret == :None
-      when "Evolutions"
+      when "Evolutions", "Evolution"
         if ret
           ret = ret.reject { |evo| evo[3] }   # Remove prevolutions
           ret.each do |evo|
@@ -487,4 +515,3 @@ module GameData
     end
   end
 end
-

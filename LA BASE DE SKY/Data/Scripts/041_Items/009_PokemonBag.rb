@@ -76,6 +76,14 @@ class PokemonBag
   def has?(item, qty = 1)
     return quantity(item) >= qty
   end
+
+  def has_any?(items)
+    items.each do |item|
+      return true if has?(item)
+    end
+    return false
+  end
+  
   alias can_remove? has?
 
   def can_add?(item, qty = 1)
@@ -145,6 +153,18 @@ class PokemonBag
     return ret
   end
 
+  def get_item_with_flag(flag)
+    items = {}
+    @pockets.each do |pocket|
+      next if !pocket
+      pocket.each do |item|
+        item_data = GameData::Item.try_get(item)
+        next if !item_data
+        items[item] if item_data.has_flag?(flag)
+      end
+    end
+  end
+
   #-----------------------------------------------------------------------------
 
   # Returns whether item has been registered for quick access in the Ready Menu.
@@ -152,6 +172,16 @@ class PokemonBag
     item_data = GameData::Item.try_get(item)
     return false if !item_data
     return @registered_items.include?(item_data.id)
+  end
+
+  # Replaces a registered item with another item. Keeps the same index.
+  # Useful for items that are toggled on/off for example the infinite repel.
+  def replace_registered(old_item, new_item)
+    return unless GameData::Item.exists?(old_item) && GameData::Item.exists?(new_item)
+    if registered?(old_item)
+      index = @registered_items.index(old_item)
+      @registered_items[index] = new_item
+    end
   end
 
   # Registers the item in the Ready Menu.
@@ -315,19 +345,21 @@ class PCItemStorage
 end
 
 #===============================================================================
-# Implements methods that act on arrays of items.  Each element in an item
-# array is itself an array of [itemID, itemCount].
+# Implements methods that act on arrays of items. Each element in an item array
+# is itself an array of [itemID, itemCount].
 # Used by the Bag, PC item storage, and Triple Triad.
 #===============================================================================
 module ItemStorageHelper
-  # Returns the quantity of item in items
-  def self.quantity(items, item)
+  module_function
+
+  # Returns the quantity of item in items.
+  def quantity(items, item)
     ret = 0
     items.each { |i| ret += i[1] if i && i[0] == item }
     return ret
   end
 
-  def self.can_add?(items, max_slots, max_per_slot, item, qty)
+  def can_add?(items, max_slots, max_per_slot, item, qty)
     raise "Invalid value for qty: #{qty}" if qty < 0
     return true if qty == 0
     max_slots.times do |i|
@@ -345,7 +377,7 @@ module ItemStorageHelper
     return false
   end
 
-  def self.add(items, max_slots, max_per_slot, item, qty)
+  def add(items, max_slots, max_per_slot, item, qty)
     raise "Invalid value for qty: #{qty}" if qty < 0
     return true if qty == 0
     max_slots.times do |i|
@@ -365,8 +397,8 @@ module ItemStorageHelper
     return false
   end
 
-  # Deletes an item (items array, max. size per slot, item, no. of items to delete)
-  def self.remove(items, item, qty)
+  # Deletes an item (items array, max. size per slot, item, no. of items to delete).
+  def remove(items, item, qty)
     raise "Invalid value for qty: #{qty}" if qty < 0
     return true if qty == 0
     ret = false
@@ -385,4 +417,3 @@ module ItemStorageHelper
     return ret
   end
 end
-

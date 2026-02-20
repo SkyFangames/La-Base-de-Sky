@@ -2,6 +2,16 @@
 #
 #===============================================================================
 class PokemonJukebox_Scene
+
+  COMMAND_WINDOW_X      = 94
+  COMMAND_WINDOW_Y      = 92
+  COMMAND_WINDOW_WIDTH  = 324
+  COMMAND_WINDOW_HEIGHT = 224
+  HEADER_TEXT_X        = 2
+  HEADER_TEXT_Y        = -18
+  HEADER_TEXT_WIDTH    = 160
+  HEADER_TEXT_HEIGHT   = 64
+
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
   end
@@ -14,13 +24,13 @@ class PokemonJukebox_Scene
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["background"].setBitmap(_INTL("Graphics/UI/jukebox_bg"))
     @sprites["header"] = Window_UnformattedTextPokemon.newWithSize(
-      _INTL("Reproductor"), 2, -18, 128, 64, @viewport
+      _INTL("Reproductor"), HEADER_TEXT_X, HEADER_TEXT_Y, HEADER_TEXT_WIDTH, HEADER_TEXT_HEIGHT, @viewport
     )
     @sprites["header"].baseColor   = Color.new(248, 248, 248)
     @sprites["header"].shadowColor = Color.black
     @sprites["header"].windowskin  = nil
     @sprites["commands"] = Window_CommandPokemon.newWithSize(
-      @commands, 94, 92, 324, 224, @viewport
+      @commands, COMMAND_WINDOW_X, COMMAND_WINDOW_Y, COMMAND_WINDOW_WIDTH, COMMAND_WINDOW_HEIGHT, @viewport
     )
     @sprites["commands"].windowskin = nil
     pbFadeInAndShow(@sprites) { pbUpdate }
@@ -58,6 +68,10 @@ end
 #
 #===============================================================================
 class PokemonJukeboxScreen
+  HIGHER_ENCOUNTER_RATE_BGM = "Radio - March"
+  LOWER_ENCOUNTER_RATE_BGM  = "Radio - Lullaby"
+  NORMAL_ENCOUNTER_RATE_BGM = "Radio - Oak"
+  
   def initialize(scene)
     @scene = scene
   end
@@ -83,21 +97,21 @@ class PokemonJukeboxScreen
         break
       elsif cmdMarch >= 0 && cmd == cmdMarch
         pbPlayDecisionSE
-        pbBGMPlay("Radio - March", 100, 100)
+        pbBGMPlay(HIGHER_ENCOUNTER_RATE_BGM, 100, 100)
         if $PokemonMap
           $PokemonMap.lower_encounter_rate = false
           $PokemonMap.higher_encounter_rate = true
         end
       elsif cmdLullaby >= 0 && cmd == cmdLullaby
         pbPlayDecisionSE
-        pbBGMPlay("Radio - Lullaby", 100, 100)
+        pbBGMPlay(LOWER_ENCOUNTER_RATE_BGM, 100, 100)
         if $PokemonMap
           $PokemonMap.lower_encounter_rate = true
           $PokemonMap.higher_encounter_rate = false
         end
       elsif cmdOak >= 0 && cmd == cmdOak
         pbPlayDecisionSE
-        pbBGMPlay("Radio - Oak", 100, 100)
+        pbBGMPlay(NORMAL_ENCOUNTER_RATE_BGM, 100, 100)
         if $PokemonMap
           $PokemonMap.lower_encounter_rate = false
           $PokemonMap.higher_encounter_rate = false

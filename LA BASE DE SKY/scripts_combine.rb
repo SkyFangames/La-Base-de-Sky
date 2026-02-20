@@ -1,4 +1,5 @@
 require 'zlib'
+require 'fileutils'
 
 class Numeric
   def to_digits(num = 3)
@@ -24,6 +25,13 @@ module Scripts
     File.open(rxdata, "wb") do |f|
       Marshal.dump(scripts, f)
     end
+
+    delete_scripts_folder(path)
+  end
+
+  def self.delete_scripts_folder(path)
+    return unless Dir.exist?(path)
+    FileUtils.rm_rf(path)
   end
 
   def self.aggregate_from_folder(path, scripts, level = 0)

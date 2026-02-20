@@ -6,8 +6,11 @@ class PokegearButton < Sprite
   attr_reader :name
   attr_reader :selected
 
-  TEXT_BASE_COLOR = Color.new(248, 248, 248)
+  TEXT_BASE_COLOR   = Color.new(248, 248, 248)
   TEXT_SHADOW_COLOR = Color.new(40, 40, 40)
+  ICON_X            = 18  
+  ICON_Y            = 10
+  NAME_Y_OFFSET     = -10
 
   def initialize(command, x, y, viewport = nil)
     super(viewport)
@@ -45,11 +48,11 @@ class PokegearButton < Sprite
     rect.y = @button.height / 2 if @selected
     self.bitmap.blt(0, 0, @button.bitmap, rect)
     textpos = [
-      [@name, rect.width / 2, (rect.height / 2) - 10, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]
+      [@name, rect.width / 2, (rect.height / 2) + NAME_Y_OFFSET, :center, TEXT_BASE_COLOR, TEXT_SHADOW_COLOR]
     ]
     pbDrawTextPositions(self.bitmap, textpos)
     imagepos = [
-      [sprintf("Graphics/UI/Pokegear/icon_%s", @image), 18, 10]
+      [sprintf("Graphics/UI/Pokegear/icon_%s", @image), ICON_X, ICON_Y]
     ]
     pbDrawImagePositions(self.bitmap, imagepos)
   end

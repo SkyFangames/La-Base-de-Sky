@@ -2,11 +2,17 @@
 # Used for drawing entire pages worth of species icon sprites at a time.
 #===============================================================================
 class PokemonDataPageSprite < Sprite
-  PAGE_SIZE = 12  # The number of species icons per page.
-  ROW_SIZE  = 6   # The number of species icons per row.
-  ICON_GAP  = 72  # The pixel gap between each species icon.
-  PAGE_X    = 43  # The x coordinates of where the icons are placed.
-  PAGE_Y    = 26  # The y coordinates of where the icons are placed.
+  PAGE_SIZE      = 12  # The number of species icons per page.
+  ROW_SIZE       = 6   # The number of species icons per row.
+  ICON_GAP       = 72  # The pixel gap between each species icon.
+  PAGE_X         = 43  # The x coordinates of where the icons are placed.
+  PAGE_Y         = 26  # The y coordinates of where the icons are placed.
+  WRAPPER_WIDTH  = 44
+  WRAPPER_HEIGHT = 100
+
+  # Tone presets
+  TONE_NORMAL = Tone.new(0,0,0,0)
+  TONE_FADED = Tone.new(-255,-255,-255,0)
 
   def initialize(list, page, viewport = nil)
     super(viewport)
@@ -27,7 +33,7 @@ class PokemonDataPageSprite < Sprite
       @pokemonsprites[i].x = xpos - ICON_GAP
       @pokemonsprites[i].y = ypos + ICON_GAP * offset
     end
-    @contents = BitmapWrapper.new(44, 100)
+    @contents = BitmapWrapper.new(WRAPPER_WIDTH, WRAPPER_HEIGHT)
     self.bitmap = @contents
     self.x = 0
     self.y = 0
@@ -72,13 +78,13 @@ class PokemonDataPageSprite < Sprite
         @pokemonsprites[i].pbSetParams(species.species, sp_gender, sp_form)
         @pokemonsprites[i].visible = true
         if !$player.owned?(pokemon)
-          @pokemonsprites[i].tone = Tone.new(-255,-255,-255,0)
+          @pokemonsprites[i].tone = TONE_FADED
         else
-          @pokemonsprites[i].tone = Tone.new(0,0,0,0)
+          @pokemonsprites[i].tone = TONE_NORMAL
         end
       elsif pokemon == :RETURN
         @pokemonsprites[i].pbSetParams(pokemon, 0, 0)
-        @pokemonsprites[i].tone = Tone.new(0,0,0,0)
+        @pokemonsprites[i].tone = TONE_NORMAL
         @pokemonsprites[i].visible = true
       else
         @pokemonsprites[i].visible = false
@@ -110,6 +116,84 @@ end
 # Handles the various Data Page sub menus.
 #===============================================================================
 class PokemonPokedexInfo_Scene
+  # Sub menu layout constants (moved from method-local into class-level)
+  HEADER_NAME_X = 256
+  HEADER_NAME_Y = 248
+  PAGE_COUNTER_X = 51
+  PAGE_COUNTER_Y = 249
+
+  SUBMENU_BG_X = 0
+  SUBMENU_BG_Y = 88
+  SUBMENU_BG_SRC_Y_TOP = 0
+  SUBMENU_BG_SRC_Y_ALT = 196
+  SUBMENU_BG_SRC_H = 196
+  SUBMENU_BG_SRC_W = 512
+
+  CURSOR_OFFSET_X = -5
+  CURSOR_OFFSET_Y = -4
+  CURSOR_SRC_X = 402
+  CURSOR_SRC_Y = 132
+  CURSOR_SIZE = 76
+
+  PAGE_CURSOR_LEFT_X = 88
+  PAGE_CURSOR_RIGHT_X = 348
+  PAGE_CURSOR_Y = 242
+  PAGE_CURSOR_SRC_LEFT_X = 0
+  PAGE_CURSOR_SRC_Y = 70
+  PAGE_CURSOR_SRC_RIGHT_X = 76
+  PAGE_CURSOR_W = 76
+  PAGE_CURSOR_H = 32
+
+  HEADING_Y = 40
+  MESSAGEBOX_BOTTOM_OFFSET = 100
+  SUBMENU_SMALL_X = 468
+  SUBMENU_SMALL_Y = 244
+  SUBMENU_SMALL_SRC_X = 440
+  SUBMENU_SMALL_SRC_Y = 392
+  SUBMENU_SMALL_W = 28
+  SUBMENU_SMALL_H = 28
+
+  HEADING_ICON_X = 14
+  HEADING_ICON_Y = 50
+  EGG_ICON_X = -2
+  EGG_ICON_Y = 26
+  HEADING_TEXT_X = 52
+  HEADING_TEXT_Y = 56
+
+  DATA_TEXT_X = 34
+  DATA_TEXT_Y = 294
+  DATA_TEXT_W = 446
+
+  # Item/ability list layout
+  ITEM_ROW_X = 50
+  ITEM_ROW_BASE_Y = 104
+  ITEM_ROW_SPACING = 42
+  ITEM_ROW_SRC_Y1 = 392
+  ITEM_ROW_SRC_Y2 = 432
+  ITEM_ROW_SRC_W = 412
+  ITEM_ROW_SRC_H = 40
+  INDEX_PAGE_X = 115
+  INDEX_PAGE_Y = 243
+  NAME_COL_X = 326
+  NAME_ROW_BASE = 114
+
+  ICON_COL_X = 98
+  ICON_ROW_BASE = 110
+  ICON_SRC_X = 468
+  ICON_SRC_Y = 392
+  ICON_W = 34
+  ICON_H = 28
+
+  CURSOR_PANEL_X = 184
+  CURSOR_PANEL_BASE_Y = 98
+  CURSOR_PANEL_SRC_Y = 288
+  CURSOR_PANEL_W = 284
+  CURSOR_PANEL_H = 52
+
+  PAGE_CURSOR_MID_X = 248
+  PAGE_CURSOR_MID_Y = 236
+  PAGE_CURSOR_RIGHT_ALT_X = 328
+
   #-----------------------------------------------------------------------------
   # Controls for navigating sub menus that display pages of species icons.
   #-----------------------------------------------------------------------------
@@ -355,12 +439,13 @@ class PokemonPokedexInfo_Scene
           next if !sp.display_species?(@dexlist, species, true)
           regional_form = sp.form > 0 && sp.is_regional_form?
           base_form = (sp.form > 0) ? GameData::Species.get_species_form(sp.species, sp.base_pokedex_form) : nil
-          next if base_form && !regional_form && 
-		          sp.moves == base_form.moves && 
-              sp.get_tutor_moves == base_form.get_tutor_moves
+          if base_form && !regional_form
+            next if sp.moves.sort == base_form.moves.sort && 
+                    sp.get_tutor_moves.sort == base_form.get_tutor_moves.sort
+          end
           if sp.moves.any? { |m| m[1] == moveID } ||
              sp.get_tutor_moves.include?(moveID) ||
-             sp.get_egg_moves.include?(moveID)
+             sp.get_inherited_moves.include?(moveID)
             list.push(sp.id)
           end
         end
@@ -372,7 +457,7 @@ class PokemonPokedexInfo_Scene
           sp = GameData::Species.try_get(s)
           if sp && sp.moves.any? { |m| m[1] == moveID } ||
              sp.get_tutor_moves.include?(moveID) ||
-             sp.get_egg_moves.include?(moveID)
+             sp.get_inherited_moves.include?(moveID)
             compatible.push(s)
           end
         end
@@ -388,8 +473,8 @@ class PokemonPokedexInfo_Scene
         regional_form = sp.form > 0 && sp.is_regional_form?
         base_form = (sp.form > 0) ? GameData::Species.get_species_form(sp.species, sp.base_pokedex_form) : nil
         next if base_form && !regional_form && 
-		        sp.abilities == base_form.abilities && 
-            sp.hidden_abilities == base_form.hidden_abilities
+                sp.abilities == base_form.abilities && 
+                sp.hidden_abilities == base_form.hidden_abilities
         if sp.abilities.include?(cursor) || sp.hidden_abilities.include?(cursor)
           list.push(sp.id)
         end
@@ -405,7 +490,7 @@ class PokemonPokedexInfo_Scene
         regional_form = sp.form > 0 && sp.is_regional_form?
         base_form = (sp.form > 0) ? GameData::Species.get_species_form(sp.species, sp.base_pokedex_form) : nil
         next if base_form && !regional_form && 
-		        sp.wild_item_common   == base_form.wild_item_common   && 
+                sp.wild_item_common   == base_form.wild_item_common   && 
                 sp.wild_item_uncommon == base_form.wild_item_uncommon &&
                 sp.wild_item_rare     == base_form.wild_item_rare
         if sp.wild_item_common.include?(cursor) ||
@@ -446,38 +531,39 @@ class PokemonPokedexInfo_Scene
     @sprites["pokelist"].setPokemon(list, page, gender)
     pokesprite = @sprites["pokelist"].getPokemon(index)
     name = (species_data) ? species_data.name : _INTL("Volver")
+    
     textpos = [
-      [name, 256, 248, :center, base, shadow, :outline],
-      [sprintf("%d/%d", page + 1, maxpage + 1), 51, 249, :center, base, shadow, :outline]
+      [name, HEADER_NAME_X, HEADER_NAME_Y, :center, base, shadow, :outline],
+      [sprintf("%d/%d", page + 1, maxpage + 1), PAGE_COUNTER_X, PAGE_COUNTER_Y, :center, base, shadow, :outline]
     ]
     imagepos = [
-      [path + "submenu", 0, 88, 0, 0, 512, 196], 
-      [path + "cursor", pokesprite.x - 5, pokesprite.y - 4, 402, 132, 76, 76]
+      [path + "submenu", SUBMENU_BG_X, SUBMENU_BG_Y, 0, SUBMENU_BG_SRC_Y_TOP, SUBMENU_BG_SRC_W, SUBMENU_BG_SRC_H],
+      [path + "cursor", pokesprite.x + CURSOR_OFFSET_X, pokesprite.y + CURSOR_OFFSET_Y, CURSOR_SRC_X, CURSOR_SRC_Y, CURSOR_SIZE, CURSOR_SIZE]
     ]
     if page < maxpage
-      imagepos.push([path + "page_cursor", 88, 242, 0, 70, 76, 32])
+      imagepos.push([path + "page_cursor", PAGE_CURSOR_LEFT_X, PAGE_CURSOR_Y, PAGE_CURSOR_SRC_LEFT_X, PAGE_CURSOR_SRC_Y, PAGE_CURSOR_W, PAGE_CURSOR_H])
     end
     if page > 0
-      imagepos.push([path + "page_cursor", 348, 242, 76, 70, 76, 32])
+      imagepos.push([path + "page_cursor", PAGE_CURSOR_RIGHT_X, PAGE_CURSOR_Y, PAGE_CURSOR_SRC_RIGHT_X, PAGE_CURSOR_SRC_Y, PAGE_CURSOR_W, PAGE_CURSOR_H])
     end
     #---------------------------------------------------------------------------
     # Draws header and message box if viewing moves.
     #---------------------------------------------------------------------------
     if @viewingMoves
       imagepos.push(
-        [path + "heading", 0, 40], 
-        [path + "messagebox", 0, Graphics.height - 100],
-        [path + "submenu", 468, 244, 440, 392, 28, 28]
+        [path + "heading", 0, HEADING_Y], 
+        [path + "messagebox", 0, Graphics.height - MESSAGEBOX_BOTTOM_OFFSET],
+        [path + "submenu", SUBMENU_SMALL_X, SUBMENU_SMALL_Y, SUBMENU_SMALL_SRC_X, SUBMENU_SMALL_SRC_Y, SUBMENU_SMALL_W, SUBMENU_SMALL_H]
       )
       case cursor
       when :move
         heading = _INTL("Especies que conocen el movimiento:")
-        imagepos.push([_INTL("Graphics/UI/Pokedex/icon_own"), 14, 50])
+        imagepos.push([_INTL("Graphics/UI/Pokedex/icon_own"), HEADING_ICON_X, HEADING_ICON_Y])
       when :egg
         heading = _INTL("Especies compatibles que conocen este movimiento:")
-        imagepos.push([_INTL("Graphics/Pokemon/Eggs/000_icon"), -2, 26, 0, 0, 64, 64])
+        imagepos.push([_INTL("Graphics/Pokemon/Eggs/000_icon"), EGG_ICON_X, EGG_ICON_Y, 0, 0, 64, 64])
       end
-      textpos.push([heading, 52,  56, :left, base, Color.black, :outline])
+      textpos.push([heading, HEADING_TEXT_X, HEADING_TEXT_Y, :left, base, Color.black, :outline])
     end
     #---------------------------------------------------------------------------
     # Draws message box text.
@@ -502,17 +588,17 @@ class PokemonPokedexInfo_Scene
       end
     else
       if GameData::Ability.exists?(cursor)
-        view = "Habilidades de la especie"
+        view = _INTL("Habilidades de la especie")
       elsif GameData::Item.exists?(cursor)
-        view = "Objetos equipados de la especie"
+        view = _INTL("Objetos equipados de la especie")
       else
-        view = (@viewingMoves) ? "Movimientos de la especie" : "datos de la especie"
+        view = (@viewingMoves) ? _INTL("Movimientos de la especie") : _INTL("datos de la especie")
       end
-      data_text = DATA_TEXT_TAGS[0] + "Volver a #{view}."
+      data_text = _INTL("{1}Volver a {2}.", DATA_TEXT_TAGS[0], view)
     end
     pbDrawImagePositions(overlay, imagepos)
     pbDrawTextPositions(overlay, textpos)
-    drawFormattedTextEx(overlay, 34, 294, 446, _INTL("{1}", data_text))
+    drawFormattedTextEx(overlay, DATA_TEXT_X, DATA_TEXT_Y, DATA_TEXT_W, _INTL("{1}", data_text))
   end
   
   #-----------------------------------------------------------------------------
@@ -581,6 +667,89 @@ class PokemonPokedexInfo_Scene
         drawPage(@page)
         pbDrawDataNotes
         break
+      elsif Input.trigger?(Input::SPECIAL) && cursor == :ability && Settings::SHOW_STAT_CHANGES_WITH_POKEAPI
+        show_ability_diffs
+      end
+    end
+  end
+
+  def show_ability_diffs
+    species = GameData::Species.get_species_form(@species, @form)
+    @api_data = PokeAPI.get_data(species) if !@api_data || @api_data["species"] != species.id || @api_data["form"] != @form
+    
+    if @api_data
+      api_abilities = @api_data["abilities"]
+      abilities = species.abilities
+      hidden_abilities = species.hidden_abilities
+      
+      # Prepare game abilities with slot numbers
+      game_abilities = {}
+      abilities.each_with_index do |ability, i|
+        game_abilities[ability.to_sym] = [GameData::Ability.get(ability).name, i + 1, false]
+      end
+      hidden_abilities.each do |ability|
+        game_abilities[ability.to_sym] = [GameData::Ability.get(ability).name, 3, true]
+      end
+      
+      # Sort by slot number
+      game_abilities = game_abilities.sort_by { |_key, value| value[1] }.to_h
+      api_abilities = api_abilities.sort_by { |_key, value| value[1] }.to_h
+      
+      # Find differences for each slot
+      changed_abilities = []
+      added_abilities = []
+      removed_abilities = []
+      
+      # Check slots 1, 2, and 3 (hidden)
+      (1..3).each do |slot|
+        game_ability = game_abilities.find { |_key, data| data[1] == slot }
+        api_ability = api_abilities.find { |_key, data| data[1] == slot }
+        
+        if game_ability && api_ability
+          # Both have abilities in this slot
+          game_key, game_data = game_ability
+          api_key, api_data = api_ability
+          
+          if game_key != api_key
+            # Ability changed (Scenario 1: Ability A => Ability B)
+            slot_name = slot == 3 ? _INTL("Habilidad Oculta") : _INTL("Habilidad {1}", slot)
+            changed_abilities.push([slot_name, api_data[0], game_data[0]])
+          end
+        elsif game_ability && !api_ability
+          # Game has ability, API doesn't (Scenario 3: Added ability)
+          game_key, game_data = game_ability
+          slot_name = slot == 3 ? _INTL("Habilidad Oculta") : _INTL("Habilidad {1}", slot)
+          added_abilities.push([slot_name, game_data[0]])
+        elsif !game_ability && api_ability
+          # API has ability, game doesn't (Scenario 2: Removed ability)
+          api_key, api_data = api_ability
+          slot_name = slot == 3 ? _INTL("Habilidad Oculta") : _INTL("Habilidad {1}", slot)
+          removed_abilities.push([slot_name, api_data[0]])
+        end
+      end
+      
+      # Build difference text
+      if !changed_abilities.empty? || !added_abilities.empty? || !removed_abilities.empty?
+        diff_text = _INTL("Diferencias de Habilidades:\n")
+        
+        # Show changes first (in slot order)
+        changed_abilities.each do |slot_name, old_ability, new_ability|
+          diff_text += _INTL("\\c[1]{1} => {2}\\c[0]\n", old_ability, new_ability)
+        end
+        
+        # Show added abilities
+        added_abilities.each do |slot_name, ability_name|
+          diff_text += _INTL("\\c[3]{1}: {2}\\c[0]\n", slot_name, ability_name)
+        end
+        
+        # Show removed abilities
+        removed_abilities.each do |slot_name, ability_name|
+          diff_text += _INTL("\\c[2]Eliminada: {1}\\c[0]\n", ability_name)
+        end
+        
+        pbPlayDecisionSE
+        diff_text.chomp!
+        pbMessage(_INTL("{1}", diff_text))
       end
     end
   end
@@ -601,7 +770,7 @@ class PokemonPokedexInfo_Scene
     shadow = Color.new(72, 72, 72)
     path = Settings::POKEDEX_DATA_PAGE_GRAPHICS_PATH
     textpos = []
-    imagepos = [[path + "submenu", 0, 88, 0, 196, 512, 196]]
+    imagepos = [[path + "submenu", SUBMENU_BG_X, SUBMENU_BG_Y, 0, SUBMENU_BG_SRC_Y_ALT, SUBMENU_BG_SRC_W, SUBMENU_BG_SRC_H]]
     last_idx = list.length - 1
     case index
     when 0        then real_idx = 0
@@ -623,43 +792,43 @@ class PokemonPokedexInfo_Scene
         case cursor
         when :item
           case num
-          when 0 then note = "Común"
-          when 1 then note = "Poco común"
-          when 2 then note = "Raro"
+          when 0 then note = _INTL("Común")
+          when 1 then note = _INTL("Poco común")
+          when 2 then note = _INTL("Raro")
           end
         when :ability
           case num
-          when 0 then note = "Habil. #{list.index(id) + 1}"
-          when 1 then note = "H. Oculta"
-          when 2 then note = "H. Especial"
+          when 0 then note = _INTL("Habil. {1}", list.index(id) + 1)
+          when 1 then note = _INTL("H. Oculta")
+          when 2 then note = _INTL("H. Especial")
           end
         end
         idx = num
         break if !nil_or_empty?(note)
       end
       case idx
-      when 1 then imagepos.push([path + "submenu", 50, 104 + 42 * i, 0, 392, 412, 40])
-      when 2 then imagepos.push([path + "submenu", 50, 104 + 42 * i, 0, 432, 412, 40])
+      when 1 then imagepos.push([path + "submenu", ITEM_ROW_X, ITEM_ROW_BASE_Y + ITEM_ROW_SPACING * i, 0, ITEM_ROW_SRC_Y1, ITEM_ROW_SRC_W, ITEM_ROW_SRC_H])
+      when 2 then imagepos.push([path + "submenu", ITEM_ROW_X, ITEM_ROW_BASE_Y + ITEM_ROW_SPACING * i, 0, ITEM_ROW_SRC_Y2, ITEM_ROW_SRC_W, ITEM_ROW_SRC_H])
       end
       if index < list.length - 1
-        textpos.push([sprintf("%d/%d", index + 1, list.length - 1), 115, 243, :center, base, shadow, :outline])
+        textpos.push([sprintf("%d/%d", index + 1, list.length - 1), INDEX_PAGE_X, INDEX_PAGE_Y, :center, base, shadow, :outline])
       end
       if id.is_a?(Symbol)
         textpos.push(
-          [_INTL("{1}", note), 115, 114 + 42 * i, :center, base, shadow, :outline],
-          [data.get(id).name, 326, 114 + 42 * i, :center, base, shadow, :outline]
+          [_INTL("{1}", note), INDEX_PAGE_X, NAME_ROW_BASE + ITEM_ROW_SPACING * i, :center, base, shadow, :outline],
+          [data.get(id).name, NAME_COL_X, NAME_ROW_BASE + ITEM_ROW_SPACING * i, :center, base, shadow, :outline]
         )
       else
-        imagepos.push([path + "submenu", 98, 110 + 42 * i, 468, 392, 34, 28])
-        textpos.push([id, 326, 114 + 42 * i, :center, base, Color.new(148, 148, 148), :outline])
+        imagepos.push([path + "submenu", ICON_COL_X, ICON_ROW_BASE + ITEM_ROW_SPACING * i, ICON_SRC_X, ICON_SRC_Y, ICON_W, ICON_H])
+        textpos.push([id, NAME_COL_X, NAME_ROW_BASE + ITEM_ROW_SPACING * i, :center, base, Color.new(148, 148, 148), :outline])
       end
     end
-    imagepos.push([path + "cursor", 184, 98 + 42 * real_idx, 0, 288, 284, 52])
+    imagepos.push([path + "cursor", CURSOR_PANEL_X, CURSOR_PANEL_BASE_Y + ITEM_ROW_SPACING * real_idx, 0, CURSOR_PANEL_SRC_Y, CURSOR_PANEL_W, CURSOR_PANEL_H])
     if index < list.length - 1
-      imagepos.push([path + "page_cursor", 248, 236, 0, 70, 76, 32])
+      imagepos.push([path + "page_cursor", PAGE_CURSOR_MID_X, PAGE_CURSOR_MID_Y, PAGE_CURSOR_SRC_LEFT_X, PAGE_CURSOR_SRC_Y, PAGE_CURSOR_W, PAGE_CURSOR_H])
     end
     if index > 0
-      imagepos.push([path + "page_cursor", 328, 236, 76, 70, 76, 32])
+      imagepos.push([path + "page_cursor", PAGE_CURSOR_RIGHT_ALT_X, PAGE_CURSOR_MID_Y, PAGE_CURSOR_SRC_RIGHT_X, PAGE_CURSOR_SRC_Y, PAGE_CURSOR_W, PAGE_CURSOR_H])
     end
     pbDrawImagePositions(overlay, imagepos)
     pbDrawTextPositions(overlay, textpos)
@@ -667,8 +836,8 @@ class PokemonPokedexInfo_Scene
     when Symbol
       data_text = DATA_TEXT_TAGS[0] + data.get(list[index]).description
     else
-      data_text = DATA_TEXT_TAGS[0] + "Volver a los datos de la especie."
+      data_text = DATA_TEXT_TAGS[0] + _INTL("Volver a los datos de la especie.")
     end
-    drawFormattedTextEx(overlay, 34, 294, 446, _INTL("{1}", data_text))
+    drawFormattedTextEx(overlay, DATA_TEXT_X, DATA_TEXT_Y, DATA_TEXT_W, _INTL("{1}", data_text))
   end
 end

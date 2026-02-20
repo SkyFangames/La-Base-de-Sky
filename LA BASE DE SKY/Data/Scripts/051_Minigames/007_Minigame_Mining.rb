@@ -148,6 +148,41 @@ class MiningGameScene
   BOARD_WIDTH  = 13
   BOARD_HEIGHT = 10
   ITEMS = [   # Item, probability, graphic x, graphic y, width, height, pattern
+    # ITEMS VARIOS
+    [:REVIVE, 80, 0, 20, 3, 3, [0, 1, 0, 1, 1, 1, 0, 1, 0]],
+    [:MAXREVIVE, 50, 0, 23, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:LIGHTCLAY, 90, 6, 20, 4, 4, [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1]],
+    [:HARDSTONE, 70, 6, 24, 2, 2, [1, 1, 1, 1]],
+    [:HEARTSCALE, 100, 8, 24, 2, 2, [1, 0, 1, 1]],
+    [:IRONBALL, 50, 9, 17, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:ODDKEYSTONE, 20, 10, 20, 4, 4, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:OVALSTONE, 70, 24, 17, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:EVERSTONE, 70, 21, 20, 4, 2, [1, 1, 1, 1, 1, 1, 1, 1]],
+
+    # PARTES
+    [:REDSHARD, 70, 21, 22, 3, 3, [1, 1, 1, 1, 1, 0, 1, 1, 1]],
+    [:GREENSHARD, 70, 25, 20, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]],
+    [:YELLOWSHARD, 70, 25, 23, 4, 3, [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1]],
+    [:BLUESHARD, 70, 26, 26, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    
+    # ROCAS CLIMAS
+    [:HEATROCK, 50, 12, 17, 4, 3, [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:DAMPROCK, 50, 14, 20, 3, 3, [1, 1, 1, 1, 1, 1, 1, 0, 1]],
+    [:SMOOTHROCK, 50, 17, 18, 4, 4, [0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0]],
+    [:ICYROCK, 50, 17, 22, 4, 4, [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1]],
+
+    # ITEMS DE VENDER CAROS
+    [:STARPIECE, 80, 0, 17, 3, 3, [0, 1, 0, 1, 1, 1, 0, 1, 0]],
+    [:RAREBONE, 30, 3, 17, 6, 3, [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1]],
+    [:RAREBONE, 30, 3, 20, 3, 6, [1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1]],
+    [:RELICCOPPER, 50, 12, 35, 2, 2, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    [:RELICSILVER, 20, 14, 35, 2, 2, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    [:RELICGOLD, 5, 16, 35, 2, 2, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    [:COMETSHARD, 15, 8, 38, 3, 3, [0, 1, 0, 1, 1, 1, 0, 1, 0]],
+    [:NUGGET, 10, 11, 38, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:BIGNUGGET, 8, 14, 38, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+
+    # FÓSILES
     [:DOMEFOSSIL, 20, 0, 3, 5, 4, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0]],
     [:HELIXFOSSIL, 5, 5, 3, 4, 4, [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]],
     [:HELIXFOSSIL, 5, 9, 3, 4, 4, [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1]],
@@ -165,6 +200,12 @@ class MiningGameScene
     [:CLAWFOSSIL, 5, 4, 12, 5, 4, [1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1]],
     [:CLAWFOSSIL, 5, 9, 12, 4, 5, [0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0]],
     [:CLAWFOSSIL, 5, 13, 12, 5, 4, [1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1]],
+    [:PLUMEFOSSIL, 20, 18, 35, 4, 4, [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    [:COVERFOSSIL, 20, 22, 35, 4, 4, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0]],
+    [:JAWFOSSIL, 20, 0, 38, 4, 4, [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    [:SAILFOSSIL, 20, 4, 38, 4, 4, [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    
+    # PIEDRAS EVOLUTIVAS
     [:FIRESTONE, 20, 20, 11, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:WATERSTONE, 20, 23, 11, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
     [:THUNDERSTONE, 20, 26, 11, 3, 3, [0, 1, 1, 1, 1, 1, 1, 1, 0]],
@@ -173,26 +214,12 @@ class MiningGameScene
     [:MOONSTONE, 10, 25, 14, 4, 2, [0, 1, 1, 1, 1, 1, 1, 0]],
     [:MOONSTONE, 10, 27, 16, 2, 4, [1, 0, 1, 1, 1, 1, 0, 1]],
     [:SUNSTONE, 20, 21, 17, 3, 3, [0, 1, 0, 1, 1, 1, 1, 1, 1]],
-    [:OVALSTONE, 150, 24, 17, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
-    [:EVERSTONE, 150, 21, 20, 4, 2, [1, 1, 1, 1, 1, 1, 1, 1]],
-    [:STARPIECE, 100, 0, 17, 3, 3, [0, 1, 0, 1, 1, 1, 0, 1, 0]],
-    [:REVIVE, 100, 0, 20, 3, 3, [0, 1, 0, 1, 1, 1, 0, 1, 0]],
-    [:MAXREVIVE, 50, 0, 23, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
-    [:RAREBONE, 50, 3, 17, 6, 3, [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1]],
-    [:RAREBONE, 50, 3, 20, 3, 6, [1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1]],
-    [:LIGHTCLAY, 100, 6, 20, 4, 4, [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1]],
-    [:HARDSTONE, 200, 6, 24, 2, 2, [1, 1, 1, 1]],
-    [:HEARTSCALE, 200, 8, 24, 2, 2, [1, 0, 1, 1]],
-    [:IRONBALL, 100, 9, 17, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
-    [:ODDKEYSTONE, 100, 10, 20, 4, 4, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
-    [:HEATROCK, 50, 12, 17, 4, 3, [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1]],
-    [:DAMPROCK, 50, 14, 20, 3, 3, [1, 1, 1, 1, 1, 1, 1, 0, 1]],
-    [:SMOOTHROCK, 50, 17, 18, 4, 4, [0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0]],
-    [:ICYROCK, 50, 17, 22, 4, 4, [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1]],
-    [:REDSHARD, 100, 21, 22, 3, 3, [1, 1, 1, 1, 1, 0, 1, 1, 1]],
-    [:GREENSHARD, 100, 25, 20, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]],
-    [:YELLOWSHARD, 100, 25, 23, 4, 3, [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1]],
-    [:BLUESHARD, 100, 26, 26, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
+    [:DUSKSTONE, 20, 0, 35, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:DAWNSTONE, 20, 3, 35, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SHINYSTONE, 20, 6, 35, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:ICESTONE, 20, 9, 35, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 0]],
+
+    # TABLAS
     [:INSECTPLATE, 10, 0, 26, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:DREADPLATE, 10, 4, 26, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:DRACOPLATE, 10, 8, 26, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
@@ -208,7 +235,78 @@ class MiningGameScene
     [:SKYPLATE, 10, 0, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:SPOOKYPLATE, 10, 4, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
     [:IRONPLATE, 10, 8, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
-    [:SPLASHPLATE, 10, 12, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+    [:SPLASHPLATE, 13, 12, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:PIXIEPLATE, 13, 16, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:BLANKPLATE, 13, 20, 32, 4, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]],
+
+    # GEMAS
+    [:FIREGEM, 20, 0, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:WATERGEM, 20, 3, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:ELECTRICGEM, 20, 6, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:GRASSGEM, 20, 9, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:ICEGEM, 20, 12, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:FIGHTINGGEM, 20, 15, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:POISONGEM, 20, 18, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:GROUNDGEM, 20, 21, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:FLYINGGEM, 20, 0, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:PSYCHICGEM, 20, 3, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:BUGGEM, 20, 63, 60, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:ROCKGEM, 20, 9, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:GHOSTGEM, 20, 12, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:DRAGONGEM, 20, 15, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:DARKGEM, 20, 18, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:STEELGEM, 20, 21, 63, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:NORMALGEM, 20, 0, 66, 3, 2, [1, 1, 1, 1, 1, 1]],
+    [:FAIRYGEM, 20, 3, 66, 3, 2, [1, 1, 1, 1, 1, 1]],
+
+    # MEGAPIEDRAS
+    [:GENGARITE, 0.5, 0, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:GARDEVOIRITE, 0.5, 3, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:AMPHAROSITE, 0.5, 6, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:VENUSAURITE, 0.5, 9, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:CHARIZARDITEX, 0.5, 12, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:CHARIZARDITEY, 0.5, 15, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:BLASTOISINITE, 0.5, 18, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:MEWTWONITEX, 0.5, 21, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:MEWTWONITEY, 0.5, 24, 42, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:BLAZIKENITE, 0.5, 0, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:MEDICHAMITE, 0.5, 3, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:HOUNDOOMINITE, 0.5, 6, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:AGGRONITE, 0.5, 9, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:BANETTITE, 0.5, 12, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:TYRANITARITE, 0.5, 15, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SCIZORITE, 0.5, 18, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:PINSIRITE, 0.5, 21, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:AERODACTYLITE, 0.6, 24, 45, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:LUCARIONITE, 0.5, 0, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:ABOMASITE, 0.5, 3, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:KANGASKHANITE, 0.5, 6, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:GYARADOSITE, 0.5, 9, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:ABSOLITE, 0.5, 12, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:ALAKAZITE, 0.5, 15, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:HERACRONITE, 0.5, 18, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:MAWILITE, 0.5, 21, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:MANECTITE, 0.5, 24, 48, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:GARCHOMPITE, 0.5, 0, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:LATIASITE, 0.5, 3, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:LATIOSITE, 0.5, 6, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SWAMPERTITE, 0.5, 9, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SCEPTILITE, 0.5, 12, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SABLENITE, 0.5, 15, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:ALTARIANITE, 0.5, 18, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:GALLADITE, 0.5, 21, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:AUDINITE, 0.5, 24, 51, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:METAGROSSITE, 0.5, 0, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SHARPEDONITE, 0.5, 3, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SLOWBRONITE, 0.5, 6, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:STEELIXITE, 0.5, 9, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:PIDGEOTITE, 0.5, 12, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:GLALITITE, 0.5, 15, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:DIANCITE, 0.5, 18, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:CAMERUPTITE, 0.5, 21, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:LOPUNNITE, 0.5, 24, 54, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:SALAMENCITE, 0.5, 0, 57, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]],
+    [:BEEDRILLITE, 0.5, 3, 57, 3, 3, [1, 1, 1, 1, 1, 1, 1, 1, 1]]
   ]
   IRON = [   # Graphic x, graphic y, width, height, pattern
     [0, 0, 1, 4, [1, 1, 1, 1]],
@@ -225,6 +323,8 @@ class MiningGameScene
     [6, 6, 2, 3, [1, 0, 1, 1, 1, 0]],
     [8, 6, 2, 3, [0, 1, 1, 1, 0, 1]]
   ]
+
+  ALLOW_MEGA_STONE_MINING = false
 
   def update
     pbUpdateSpriteHash(@sprites)
@@ -265,8 +365,10 @@ class MiningGameScene
 
   def pbDistributeItems
     # Set items to be buried (index in ITEMS, x coord, y coord)
+    item_list = ITEMS.clone
+    item_list.delete_if { |i| GameData::Item.get(i[0]).is_mega_stone? && !ALLOW_MEGA_STONE_MINING }
     ptotal = 0
-    ITEMS.each do |i|
+    item_list.each do |i|
       ptotal += i[1]
     end
     numitems = rand(2..4)
@@ -274,14 +376,14 @@ class MiningGameScene
     while numitems > 0
       rnd = rand(ptotal)
       added = false
-      ITEMS.length.times do |i|
-        rnd -= ITEMS[i][1]
+      item_list.length.times do |i|
+        rnd -= item_list[i][1]
         if rnd < 0
-          if pbNoDuplicateItems(ITEMS[i][0])
+          if pbNoDuplicateItems(item_list[i][0])
             until added
-              provx = rand(BOARD_WIDTH - ITEMS[i][4] + 1)
-              provy = rand(BOARD_HEIGHT - ITEMS[i][5] + 1)
-              if pbCheckOverlaps(false, provx, provy, ITEMS[i][4], ITEMS[i][5], ITEMS[i][6])
+              provx = rand(BOARD_WIDTH - item_list[i][4] + 1)
+              provy = rand(BOARD_HEIGHT - item_list[i][5] + 1)
+              if pbCheckOverlaps(false, provx, provy, item_list[i][4], item_list[i][5], item_list[i][6])
                 @items.push([i, provx, provy])
                 numitems -= 1
                 added = true
@@ -299,10 +401,10 @@ class MiningGameScene
     # Draw items on item layer
     layer = @sprites["itemlayer"].bitmap
     @items.each do |i|
-      ox = ITEMS[i[0]][2]
-      oy = ITEMS[i[0]][3]
-      rectx = ITEMS[i[0]][4]
-      recty = ITEMS[i[0]][5]
+      ox = item_list[i[0]][2]
+      oy = item_list[i[0]][3]
+      rectx = item_list[i[0]][4]
+      recty = item_list[i[0]][5]
       layer.blt(32 * i[1], 64 + (32 * i[2]), @itembitmap.bitmap, Rect.new(32 * ox, 32 * oy, 32 * rectx, 32 * recty))
     end
   end
@@ -336,26 +438,40 @@ class MiningGameScene
   def pbNoDuplicateItems(newitem)
     return true if newitem == :HEARTSCALE   # Allow multiple Heart Scales
     fossils = [:DOMEFOSSIL, :HELIXFOSSIL, :OLDAMBER, :ROOTFOSSIL,
-               :SKULLFOSSIL, :ARMORFOSSIL, :CLAWFOSSIL]
+               :SKULLFOSSIL, :ARMORFOSSIL, :CLAWFOSSIL, 
+               :PLUMEFOSSIL, :COVERFOSSIL, :JAWFOSSIL, :SAILFOSSIL]
     plates = [:INSECTPLATE, :DREADPLATE, :DRACOPLATE, :ZAPPLATE, :FISTPLATE,
               :FLAMEPLATE, :MEADOWPLATE, :EARTHPLATE, :ICICLEPLATE, :TOXICPLATE,
               :MINDPLATE, :STONEPLATE, :SKYPLATE, :SPOOKYPLATE, :IRONPLATE, :SPLASHPLATE]
+    megastones = [:GENGARITE, :GARDEVOIRITE, :AMPHAROSITE, :VENUSAURITE, :CHARIZARDITEX, 
+                  :CHARIZARDITEY, :BLASTOISINITE, :MEWTWONITEX, :MEWTWONITEY, :BLAZIKENITE, 
+                  :MEDICHAMITE, :HOUNDOOMINITE, :AGGRONITE, :BANETTITE, :TYRANITARITE, :SCIZORITE, 
+                  :PINSIRITE, :AERODACTYLITE, :LUCARIONITE, :ABOMASITE, :KANGASKHANITE, :GYARADOSITE, 
+                  :ABSOLITE, :ALAKAZITE, :HERACRONITE, :MAWILITE, :MANECTITE, :GARCHOMPITE, :LATIASITE, 
+                  :LATIOSITE, :SWAMPERTITE, :SCEPTILITE, :SABLENITE, :ALTARIANITE, :GALLADITE, :AUDINITE, 
+                  :METAGROSSITE, :SHARPEDONITE, :SLOWBRONITE, :STEELIXITE, :PIDGEOTITE, :GLALITITE, 
+                  :DIANCITE, :CAMERUPTITE, :LOPUNNITE, :SALAMENCITE, :BEEDRILLITE]
+    item_list = ITEMS.clone
+    item_list.delete_if { |i| GameData::Item.get(i[0]).is_mega_stone? && !ALLOW_MEGA_STONE_MINING }
     @items.each do |i|
-      preitem = ITEMS[i[0]][0]
+      preitem = item_list[i[0]][0]
       return false if preitem == newitem   # No duplicate items
       return false if fossils.include?(preitem) && fossils.include?(newitem)
       return false if plates.include?(preitem) && plates.include?(newitem)
+      return false if megastones.include?(preitem) && megastones.include?(newitem)
     end
     return true
   end
 
   def pbCheckOverlaps(checkiron, provx, provy, provwidth, provheight, provpattern)
+    item_list = ITEMS.clone
+    item_list.delete_if { |i| GameData::Item.get(i[0]).is_mega_stone? && !ALLOW_MEGA_STONE_MINING }
     @items.each do |i|
       prex = i[1]
       prey = i[2]
-      prewidth = ITEMS[i[0]][4]
-      preheight = ITEMS[i[0]][5]
-      prepattern = ITEMS[i[0]][6]
+      prewidth = item_list[i[0]][4]
+      preheight = item_list[i[0]][5]
+      prepattern = item_list[i[0]][6]
       next if provx + provwidth <= prex || provx >= prex + prewidth ||
               provy + provheight <= prey || provy >= prey + preheight
       prepattern.length.times do |j|
@@ -438,13 +554,15 @@ class MiningGameScene
   end
 
   def pbIsItemThere?(position)
+    item_list = ITEMS.clone
+    item_list.delete_if { |i| GameData::Item.get(i[0]).is_mega_stone? && !ALLOW_MEGA_STONE_MINING }
     posx = position % BOARD_WIDTH
     posy = position / BOARD_WIDTH
     @items.each do |i|
       index = i[0]
-      width = ITEMS[index][4]
-      height = ITEMS[index][5]
-      pattern = ITEMS[index][6]
+      width = item_list[index][4]
+      height = item_list[index][5]
+      pattern = item_list[index][6]
       next if posx < i[1] || posx >= (i[1] + width)
       next if posy < i[2] || posy >= (i[2] + height)
       dx = posx - i[1]
@@ -473,13 +591,15 @@ class MiningGameScene
 
   def pbCheckRevealed
     ret = []
+    item_list = ITEMS.clone
+    item_list.delete_if { |i| GameData::Item.get(i[0]).is_mega_stone? && !ALLOW_MEGA_STONE_MINING }
     @items.length.times do |i|
       next if @items[i][3]
       revealed = true
       index = @items[i][0]
-      width = ITEMS[index][4]
-      height = ITEMS[index][5]
-      pattern = ITEMS[index][6]
+      width = item_list[index][4]
+      height = item_list[index][5]
+      pattern = item_list[index][6]
       height.times do |j|
         width.times do |k|
           layer = @sprites["tile#{@items[i][1] + k + ((@items[i][2] + j) * BOARD_WIDTH)}"].layer
@@ -499,6 +619,8 @@ class MiningGameScene
     revealeditems.z = 15
     revealeditems.color = Color.new(255, 255, 255, 0)
     flash_duration = 0.25
+    item_list = ITEMS.clone
+    item_list.delete_if { |i| GameData::Item.get(i[0]).is_mega_stone? && !ALLOW_MEGA_STONE_MINING }
     2.times do |i|
       alpha_start = (i == 0) ? 0 : 255
       alpha_end = (i == 0) ? 255 : 0
@@ -508,8 +630,8 @@ class MiningGameScene
           burieditem = @items[index]
           revealeditems.bitmap.blt(32 * burieditem[1], 64 + (32 * burieditem[2]),
                                    @itembitmap.bitmap,
-                                   Rect.new(32 * ITEMS[burieditem[0]][2], 32 * ITEMS[burieditem[0]][3],
-                                            32 * ITEMS[burieditem[0]][4], 32 * ITEMS[burieditem[0]][5]))
+                                   Rect.new(32 * item_list[burieditem[0]][2], 32 * item_list[burieditem[0]][3],
+                                            32 * item_list[burieditem[0]][4], 32 * item_list[burieditem[0]][5]))
         end
         flash_alpha = lerp(alpha_start, alpha_end, flash_duration / 2, timer_start, System.uptime)
         revealeditems.color.alpha = flash_alpha
@@ -521,7 +643,7 @@ class MiningGameScene
     revealeditems.dispose
     revealed.each do |index|
       @items[index][3] = true
-      item = ITEMS[@items[index][0]][0]
+      item = item_list[@items[index][0]][0]
       @itemswon.push(item)
     end
   end
@@ -592,7 +714,7 @@ class MiningGameScene
       elsif Input.trigger?(Input::USE)   # Hit
         pbHit
       elsif Input.trigger?(Input::BACK)   # Quit
-        break if pbConfirmMessage(_INTL("¿Estás seguro de que te quieres retirar?"))
+        break if pbConfirmMessage(_INTL("¿Estás segur{1} de que te quieres retirar?", $player.female? ? 'a' : 'o'))
       end
     end
     pbGiveItems

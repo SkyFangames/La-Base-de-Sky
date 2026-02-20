@@ -4,11 +4,14 @@
 module Battle::ItemEffects
   SpeedCalc                       = ItemHandlerHash.new
   WeightCalc                      = ItemHandlerHash.new   # Float Stone
-  # Battler's HP/stat changed
+  # Battler's HP changed
   HPHeal                          = ItemHandlerHash.new
-  OnStatLoss                      = ItemHandlerHash.new
-  # Battler's status problem
+  # Battler's status condition
   StatusCure                      = ItemHandlerHash.new
+  # Battler's stat stages
+  StatLossImmunity                = ItemHandlerHash.new
+  OnStatLoss                      = ItemHandlerHash.new
+  CopyStatChanges                 = ItemHandlerHash.new
   # Priority and turn order
   PriorityChange                  = ItemHandlerHash.new
   PriorityBracketChange           = ItemHandlerHash.new
@@ -37,7 +40,8 @@ module Battle::ItemEffects
   # Weather and terrin
   WeatherExtender                 = ItemHandlerHash.new
   TerrainExtender                 = ItemHandlerHash.new   # Terrain Extender
-  TerrainStatBoost                = ItemHandlerHash.new
+  OnWeatherChange                 = ItemHandlerHash.new
+  OnTerrainChange                 = ItemHandlerHash.new
   # End Of Round
   EndOfRoundHealing               = ItemHandlerHash.new
   EndOfRoundEffect                = ItemHandlerHash.new
@@ -48,18 +52,15 @@ module Battle::ItemEffects
   OnIntimidated                   = ItemHandlerHash.new   # Adrenaline Orb
   # Running from battle
   CertainEscapeFromBattle         = ItemHandlerHash.new   # Smoke Ball
-  
-  OnOpposingStatGain = ItemHandlerHash.new # Mirror Herb
-  StatLossImmunity   = ItemHandlerHash.new # Clear Amulet
-  
-  #=============================================================================
+
+  #-----------------------------------------------------------------------------
 
   def self.trigger(hash, *args, ret: false)
     new_ret = hash.trigger(*args)
     return (!new_ret.nil?) ? new_ret : ret
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerSpeedCalc(item, battler, mult)
     return trigger(SpeedCalc, item, battler, mult, ret: mult)
@@ -69,31 +70,33 @@ module Battle::ItemEffects
     return trigger(WeightCalc, item, battler, w, ret: w)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerHPHeal(item, battler, battle, forced)
     return trigger(HPHeal, item, battler, battle, forced)
   end
 
-  def self.triggerOnStatLoss(item, user, move_user, battle)
-    return trigger(OnStatLoss, item, user, move_user, battle)
-  end
-  
-  def self.triggerStatLossImmunity(item, battler, stat, battle, show_message)
-    return trigger(StatLossImmunity, item, battler, stat, battle, show_message)
-  end
-  
-  def self.triggerOnOpposingStatGain(item, battler, battle, statUps, forced)
-    return trigger(OnOpposingStatGain, item, battler, battle, statUps, forced)
-  end
-
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerStatusCure(item, battler, battle, forced)
     return trigger(StatusCure, item, battler, battle, forced)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
+
+  def self.triggerStatLossImmunity(item, battler, stat, battle, show_messages)
+    return trigger(StatLossImmunity, item, battler, stat, battle, show_messages)
+  end
+
+  def self.triggerOnStatLoss(item, user, move_user, battle)
+    return trigger(OnStatLoss, item, user, move_user, battle)
+  end
+
+  def self.triggerCopyStatChanges(item, battler, battle)
+    CopyStatChanges.trigger(item, battler, battle)
+  end
+
+  #-----------------------------------------------------------------------------
 
   def self.triggerPriorityChange(item, battler, move, priority)
     return trigger(PriorityChange, item, battler, move, priority, ret: priority)
@@ -107,13 +110,13 @@ module Battle::ItemEffects
     PriorityBracketUse.trigger(item, battler, battle)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerOnMissingTarget(item, user, target, move, hit_num, battle)
     OnMissingTarget.trigger(item, user, target, move, hit_num, battle)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerAccuracyCalcFromUser(item, mods, user, target, move, type)
     AccuracyCalcFromUser.trigger(item, mods, user, target, move, type)
@@ -123,7 +126,7 @@ module Battle::ItemEffects
     AccuracyCalcFromTarget.trigger(item, mods, user, target, move, type)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerDamageCalcFromUser(item, user, target, move, mults, power, type)
     DamageCalcFromUser.trigger(item, user, target, move, mults, power, type)
@@ -133,15 +136,15 @@ module Battle::ItemEffects
     DamageCalcFromTarget.trigger(item, user, target, move, mults, power, type)
   end
 
-  def self.triggerCriticalCalcFromUser(item, user, target, crit_stage)
-    return trigger(CriticalCalcFromUser, item, user, target, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromUser(item, user, target, crit_stage, move = nil)
+    return trigger(CriticalCalcFromUser, item, user, target, crit_stage, move, ret: crit_stage)
   end
 
-  def self.triggerCriticalCalcFromTarget(item, user, target, crit_stage)
-    return trigger(CriticalCalcFromTarget, item, user, target, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromTarget(item, user, target, crit_stage, move = nil)
+    return trigger(CriticalCalcFromTarget, item, user, target, crit_stage, move, ret: crit_stage)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerOnBeingHit(item, user, target, move, battle)
     OnBeingHit.trigger(item, user, target, move, battle)
@@ -151,7 +154,7 @@ module Battle::ItemEffects
     return trigger(OnBeingHitPositiveBerry, item, battler, battle, forced)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerAfterMoveUseFromTarget(item, battler, user, move, switched_battlers, battle)
     AfterMoveUseFromTarget.trigger(item, battler, user, move, switched_battlers, battle)
@@ -169,7 +172,7 @@ module Battle::ItemEffects
     return trigger(OnEndOfUsingMoveStatRestore, item, battler, battle, forced)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerExpGainModifier(item, battler, exp)
     return trigger(ExpGainModifier, item, battler, exp, ret: -1)
@@ -181,7 +184,7 @@ module Battle::ItemEffects
     return true
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerWeatherExtender(item, weather, duration, battler, battle)
     return trigger(WeatherExtender, item, weather, duration, battler, battle, ret: duration)
@@ -191,11 +194,15 @@ module Battle::ItemEffects
     return trigger(TerrainExtender, item, terrain, duration, battler, battle, ret: duration)
   end
 
-  def self.triggerTerrainStatBoost(item, battler, battle)
-    return trigger(TerrainStatBoost, item, battler, battle)
+  def self.triggerOnWeatherChange(item, battler, battle, old_weather)
+    return trigger(OnWeatherChange, item, battler, battle, old_weather)
   end
 
-  #=============================================================================
+  def self.triggerOnTerrainChange(item, battler, battle, old_terrain)
+    return trigger(OnTerrainChange, item, battler, battle, old_terrain)
+  end
+
+  #-----------------------------------------------------------------------------
 
   def self.triggerEndOfRoundHealing(item, battler, battle)
     EndOfRoundHealing.trigger(item, battler, battle)
@@ -205,7 +212,7 @@ module Battle::ItemEffects
     EndOfRoundEffect.trigger(item, battler, battle)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerCertainSwitching(item, switcher, battle)
     return trigger(CertainSwitching, item, switcher, battle)
@@ -223,7 +230,7 @@ module Battle::ItemEffects
     return trigger(OnIntimidated, item, battler, battle)
   end
 
-  #=============================================================================
+  #-----------------------------------------------------------------------------
 
   def self.triggerCertainEscapeFromBattle(item, battler)
     return trigger(CertainEscapeFromBattle, item, battler)
@@ -332,9 +339,10 @@ Battle::ItemEffects::HPHeal.add(:IAPAPABERRY,
 Battle::ItemEffects::HPHeal.add(:LANSATBERRY,
   proc { |item, battler, battle, forced|
     next false if !forced && !battler.canConsumePinchBerry?
-    next false if battler.effects[PBEffects::FocusEnergy] >= 2
+    next false if battler.criticalHitRate >= 2
     battle.pbCommonAnimation("EatBerry", battler) if !forced
-    battler.effects[PBEffects::FocusEnergy] = 2
+    battler.setCriticalHitRate(2)
+    battle.pbCommonAnimation("CriticalHitRateUp", battler)
     itemName = GameData::Item.get(item).name
     if forced
       battle.pbDisplay(_INTL("¡{1} se ha entusiasmado con {2}!", battler.pbThis, itemName))
@@ -362,15 +370,15 @@ Battle::ItemEffects::HPHeal.add(:MAGOBERRY,
 Battle::ItemEffects::HPHeal.add(:MICLEBERRY,
   proc { |item, battler, battle, forced|
     next false if !forced && !battler.canConsumePinchBerry?
-    next false if !battler.effects[PBEffects::MicleBerry]
+    next false if battler.effects[PBEffects::MicleBerry]
     battle.pbCommonAnimation("EatBerry", battler) if !forced
     battler.effects[PBEffects::MicleBerry] = true
     itemName = GameData::Item.get(item).name
     if forced
       PBDebug.log("[Item triggered] Forced consuming of #{itemName}")
-      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su proximo ataque!", battler.pbThis))
+      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su próximo ataque!", battler.pbThis))
     else
-      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su proximo ataque con {2}!",
+      battle.pbDisplay(_INTL("¡{1} ha aumentado la precisión de su próximo ataque con {2}!",
          battler.pbThis, itemName))
     end
     next true
@@ -458,35 +466,6 @@ Battle::ItemEffects::HPHeal.add(:WIKIBERRY,
 )
 
 #===============================================================================
-# OnStatLoss handlers
-#===============================================================================
-Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
-  proc { |item, battler, move_user, battle|
-    next false if battler.effects[PBEffects::SkyDrop] >= 0 ||
-                  battler.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSkyTargetCannotAct")   # Sky Drop
-    next false if battle.pbAllFainted?(battler.idxOpposingSide)
-    next false if battler.wild?   # Wild Pokémon can't eject
-    next false if !battle.pbCanSwitchOut?(battler.index)   # Battler can't switch out
-    next false if !battle.pbCanChooseNonActive?(battler.index)   # No Pokémon can switch in
-    battle.pbCommonAnimation("UseItem", battler)
-    battle.pbDisplay(_INTL("¡{1} regresa gracias a {2}!", battler.pbThis, battler.itemName))
-    battler.pbConsumeItem(true, false)
-    if battle.endOfRound   # Just switch out
-      battle.scene.pbRecall(battler.index) if !battler.fainted?
-      battler.pbAbilitiesOnSwitchOut   # Inc. primordial weather check
-      next true
-    end
-    newPkmn = battle.pbGetReplacementPokemonIndex(battler.index)   # Owner chooses
-    next false if newPkmn < 0   # Shouldn't ever do this
-    battle.pbRecallAndReplace(battler.index, newPkmn)
-    battle.pbClearChoice(battler.index)   # Replacement Pokémon does nothing this round
-    battle.moldBreaker = false if move_user && battler.index == move_user.index
-    battle.pbOnBattlerEnteringBattle(battler.index)
-    next true
-  }
-)
-
-#===============================================================================
 # StatusCure handlers
 #===============================================================================
 
@@ -511,7 +490,7 @@ Battle::ItemEffects::StatusCure.add(:CHERIBERRY,
     PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
     battle.pbCommonAnimation("EatBerry", battler) if !forced
     battler.pbCureStatus(forced)
-    battle.pbDisplay(_INTL("¡{1} se ha cudado de la parálisis con {2}!", battler.pbThis, itemName)) if !forced
+    battle.pbDisplay(_INTL("¡{1} se ha curado de la parálisis con {2}!", battler.pbThis, itemName)) if !forced
     next true
   }
 )
@@ -548,14 +527,12 @@ Battle::ItemEffects::StatusCure.add(:LUMBERRY,
       when :SLEEP
         battle.pbDisplay(_INTL("¡{1} se ha despertado con {2}!", battler.pbThis, itemName))
       when :POISON
-        battle.pbDisplay(_INTL("¡{1} se ha curado del envenienmiento con {2}!", battler.pbThis, itemName))
+        battle.pbDisplay(_INTL("¡{1} se ha curado del envenenamiento con {2}!", battler.pbThis, itemName))
       when :BURN
         battle.pbDisplay(_INTL("¡{1} se ha curado de las quemaduras con {2}!", battler.pbThis, itemName))
       when :PARALYSIS
         battle.pbDisplay(_INTL("¡{1} se ha curado de la parálisis con {2}!", battler.pbThis, itemName))
-      when :FROZEN
-        battle.pbDisplay(_INTL("¡{1} se ha descongelado con {2}!", battler.pbThis, itemName))
-      when :FROSTBITE
+      when :FROZEN, :FROSTBITE
         battle.pbDisplay(_INTL("¡{1} se ha descongelado con {2}!", battler.pbThis, itemName))
       end
       if oldConfusion
@@ -646,8 +623,82 @@ Battle::ItemEffects::StatusCure.add(:RAWSTBERRY,
 )
 
 #===============================================================================
+# StatLossImmunity handlers
+#===============================================================================
+
+Battle::ItemEffects::StatLossImmunity.add(:CLEARAMULET,
+  proc { |item, battler, stat, battle, showMessages|
+    battle.pbDisplay(_INTL("¡Los efectos del {2} de {1} evitan que sus estadísticas bajen!",
+                           battler.pbThis, GameData::Item.get(item).name)) if showMessages
+    next true
+  }
+)
+
+#===============================================================================
+# OnStatLoss handlers
+#===============================================================================
+Battle::ItemEffects::OnStatLoss.add(:EJECTPACK,
+  proc { |item, battler, move_user, battle|
+    next false if battler.effects[PBEffects::Commanding] >= 0
+    next false if battler.effects[PBEffects::SkyDrop] >= 0 ||
+                  battler.inTwoTurnAttack?("TwoTurnAttackInvulnerableInSkyTargetCannotAct")   # Sky Drop
+    next false if battle.pbAllFainted?(battler.idxOpposingSide)
+    next false if battler.wild?   # Wild Pokémon can't eject
+    next false if !battle.pbCanSwitchOut?(battler.index)   # Battler can't switch out
+    next false if !battle.pbCanChooseNonActive?(battler.index)   # No Pokémon can switch in
+    battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("¡{1} se retira por {2}!", battler.pbThis, battler.itemName))
+    battler.pbConsumeItem(true, false)
+    if battle.endOfRound   # Just switch out
+      battle.scene.pbRecall(battler.index) if !battler.fainted?
+      battler.pbAbilitiesOnSwitchOut   # Inc. primordial weather check
+      next true
+    end
+    newPkmn = battle.pbGetReplacementPokemonIndex(battler.index)   # Owner chooses
+    next false if newPkmn < 0   # Shouldn't ever do this
+    battle.pbRecallAndReplace(battler.index, newPkmn)
+    battle.pbClearChoice(battler.index)   # Replacement Pokémon does nothing this round
+    battle.moldBreaker = false if move_user && battler.index == move_user.index
+    battle.pbOnBattlerEnteringBattle(battler.index)
+    next true
+  }
+)
+
+#===============================================================================
+# CopyStatChanges handlers
+#===============================================================================
+
+Battle::ItemEffects::CopyStatChanges.add(:MIRRORHERB,
+  proc { |item, battler, battle|
+    raises = {}
+    GameData::Stat.each_battle { |stat| raises[stat.id] = 0 }
+    raises[:CRITICAL_HIT] = 0
+    battler.allOpposing.each do |b|
+      b.stagesChangeRecord[0].each_pair { |stat, increment| raises[stat] += increment }
+    end
+    next if raises.none? { |stat, increment| increment > 0 }
+    battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("¡{1} usó su {2} para copiar los cambios de estadísticas del rival!",
+                            battler.pbThis, battler.itemName))
+    raises.each_pair do |stat, increment|
+      next if increment <= 0
+      if stat == :CRITICAL_HIT
+        battler.setCriticalHitRate(increment)
+        battle.pbCommonAnimation("CriticalHitRateUp", battler)
+        battle.pbDisplay(_INTL("¡{1} se está concentrando!", battler.pbThis))
+      else
+        battler.pbRaiseStatStage(stat, increment, battler)
+      end
+    end
+    battle.pbDisplay(_INTL("¡{1} se consumió...", battler.itemName))
+    battler.pbHeldItemTriggered(item)
+  }
+)
+
+#===============================================================================
 # PriorityChange handlers
 #===============================================================================
+
 # There aren't any!
 
 #===============================================================================
@@ -670,10 +721,6 @@ Battle::ItemEffects::PriorityBracketChange.copy(:LAGGINGTAIL, :FULLINCENSE)
 
 Battle::ItemEffects::PriorityBracketChange.add(:QUICKCLAW,
   proc { |item, battler, battle|
-    if battler.hasActiveAbility?(:MYCELIUMMIGHT)
-      pri = Battle::AbilityEffects.triggerPriorityBracketChange(battler.ability, battler, battle)
-      next pri if pri != 0
-    end
     next 1 if battle.pbRandom(100) < 20
   }
 )
@@ -757,6 +804,8 @@ Battle::ItemEffects::DamageCalcFromUser.add(:ADAMANTORB,
   }
 )
 
+Battle::ItemEffects::DamageCalcFromUser.copy(:ADAMANTORB, :ADAMANTCRYSTAL)
+
 Battle::ItemEffects::DamageCalcFromUser.add(:BLACKBELT,
   proc { |item, user, target, move, mults, power, type|
     mults[:power_multiplier] *= 1.2 if type == :FIGHTING
@@ -799,6 +848,14 @@ Battle::ItemEffects::DamageCalcFromUser.add(:CHOICESPECS,
   }
 )
 
+Battle::ItemEffects::DamageCalcFromUser.add(:CORNERSTONEMASK,
+  proc { |item, user, target, move, mults, power, type|
+    mults[:power_multiplier] *= 1.2 if user.isSpecies?(:OGERPON)
+  }
+)
+
+Battle::ItemEffects::DamageCalcFromUser.copy(:CORNERSTONEMASK, :HEARTHFLAMEEMASK, :WELLSPRINGMASK)
+
 Battle::ItemEffects::DamageCalcFromUser.add(:DARKGEM,
   proc { |item, user, target, move, mults, power, type|
     user.pbMoveTypePoweringUpGem(:DARK, move, type, mults)
@@ -840,6 +897,14 @@ Battle::ItemEffects::DamageCalcFromUser.add(:EXPERTBELT,
     end
   }
 )
+
+Battle::ItemEffects::DamageCalcFromUser.add(:FAIRYFEATHER,
+  proc { |item, user, target, move, mults, power, type|
+    mults[:power_multiplier] *= 1.2 if type == :FAIRY
+  }
+)
+
+Battle::ItemEffects::DamageCalcFromUser.copy(:FAIRYFEATHER, :PIXIEPLATE)
 
 Battle::ItemEffects::DamageCalcFromUser.add(:FAIRYGEM,
   proc { |item, user, target, move, mults, power, type|
@@ -885,6 +950,8 @@ Battle::ItemEffects::DamageCalcFromUser.add(:GRISEOUSORB,
   }
 )
 
+Battle::ItemEffects::DamageCalcFromUser.copy(:GRISEOUSORB, :GRISEOUSCORE)
+
 Battle::ItemEffects::DamageCalcFromUser.add(:GROUNDGEM,
   proc { |item, user, target, move, mults, power, type|
     user.pbMoveTypePoweringUpGem(:GROUND, move, type, mults)
@@ -907,9 +974,7 @@ Battle::ItemEffects::DamageCalcFromUser.add(:ICEGEM,
 
 Battle::ItemEffects::DamageCalcFromUser.add(:LIFEORB,
   proc { |item, user, target, move, mults, power, type|
-    if !move.is_a?(Battle::Move::Confusion)
-      mults[:final_damage_multiplier] *= 1.3
-    end
+    mults[:final_damage_multiplier] *= 1.3
   }
 )
 
@@ -926,6 +991,8 @@ Battle::ItemEffects::DamageCalcFromUser.add(:LUSTROUSORB,
     end
   }
 )
+
+Battle::ItemEffects::DamageCalcFromUser.copy(:LUSTROUSORB, :LUSTROUSGLOBE)
 
 Battle::ItemEffects::DamageCalcFromUser.add(:MAGNET,
   proc { |item, user, target, move, mults, power, type|
@@ -986,13 +1053,6 @@ Battle::ItemEffects::DamageCalcFromUser.add(:NORMALGEM,
   }
 )
 
-Battle::ItemEffects::DamageCalcFromUser.add(:PIXIEPLATE,
-  proc { |item, user, target, move, mults, power, type|
-    mults[:power_multiplier] *= 1.2 if type == :FAIRY
-  }
-)
-Battle::ItemEffects::DamageCalcFromUser.copy(:PIXIEPLATE, :FAIRYFEATHER)
-
 Battle::ItemEffects::DamageCalcFromUser.add(:POISONBARB,
   proc { |item, user, target, move, mults, power, type|
     mults[:power_multiplier] *= 1.2 if type == :POISON
@@ -1014,7 +1074,7 @@ Battle::ItemEffects::DamageCalcFromUser.add(:PSYCHICGEM,
 )
 
 Battle::ItemEffects::DamageCalcFromUser.add(:PUNCHINGGLOVE,
-  proc { |item, user, target, move, mults, baseDmg, type|
+  proc { |item, user, target, move, mults, power, type|
     mults[:power_multiplier] *= 1.1 if move.punchingMove?
   }
 )
@@ -1101,15 +1161,6 @@ Battle::ItemEffects::DamageCalcFromUser.add(:WATERGEM,
     user.pbMoveTypePoweringUpGem(:WATER, move, type, mults)
   }
 )
-
-Battle::ItemEffects::DamageCalcFromUser.add(:WELLSPRINGMASK,
-  proc { |item, user, target, move, mults, power, type|
-    mults[:final_damage_multiplier] *= 1.2 if user.isSpecies?(:OGERPON)
-  }
-)
-
-Battle::ItemEffects::DamageCalcFromUser.copy(:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK)
- 
 
 Battle::ItemEffects::DamageCalcFromUser.add(:WISEGLASSES,
   proc { |item, user, target, move, mults, power, type|
@@ -1281,13 +1332,13 @@ Battle::ItemEffects::DamageCalcFromTarget.add(:YACHEBERRY,
 #===============================================================================
 
 Battle::ItemEffects::CriticalCalcFromUser.add(:LUCKYPUNCH,
-  proc { |item, user, target, c|
+  proc { |item, user, target, c, move|
     next c + 2 if user.isSpecies?(:CHANSEY)
   }
 )
 
 Battle::ItemEffects::CriticalCalcFromUser.add(:RAZORCLAW,
-  proc { |item, user, target, c|
+  proc { |item, user, target, c, move|
     next c + 1
   }
 )
@@ -1295,7 +1346,7 @@ Battle::ItemEffects::CriticalCalcFromUser.add(:RAZORCLAW,
 Battle::ItemEffects::CriticalCalcFromUser.copy(:RAZORCLAW, :SCOPELENS)
 
 Battle::ItemEffects::CriticalCalcFromUser.add(:LEEK,
-  proc { |item, user, target, c|
+  proc { |item, user, target, c, move|
     next c + 2 if user.isSpecies?(:FARFETCHD) || user.isSpecies?(:SIRFETCHD)
   }
 )
@@ -1318,6 +1369,7 @@ Battle::ItemEffects::OnBeingHit.add(:ABSORBBULB,
     next if !target.pbCanRaiseStatStage?(:SPECIAL_ATTACK, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:SPECIAL_ATTACK, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1325,8 +1377,7 @@ Battle::ItemEffects::OnBeingHit.add(:ABSORBBULB,
 Battle::ItemEffects::OnBeingHit.add(:AIRBALLOON,
   proc { |item, user, target, move, battle|
     battle.pbDisplay(_INTL("¡{1} de {2} ha explotado!", target.pbThis, target.itemName))
-    target.pbConsumeItem(false, true)
-    target.pbSymbiosis
+    target.pbConsumeItem(false)
   }
 )
 
@@ -1336,6 +1387,7 @@ Battle::ItemEffects::OnBeingHit.add(:CELLBATTERY,
     next if !target.pbCanRaiseStatStage?(:ATTACK, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:ATTACK, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1346,6 +1398,7 @@ Battle::ItemEffects::OnBeingHit.add(:ENIGMABERRY,
             target.damageState.disguise || target.damageState.iceFace
     next if !Effectiveness.super_effective?(target.damageState.typeMod)
     if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(item, target, battle, false)
+      battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
       target.pbHeldItemTriggered(item)
     end
   }
@@ -1367,7 +1420,7 @@ Battle::ItemEffects::OnBeingHit.add(:JABOCABERRY,
     battle.pbHideAbilitySplash(target) if ripening
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(amt, false)
-    battle.pbDisplay(_INTL("¡{1} ha cunsumido su {2} y ha dañado a {3}!", target.pbThis,
+    battle.pbDisplay(_INTL("¡{1} ha consumido su {2} y ha dañado a {3}!", target.pbThis,
        target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggered(item)
   }
@@ -1382,6 +1435,7 @@ Battle::ItemEffects::OnBeingHit.add(:KEEBERRY,
   proc { |item, user, target, move, battle|
     next if !move.physicalMove?
     if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(item, target, battle, false)
+      battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
       target.pbHeldItemTriggered(item)
     end
   }
@@ -1393,6 +1447,7 @@ Battle::ItemEffects::OnBeingHit.add(:LUMINOUSMOSS,
     next if !target.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:SPECIAL_DEFENSE, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1406,6 +1461,7 @@ Battle::ItemEffects::OnBeingHit.add(:MARANGABERRY,
   proc { |item, user, target, move, battle|
     next if !move.specialMove?
     if Battle::ItemEffects.triggerOnBeingHitPositiveBerry(item, target, battle, false)
+      battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
       target.pbHeldItemTriggered(item)
     end
   }
@@ -1437,7 +1493,7 @@ Battle::ItemEffects::OnBeingHit.add(:ROWAPBERRY,
     battle.pbHideAbilitySplash(target) if ripening
     battle.scene.pbDamageAnimation(user)
     user.pbReduceHP(amt, false)
-    battle.pbDisplay(_INTL("¡{1} ha cunsumido su {2} y ha dañado a {3}!", target.pbThis,
+    battle.pbDisplay(_INTL("¡{1} ha consumido su {2} y ha dañado a {3}!", target.pbThis,
        target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggered(item)
   }
@@ -1449,6 +1505,7 @@ Battle::ItemEffects::OnBeingHit.add(:SNOWBALL,
     next if !target.pbCanRaiseStatStage?(:ATTACK, target)
     battle.pbCommonAnimation("UseItem", target)
     target.pbRaiseStatStageByCause(:ATTACK, 1, target, target.itemName)
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", target.itemName))
     target.pbHeldItemTriggered(item)
   }
 )
@@ -1460,11 +1517,6 @@ Battle::ItemEffects::OnBeingHit.add(:STICKYBARB,
     user.item = target.item
     target.item = nil
     target.effects[PBEffects::Unburden] = true if target.hasActiveAbility?(:UNBURDEN)
-    if battle.wildBattle? && !user.opposes? &&
-       !user.initialItem && user.item == target.initialItem
-      user.setInitialItem(user.item)
-      target.setInitialItem(nil)
-    end
     battle.pbDisplay(_INTL("¡{2} de {1} fue transferida a {3}!",
        target.pbThis(true), user.itemName, user.pbThis(true)))
   }
@@ -1570,6 +1622,8 @@ Battle::ItemEffects::AfterMoveUseFromTarget.add(:EJECTBUTTON,
     next if !switched_battlers.empty?
     next if battle.pbAllFainted?(battler.idxOpposingSide)
     next if !battle.pbCanChooseNonActive?(battler.index)
+    next if battler.effects[PBEffects::Commanding] >= 0 ||
+            battler.effects[PBEffects::CommandedBy] >= 0
     battle.pbCommonAnimation("UseItem", battler)
     battle.pbDisplay(_INTL("¡{1} regresa gracias a {2}!", battler.pbThis, battler.itemName))
     battler.pbConsumeItem(true, false)
@@ -1592,20 +1646,7 @@ Battle::ItemEffects::AfterMoveUseFromTarget.add(:REDCARD,
     battle.pbDisplay(_INTL("¡{1} ha sacado {2} a {3}!",
        battler.pbThis, battler.itemName, user.pbThis(true)))
     battler.pbConsumeItem
-    if user.hasActiveAbility?([:SUCTIONCUPS, :GUARDDOG]) && !battle.moldBreaker
-      battle.pbShowAbilitySplash(user)
-      if Battle::Scene::USE_ABILITY_SPLASH
-        battle.pbDisplay(_INTL("¡{1} se aferró!", user.pbThis))
-      else
-        battle.pbDisplay(_INTL("¡{1} se aferró con sus {2}!", user.pbThis, user.abilityName))
-      end
-      battle.pbHideAbilitySplash(user)
-      next
-    end
-    if user.effects[PBEffects::Ingrain]
-      battle.pbDisplay(_INTL("¡{1} se aferró con sus raíces!", user.pbThis))
-      next
-    end
+    next if !user.canBeForcedOutOfBattle?
     battle.pbRecallAndReplace(user.index, newPkmn, true)
     battle.pbDisplay(_INTL("¡{1} fue arrastrado al combate!", user.pbThis))
     battle.pbClearChoice(user.index)   # Replacement Pokémon does nothing this round
@@ -1705,8 +1746,6 @@ Battle::ItemEffects::OnEndOfUsingMove.add(:LEPPABERRY,
   }
 )
 
-Battle::ItemEffects::OnEndOfUsingMove.copy(:LEPPABERRY, :HOPOBERRY)
-
 #===============================================================================
 # OnEndOfUsingMoveStatRestore handlers
 #===============================================================================
@@ -1716,8 +1755,10 @@ Battle::ItemEffects::OnEndOfUsingMoveStatRestore.add(:WHITEHERB,
     reducedStats = false
     GameData::Stat.each_battle do |s|
       next if battler.stages[s.id] >= 0
-      battler.stages[s.id] = 0
+      battler.stagesChangeRecord[0][s.id] ||= 0
+      battler.stagesChangeRecord[0][s.id] -= battler.stages[s.id]
       battler.statsRaisedThisRound = true
+      battler.stages[s.id] = 0
       reducedStats = true
     end
     next false if !reducedStats
@@ -1808,7 +1849,7 @@ Battle::ItemEffects::WeatherExtender.add(:HEATROCK,
 
 Battle::ItemEffects::WeatherExtender.add(:ICYROCK,
   proc { |item, weather, duration, battler, battle|
-    next 8 if weather == :Hail
+    next 8 if [:Hail, :Snowstorm].include?(weather)
   }
 )
 
@@ -1829,11 +1870,67 @@ Battle::ItemEffects::TerrainExtender.add(:TERRAINEXTENDER,
 )
 
 #===============================================================================
-# TerrainStatBoost handlers
+# OnWeatherChange handlers
 #===============================================================================
 
-Battle::ItemEffects::TerrainStatBoost.add(:ELECTRICSEED,
-  proc { |item, battler, battle|
+Battle::ItemEffects::OnWeatherChange.add(:BOOSTERENERGY,
+  proc { |item, battler, battle, old_weather|
+    next false if battler.effects[PBEffects::Transform]
+    next false if battler.effects[PBEffects::ProtosynthesisStat]
+    next false if battler.effects[PBEffects::BoosterEnergy]
+    next false if !battler.hasActiveAbility?(:PROTOSYNTHESIS)
+    next false if ![:Sun, :HarshSun].include?(battle.field.pbWeather)
+    best = nil
+    [:ATTACK, :DEFENSE, :SPECIAL_ATTACK, :SPECIAL_DEFENSE, :SPEED].each do |stat|
+      value = battler.stat_with_stages(stat)
+      best = [stat, value] if !value || value > stat[1]
+    end
+    battler.effects[PBEffects::ProtosynthesisStat] = best[0]
+    battler.effects[PBEffects::BoosterEnergy] = true
+    battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", GameData::Item.get(item).name))
+    battle.pbShowAbilitySplash(battler)
+    battle.pbDisplay(_INTL("¡{1} usó su {2} para activar {3}!",
+                           battler.pbThis, GameData::Item.get(item).name, battler.abilityName))
+    battle.pbDisplay(_INTL("¡{1} aumentó su {2}!", battler.pbThis, GameData::Stat.get(best[0]).name))
+    battle.pbHideAbilitySplash(battler)
+    battler.pbHeldItemTriggered(item)
+    next true
+  }
+)
+
+#===============================================================================
+# OnTerrainChange handlers
+#===============================================================================
+
+Battle::ItemEffects::OnTerrainChange.add(:BOOSTERENERGY,
+  proc { |item, battler, battle, old_terrain|
+    next false if battler.effects[PBEffects::Transform]
+    next false if battler.effects[PBEffects::ProtosynthesisStat]
+    next false if battler.effects[PBEffects::BoosterEnergy]
+    next false if !battler.hasActiveAbility?(:QUARKDRIVE)
+    next false if battle.field.terrain != :Electric
+    best = nil
+    [:ATTACK, :DEFENSE, :SPECIAL_ATTACK, :SPECIAL_DEFENSE, :SPEED].each do |stat|
+      value = battler.stat_with_stages(stat)
+      best = [stat, value] if !value || value > stat[1]
+    end
+    battler.effects[PBEffects::ProtosynthesisStat] = best[0]
+    battler.effects[PBEffects::BoosterEnergy] = true
+    battle.pbCommonAnimation("UseItem", battler)
+    battle.pbDisplay(_INTL("¡{1} se ha consumido!", GameData::Item.get(item).name))
+    battle.pbShowAbilitySplash(battler)
+    battle.pbDisplay(_INTL("¡{1} usó su {2} para activar {3}!",
+                           battler.pbThis, GameData::Item.get(item).name, battler.abilityName))
+    battle.pbDisplay(_INTL("¡{1} aumentó su {2}!", battler.pbThis, GameData::Stat.get(best[0]).name))
+    battle.pbHideAbilitySplash(battler)
+    battler.pbHeldItemTriggered(item)
+    next true
+  }
+)
+
+Battle::ItemEffects::OnTerrainChange.add(:ELECTRICSEED,
+  proc { |item, battler, battle, old_terrain|
     next false if battle.field.terrain != :Electric
     next false if !battler.pbCanRaiseStatStage?(:DEFENSE, battler)
     itemName = GameData::Item.get(item).name
@@ -1842,8 +1939,8 @@ Battle::ItemEffects::TerrainStatBoost.add(:ELECTRICSEED,
   }
 )
 
-Battle::ItemEffects::TerrainStatBoost.add(:GRASSYSEED,
-  proc { |item, battler, battle|
+Battle::ItemEffects::OnTerrainChange.add(:GRASSYSEED,
+  proc { |item, battler, battle, old_terrain|
     next false if battle.field.terrain != :Grassy
     next false if !battler.pbCanRaiseStatStage?(:DEFENSE, battler)
     itemName = GameData::Item.get(item).name
@@ -1852,8 +1949,8 @@ Battle::ItemEffects::TerrainStatBoost.add(:GRASSYSEED,
   }
 )
 
-Battle::ItemEffects::TerrainStatBoost.add(:MISTYSEED,
-  proc { |item, battler, battle|
+Battle::ItemEffects::OnTerrainChange.add(:MISTYSEED,
+  proc { |item, battler, battle, old_terrain|
     next false if battle.field.terrain != :Misty
     next false if !battler.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, battler)
     itemName = GameData::Item.get(item).name
@@ -1862,8 +1959,8 @@ Battle::ItemEffects::TerrainStatBoost.add(:MISTYSEED,
   }
 )
 
-Battle::ItemEffects::TerrainStatBoost.add(:PSYCHICSEED,
-  proc { |item, battler, battle|
+Battle::ItemEffects::OnTerrainChange.add(:PSYCHICSEED,
+  proc { |item, battler, battle, old_terrain|
     next false if battle.field.terrain != :Psychic
     next false if !battler.pbCanRaiseStatStage?(:SPECIAL_DEFENSE, battler)
     itemName = GameData::Item.get(item).name
@@ -1959,6 +2056,14 @@ Battle::ItemEffects::OnSwitchIn.add(:AIRBALLOON,
   }
 )
 
+Battle::ItemEffects::OnSwitchIn.add(:BOOSTERENERGY,
+  proc { |item, battler, battle|
+    next if battler.effects[PBEffects::ProtosynthesisStat]
+    Battle::ItemEffects.triggerOnWeatherChange(item, battler, battle, battle.field.weather)
+    Battle::ItemEffects.triggerOnTerrainChange(item, battler, battle, battle.field.terrain)
+  }
+)
+
 Battle::ItemEffects::OnSwitchIn.add(:ROOMSERVICE,
   proc { |item, battler, battle|
     next if battle.field.effects[PBEffects::TrickRoom] == 0
@@ -1991,40 +2096,3 @@ Battle::ItemEffects::CertainEscapeFromBattle.add(:SMOKEBALL,
     next true
   }
 )
-
-#===============================================================================
-# StatLossImmunity handlers
-#===============================================================================
-Battle::ItemEffects::StatLossImmunity.add(:CLEARAMULET,
-  proc { |item, battler, stat, battle, showMessages|
-    if showMessages
-      battle.pbDisplay(_INTL("¡El {2} de {1} previene las bajadas de características!", battler.pbThis, battler.itemName))
-    end
-    next true
-  }
-)
-
-#===============================================================================
-# OnOpposingStatGain handlers
-#===============================================================================
-Battle::ItemEffects::OnOpposingStatGain.add(:MIRRORHERB,
-  proc { |item, battler, battle, statUps, forced|
-    showAnim = true
-    battler.mirrorHerbUsed = true
-    statUps.each do |stat, increment|
-      next if !battler.pbCanRaiseStatStage?(stat, battler)
-      if battler.pbRaiseStatStage(stat, increment, battler, showAnim)
-        showAnim = false
-      end
-    end
-    battler.mirrorHerbUsed = false
-    next false if showAnim
-    itemName = GameData::Item.get(item).name
-    PBDebug.log("[Item triggered] #{battler.pbThis}'s #{itemName}") if forced
-    battle.pbCommonAnimation("UseItem", battler) if !forced
-    battle.pbDisplay(_INTL("¡{1} usó su {2} para copiar los cambios de características de su rival!", battler.pbThis, itemName))
-    next true
-  }
-)
-
-

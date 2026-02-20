@@ -111,6 +111,9 @@ module PluginManager
   # Contiene todos los datos registrados de los plugins.
   @@Plugins = {}
 
+  EXCLUDED_REQUIRES = ["v21.1 Hotfixes", "Modular UI Scenes", "Luka's Scripting Utilities", "Marin's Scripting Utilities", 
+                       "Tileset Rearranger", "DP Scripting Utilities", "Easy Mouse", "Event Reporting"]
+
   # Registra un plugin y prueba sus dependencias e incompatibilidades.
   def self.register(options)
     name         = nil
@@ -155,7 +158,7 @@ module PluginManager
         value.each do |dep|
           case dep
           when String   # "plugin name"
-            if !self.installed?(dep)
+            if !self.installed?(dep) && !EXCLUDED_REQUIRES.include?(dep)
               self.error("El plugin '#{name}' requiere que el plugin '#{dep}' esté instalado antes que él.")
             end
           when Array
@@ -163,7 +166,7 @@ module PluginManager
             when 1   # ["nombre del plugin"]
               if dep[0].is_a?(String)
                 dep_name = dep[0]
-                if !self.installed?(dep_name)
+                if !self.installed?(dep_name) && !EXCLUDED_REQUIRES.include?(dep_name) 
                   self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' esté instalado antes que él.")
                 end
               else
@@ -176,21 +179,19 @@ module PluginManager
                 dep_name    = dep[0]
                 dep_version = dep[1]
                 next if self.installed?(dep_name, dep_version)
-                if self.installed?(dep_name)   # Tiene el plugin pero en una versión más baja
+                if self.installed?(dep_name) && !EXCLUDED_REQUIRES.include?(dep_name)    # Tiene el plugin pero en una versión más baja
                   msg = "El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} o superior, " +
                         "pero la versión instalada es #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
                   if dep_link
                     msg += "\r\nVerifica #{dep_link} para obtener una actualización del plugin '#{dep_name}'."
                   end
-                  
-                  
-                  
-                  
                   self.error(msg)
                 else   # No tiene el plugin
-                  self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} " +
-                      "o superior para estar instalado antes que él.")
+                  if !EXCLUDED_REQUIRES.include?(dep_name) 
+                    self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} " +
+                        "o superior para estar instalado antes que él.")
+                  end
                 end
               end
             when 3   # [:optional/:exact/:optional_exact, "plugin name", "version"]
@@ -232,18 +233,18 @@ module PluginManager
                   end
                   self.error(msg)
                 end
-              elsif !self.installed?(dep_name, dep_version, exact)
+              elsif !self.installed?(dep_name, dep_version, exact) && !EXCLUDED_REQUIRES.include?(dep_name)
                 if self.installed?(dep_name)   # Tiene el plugin pero en una versión más baja
                   msg = "El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version}"
                   msg << " o posterior" if !exact
-                  msg << ", but the installed version was #{self.version(dep_name)}."
+                  msg << ", pero la versión instalada fue #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
                   if dep_link
-                    msg << "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'."
+                    msg << "\r\nVerifica #{dep_link} para obtener una actualización del plugin '#{dep_name}'."
                   end
                 else   # Don't have plugin
-                  msg = "El plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} "
-                  msg << "or later " if !exact
+                  msg = "El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} "
+                  msg << "o posterior " if !exact
                   msg << "para estar instalado antes que él."
                 end
                 self.error(msg)
@@ -273,9 +274,19 @@ module PluginManager
           self.error("El campo de créditos del plugin '#{name}' debe contener una cadena o una matriz de cadenas.")
         end
       when :disabled # Requerido para que no tire error.
+      when :last  # Requerido para que no tire error.
+        options[:last] = value
+      when :first  # Requerido para que no tire error.
+        options[:first] = value
+      when :priority  # Requerido para que no tire error.
+        options[:priority] = value.to_i
       else
         self.error("Clave de registro de plugin no válida '#{key}'.")
       end
+    end
+    # Verificar que no sea first y last al mismo tiempo
+    if options[:first] && options[:last]
+      self.error("El plugin '#{name}' no puede ser tanto 'First' como 'Last' al mismo tiempo.")
     end
     @@Plugins.each_value do |plugin|
       if plugin[:incompatibilities]&.include?(name)
@@ -290,7 +301,10 @@ module PluginManager
       :link              => link,
       :dependencies      => dependencies,
       :incompatibilities => incompats,
-      :credits           => credits
+      :credits           => credits,
+      :first             => options[:first],
+      :last              => options[:last],
+      :priority          => options[:priority] || 0
     }
   end
 
@@ -313,6 +327,7 @@ module PluginManager
   # Si mustequal es true, la versión debe coincidir con la versión especificada.
   def self.installed?(plugin_name, plugin_version = nil, mustequal = false)
     plugin = @@Plugins[plugin_name]
+    return true if EXCLUDED_REQUIRES.include?(plugin_name)
     return false if plugin.nil?
     return true if plugin_version.nil?
     comparison = compare_versions(plugin[:version], plugin_version)
@@ -350,26 +365,47 @@ module PluginManager
   #     0 si v1 es igual a v2
   #     -1 si v1 es menor que v2
   def self.compare_versions(v1, v2)
-    d1 = v1.chars
-    d1.insert(0, "0") if d1[0] == "."   # Convierte ".123" en "0.123"
-    while d1[-1] == "."                 # Convierte "123." en "123"
-      d1 = d1[0..-2]
+    version_chunks1 = v1.split(".")
+    version_chunks1.each_with_index do |val, i|
+      next if val != ""
+      version_chunks1[i] = (i == 0) ? "0" : nil
     end
-    d2 = v2.chars
-    d2.insert(0, "0") if d2[0] == "."   # Convierte ".123" en "0.123"
-    while d2[-1] == "."                 # Convierte "123." into "123"
-      d2 = d2[0..-2]
+    version_chunks1.compact!
+    version_chunks2 = v2.split(".")
+    version_chunks2.each_with_index do |val, i|
+      next if val != ""
+      version_chunks2[i] = (i == 0) ? "0" : nil
     end
-    [d1.size, d2.size].max.times do |i| # Compara cada dígito por turno
-      c1 = d1[i]
-      c2 = d2[i]
-      if c1
-        return 1 if !c2
-        return 1 if c1.to_i(16) > c2.to_i(16)
-        return -1 if c1.to_i(16) < c2.to_i(16)
-      elsif c2
-        return -1
+    version_chunks2.compact!
+    # Compare each chunk in turn
+    decision = :equal   # Could be :higher or :lower
+    [version_chunks1.length, version_chunks2.length].max.times do |i|
+      chunk1 = version_chunks1[i]
+      chunk2 = version_chunks2[i]
+      if !chunk1
+        decision = :lower if decision == :equal
+        break
+      elsif !chunk2
+        decision = :higher if decision == :equal
+        break
       end
+      # Make both chunks the same left by pre-padding with "0"
+      chars_count = [chunk1.length, chunk2.length].max
+      chunk1 = chunk1.rjust(chars_count, "0").chars
+      chunk2 = chunk2.rjust(chars_count, "0").chars
+      chunk1.length.times do |j|
+        c1 = chunk1[j]
+        c2 = chunk2[j]
+        next if c1 == c2
+        decision = (c1.to_i(16) > c2.to_i(16)) ? :higher : :lower
+        break
+      end
+      break if decision != :equal
+    end
+    case decision
+    when :equal  then return 0
+    when :higher then return 1
+    when :lower  then return -1
     end
     return 0
   end
@@ -380,10 +416,11 @@ module PluginManager
     # comenzar formateo del mensaje
     message = "[Pokémon Essentials versión #{Essentials::VERSION}]\r\n"
     message += "#{Essentials::ERROR_TEXT}\r\n"   # Para que los scripts de terceros lo añadan
+    message += "[LA BASE DE SKY versión #{LBDSKY::VERSION}]\r\n"
     message += "Error en el Plugin: [#{name}]\r\n"
     message += "Excepción: #{e.class}\r\n"
     message += "Mensaje: "
-    message += e.message
+    message += e.message || ""
     # muestra las últimas 10 líneas de la traza de llamadas
     message += "\r\n\r\nTraza de llamadas:\r\n"
     e.backtrace[0, 10].each { |i| message += "#{i}\r\n" }
@@ -411,8 +448,7 @@ module PluginManager
       end
     end
   end
-  
-  
+
   # Utilizado para leer el archivo de metadatos
   def self.readMeta(dir, file)
     filename = "#{dir}/#{file}"
@@ -461,6 +497,12 @@ module PluginManager
         meta[:link] = data[0]
       when "DISABLED"
         meta[:disabled] = data[0] if data[0]
+      when "LAST"
+        meta[:last] = data[0] if data[0]
+      when "FIRST"
+        meta[:first] = data[0] if data[0]
+      when "PRIORITY"
+        meta[:priority] = data[0].to_i if data[0]
       else
         meta[property.downcase.to_sym] = data[0]
       end
@@ -487,6 +529,17 @@ module PluginManager
     Dir.get("Plugins").each { |d| dirs.push(d) if Dir.safe?(d) }
     # devuelve todos los plugins
     return dirs
+  end
+
+  # Comprueba si un plugin está marcado como :last
+  def self.isLastPlugin?(plugin_meta)
+    return false if !plugin_meta || !plugin_meta[:last]
+    return [true, 'true', 'verdadero', 'si', 'x'].include?(plugin_meta[:last].to_s.downcase)
+  end
+
+  def self.isFirstPlugin?(plugin_meta)
+    return false if !plugin_meta || !plugin_meta[:first]
+    return [true, 'true', 'verdadero', 'si', 'x'].include?(plugin_meta[:first].to_s.downcase)
   end
 
   # Captura cualquier posible bucle con dependencias y genera un error
@@ -524,6 +577,7 @@ module PluginManager
         # capturar dependencia faltante
         if !order.include?(dname)
           next if optional
+          next if EXCLUDED_REQUIRES.include?(dname)
           self.error("El plugin '#{o}' requiere que el plugin '#{dname}' esté presente para funcionar correctamente.")
         end
         # saltar si ya está ordenado
@@ -533,7 +587,62 @@ module PluginManager
         order = self.sortLoadOrder(order, plugins)
       end
     end
+    # Mover los plugins con :last => true al principio (después del reverse, estarán al final)
+    last_plugins = []
+    order.each do |o|
+      next if !self.isLastPlugin?(plugins[o])
+      last_plugins.push(o)
+    end
+    last_plugins_ordered = self.sortSpecialPlugins(last_plugins, plugins, false)
+    last_plugins_ordered.each do |lp|
+      order.delete(lp)
+      order.unshift(lp)
+    end
+    # Mover los plugins con :first => true al final (después del reverse, estarán al principio)
+    first_plugins = []
+    order.each do |o|
+      next if !self.isFirstPlugin?(plugins[o])
+      first_plugins.push(o)
+    end
+    first_plugins_ordered = self.sortSpecialPlugins(first_plugins, plugins, true)
+    first_plugins_ordered.each do |fp|
+      order.delete(fp)
+      order.push(fp)
+    end
     return order
+  end
+
+  # Ordena una lista de plugins especiales (First o Last) basándose en sus dependencias
+  def self.sortSpecialPlugins(plugin_list, plugins_meta, reverse_order)
+    ordered = []
+    plugin_list.each do |p|
+      inserted = false
+      # Buscar la posición correcta basada en dependencias
+      ordered.each_with_index do |existing, idx|
+        # Si el plugin existente depende del nuevo, insertar antes
+        if plugins_meta[existing][:dependencies]
+          plugins_meta[existing][:dependencies].each do |dname|
+            dep_name = dname
+            dep_name = dname[0] if dname.is_a?(Array) && dname.length == 2
+            dep_name = dname[1] if dname.is_a?(Array) && dname.length == 3
+            if dep_name == p
+              ordered.insert(idx, p)
+              inserted = true
+              break
+            end
+          end
+        end
+        break if inserted
+      end
+      ordered.push(p) if !inserted
+    end
+    # Ordenar por prioridad después de las dependencias
+    if reverse_order  # Para First plugins, prioridad más alta primero
+      ordered.sort_by! { |p| -(plugins_meta[p][:priority] || 0) }
+    else  # Para Last plugins, prioridad más alta al final
+      ordered.sort_by! { |p| plugins_meta[p][:priority] || 0 }
+    end
+    reverse_order ? ordered.reverse : ordered
   end
 
   # Obtener el orden en el que se cargarán los plugins
@@ -559,6 +668,24 @@ module PluginManager
     end
     # validar todas las dependencias
     order.each { |o| self.validateDependencies(o, plugins) }
+    # validar que plugins no-last no dependan de plugins last
+    order.each do |o|
+      next if !plugins[o] || !plugins[o][:dependencies]
+      is_current_last = self.isLastPlugin?(plugins[o])
+      plugins[o][:dependencies].each do |dname|
+        # limpiar el nombre a una cadena simple
+        dep_name = dname
+        dep_name = dname[0] if dname.is_a?(Array) && dname.length == 2
+        dep_name = dname[1] if dname.is_a?(Array) && dname.length == 3
+        next if !plugins[dep_name]
+        is_dep_last = self.isLastPlugin?(plugins[dep_name])
+        # Si la dependencia es :last pero el plugin actual no es :last, error
+        if is_dep_last && !is_current_last
+          self.error("El plugin '#{o}' no puede depender de '#{dep_name}' porque '#{dep_name}' está marcado como 'Last'. " +
+                     "Solo los plugins marcados como 'Last' pueden depender de otros plugins 'Last'.")
+        end
+      end
+    end
     # ordenar el orden de carga
     return self.sortLoadOrder(order, plugins).reverse, plugins
   end
@@ -567,21 +694,19 @@ module PluginManager
   def self.needCompiling?(order, plugins)
     # acciones fijas
     return false if !$DEBUG || FileTest.exist?("Game.rgssad")
+    return true if $full_compile
     return true if !FileTest.exist?("Data/PluginScripts.rxdata")
     Input.update
-
+    # Force compiling if holding Shift or Ctrl
     return true if Input.press?(Input::SHIFT) || Input.press?(Input::CTRL)
-
     # Should compile if the number of plugins has changed
     scripts = load_data("Data/PluginScripts.rxdata")
     return true if scripts.length != plugins.length
-
     # Should compile if any plugins have changed version or been replaced
     found_plugins = []
     plugins.each_pair { |name, meta| found_plugins.push([meta[:name], meta[:version]]) }
     existing_plugins = []
     scripts.each { |plugin| existing_plugins.push([plugin[1][:name], plugin[1][:version]]) }
-
     return true if found_plugins != existing_plugins
 
     # # Verificar si se agregaron o borraron carpetas y recompilar si es necesario
@@ -702,4 +827,3 @@ module PluginManager
     return nil
   end
 end
-

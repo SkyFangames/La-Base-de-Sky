@@ -45,6 +45,17 @@ class PokemonPauseMenu_Scene
     @sprites["helpwindow"].visible = false
   end
 
+  def pbShowLocationSign
+    return if Settings::DISABLE_LOCATION_SIGNS
+    return if !Settings::SHOW_LOCATION_SIGN_IN_PAUSE_MENU
+    # Location window
+    map_name = $game_map.name
+    location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
+    @sprites["location"] = LocationWindow.new(map_name, location_sign_graphic, false, @viewport)
+    # Delete any location window currently being displayed
+    $scene.spriteset.usersprites.each { |sprite| sprite.dispose if sprite.is_a?(LocationWindow) }
+  end
+
   def pbShowCommands(commands)
     ret = -1
     cmdwindow = @sprites["cmdwindow"]
@@ -94,6 +105,8 @@ class PokemonPauseMenu
 
   def pbShowInfo; end
 
+  def pbShowLocationSign; end
+
   def pbStartPokemonMenu
     if !$player
       if $DEBUG
@@ -105,6 +118,7 @@ class PokemonPauseMenu
     @scene.pbStartScene
     # Show extra info window if relevant
     pbShowInfo
+    @scene.pbShowLocationSign
     # Get all commands
     command_list = []
     commands = []
@@ -276,12 +290,15 @@ MenuHandlers.add(:pause_menu, :options, {
   "order"     => 70,
   "effect"    => proc { |menu|
     pbPlayDecisionSE
-    pbFadeOutIn do
-      scene = PokemonOption_Scene.new
-      screen = PokemonOptionScreen.new(scene)
-      screen.pbStartScreen
-      pbUpdateSceneMap
-      menu.pbRefresh
+    if Settings::USE_NEW_OPTIONS_UI
+      UI::Options.new.main
+    else
+      pbFadeOutIn do
+        scene = PokemonOption_Scene.new
+        screen = PokemonOptionScreen.new(scene)
+        screen.pbStartScreen
+        pbUpdateSceneMap
+      end
     end
     next false
   }
@@ -306,7 +323,7 @@ MenuHandlers.add(:pause_menu, :quit_game, {
   "order"     => 90,
   "effect"    => proc { |menu|
     menu.pbHideMenu
-    if pbConfirmMessage(_INTL("¿Estás seguro de que quieres cerrar el juego?"))
+    if pbConfirmMessage(_INTL("¿Estás segur{1} de que quieres cerrar el juego?", $player.female? ? 'a' : 'o'))
       scene = PokemonSave_Scene.new
       screen = PokemonSaveScreen.new(scene)
       screen.pbSaveScreen

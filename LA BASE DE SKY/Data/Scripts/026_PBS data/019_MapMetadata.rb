@@ -4,6 +4,7 @@ module GameData
     attr_reader :real_name
     attr_reader :outdoor_map
     attr_reader :announce_location
+    attr_reader :location_sign
     attr_reader :can_bicycle
     attr_reader :always_bicycle
     attr_reader :teleport_destination
@@ -34,6 +35,7 @@ module GameData
       "SectionName"       => [:id,                   "u"],
       "Name"              => [:real_name,            "s"],
       "Outdoor"           => [:outdoor_map,          "b"],
+      "LocationSign"      => [:location_sign,        "s"],
       "ShowArea"          => [:announce_location,    "b"],
       "Bicycle"           => [:can_bicycle,          "b"],
       "BicycleAlways"     => [:always_bicycle,       "b"],
@@ -66,6 +68,7 @@ module GameData
         ["Name",              StringProperty,          _INTL("El nombre del mapa, tal como lo ve el jugador. Puede ser diferente al nombre del mapa como se ve en RMXP.")],
         ["Outdoor",           BooleanProperty,         _INTL("Si su valor es true, este mapa es un mapa de exteriores y se coloreará según la hora del día.")],
         ["ShowArea",          BooleanProperty,         _INTL("Si su valor es true, el juego mostrará el nombre del mapa al ingresar.")],
+        ["LocationSign",      StringProperty,          _INTL("Nombre de archivo en 'Graphics/UI/Location/' que se utilizará como el letrero de ubicación.")],
         ["Bicycle",           BooleanProperty,         _INTL("Si su valor es true, la bicicleta se puede utilizar en este mapa.")],
         ["BicycleAlways",     BooleanProperty,         _INTL("Si su valor es true, la bicicleta se montará automáticamente en este mapa y no se podrá desmontar.")],
         ["HealingSpot",       MapCoordsProperty,       _INTL("ID del mapa de la ciudad de este Centro Pokémon y coordenadas X e Y de su entrada dentro de esa ciudad.")],
@@ -94,6 +97,7 @@ module GameData
       @real_name            = hash[:real_name]
       @outdoor_map          = hash[:outdoor_map]
       @announce_location    = hash[:announce_location]
+      @location_sign        = hash[:location_sign]
       @can_bicycle          = hash[:can_bicycle]
       @always_bicycle       = hash[:always_bicycle]
       @teleport_destination = hash[:teleport_destination]

@@ -8,6 +8,14 @@ class Trainer
   attr_accessor :language
   attr_accessor :party
 
+  def initialize(name, trainer_type)
+    @trainer_type = GameData::TrainerType.get(trainer_type).id
+    @name         = name
+    @id           = rand(2**16) | (rand(2**16) << 16)
+    @language     = pbGetLanguage
+    @party        = []
+  end
+
   def inspect
     str = super.chop
     party_str = @party.map { |pkmn| pkmn.species_data.species }.inspect
@@ -48,6 +56,7 @@ class Trainer
   def male?;             return GameData::TrainerType.get(self.trainer_type).male?;           end
   def female?;           return GameData::TrainerType.get(self.trainer_type).female?;         end
   def skill_level;       return GameData::TrainerType.get(self.trainer_type).skill_level;     end
+  def default_poke_ball; return GameData::TrainerType.get(self.trainer_type).poke_ball;       end
   def flags;             return GameData::TrainerType.get(self.trainer_type).flags;           end
   def has_flag?(flag);   return GameData::TrainerType.get(self.trainer_type).has_flag?(flag); end
 
@@ -87,11 +96,11 @@ class Trainer
   end
 
   def first_party
-    return @party.first
+    return @party[0]
   end
 
   def first_pokemon
-    return pokemon_party.first
+    return pokemon_party[0]
   end
 
   def first_able_pokemon
@@ -184,10 +193,25 @@ class Trainer
 
   # Returns true if there is a Pokémon of the given species in the trainer's
   # party. You may also specify a particular form it should be.
-  def has_species?(species, form = -1)
-    return pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) }
+  def has_species?(species, form = -1, exclude_form = -1, check_pc = false)
+    # Check party first
+    party_result = pokemon_party.any? { |pkmn| pkmn&.isSpecies?(species) && (form < 0 || pkmn.form == form) && (exclude_form < 0 || pkmn.form != exclude_form) }
+    return true if party_result
+    
+    # If not found in party and check_pc is true, check PC storage
+    if check_pc && $PokemonStorage
+      (0...$PokemonStorage.maxBoxes).each do |i|
+        $PokemonStorage.maxPokemon(i).times do |j|
+          pkmn = $PokemonStorage[i, j]
+          if pkmn && pkmn.isSpecies?(species) && (form < 0 || pkmn.form == form) && (exclude_form < 0 || pkmn.form != exclude_form)
+            return true
+          end
+        end
+      end
+    end
+    
+    return false
   end
-
   # Returns whether there is a fatefully met Pokémon of the given species in the
   # trainer's party.
   def has_fateful_species?(species)
@@ -207,6 +231,16 @@ class Trainer
 
     type = GameData::Type.get(type).id
     all ? pokemon_party.find_all { |p| p&.hasType?(type) } : pokemon_party.find { |p| p&.hasType?(type) }
+  end
+
+  def has_pokemon_with_ability?(ability)
+    return false unless GameData::Ability.exists?(ability)
+    return pokemon_party.any? { |pkmn| pkmn&.hasAbility?(ability) }
+  end
+
+  def find_pokemon_with_ability(ability, all = false)
+    return false unless GameData::Ability.exists?(ability)
+    return all ? pokemon_party.find_all { |pkmn| pkmn&.hasAbility?(ability) } : pokemon_party.find { |pkmn| pkmn&.hasAbility?(ability) }
   end
 
   # Checks whether any Pokémon in the party knows the given move, and returns
@@ -269,14 +303,6 @@ class Trainer
   end
 
   #=============================================================================
-
-  def initialize(name, trainer_type)
-    @trainer_type = GameData::TrainerType.get(trainer_type).id
-    @name         = name
-    @id           = rand(2**16) | (rand(2**16) << 16)
-    @language     = pbGetLanguage
-    @party        = []
-  end
 end
 
 #===============================================================================

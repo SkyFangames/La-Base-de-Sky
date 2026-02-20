@@ -5,6 +5,7 @@ class PokemonSprite < Sprite
   def initialize(viewport = nil)
     super(viewport)
     @_iconbitmap = nil
+    @should_be_grey = false
   end
 
   def dispose
@@ -51,6 +52,7 @@ class PokemonSprite < Sprite
     @_iconbitmap = (pokemon) ? GameData::Species.sprite_bitmap_from_pokemon(pokemon, back) : nil
     self.bitmap = (@_iconbitmap) ? @_iconbitmap.bitmap : nil
     self.color = Color.new(0, 0, 0, 0)
+    self.make_grey_if_fainted = pokemon.fainted?
     changeOrigin
   end
 
@@ -58,6 +60,7 @@ class PokemonSprite < Sprite
     @_iconbitmap&.dispose
     @_iconbitmap = (pokemon) ? GameData::Species.sprite_bitmap_from_pokemon(pokemon, back, species) : nil
     self.bitmap = (@_iconbitmap) ? @_iconbitmap.bitmap : nil
+    self.make_grey_if_fainted = pokemon.fainted?
     changeOrigin
   end
 
@@ -66,6 +69,21 @@ class PokemonSprite < Sprite
     @_iconbitmap = GameData::Species.sprite_bitmap(species, form, gender, shiny, shadow, back, egg)
     self.bitmap = (@_iconbitmap) ? @_iconbitmap.bitmap : nil
     changeOrigin
+  end
+
+  def make_grey_if_fainted=(value)
+    return if !Settings::GREY_OUT_FAINTED
+    @should_be_grey = value
+  end
+
+  def show_as_silhouette=(value)
+    @show_as_silhouette = value
+    # Aplicar el tono inmediatamente al cambiar el valor
+    if @show_as_silhouette
+      self.tone = Tone.new(-255, -255, -255, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0) unless @should_be_grey
+    end
   end
 
   def update
@@ -101,6 +119,7 @@ class PokemonIconSprite < Sprite
     @logical_y     = 0   # Actual y coordinate
     @adjusted_x    = 0   # Offset due to "jumping" animation in party screen
     @adjusted_y    = 0   # Offset due to "jumping" animation in party screen
+    @should_be_grey = @pokemon.fainted? && Settings::GREY_OUT_FAINTED
   end
 
   def dispose
@@ -121,8 +140,28 @@ class PokemonIconSprite < Sprite
     super(@logical_y + @adjusted_y)
   end
 
+  def make_grey_if_fainted=(value)
+    return if !Settings::GREY_OUT_FAINTED
+    @should_be_grey = value
+  end
+
   def pokemon=(value)
     @pokemon = value
+    # Check if the bitmap needs to be reloaded
+    new_values = nil
+    if @pokemon
+      new_values = {
+        :species => @pokemon.species,
+        :form    => @pokemon.form,
+        :gender  => @pokemon.gender,
+        :shiny   => @pokemon.shiny?,
+        :shadow  => @pokemon.shadowPokemon?,
+        :egg     => @pokemon.egg?
+      }
+    end
+    return if @pokemon_values == new_values
+    @pokemon_values = new_values
+    # Reload the bitmap
     @animBitmap&.dispose
     @animBitmap = nil
     if !@pokemon
@@ -136,6 +175,7 @@ class PokemonIconSprite < Sprite
     self.src_rect.height = @animBitmap.height
     @frames_count = @animBitmap.width / @animBitmap.height
     @current_frame = 0 if @current_frame >= @frames_count
+    self.make_grey_if_fainted = value.fainted?
     changeOrigin
   end
 
@@ -199,6 +239,12 @@ class PokemonIconSprite < Sprite
     end
     self.x = self.x
     self.y = self.y
+    # Apply tone after any bitmap changes
+    if @should_be_grey
+      self.tone = Tone.new(0, 0, 0, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0)
+    end
   end
 end
 
@@ -219,7 +265,7 @@ class PokemonSpeciesIconSprite < Sprite
     @species       = species
     @gender        = 0
     @form          = 0
-    @shiny         = 0
+    @shiny         = false
     @frames_count  = 0
     @current_frame = 0
     refresh
@@ -314,4 +360,3 @@ class PokemonSpeciesIconSprite < Sprite
     self.src_rect.x = self.src_rect.width * @current_frame
   end
 end
-

@@ -10,7 +10,7 @@ Description = Cuando entra en combate invoca una lluvia que dura 5 turnos. Si el
 #-------------------------------
 [SPEEDBOOST]
 Name = Impulso
-Description = Aumenta en un nivel la Velocidad  del usuario al final de cada turno.
+Description = Aumenta en un nivel la Velocidad del usuario al final de cada turno.
 #-------------------------------
 [BATTLEARMOR]
 Name = Armadura Batalla
@@ -208,7 +208,7 @@ Description = La aguda vista de este Pokémon evita que disminuya su Precisión.
 #-------------------------------
 [HYPERCUTTER]
 Name = Corte Fuerte
-Description = Evita que el rival le baje el Ataque. Reduciones por ataques propios o por los movimientos Cambia fuerza, Cambia almas e Isofuerta sí tienen efecto.
+Description = Evita que el rival le baje el Ataque. Reducciones por ataques propios o por los movimientos Cambia fuerza, Cambia almas e Isofuerta sí tienen efecto.
 #-------------------------------
 [PICKUP]
 Name = Recogida
@@ -261,18 +261,22 @@ Description = Hiere a los Pokémon que intentan drenarle los PS. Estos pierden t
 [OVERGROW]
 Name = Espesura
 Description = Potencia los movimientos de tipo Planta del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = GRASS
 #-------------------------------
 [BLAZE]
 Name = Mar Llamas
 Description = Potencia los movimientos de tipo Fuego del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = FIRE
 #-------------------------------
 [TORRENT]
 Name = Torrente
 Description = Potencia los movimientos de tipo Agua del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = WATER
 #-------------------------------
 [SWARM]
 Name = Enjambre
 Description = Potencia los movimientos de tipo Bicho del Pokémon en un 50% cuando tenga 1/3 o menos de sus PS máximos.
+Flags = BUG
 #-------------------------------
 [ROCKHEAD]
 Name = Cabeza Roca
@@ -316,7 +320,7 @@ Description = Si le alcanza un movimiento tipo Eléctrico, aumenta un nivel la V
 #-------------------------------
 [RIVALRY]
 Name = Rivalidad
-Description = Aumenta la potencia de sus movimientos en un 25% si el objetivo es del mismo sexo. Ya no disminuye un 25% si es del sexo contrario.
+Description = Aumenta la potencia de sus movimientos en un 25% si el objetivo es del mismo sexo y los reduce en un 25% si es del sexo contrario.
 #-------------------------------
 [STEADFAST]
 Name = Impasible
@@ -436,7 +440,7 @@ Description = Determina el movimiento más potente del rival al entrar en combat
 #-------------------------------
 [UNAWARE]
 Name = Ignorante
-Description = Ignora los cambios tanto positivos como negaticos en las características del rival al atacar, salvo la Velocidad.
+Description = Ignora los cambios tanto positivos como negativos en las características del rival al atacar, salvo la Velocidad.
 #-------------------------------
 [TINTEDLENS]
 Name = Cromolente
@@ -460,7 +464,7 @@ Description = Atrae los movimientos de tipo Agua, aumenta un nivel el Ataque Esp
 #-------------------------------
 [ICEBODY]
 Name = Gélido
-Description = Recupera 1/16 de sus PS máximos añl final de cada turno cuando hay tormentas de granizo.
+Description = Recupera 1/16 de sus PS máximos al final de cada turno cuando hay tormentas de granizo.
 #-------------------------------
 [SOLIDROCK]
 Name = Roca Solida
@@ -576,7 +580,7 @@ Description = Puede envenenar al objetivo con solo tocarlo un 30% de las veces.
 #-------------------------------
 [REGENERATOR]
 Name = Regeneración
-Description = Recupera 1/3 de sus PS máximos cuando el Pokémon vuelve a su Pokéball en combate, tanto si es un cambio manual como causado por un mov. del rival.
+Description = Recupera 1/3 de sus PS máximos cuando el Pokémon vuelve a su Poké Ball en combate, tanto si es un cambio manual como causado por un mov. del rival.
 #-------------------------------
 [BIGPECKS]
 Name = Sacapecho
@@ -628,7 +632,7 @@ Description = Permite devolver los ataques de estado lanzados por el rival, sin 
 #-------------------------------
 [SAPSIPPER]
 Name = Herbívoro
-Description = Neutraliza los movimientos de tipo Planta y sube el Ataque en un nivel, incluídos movimientos de estado.
+Description = Neutraliza los movimientos de tipo Planta y sube el Ataque en un nivel, incluidos movimientos de estado.
 #-------------------------------
 [PRANKSTER]
 Name = Bromista
@@ -1069,7 +1073,7 @@ Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y
 #-------------------------------
 [ASONEGRIMNEIGH]
 Name = Unidad Ecuestre
-Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y Relincho Blanco (al derrotar a un objetivo aumenta su At. Especial).
+Description = Combina las habilidades Nerviosismo (impide al rival usar bayas) y Relincho Negro (al derrotar a un objetivo aumenta su At. Especial).
 #-------------------------------
 
 

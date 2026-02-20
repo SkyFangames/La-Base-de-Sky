@@ -38,12 +38,38 @@
 class Scene_Credits
   # Backgrounds to show in credits. Found in Graphics/Titles/ folder
   BACKGROUNDS_LIST       = ["credits1", "credits2", "credits3", "credits4", "credits5"]
-  BGM                    = "Credits"
+  CREDITS_BGM                    = "Credits"
   SCROLL_SPEED           = 40   # Pixels per second
   SECONDS_PER_BACKGROUND = 11
   TEXT_OUTLINE_COLOR     = Color.new(0, 0, 128, 255)
   TEXT_BASE_COLOR        = Color.new(255, 255, 255, 255)
   TEXT_SHADOW_COLOR      = Color.new(0, 0, 0, 100)
+
+  # Constantes de layout y temporización
+  # Altura en píxeles de cada línea de crédito
+  LINE_HEIGHT = 32
+  # Relleno vertical añadido al bitmap de créditos
+  BITMAP_PADDING = 16
+  # Factor de recorte para calcular el trim: Graphics.height / TRIM_DIVISOR
+  TRIM_DIVISOR = 10
+  # Margen usado al dividir una línea en dos mitades con <s>
+  SPLIT_MARGIN = 20
+  # Desplazamientos Y usados para dibujar sombras/contornos/texto base
+  TEXT_Y_SHADOW = 12
+  TEXT_Y_OUTLINE_TOP = 2
+  TEXT_Y_BASE = 4
+  TEXT_Y_OUTLINE_BOTTOM = 6
+  # Desplazamiento X para contornos (izquierda/derecha)
+  TEXT_X_OFFSET = 2
+
+  # Z para viewports y sprites usados en créditos
+  VIEWPORT_Z = 99999
+  TEXT_VIEWPORT_Z = 99999
+  CREDIT_SPRITE_Z = 9998
+
+  # Duraciones usadas para fundidos y transiciones
+  BGM_FADE_DURATION = 2.0
+  TRANSITION_FADE_DURATION = 8
 
   def add_names_to_credits(credits, names, with_final_new_line = true)
     if names.length >= 5
@@ -102,7 +128,7 @@ class Scene_Credits
       _INTL("Afilicado con Game Freak")
     ])
     ret.push("", "")
-    ret.push(_INTL("Esto es un fan juego sin ánimo de lucro."),
+    ret.push(_INTL("Esto es un fanjuego sin ánimo de lucro."),
              _INTL("No se pretende infringir los derechos de autor."),
              _INTL("¡Por favor, apoya los juegos oficiales!"))
     return ret
@@ -116,7 +142,7 @@ class Scene_Credits
     @timer_start = System.uptime   # Time when the credits started
     @bg_index = 0
     @bitmap_height = Graphics.height   # For a single credits text bitmap
-    @trim = Graphics.height / 10
+    @trim = Graphics.height / TRIM_DIVISOR
     # Number of game frames per background frame
     @realOY = -(Graphics.height - @trim)
     #-------------------------------
@@ -127,17 +153,17 @@ class Scene_Credits
     # Make background and text sprites
     #-------------------------------
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
+    viewport.z = VIEWPORT_Z
     text_viewport = Viewport.new(0, @trim, Graphics.width, Graphics.height - (@trim * 2))
-    text_viewport.z = 99999
+    text_viewport.z = TEXT_VIEWPORT_Z
     @background_sprite = IconSprite.new(0, 0)
     @background_sprite.setBitmap("Graphics/Titles/" + BACKGROUNDS_LIST[0])
     @credit_sprites = []
-    @total_height = credit_lines.size * 32
-    lines_per_bitmap = @bitmap_height / 32
+    @total_height = credit_lines.size * LINE_HEIGHT
+    lines_per_bitmap = @bitmap_height / LINE_HEIGHT
     num_bitmaps = (credit_lines.size.to_f / lines_per_bitmap).ceil
     num_bitmaps.times do |i|
-      credit_bitmap = Bitmap.new(Graphics.width, @bitmap_height + 16)
+      credit_bitmap = Bitmap.new(Graphics.width, @bitmap_height + BITMAP_PADDING)
       pbSetSystemFont(credit_bitmap)
       lines_per_bitmap.times do |j|
         line = credit_lines[(i * lines_per_bitmap) + j]
@@ -150,28 +176,28 @@ class Scene_Credits
         line.length.times do |k|
           text = line[k].strip
           if line.length > 1
-            xpos = (k == 0) ? 0 : 20 + (Graphics.width / 2)
+            xpos = (k == 0) ? 0 : SPLIT_MARGIN + (Graphics.width / 2)
             align = (k == 0) ? 2 : 0   # Right align : left align
-            linewidth = (Graphics.width / 2) - 20
+            linewidth = (Graphics.width / 2) - SPLIT_MARGIN
           end
           credit_bitmap.font.color = TEXT_SHADOW_COLOR
-          credit_bitmap.draw_text(xpos, (j * 32) + 12, linewidth, 32, text, align)
+          credit_bitmap.draw_text(xpos, (j * LINE_HEIGHT) + TEXT_Y_SHADOW, linewidth, LINE_HEIGHT, text, align)
           credit_bitmap.font.color = TEXT_OUTLINE_COLOR
-          credit_bitmap.draw_text(xpos + 2, (j * 32) + 2, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos,     (j * 32) + 2, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos - 2, (j * 32) + 2, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos + 2, (j * 32) + 4, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos - 2, (j * 32) + 4, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos + 2, (j * 32) + 6, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos,     (j * 32) + 6, linewidth, 32, text, align)
-          credit_bitmap.draw_text(xpos - 2, (j * 32) + 6, linewidth, 32, text, align)
+          credit_bitmap.draw_text(xpos + TEXT_X_OFFSET, (j * LINE_HEIGHT) + TEXT_Y_OUTLINE_TOP, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos,                   (j * LINE_HEIGHT) + TEXT_Y_OUTLINE_TOP, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos - TEXT_X_OFFSET, (j * LINE_HEIGHT) + TEXT_Y_OUTLINE_TOP, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos + TEXT_X_OFFSET, (j * LINE_HEIGHT) + TEXT_Y_BASE, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos - TEXT_X_OFFSET, (j * LINE_HEIGHT) + TEXT_Y_BASE, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos + TEXT_X_OFFSET, (j * LINE_HEIGHT) + TEXT_Y_OUTLINE_BOTTOM, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos,                   (j * LINE_HEIGHT) + TEXT_Y_OUTLINE_BOTTOM, linewidth, LINE_HEIGHT, text, align)
+          credit_bitmap.draw_text(xpos - TEXT_X_OFFSET, (j * LINE_HEIGHT) + TEXT_Y_OUTLINE_BOTTOM, linewidth, LINE_HEIGHT, text, align)
           credit_bitmap.font.color = TEXT_BASE_COLOR
-          credit_bitmap.draw_text(xpos, (j * 32) + 4, linewidth, 32, text, align)
+          credit_bitmap.draw_text(xpos, (j * LINE_HEIGHT) + TEXT_Y_BASE, linewidth, LINE_HEIGHT, text, align)
         end
       end
       credit_sprite = Sprite.new(text_viewport)
       credit_sprite.bitmap = credit_bitmap
-      credit_sprite.z      = 9998
+      credit_sprite.z      = CREDIT_SPRITE_Z
       credit_sprite.oy     = @realOY - (@bitmap_height * i)
       @credit_sprites[i] = credit_sprite
     end
@@ -183,8 +209,8 @@ class Scene_Credits
     pbMEStop
     pbBGSStop
     pbSEStop
-    pbBGMFade(2.0)
-    pbBGMPlay(BGM)
+    pbBGMFade(BGM_FADE_DURATION)
+    pbBGMPlay(CREDITS_BGM)
     Graphics.transition
     loop do
       Graphics.update
@@ -193,11 +219,11 @@ class Scene_Credits
       break if @quit
     end
     $game_temp.background_bitmap = Graphics.snap_to_bitmap
-    pbBGMFade(2.0)
+    pbBGMFade(BGM_FADE_DURATION)
     Graphics.freeze
     viewport.color = Color.black   # Ensure screen is black
     text_viewport.color = Color.black   # Ensure screen is black
-    Graphics.transition(8, "fadetoblack")
+    Graphics.transition(TRANSITION_FADE_DURATION, "fadetoblack")
     $game_temp.background_bitmap.dispose
     @background_sprite.dispose
     @credit_sprites.each { |s| s&.dispose }

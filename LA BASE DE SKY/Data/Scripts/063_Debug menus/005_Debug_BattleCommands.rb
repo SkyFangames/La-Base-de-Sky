@@ -14,13 +14,13 @@ MenuHandlers.add(:battle_debug_menu, :list_player_battlers, {
   "effect"      => proc { |battle|
     battlers = []
     cmds = []
-    battle.allSameSideBattlers.each do |b|
+    battle.allSameSideBattlers(0, true).each do |b|
       battlers.push(b)
       text = "[#{b.index}] #{b.name}"
       if b.pbOwnedByPlayer?
-        text += " (yours)"
+        text += " (tuyo)"
       else
-        text += " (ally's)"
+        text += " (aliado)"
       end
       cmds.push(text)
     end
@@ -40,7 +40,7 @@ MenuHandlers.add(:battle_debug_menu, :list_foe_battlers, {
   "effect"      => proc { |battle|
     battlers = []
     cmds = []
-    battle.allOtherSideBattlers.each do |b|
+    battle.allOtherSideBattlers(0, true).each do |b|
       battlers.push(b)
       cmds.push("[#{b.index}] #{b.name}")
     end
@@ -249,7 +249,7 @@ MenuHandlers.add(:battle_debug_menu, :weather, {
     cmd = 0
     loop do
       weather_data = GameData::BattleWeather.try_get(battle.field.weather)
-      msg = _INTL("Clima actual: {1}", weather_data.name || _INTL("Desconocido"))
+      msg = _INTL("Clima actual: {1}", weather_data&.name || _INTL("Desconocido"))
       if weather_data.id != :None
         if battle.field.weatherDuration > 0
           msg += "\n"
@@ -456,7 +456,7 @@ MenuHandlers.add(:battle_debug_menu, :opposing_side, {
 MenuHandlers.add(:battle_debug_menu, :position_effects, {
   "name"        => _INTL("Efectos de la posición..."),
   "parent"      => :field,
-  "description" => _INTL("Efectos que se aplican en la posición individial de los combatientes."),
+  "description" => _INTL("Efectos que se aplican en la posición individual de los combatientes."),
   "effect"      => proc { |battle|
     positions = []
     cmds = []

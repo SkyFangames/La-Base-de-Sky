@@ -33,9 +33,9 @@ class Battle
   # Check whether actions can be taken
   #=============================================================================
   def pbCanShowCommands?(idxBattler)
-    return false if @battlers[idxBattler].isCommander?
     battler = @battlers[idxBattler]
     return false if !battler || battler.fainted?
+    return false if battler.effects[PBEffects::Commanding] >= 0
     return false if battler.usingMultiTurnAttack?
     return true
   end
@@ -145,6 +145,8 @@ class Battle
     else
       ret = pbPartyScreen(idxBattler, false, true, true)
     end
+    battler = @battlers[idxBattler]
+    @battlers[idxBattler].refresh_moves if !battler.effects[PBEffects::Transform]
     return ret >= 0
   end
 
@@ -160,10 +162,12 @@ class Battle
   def pbDebugMenu
     pbBattleDebug(self)
     @scene.pbRefreshEverything
-    allBattlers.each { |b| b.pbCheckFormOnWeatherChange }
+    allBattlers(true).each { |b| b.pbCheckFormOnWeatherChange }
+    allBattlers(true).each { |b| b.pbCheckFormOnTerrainChange }
     pbEndPrimordialWeather
-    allBattlers.each { |b| b.pbAbilityOnTerrainChange }
-    allBattlers.each do |b|
+    allBattlers(true).each { |b| b.pbAbilityOnWeatherChange(@field.weather) }
+    allBattlers(true).each { |b| b.pbAbilityOnTerrainChange(@field.terrain) }
+    allBattlers(true).each do |b|
       b.pbCheckFormOnMovesetChange
       b.pbCheckFormOnStatusChange
     end
@@ -188,7 +192,7 @@ class Battle
     end
     # Choose actions for the round (player first, then AI)
     pbCommandPhaseLoop(true)    # Player chooses their actions
-    if @decision != 0   # Battle ended, stop choosing actions
+    if decided?   # Battle ended, stop choosing actions
       @command_phase = false
       return
     end
@@ -202,13 +206,14 @@ class Battle
     actioned = []
     idxBattler = -1
     loop do
-      break if @decision != 0   # Battle ended, stop choosing actions
+      break if decided?   # Battle ended, stop choosing actions
       idxBattler += 1
       break if idxBattler >= @battlers.length
       next if !@battlers[idxBattler] || pbOwnedByPlayer?(idxBattler) != isPlayer
+      next if @battlers[idxBattler].effects[PBEffects::Commanding] >= 0
       if @choices[idxBattler][0] != :None || !pbCanShowCommands?(idxBattler)
         # Action is forced, can't choose one
-        PBDebug.log_ai("#{@battlers[idxBattler].pbThis} (#{idxBattler}) is forced to use a multi-turn move")
+        PBDebug.log("[Command phase] #{@battlers[idxBattler].pbThis} (#{idxBattler}) is forced to use a multi-turn move")
         next
       end
       # AI controls this battler
@@ -264,4 +269,3 @@ class Battle
     end
   end
 end
-

@@ -68,6 +68,36 @@ end
 # Text entry screen - free typing.
 #===============================================================================
 class PokemonEntryScene
+
+  WINDOW_ENTRY_X = 0
+  WINDOW_ENTRY_Y = 0
+  WINDOW_ENTRY_WIDTH = 288
+  WINDOW_ENTRY_HEIGHT = 96
+  HELP_WINDOW_X = 24
+  HELP_WINDOW_Y_OFFSET = -96
+  HELP_WINDOW_WIDTH_OFFSET = -48
+  HELP_WINDOW_HEIGHT = 96
+  PLAYER_SHADOW_X = 66
+  PLAYER_SHADOW_Y = 64
+  PLAYER_SUBJECT_X_OFFSET = 88
+  PLAYER_SUBJECT_Y_OFFSET = 76
+  POKEMON_SHADOW_X = 66
+  POKEMON_SHADOW_Y = 64
+  POKEMON_SUBJECT_X = 88
+  POKEMON_SUBJECT_Y = 54
+  GENDER_SPRITE_WIDTH = 32
+  GENDER_SPRITE_HEIGHT = 32
+  GENDER_SPRITE_X = 430
+  GENDER_SPRITE_Y = 54
+  GENDER_TEXT_X = 0
+  GENDER_TEXT_Y = 6
+  NPC_SHADOW_X = 66
+  NPC_SHADOW_Y = 64
+  NPC_SUBJECT_X_OFFSET = 88
+  NPC_SUBJECT_Y_OFFSET = 76
+  STORAGE_BOX_SUBJECT_X_OFFSET = 88
+  STORAGE_BOX_SUBJECT_Y_OFFSET = 52
+
   @@Characters = [
     [("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz").scan(/./), "[*]"],
     [("0123456789   !@\#$%^&*()   ~`-_+={}[]   :;'\"<>,.?/   ").scan(/./), "[A]"]
@@ -80,11 +110,11 @@ class PokemonEntryScene
     @viewport.z = 99999
     if USEKEYBOARD
       @sprites["entry"] = Window_TextEntry_Keyboard.new(
-        initialText, 0, 0, 400 - 112, 96, helptext, true
+        initialText, WINDOW_ENTRY_X, WINDOW_ENTRY_Y, WINDOW_ENTRY_WIDTH, WINDOW_ENTRY_HEIGHT, helptext, true
       )
       Input.text_input = true
     else
-      @sprites["entry"] = Window_TextEntry.new(initialText, 0, 0, 400, 96, helptext, true)
+      @sprites["entry"] = Window_TextEntry.new(initialText, WINDOW_ENTRY_X, WINDOW_ENTRY_Y, WINDOW_ENTRY_WIDTH, WINDOW_ENTRY_HEIGHT, helptext, true)
     end
     @sprites["entry"].x = (Graphics.width / 2) - (@sprites["entry"].width / 2) + 32
     @sprites["entry"].viewport = @viewport
@@ -103,12 +133,12 @@ class PokemonEntryScene
     if minlength == 0
       @sprites["helpwindow"] = Window_UnformattedTextPokemon.newWithSize(
         _INTL("Escribe texto usando el teclado. Pulsa\nEnter para confirmar, o Esc para cancelar."),
-        24, Graphics.height - 96, Graphics.width - 48, 96, @viewport
+        HELP_WINDOW_X, Graphics.height + HELP_WINDOW_Y_OFFSET, Graphics.width + HELP_WINDOW_WIDTH_OFFSET, HELP_WINDOW_HEIGHT, @viewport
       )
     else
       @sprites["helpwindow"] = Window_UnformattedTextPokemon.newWithSize(
         _INTL("Escribe texto usando el teclado. Pulsa\nEnter para confirmar."),
-        32, Graphics.height - 96, Graphics.width - 64, 96, @viewport
+        HELP_WINDOW_X, Graphics.height + HELP_WINDOW_Y_OFFSET, Graphics.width + HELP_WINDOW_WIDTH_OFFSET, HELP_WINDOW_HEIGHT, @viewport
       )
     end
     @sprites["helpwindow"].letterbyletter = false
@@ -123,56 +153,56 @@ class PokemonEntryScene
       if meta
         @sprites["shadow"] = IconSprite.new(0, 0, @viewport)
         @sprites["shadow"].setBitmap("Graphics/UI/Naming/icon_shadow")
-        @sprites["shadow"].x = 66
-        @sprites["shadow"].y = 64
+        @sprites["shadow"].x = PLAYER_SHADOW_X
+        @sprites["shadow"].y = PLAYER_SHADOW_Y
         filename = pbGetPlayerCharset(meta.walk_charset, nil, true)
         @sprites["subject"] = TrainerWalkingCharSprite.new(filename, @viewport)
         charwidth = @sprites["subject"].bitmap.width
         charheight = @sprites["subject"].bitmap.height
-        @sprites["subject"].x = 88 - (charwidth / 8)
-        @sprites["subject"].y = 76 - (charheight / 4)
+        @sprites["subject"].x = PLAYER_SUBJECT_X_OFFSET - (charwidth / 8)
+        @sprites["subject"].y = PLAYER_SUBJECT_Y_OFFSET - (charheight / 4)
       end
     when 2   # Pokémon
       if pokemon
         @sprites["shadow"] = IconSprite.new(0, 0, @viewport)
         @sprites["shadow"].setBitmap("Graphics/UI/Naming/icon_shadow")
-        @sprites["shadow"].x = 66
-        @sprites["shadow"].y = 64
+        @sprites["shadow"].x = POKEMON_SHADOW_X
+        @sprites["shadow"].y = POKEMON_SHADOW_Y
         @sprites["subject"] = PokemonIconSprite.new(pokemon, @viewport)
         @sprites["subject"].setOffset(PictureOrigin::CENTER)
-        @sprites["subject"].x = 88
-        @sprites["subject"].y = 54
-        @sprites["gender"] = BitmapSprite.new(32, 32, @viewport)
-        @sprites["gender"].x = 430
-        @sprites["gender"].y = 54
+        @sprites["subject"].x = POKEMON_SUBJECT_X
+        @sprites["subject"].y = POKEMON_SUBJECT_Y
+        @sprites["gender"] = BitmapSprite.new(GENDER_SPRITE_WIDTH, GENDER_SPRITE_HEIGHT, @viewport)
+        @sprites["gender"].x = GENDER_SPRITE_X
+        @sprites["gender"].y = GENDER_SPRITE_Y
         @sprites["gender"].bitmap.clear
         pbSetSystemFont(@sprites["gender"].bitmap)
         textpos = []
         if pokemon.male?
-          textpos.push([_INTL("♂"), 0, 6, :left, Color.new(0, 128, 248), Color.new(168, 184, 184)])
+          textpos.push([_INTL("♂"), GENDER_TEXT_X, GENDER_TEXT_Y, :left, Color.new(0, 128, 248), Color.new(168, 184, 184)])
         elsif pokemon.female?
-          textpos.push([_INTL("♀"), 0, 6, :left, Color.new(248, 24, 24), Color.new(168, 184, 184)])
+          textpos.push([_INTL("♀"), GENDER_TEXT_X, GENDER_TEXT_Y, :left, Color.new(248, 24, 24), Color.new(168, 184, 184)])
         end
         pbDrawTextPositions(@sprites["gender"].bitmap, textpos)
       end
     when 3   # NPC
       @sprites["shadow"] = IconSprite.new(0, 0, @viewport)
       @sprites["shadow"].setBitmap("Graphics/UI/Naming/icon_shadow")
-      @sprites["shadow"].x = 66
-      @sprites["shadow"].y = 64
+      @sprites["shadow"].x = NPC_SHADOW_X
+      @sprites["shadow"].y = NPC_SHADOW_Y
       @sprites["subject"] = TrainerWalkingCharSprite.new(pokemon.to_s, @viewport)
       charwidth = @sprites["subject"].bitmap.width
       charheight = @sprites["subject"].bitmap.height
-      @sprites["subject"].x = 88 - (charwidth / 8)
-      @sprites["subject"].y = 76 - (charheight / 4)
+      @sprites["subject"].x = NPC_SUBJECT_X_OFFSET - (charwidth / 8)
+      @sprites["subject"].y = NPC_SUBJECT_Y_OFFSET - (charheight / 4)
     when 4   # Storage box
       @sprites["subject"] = TrainerWalkingCharSprite.new(nil, @viewport)
       @sprites["subject"].altcharset = "Graphics/UI/Naming/icon_storage"
       @sprites["subject"].anim_duration = 0.4
       charwidth = @sprites["subject"].bitmap.width
       charheight = @sprites["subject"].bitmap.height
-      @sprites["subject"].x = 88 - (charwidth / 8)
-      @sprites["subject"].y = 52 - (charheight / 2)
+      @sprites["subject"].x = STORAGE_BOX_SUBJECT_X_OFFSET - (charwidth / 8)
+      @sprites["subject"].y = STORAGE_BOX_SUBJECT_Y_OFFSET - (charheight / 2)
     end
     pbFadeInAndShow(@sprites)
   end
@@ -273,6 +303,54 @@ class PokemonEntryScene2
   BACK    = -2
   OK      = -1
 
+  COORDS_PER_MODE = {
+    PokemonEntryScene2::MODE1  => {:x => 44,  :y => 120, :cursortype => 1},
+    PokemonEntryScene2::MODE2  => {:x => 106, :y => 120, :cursortype => 1},
+    PokemonEntryScene2::MODE3  => {:x => 168, :y => 120, :cursortype => 1},
+    PokemonEntryScene2::MODE4  => {:x => 230, :y => 120, :cursortype => 1},
+    PokemonEntryScene2::BACK   => {:x => 314, :y => 120, :cursortype => 2},
+    PokemonEntryScene2::OK     => {:x => 394, :y => 120, :cursortype => 2},
+    :default                   => {
+      :x => 0,   :y => 0,   :cursortype => 0,
+      # Origen X del grid de caracteres (columna 0)
+      :grid_x => 52,
+      # Origen Y del grid de caracteres (fila 0)
+      :grid_y => 180,
+      # Ancho de cada celda del grid (espaciado X)
+      :cell_w => 32,
+      # Alto de cada celda del grid (espaciado Y)
+      :cell_h => 38
+    }
+  }
+
+  # Layout constants for the naming UI
+  BITMAP_GRID_X = 44
+  BITMAP_GRID_Y = 24
+  BITMAP_CELL_W = 32
+  BITMAP_CELL_H = 38
+
+  MODE_ICON_X = 44
+  MODE_ICON_STEP = 62
+  MODE_ICON_Y = 120
+  MODE_ICON_SRC_W = 60
+  MODE_ICON_SRC_H = 44
+
+  BLANK_X0 = 160
+  BLANK_STEP = 24
+  BLANK_Y_NORMAL = 78
+  BLANK_Y_SELECTED = 82
+
+  BOTTOMTAB_X = 22
+  BOTTOMTAB_Y = 162
+  TOPTAB_START_X = BOTTOMTAB_X - 504
+  BOTTOMTAB_OFFSCREEN_Y = 414
+
+  CONTROLS_X = 16
+  CONTROLS_Y = 96
+
+  TEXT_START_X = 172
+  TEXT_STEP_X = 24
+
   class NameEntryCursor
     def initialize(viewport)
       @sprite = Sprite.new(viewport)
@@ -290,38 +368,20 @@ class PokemonEntryScene2
 
     def updateCursorPos
       value = @cursorPos
-      case value
-      when PokemonEntryScene2::MODE1   # Upper case
-        @sprite.x = 44
-        @sprite.y = 120
-        @cursortype = 1
-      when PokemonEntryScene2::MODE2   # Lower case
-        @sprite.x = 106
-        @sprite.y = 120
-        @cursortype = 1
-      when PokemonEntryScene2::MODE3   # Accents
-        @sprite.x = 168
-        @sprite.y = 120
-        @cursortype = 1
-      when PokemonEntryScene2::MODE4   # Other symbols
-        @sprite.x = 230
-        @sprite.y = 120
-        @cursortype = 1
-      when PokemonEntryScene2::BACK   # Back
-        @sprite.x = 314
-        @sprite.y = 120
-        @cursortype = 2
-      when PokemonEntryScene2::OK   # OK
-        @sprite.x = 394
-        @sprite.y = 120
-        @cursortype = 2
-      else
-        if value >= 0
-          @sprite.x = 52 + (32 * (value % PokemonEntryScene2::ROWS))
-          @sprite.y = 180 + (38 * (value / PokemonEntryScene2::ROWS))
-          @cursortype = 0
+        # Use COORDS_PER_MODE for special control positions (modes, back, ok)
+        if PokemonEntryScene2::COORDS_PER_MODE.key?(value)
+          coords = PokemonEntryScene2::COORDS_PER_MODE[value]
+          @sprite.x = coords[:x]
+          @sprite.y = coords[:y]
+          @cursortype = coords[:cursortype]
+        else
+          if value >= 0
+            default = PokemonEntryScene2::COORDS_PER_MODE[:default]
+            @sprite.x = default[:grid_x] + (default[:cell_w] * (value % PokemonEntryScene2::ROWS))
+            @sprite.y = default[:grid_y] + (default[:cell_h] * (value / PokemonEntryScene2::ROWS))
+            @cursortype = default[:cursortype]
+          end
         end
-      end
     end
 
     def visible=(value)
@@ -383,7 +443,7 @@ class PokemonEntryScene2
       COLUMNS.times do |y|
         ROWS.times do |x|
           pos = (y * ROWS) + x
-          textPos.push([@@Characters[i][0][pos], 44 + (x * 32), 24 + (y * 38), :center,
+          textPos.push([@@Characters[i][0][pos], BITMAP_GRID_X + (x * BITMAP_CELL_W), BITMAP_GRID_Y + (y * BITMAP_CELL_H), :center,
                         Color.new(16, 24, 32), Color.new(160, 160, 160)])
         end
       end
@@ -463,21 +523,21 @@ class PokemonEntryScene2
     @maxlength = maxlength
     @maxlength.times do |i|
       @sprites["blank#{i}"] = Sprite.new(@viewport)
-      @sprites["blank#{i}"].x = 160 + (24 * i)
+      @sprites["blank#{i}"].x = BLANK_X0 + (BLANK_STEP * i)
       @sprites["blank#{i}"].bitmap = @bitmaps[@bitmaps.length - 1]
       @blanks[i] = 0
     end
     @sprites["bottomtab"] = Sprite.new(@viewport)   # Current tab
-    @sprites["bottomtab"].x = 22
-    @sprites["bottomtab"].y = 162
+    @sprites["bottomtab"].x = BOTTOMTAB_X
+    @sprites["bottomtab"].y = BOTTOMTAB_Y
     @sprites["bottomtab"].bitmap = @bitmaps[@@Characters.length]
     @sprites["toptab"] = Sprite.new(@viewport)   # Next tab
-    @sprites["toptab"].x = 22 - 504
-    @sprites["toptab"].y = 162
+    @sprites["toptab"].x = TOPTAB_START_X
+    @sprites["toptab"].y = BOTTOMTAB_Y
     @sprites["toptab"].bitmap = @bitmaps[@@Characters.length + 1]
     @sprites["controls"] = IconSprite.new(0, 0, @viewport)
-    @sprites["controls"].x = 16
-    @sprites["controls"].y = 96
+    @sprites["controls"].x = CONTROLS_X
+    @sprites["controls"].y = CONTROLS_Y
     @sprites["controls"].setBitmap(_INTL("Graphics/UI/Naming/overlay_controls"))
     @sprites["overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     pbDoUpdateOverlay2
@@ -495,7 +555,7 @@ class PokemonEntryScene2
   def pbDoUpdateOverlay2
     overlay = @sprites["overlay"].bitmap
     overlay.clear
-    modeIcon = [[_INTL("Graphics/UI/Naming/icon_mode"), 44 + (@mode * 62), 120, @mode * 60, 0, 60, 44]]
+    modeIcon = [[_INTL("Graphics/UI/Naming/icon_mode"), MODE_ICON_X + (@mode * MODE_ICON_STEP), MODE_ICON_Y, @mode * MODE_ICON_SRC_W, 0, MODE_ICON_SRC_W, MODE_ICON_SRC_H]]
     pbDrawImagePositions(overlay, modeIcon)
   end
 
@@ -509,10 +569,10 @@ class PokemonEntryScene2
       [@helptext, 160, 18, :left, Color.new(16, 24, 32), Color.new(168, 184, 184)]
     ]
     chars = @helper.textChars
-    x = 172
+    x = TEXT_START_X
     chars.each do |ch|
       textPositions.push([ch, x, 54, :center, Color.new(16, 24, 32), Color.new(168, 184, 184)])
-      x += 24
+      x += TEXT_STEP_X
     end
     pbDrawTextPositions(bgoverlay, textPositions)
   end
@@ -525,12 +585,12 @@ class PokemonEntryScene2
     # onto the screen
     timer_start = System.uptime
     loop do
-      @sprites["bottomtab"].y = lerp(162, 414, 0.5, timer_start, System.uptime)
-      @sprites["toptab"].x = lerp(22 - 504, 22, 0.5, timer_start, System.uptime)
+      @sprites["bottomtab"].y = lerp(BOTTOMTAB_Y, BOTTOMTAB_OFFSCREEN_Y, 0.5, timer_start, System.uptime)
+      @sprites["toptab"].x = lerp(TOPTAB_START_X, BOTTOMTAB_X, 0.5, timer_start, System.uptime)
       Graphics.update
       Input.update
       pbUpdate
-      break if @sprites["toptab"].x >= 22 && @sprites["bottomtab"].y >= 414
+      break if @sprites["toptab"].x >= BOTTOMTAB_X && @sprites["bottomtab"].y >= BOTTOMTAB_OFFSCREEN_Y
     end
     # Swap top and bottom tab around
     @sprites["toptab"].x, @sprites["bottomtab"].x = @sprites["bottomtab"].x, @sprites["toptab"].x
@@ -545,8 +605,8 @@ class PokemonEntryScene2
     newtab = @bitmaps[((@mode + 1) % @@Characters.length) + @@Characters.length]
     @sprites["cursor"].visible = true
     @sprites["toptab"].bitmap = newtab
-    @sprites["toptab"].x = 22 - 504
-    @sprites["toptab"].y = 162
+    @sprites["toptab"].x = TOPTAB_START_X
+    @sprites["toptab"].y = BOTTOMTAB_Y
     pbSEPlay("GUI naming tab swap end")
     pbDoUpdateOverlay2
   end

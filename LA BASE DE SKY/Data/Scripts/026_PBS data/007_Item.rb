@@ -65,7 +65,7 @@ module GameData
         ["BattleUse",         EnumProperty.new(battle_use_array),      _INTL("Como se puede usar este objeto en combate.")],
         ["Flags",             StringListProperty,                      _INTL("Palabras/frases que pueden usarse para agrupar ciertos tipos de objetos.")],
         ["Consumable",        BooleanProperty,                         _INTL("Si este objeto es consumido tras usarlo o no.")],
-        ["ShowQuantity",      BooleanProperty,                         _INTL("Si la Mochila muestra cuantas unidades de este objeto ahi o no.")],
+        ["ShowQuantity",      BooleanProperty,                         _INTL("Si la Mochila muestra cuantas unidades de este objeto hay o no.")],
         ["Move",              MoveProperty,                            _INTL("Movimiento enseñado por esta MO, MT o DT.")],
         ["Description",       StringProperty,                          _INTL("Descripción de este objeto.")]
       ]
@@ -96,6 +96,11 @@ module GameData
         end
       end
       return "Graphics/Items/000"
+    end
+
+    def self.icon_bitmap(item)
+      filename = self.icon_filename(item)
+      AnimatedBitmap.new(filename)
     end
 
     def self.held_icon_filename(item)
@@ -198,6 +203,10 @@ module GameData
     def is_mulch?;           return has_flag?("Mulch"); end
     def is_mega_stone?;      return has_flag?("MegaStone"); end   # Does NOT include Red Orb/Blue Orb
     def is_scent?;           return has_flag?("Scent"); end
+    def is_unlosable?;       return has_flag?("Unlosable"); end
+    def is_healing_item?;    return has_flag?("Healing"); end
+    def is_vitamin?;         return has_flag?("Vitamin"); end
+    def is_x_item?;          return has_flag?("XItem"); end
 
     def is_important?
       return true if is_key_item? || is_HM? || is_TM?
@@ -225,6 +234,7 @@ module GameData
     end
 
     def unlosable?(species, ability)
+      return true if is_unlosable?
       return false if species == :ARCEUS && ability != :MULTITYPE
       return false if species == :SILVALLY && ability != :RKSSYSTEM
       combos = {
@@ -263,15 +273,15 @@ module GameData
                        :DRAGONMEMORY,
                        :DARKMEMORY,
                        :FAIRYMEMORY],
+        :DIALGA    => [:ADAMANTCRYSTAL],
+        :PALKIA    => [:LUSTROUSGLOBE],
+        :GIRATINA  => [:GRISEOUSORB, :GRISEOUSCORE],
         :GENESECT  => [:BURNDRIVE, :CHILLDRIVE, :DOUSEDRIVE, :SHOCKDRIVE],
         :KYOGRE    => [:BLUEORB],
         :GROUDON   => [:REDORB],
         :ZACIAN    => [:RUSTEDSWORD],
         :ZAMAZENTA => [:RUSTEDSHIELD],
-        :DIALGA   => [:ADAMANTCRYSTAL],
-        :PALKIA   => [:LUSTROUSGLOBE],
-        :GIRATINA => [:GRISEOUSCORE],
-        :OGERPON  => [:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK]
+        :OGERPON   => [:WELLSPRINGMASK, :HEARTHFLAMEMASK, :CORNERSTONEMASK]
       }
       return true if @id == :BOOSTERENERGY &&
                      [:PROTOSYNTHESIS, :QUARKDRIVE].include?(ability) &&
@@ -298,4 +308,3 @@ module GameData
     end
   end
 end
-

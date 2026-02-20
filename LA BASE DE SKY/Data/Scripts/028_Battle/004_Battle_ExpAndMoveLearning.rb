@@ -5,7 +5,7 @@ class Battle
   def pbGainExp
     # Play wild victory music if it's the end of the battle (has to be here)
     @scene.pbWildBattleSuccess if wildBattle? && pbAllFainted?(1) && !pbAllFainted?(0)
-    return if !@internalBattle || !@expGain
+    return if !@internalBattle || @rules[:no_exp_gain]
     # Go through each battler in turn to find the Pokémon that participated in
     # battle against it, and award those Pokémon Exp/EVs
     expAll = $player.has_exp_all || $bag.has?(:EXPALL)
@@ -25,7 +25,7 @@ class Battle
       if !expAll
         eachInTeam(0, 0) do |pkmn, i|
           next if !pkmn.able?
-          next if !pkmn.hasItem?(:EXPSHARE) && GameData::Item.try_get(@initialItems[0][i]) != :EXPSHARE
+          next if !pkmn.hasItem?(:EXPSHARE) && initialItem(0, i) != :EXPSHARE
           expShare.push(i)
         end
       end
@@ -69,7 +69,7 @@ class Battle
     GameData::Stat.each_main { |s| evTotal += pkmn.ev[s.id] }
     # Modify EV yield based on pkmn's held item
     if !Battle::ItemEffects.triggerEVGainModifier(pkmn.item, pkmn, evYield)
-      Battle::ItemEffects.triggerEVGainModifier(@initialItems[0][idxParty], pkmn, evYield)
+      Battle::ItemEffects.triggerEVGainModifier(initialItem(0, idxParty), pkmn, evYield)
     end
     # Double EV gain because of Pokérus
     if pkmn.pokerusStage >= 1   # Infected or cured
@@ -154,7 +154,7 @@ class Battle
     # Modify Exp gain based on pkmn's held item
     i = Battle::ItemEffects.triggerExpGainModifier(pkmn.item, pkmn, exp)
     if i < 0
-      i = Battle::ItemEffects.triggerExpGainModifier(@initialItems[0][idxParty], pkmn, exp)
+      i = Battle::ItemEffects.triggerExpGainModifier(initialItem(0, idxParty), pkmn, exp)
     end
     exp = i if i >= 0
     # Boost Exp gained with high affection
@@ -219,7 +219,7 @@ class Battle
       pkmn.calc_stats
       battler&.pbUpdate(false)
       @scene.pbRefreshOne(battler.index) if battler
-      pbDisplayPaused(_INTL("¡{1} subió al nivel {2}!", pkmn.name, curLevel)) { pbSEPlay("Pkmn level up") }
+      pbDisplayPaused(_INTL("¡{1} subió al nivel {2}!", pkmn.name, curLevel) + "\\se[Pkmn level up]\\wtnp[30]")
       @scene.pbLevelUp(pkmn, battler, oldTotalHP, oldAttack, oldDefense,
                        oldSpAtk, oldSpDef, oldSpeed)
       # Learn all moves learned at this level
@@ -232,6 +232,7 @@ class Battle
   # Learning a move
   #=============================================================================
   def pbLearnMove(idxParty, newMove)
+    return if $PokemonSystem.skip_move_learning == 0
     pkmn = pbParty(0)[idxParty]
     return if !pkmn
     pkmnName = pkmn.name
@@ -242,11 +243,12 @@ class Battle
     # Pokémon has space for the new move; just learn it
     if pkmn.numMoves < Pokemon::MAX_MOVES
       pkmn.learn_move(newMove)
-      pbDisplay(_INTL("¡{1} ha aprendido {2}!", pkmnName, moveName)) { pbSEPlay("Pkmn move learnt") }
+      pbDisplay(_INTL("¡{1} ha aprendido {2}!", pkmnName, moveName) + "\\se[Pkmn move learnt]\\wtnp[30]")
       if battler
         battler.moves.push(Move.from_pokemon_move(self, pkmn.moves.last))
         battler.pbCheckFormOnMovesetChange
       end
+      $PokemonGlobal.add_seen_move(pkmn.species, newMove)
       return
     end
     # Pokémon already knows the maximum number of moves; try to forget one to learn the new move
@@ -259,10 +261,11 @@ class Battle
           oldMoveName = pkmn.moves[forgetMove].name
           pkmn.moves[forgetMove] = Pokemon::Move.new(newMove)   # Replaces current/total PP
           battler.moves[forgetMove] = Move.from_pokemon_move(self, pkmn.moves[forgetMove]) if battler
-          pbDisplayPaused(_INTL("1, 2, y... ... ... ¡Puf!")) { pbSEPlay("Battle ball drop") }
+          pbDisplayPaused(_INTL("1, 2, y... ... ... ¡Puf!") + "\\se[Battle ball drop]\\wtnp[10]")
           pbDisplayPaused(_INTL("{1} olvidó como usar {2}. Y...", pkmnName, oldMoveName))
-          pbDisplay(_INTL("¡{1} aprendió {2}!", pkmnName, moveName)) { pbSEPlay("Pkmn move learnt") }
+          pbDisplay(_INTL("¡{1} aprendió {2}!", pkmnName, moveName) + "\\se[Pkmn move learnt]\\wtnp[30]")
           battler&.pbCheckFormOnMovesetChange
+          $PokemonGlobal.add_seen_move(pkmn.species, newMove)
           break
         elsif pbDisplayConfirm(_INTL("¿Quieres que no aprenda {1}?", moveName))
           pbDisplay(_INTL("{1} no aprendió {2}.", pkmnName, moveName))
@@ -274,4 +277,3 @@ class Battle
     end
   end
 end
-

@@ -105,6 +105,12 @@ class Game_Follower < Game_Event
       jump_fancy(8, leader)
     elsif self.x == new_x && self.y - new_y == -2
       jump_fancy(2, leader)
+    #fix follower on stairs
+    elsif self.x - new_x == -1
+      move_fancy(6)
+    elsif self.x - new_x == 1
+      move_fancy(4)
+    #fix follower on stairs
     elsif self.x != new_x || self.y != new_y
       moveto(new_x, new_y)
     end

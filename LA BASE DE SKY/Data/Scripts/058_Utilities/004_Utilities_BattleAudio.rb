@@ -15,7 +15,7 @@ def pbGetWildBattleBGM(_wildParty)
     music = GameData::Metadata.get.wild_battle_BGM
     ret = pbStringToAudioFile(music) if music && music != ""
   end
-  ret = pbStringToAudioFile("Battle wild") if !ret
+  ret = pbStringToAudioFile(Settings::DEFAULT_WILD_BATTLE_BGM) if !ret
   return ret
 end
 
@@ -32,7 +32,7 @@ def pbGetWildVictoryBGM
     music = GameData::Metadata.get.wild_victory_BGM
     ret = pbStringToAudioFile(music) if music && music != ""
   end
-  ret = pbStringToAudioFile("Battle victory") if !ret
+  ret = pbStringToAudioFile(Settings::DEFAULT_WILD_VICTORY_BGM) if !ret
   ret.name = "../../Audio/BGM/" + ret.name
   return ret
 end
@@ -52,7 +52,7 @@ def pbGetWildCaptureME
     music = GameData::Metadata.get.wild_capture_ME
     ret = pbStringToAudioFile(music) if music && music != ""
   end
-  ret = pbStringToAudioFile("Battle capture success") if !ret
+  ret = pbStringToAudioFile(Settings::DEFAULT_WILD_CAPTURE_ME) if !ret
   ret.name = "../../Audio/ME/" + ret.name
   return ret
 end
@@ -65,8 +65,14 @@ def pbPlayTrainerIntroBGM(trainer_type)
   return if nil_or_empty?(trainer_type_data.intro_BGM)
   bgm = pbStringToAudioFile(trainer_type_data.intro_BGM)
   if !$game_temp.memorized_bgm
-    $game_temp.memorized_bgm = $game_system.getPlayingBGM
-    $game_temp.memorized_bgm_position = (Audio.bgm_pos rescue 0)
+    if $game_temp.cue_bgm_delay
+      $game_temp.cue_bgm_delay = nil
+      $game_temp.memorized_bgm = $game_temp.cue_bgm
+      $game_temp.memorized_bgm_position = 0
+    else
+      $game_temp.memorized_bgm = $game_system.getPlayingBGM
+      $game_temp.memorized_bgm_position = (Audio.bgm_pos rescue 0)
+    end
   end
   pbBGMPlay(bgm)
 end
@@ -92,7 +98,7 @@ def pbGetTrainerBattleBGM(trainer)
     music = GameData::Metadata.get.trainer_battle_BGM
     ret = pbStringToAudioFile(music) if music && music != ""
   end
-  ret = pbStringToAudioFile("Battle trainer") if !ret
+  ret = pbStringToAudioFile(Settings::DEFAULT_TRAINER_BATTLE_BGM) if !ret
   return ret
 end
 
@@ -110,7 +116,7 @@ def pbGetTrainerBattleBGMFromType(trainertype)
     music = GameData::Metadata.get.trainer_battle_BGM
     ret = pbStringToAudioFile(music) if music && music != ""
   end
-  ret = pbStringToAudioFile("Battle trainer") if !ret
+  ret = pbStringToAudioFile(Settings::DEFAULT_TRAINER_BATTLE_BGM) if !ret
   return ret
 end
 
@@ -137,8 +143,7 @@ def pbGetTrainerVictoryBGM(trainer)
     music = GameData::Metadata.get.trainer_victory_BGM
     ret = pbStringToAudioFile(music) if music && music != ""
   end
-  ret = pbStringToAudioFile("Battle victory") if !ret
+  ret = pbStringToAudioFile(Settings::DEFAULT_TRAINER_VICTORY_BGM) if !ret
   ret.name = "../../Audio/BGM/" + ret.name
   return ret
 end
-

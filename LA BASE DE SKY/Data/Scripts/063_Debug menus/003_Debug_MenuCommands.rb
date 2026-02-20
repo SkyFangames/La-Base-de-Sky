@@ -126,7 +126,7 @@ MenuHandlers.add(:debug_menu, :safari_zone_and_bug_contest, {
               break
             end
           end
-        when 1   # Safari Balls
+        when 1   # Sport Balls
           params = ChooseNumberParams.new
           params.setRange(0, 99999)
           params.setDefaultValue(contest.ballcount)
@@ -394,7 +394,7 @@ MenuHandlers.add(:debug_menu, :test_trainer_battle_advanced, {
       trainerCmds.push(_INTL("[Añadir entrenador]"))
       trainerCmds.push(_INTL("[Elegir tamaño bando jugador]"))
       trainerCmds.push(_INTL("[Elegir tamaño bando rival]"))
-      trainerCmds.push(_INTL("[Empezar batalla {1}vs{2}]", size0, size1))
+      trainerCmds.push(_INTL("[Empezar combate {1}vs{2}]", size0, size1))
       trainerCmd = pbShowCommands(nil, trainerCmds, -1, trainerCmd)
       break if trainerCmd < 0
       if trainerCmd == trainerCmds.length - 1      # Start battle
@@ -598,35 +598,32 @@ MenuHandlers.add(:debug_menu, :fill_boxes, {
     added = 0
     box_qty = $PokemonStorage.maxPokemon(0)
     completed = true
-    GameData::Species.each do |species_data|
-      sp = species_data.species
-      f = species_data.form
+    GameData::Species.each do |sp|
+      species = sp.species
+      form = sp.form
       # Record each form of each species as seen and owned
-      if f == 0
-        if species_data.single_gendered?
-          g = (species_data.gender_ratio == :AlwaysFemale) ? 1 : 0
-          $player.pokedex.register(sp, g, f, 0, false)
-          $player.pokedex.register(sp, g, f, 1, false)
-        else   # Both male and female
-          $player.pokedex.register(sp, 0, f, 0, false)
-          $player.pokedex.register(sp, 0, f, 1, false)
-          $player.pokedex.register(sp, 1, f, 0, false)
-          $player.pokedex.register(sp, 1, f, 1, false)
+      if sp.single_gendered?   # Or genderless
+        gender = (sp.gender_ratio == :AlwaysFemale) ? 1 : 0
+        [false, true].each do |shiny|
+          $player.pokedex.register(species, gender, form, shiny, false)
         end
-        $player.pokedex.set_owned(sp, false)
-      elsif species_data.real_form_name && !species_data.real_form_name.empty?
-        g = (species_data.gender_ratio == :AlwaysFemale) ? 1 : 0
-        $player.pokedex.register(sp, g, f, 0, false)
-        $player.pokedex.register(sp, g, f, 1, false)
+      elsif form == 0 ||
+            (sp.real_form_name && !sp.real_form_name.empty? && sp.pokedex_form == sp.form)
+        2.times do |gender|
+          [false, true].each do |shiny|
+            $player.pokedex.register(species, gender, form, shiny, false)
+          end
+        end
       end
+      $player.pokedex.set_owned(species, false)
       # Add Pokémon (if form 0, i.e. one of each species)
-      next if f != 0
+      next if form != 0
       if added >= Settings::NUM_STORAGE_BOXES * box_qty
         completed = false
         next
       end
       added += 1
-      $PokemonStorage[(added - 1) / box_qty, (added - 1) % box_qty] = Pokemon.new(sp, 50)
+      $PokemonStorage[(added - 1) / box_qty, (added - 1) % box_qty] = Pokemon.new(species, 50)
     end
     $player.pokedex.refresh_accessible_dexes
     pbMessage(_INTL("Las cajas del PC se han llenado con un Pokémon de cada especie."))
@@ -689,7 +686,7 @@ end
 MenuHandlers.add(:debug_menu, :give_demo_party, {
   "name"        => _INTL("Dar equipo de prueba"),
   "parent"      => :pokemon_menu,
-  "description" => _INTL("Te da 6 Pokémon predefinidos. Sobreescriben el equipo actual."),
+  "description" => _INTL("Te da 6 Pokémon predefinidos. Sobrescriben el equipo actual."),
   "effect"      => proc {
     darEquipoDePrueba()
     pbMessage(_INTL("Equipo entregado con Pokémon de prueba."))
@@ -1303,7 +1300,7 @@ MenuHandlers.add(:debug_menu, :import_animations, {
 MenuHandlers.add(:debug_menu, :export_animations, {
   "name"        => _INTL("Exportar animaciones de combate"),
   "parent"      => :editors_menu,
-  "description" => _INTL("Exporta todas las animaciones de comabte deforma individual a la carpeta \"Animations\"."),
+  "description" => _INTL("Exporta todas las animaciones de combate deforma individual a la carpeta \"Animations\"."),
   "effect"      => proc {
     pbExportAllAnimations
   }
@@ -1498,4 +1495,3 @@ MenuHandlers.add(:debug_menu, :reload_system_cache, {
     pbMessage(_INTL("Listo."))
   }
 })
-

@@ -34,7 +34,31 @@ module Compiler
     ["get_character(-1)",            "get_player"],
     ["pbCheckAble",                  "$player.has_other_able_pokemon?"],
     ["$PokemonTemp.lastbattle",      "$game_temp.last_battle_record"],
-    ["calcStats",                    "calc_stats"]
+    ["calcStats",                    "calc_stats"],
+    ["PBTrainers:",                  ""],
+    ["PBItems:",                     ""],   
+    ["PBSpecies:",                   ""],
+    ["PBAbilities:",                 ""],
+    ["PBStatuses:",                  ""],
+    ["PBMoves:",                     ""],
+    ["PBTypes:",                     ""],
+    ["pbPlayCry",                    "Pokemon.play_cry"],   
+    ["EncounterTypes:",              ""],
+    ["pbWildBattle",                 "WildBattle.start"],
+    ["PokeBattle_Pokemon.new",       "Pokemon.new"],
+    ["makeShiny",                    "make_shiny"],
+    ["setNature",                    "set_nature"],
+    [":PARLYZHEAL",                  ":PARALYZEHEAL"],
+    [":XDEFEND",                     ":XDEFENSE"],
+    [":XDEFEND2",                    ":XDEFENSE2"],
+    [":XDEFEND3",                    ":XDEFENSE3"],
+    [":XDEFEND6",                    ":XDEFENSE6"],
+    [":XSPECIAL",                    ":XSPATK"],
+    [":XSPECIAL2",                   ":XSPATK2"],
+    [":XSPECIAL3",                   ":XSPATK3"],
+    [":XSPECIAL6",                   ":XSPATK6"],
+    ["$PokemonGlobal.coins",         "$player.coins"],
+    ["pbHasType?",                   "$player.has_pokemon_of_type?"]
   ]
 
   module_function
@@ -1200,7 +1224,7 @@ module Compiler
               newEvents = []
               if cost == 0
                 push_branch(newEvents, "$bag.can_add?(:#{itemname})", oldIndent)
-                push_text(newEvents, _INTL("Here you go!"), oldIndent + 1)
+                push_text(newEvents, _INTL("¡Aquí tienes!"), oldIndent + 1)
                 push_script(newEvents, "pbReceiveItem(:#{itemname})", oldIndent + 1)
                 push_else(newEvents, oldIndent + 1)
                 push_text(newEvents, _INTL("No te queda espacio en la Mochila."), oldIndent + 1)
@@ -1734,8 +1758,9 @@ module Compiler
     changed = false
     Graphics.update
     commonEvents = load_data("Data/CommonEvents.rxdata")
-    Console.echo_li(_INTL("Procesando eventos comundes..."))
+    Console.echo_li(_INTL("Procesando eventos comunes..."))
     commonEvents.length.times do |key|
+      changed = true if fix_event_scripts(commonEvents[key])
       newevent = fix_event_use(commonEvents[key], 0, mapData)
       if newevent
         commonEvents[key] = newevent
@@ -1745,7 +1770,7 @@ module Compiler
     save_data(commonEvents, "Data/CommonEvents.rxdata") if changed
     Console.echo_done(true)
     if change_record.length > 0 || changed
-      Console.echo_warn(_INTL("Se han alterado los datos RMXP. Cierra RMXP para asegurarte de que los cambios se aplican."))
+      Console.echo_warn(_INTL("Se han alterado los datos RMXP. Cierra RMXP sin darle a guardar para asegurarte de que los cambios se aplican."))
     end
   end
 end

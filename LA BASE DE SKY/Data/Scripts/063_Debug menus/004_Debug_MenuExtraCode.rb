@@ -118,7 +118,30 @@ class SpriteWindow_DebugVariables < Window_DrawableCommand
       end
     else
       name = $data_system.variables[index + 1]
-      status = $game_variables[index + 1].to_s
+      codeswitch = (name[/^s\:/])
+      if codeswitch
+        code = $~.post_match
+        code_parts = code.split(/[(\[=<>. ]/)
+        code_parts[0].strip!
+        code_parts[0].gsub!(/^\s*!/, "")
+        status = nil
+        if code_parts[0][0][/[a-z]/i]
+          if code_parts[0][0].upcase == code_parts[0][0] &&
+             (Kernel.const_defined?(code_parts[0]) rescue false)
+            status = (eval(code) rescue nil)   # Code starts with a class/method name
+          elsif code_parts[0][0].downcase == code_parts[0][0] &&
+                !(Interpreter.method_defined?(code_parts[0].to_sym) rescue false) &&
+                !(Game_Event.method_defined?(code_parts[0].to_sym) rescue false)
+            status = (eval(code) rescue nil)   # Code starts with a method name (that isn't in Interpreter/Game_Event)
+          end
+        else
+          # Code doesn't start with a letter, probably $, just evaluate it
+          status = (eval(code) rescue nil)
+        end
+      else
+        status = $game_variables[index + 1]
+      end
+      status = status.to_s
       status = "\"__\"" if nil_or_empty?(status)
     end
     name ||= ""
@@ -186,6 +209,8 @@ def pbDebugVariables(mode)
     current_id = right_window.index + 1
     case mode
     when 0   # Switches
+      name = $data_system.switches[current_id]
+      next if name && name[/^s\:/]
       if Input.trigger?(Input::USE)
         pbPlayDecisionSE
         $game_switches[current_id] = !$game_switches[current_id]
@@ -193,6 +218,8 @@ def pbDebugVariables(mode)
         $game_map.need_refresh = true
       end
     when 1   # Variables
+      name = $data_system.variables[current_id]
+      next if name && name[/^s\:/]
       if Input.repeat?(Input::LEFT)
         pbDebugSetVariable(current_id, -1)
         right_window.refresh
@@ -613,7 +640,7 @@ def pbImportAllAnimations
       Graphics.update
       audios = []
       files = Dir.glob(folder + "/*.*")
-      ["wav", "ogg", "mid", "wma"].each do |ext|   # mp3
+      ["wav", "ogg", "mp3", "midi", "mid", "wma"].each do |ext|
         upext = ext.upcase
         audios.concat(files.find_all { |f| f[f.length - 3, 3] == ext })
         audios.concat(files.find_all { |f| f[f.length - 3, 3] == upext })
@@ -726,9 +753,9 @@ end
 
 def pbCheckTileValidity(tile_id, map, tilesets, passages)
   return false if !tile_id
-  if tile_id > 0 && tile_id < 384
+  if tile_id > 0 && tile_id < TilemapRenderer::TILESET_START_ID
     # Check for defined autotile
-    autotile_id = (tile_id / 48) - 1
+    autotile_id = (tile_id / TilemapRenderer::TILES_PER_AUTOTILE) - 1
     autotile_name = tilesets[map.tileset_id].autotile_names[autotile_id]
     return true if autotile_name && autotile_name != ""
   else

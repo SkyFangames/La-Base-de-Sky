@@ -49,8 +49,7 @@ end
 # Permanently stores data of follower events (i.e. in save files).
 #===============================================================================
 class PokemonGlobalMetadata
-  attr_accessor :dependentEvents   # Deprecated - to be removed in v22
-  attr_writer   :followers
+  attr_writer :followers
 
   def followers
     @followers = [] if !@followers
@@ -253,6 +252,7 @@ class Game_FollowerFactory
         follower.invisible_after_transfer = false
         event.turn_towards_leader($game_player)
       end
+      event.through = event.on_stair?
       event.move_speed  = leader.move_speed
       event.transparent = !follower.visible?
       if $PokemonGlobal.ice_sliding

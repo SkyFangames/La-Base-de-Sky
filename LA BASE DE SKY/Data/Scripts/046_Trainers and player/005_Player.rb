@@ -107,6 +107,11 @@ class Player < Trainer
     return @badges.count { |badge| badge == true }
   end
 
+  def running?
+    return false if !$game_player.can_run? || $PokemonGlobal.ice_sliding
+    return $game_player.move_speed == PLAYER_SPEEDS[:running] ? true : false 
+  end
+
   #=============================================================================
 
   # (see Pokedex#seen?)

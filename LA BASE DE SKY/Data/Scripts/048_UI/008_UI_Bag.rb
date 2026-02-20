@@ -5,12 +5,23 @@ class Window_PokemonBag < Window_DrawableCommand
   attr_reader :pocket
   attr_accessor :sorting
 
+  RECT_X_OFFSET = 16
+  RECT_Y_OFFSET = 16
+  CLOSE_BAG_TEXT_X_OFFSET = 0
+  CLOSE_BAG_TEXT_Y_OFFSET = 2
+  ITEM_NAME_Y_OFFSET = 2
+  ITEM_NAME_X_OFFSET = 0
+  ICON_REGISTER_X_OFFSET = -72
+  ICON_REGISTER_Y_OFFSET = 8
+  ITEM_QUANTITY_X_OFFSET = -16
+  ITEM_QUANTITY_Y_OFFSET = 2
+
   def initialize(bag, filterlist, pocket, x, y, width, height)
     @bag        = bag
     @filterlist = filterlist
     @pocket     = pocket
     @sorting = false
-    @adapter = PokemonMartAdapter.new
+    @adapter = PokemonItemMartAdapter.new
     super(x, y, width, height)
     @selarrow  = AnimatedBitmap.new("Graphics/UI/Bag/cursor")
     @swaparrow = AnimatedBitmap.new("Graphics/UI/Bag/cursor_swap")
@@ -63,10 +74,10 @@ class Window_PokemonBag < Window_DrawableCommand
 
   def drawItem(index, _count, rect)
     textpos = []
-    rect = Rect.new(rect.x + 16, rect.y + 16, rect.width - 16, rect.height)
+    rect = Rect.new(rect.x + RECT_X_OFFSET, rect.y + RECT_Y_OFFSET, rect.width - RECT_X_OFFSET, rect.height)
     thispocket = @bag.pockets[@pocket]
     if index == self.itemCount - 1
-      textpos.push([_INTL("CERRAR MOCHILA"), rect.x, rect.y + 2, :left, self.baseColor, self.shadowColor])
+      textpos.push([_INTL("CERRAR MOCHILA"), rect.x + CLOSE_BAG_TEXT_X_OFFSET, rect.y + CLOSE_BAG_TEXT_Y_OFFSET, :left, self.baseColor, self.shadowColor])
     else
       item = (@filterlist) ? thispocket[@filterlist[@pocket][index]][0] : thispocket[index][0]
       baseColor   = self.baseColor
@@ -76,7 +87,7 @@ class Window_PokemonBag < Window_DrawableCommand
         shadowColor = Color.new(248, 144, 144)
       end
       textpos.push(
-        [@adapter.getDisplayName(item), rect.x, rect.y + 2, :left, baseColor, shadowColor]
+        [@adapter.getDisplayName(item), rect.x + ITEM_NAME_X_OFFSET, rect.y + ITEM_NAME_Y_OFFSET, :left, baseColor, shadowColor]
       )
       item_data = GameData::Item.get(item)
       showing_register_icon = false
@@ -84,13 +95,13 @@ class Window_PokemonBag < Window_DrawableCommand
         if @bag.registered?(item)
           pbDrawImagePositions(
             self.contents,
-            [[_INTL("Graphics/UI/Bag/icon_register"), rect.x + rect.width - 72, rect.y + 8, 0, 0, -1, 24]]
+            [[_INTL("Graphics/UI/Bag/icon_register"), rect.x + rect.width + ICON_REGISTER_X_OFFSET, rect.y + ICON_REGISTER_Y_OFFSET, 0, 0, -1, 24]]
           )
           showing_register_icon = true
         elsif pbCanRegisterItem?(item)
           pbDrawImagePositions(
             self.contents,
-            [[_INTL("Graphics/UI/Bag/icon_register"), rect.x + rect.width - 72, rect.y + 8, 0, 24, -1, 24]]
+            [[_INTL("Graphics/UI/Bag/icon_register"), rect.x + rect.width + ICON_REGISTER_X_OFFSET, rect.y + ICON_REGISTER_Y_OFFSET, 0, 24, -1, 24]]
           )
           showing_register_icon = true
         end
@@ -98,8 +109,8 @@ class Window_PokemonBag < Window_DrawableCommand
       if item_data.show_quantity? && !showing_register_icon
         qty = (@filterlist) ? thispocket[@filterlist[@pocket][index]][1] : thispocket[index][1]
         qtytext = _ISPRINTF("x{1: 3d}", qty)
-        xQty    = rect.x + rect.width - self.contents.text_size(qtytext).width - 16
-        textpos.push([qtytext, xQty, rect.y + 2, :left, baseColor, shadowColor])
+        xQty    = rect.x + rect.width - self.contents.text_size(qtytext).width + ITEM_QUANTITY_X_OFFSET
+        textpos.push([qtytext, xQty, rect.y + ITEM_QUANTITY_Y_OFFSET, :left, baseColor, shadowColor])
       end
     end
     pbDrawTextPositions(self.contents, textpos)
@@ -130,13 +141,63 @@ end
 # Bag visuals
 #===============================================================================
 class PokemonBag_Scene
-  ITEMLISTBASECOLOR     = Color.new(88, 88, 80)
-  ITEMLISTSHADOWCOLOR   = Color.new(168, 184, 184)
-  ITEMTEXTBASECOLOR     = Color.new(248, 248, 248)
-  ITEMTEXTSHADOWCOLOR   = Color.new(0, 0, 0)
-  POCKETNAMEBASECOLOR   = Color.new(88, 88, 80)
-  POCKETNAMESHADOWCOLOR = Color.new(168, 184, 184)
-  ITEMSVISIBLE          = 7
+  ITEMLISTBASECOLOR                = Color.new(88, 88, 80)
+  ITEMLISTSHADOWCOLOR              = Color.new(168, 184, 184)
+  ITEMTEXTBASECOLOR                = Color.new(248, 248, 248)
+  ITEMTEXTSHADOWCOLOR              = Color.new(0, 0, 0)
+  POCKETNAMEBASECOLOR              = Color.new(88, 88, 80)
+  POCKETNAMESHADOWCOLOR            = Color.new(168, 184, 184)
+  ITEMSVISIBLE                     = 7
+  BAG_SPRITE_WIDTH                 = 30
+  BAG_SPRITE_HEIGHT                = 20
+  POCKET_ICON_WIDTH                = 186
+  POCKET_ICON_HEIGHT               = 32
+  POCKET_ICON_X                    = 0
+  POCKET_ICON_Y                    = 224
+  POCKET_ICON_OFFSET_X             = 6
+  POCKET_ICON_OFFSET_Y             = 6
+  POCKET_ICON_ACTIVE_OFFSET_X      = 2
+  POCKET_ICON_ACTIVE_OFFSET_Y      = 2
+  POCKET_ICON_SPACING_X            = 22
+  POCKET_ICON_SRC_WIDTH            = 20
+  POCKET_ICON_SRC_HEIGHT           = 20
+  POCKET_ICON_SRC_Y                = 28
+  POCKET_ACTIVE_SRC_WIDTH          = 28
+  POCKET_ACTIVE_SRC_HEIGHT         = 28
+  POCKET_ACTIVE_SRC_Y              = 0
+  POCKET_NAME_X                    = 94
+  POCKET_NAME_Y                    = 186
+
+  SLIDER_X                         = 470
+  SLIDER_ARROW_TOP_Y               = 16
+  SLIDER_ARROW_BOTTOM_Y            = 228
+  SLIDER_ARROW_SRC_TOP_Y           = 0
+  SLIDER_ARROW_SRC_BOTTOM_Y        = 38
+  SLIDER_ARROW_SRC_WIDTH           = 36
+  SLIDER_ARROW_SRC_HEIGHT          = 38
+
+  SLIDER_BAR_SRC_X                 = 36
+  SLIDER_BAR_TOP_SRC_Y             = 0
+  SLIDER_BAR_TOP_SRC_HEIGHT        = 4
+  SLIDER_BAR_FILL_SRC_Y            = 4
+  SLIDER_BAR_FILL_CHUNK_HEIGHT     = 16
+  SLIDER_BAR_BOTTOM_SRC_Y          = 20
+  SLIDER_BAR_BOTTOM_SRC_HEIGHT     = 18
+
+  SLIDER_HEIGHT                    = 174
+  SLIDER_BOX_MIN_HEIGHT            = 38
+  SLIDER_BOX_START_Y               = 54
+  SLIDER_MIN_DIV                   = 6
+  LEFT_ARROW_X                     = -4
+  LEFT_ARROW_Y                     = 76
+  RIGHT_ARROW_X                    = 150
+  RIGHT_ARROW_Y                    = 76
+  ITEM_ICON_X                      = 48
+  ITEM_ICON_Y                      = Graphics.height - 48
+  TEXT_BOX_X                       = 72
+  TEXT_BOX_Y                       = 272
+  TEXT_BOX_WIDTH                   = Graphics.width - 72 - 24
+  TEXT_BOX_HEIGHT                  = 128
 
   def pbUpdate
     pbUpdateSpriteHash(@sprites)
@@ -183,18 +244,18 @@ class PokemonBag_Scene
     @sprites["background"] = IconSprite.new(0, 0, @viewport)
     @sprites["overlay"] = BitmapSprite.new(Graphics.width, Graphics.height, @viewport)
     pbSetSystemFont(@sprites["overlay"].bitmap)
-    @sprites["bagsprite"] = IconSprite.new(30, 20, @viewport)
-    @sprites["pocketicon"] = BitmapSprite.new(186, 32, @viewport)
-    @sprites["pocketicon"].x = 0
-    @sprites["pocketicon"].y = 224
+    @sprites["bagsprite"] = IconSprite.new(BAG_SPRITE_WIDTH, BAG_SPRITE_HEIGHT, @viewport)
+    @sprites["pocketicon"] = BitmapSprite.new(POCKET_ICON_WIDTH, POCKET_ICON_HEIGHT, @viewport)
+    @sprites["pocketicon"].x = POCKET_ICON_X
+    @sprites["pocketicon"].y = POCKET_ICON_Y
     @sprites["leftarrow"] = AnimatedSprite.new("Graphics/UI/left_arrow", 8, 40, 28, 2, @viewport)
-    @sprites["leftarrow"].x       = -4
-    @sprites["leftarrow"].y       = 76
+    @sprites["leftarrow"].x       = LEFT_ARROW_X
+    @sprites["leftarrow"].y       = LEFT_ARROW_Y
     @sprites["leftarrow"].visible = (!@choosing || numfilledpockets > 1)
     @sprites["leftarrow"].play
     @sprites["rightarrow"] = AnimatedSprite.new("Graphics/UI/right_arrow", 8, 40, 28, 2, @viewport)
-    @sprites["rightarrow"].x       = 150
-    @sprites["rightarrow"].y       = 76
+    @sprites["rightarrow"].x       = RIGHT_ARROW_X
+    @sprites["rightarrow"].y       = RIGHT_ARROW_Y
     @sprites["rightarrow"].visible = (!@choosing || numfilledpockets > 1)
     @sprites["rightarrow"].play
     @sprites["itemlist"] = Window_PokemonBag.new(@bag, @filterlist, lastpocket, 168, -8, 314, 40 + 32 + (ITEMSVISIBLE * 32))
@@ -203,9 +264,9 @@ class PokemonBag_Scene
     @sprites["itemlist"].index       = @bag.last_viewed_index(lastpocket)
     @sprites["itemlist"].baseColor   = ITEMLISTBASECOLOR
     @sprites["itemlist"].shadowColor = ITEMLISTSHADOWCOLOR
-    @sprites["itemicon"] = ItemIconSprite.new(48, Graphics.height - 48, nil, @viewport)
+    @sprites["itemicon"] = ItemIconSprite.new(ITEM_ICON_X, ITEM_ICON_Y, nil, @viewport)
     @sprites["itemtext"] = Window_UnformattedTextPokemon.newWithSize(
-      "", 72, 272, Graphics.width - 72 - 24, 128, @viewport
+      "", TEXT_BOX_X, TEXT_BOX_Y, TEXT_BOX_WIDTH, TEXT_BOX_HEIGHT, @viewport
     )
     @sprites["itemtext"].baseColor   = ITEMTEXTBASECOLOR
     @sprites["itemtext"].shadowColor = ITEMTEXTSHADOWCOLOR
@@ -277,13 +338,18 @@ class PokemonBag_Scene
       (1...@bag.pockets.length).each do |i|
         next if @filterlist[i].length > 0
         @sprites["pocketicon"].bitmap.blt(
-          6 + ((i - 1) * 22), 6, @pocketbitmap.bitmap, Rect.new((i - 1) * 20, 28, 20, 20)
+          POCKET_ICON_OFFSET_X + ((i - 1) * POCKET_ICON_SPACING_X), POCKET_ICON_OFFSET_Y,
+          @pocketbitmap.bitmap,
+          Rect.new((i - 1) * POCKET_ICON_SRC_WIDTH, POCKET_ICON_SRC_Y, POCKET_ICON_SRC_WIDTH, POCKET_ICON_SRC_HEIGHT)
         )
       end
     end
     @sprites["pocketicon"].bitmap.blt(
-      2 + ((@sprites["itemlist"].pocket - 1) * 22), 2, @pocketbitmap.bitmap,
-      Rect.new((@sprites["itemlist"].pocket - 1) * 28, 0, 28, 28)
+      POCKET_ICON_ACTIVE_OFFSET_X + ((@sprites["itemlist"].pocket - 1) * POCKET_ICON_SPACING_X),
+      POCKET_ICON_ACTIVE_OFFSET_Y,
+      @pocketbitmap.bitmap,
+      Rect.new((@sprites["itemlist"].pocket - 1) * POCKET_ACTIVE_SRC_WIDTH, POCKET_ACTIVE_SRC_Y,
+               POCKET_ACTIVE_SRC_WIDTH, POCKET_ACTIVE_SRC_HEIGHT)
     )
     # Refresh the item window
     @sprites["itemlist"].refresh
@@ -298,34 +364,34 @@ class PokemonBag_Scene
     # Draw the pocket name
     pbDrawTextPositions(
       overlay,
-      [[PokemonBag.pocket_names[@bag.last_viewed_pocket - 1], 94, 186, :center, POCKETNAMEBASECOLOR, POCKETNAMESHADOWCOLOR]]
+      [[PokemonBag.pocket_names[@bag.last_viewed_pocket - 1], POCKET_NAME_X, POCKET_NAME_Y, :center, POCKETNAMEBASECOLOR, POCKETNAMESHADOWCOLOR]]
     )
     # Draw slider arrows
     showslider = false
     if itemlist.top_row > 0
-      overlay.blt(470, 16, @sliderbitmap.bitmap, Rect.new(0, 0, 36, 38))
+      overlay.blt(SLIDER_X, SLIDER_ARROW_TOP_Y, @sliderbitmap.bitmap, Rect.new(0, SLIDER_ARROW_SRC_TOP_Y, SLIDER_ARROW_SRC_WIDTH, SLIDER_ARROW_SRC_HEIGHT))
       showslider = true
     end
     if itemlist.top_item + itemlist.page_item_max < itemlist.itemCount
-      overlay.blt(470, 228, @sliderbitmap.bitmap, Rect.new(0, 38, 36, 38))
+      overlay.blt(SLIDER_X, SLIDER_ARROW_BOTTOM_Y, @sliderbitmap.bitmap, Rect.new(0, SLIDER_ARROW_SRC_BOTTOM_Y, SLIDER_ARROW_SRC_WIDTH, SLIDER_ARROW_SRC_HEIGHT))
       showslider = true
     end
     # Draw slider box
     if showslider
-      sliderheight = 174
+      sliderheight = SLIDER_HEIGHT
       boxheight = (sliderheight * itemlist.page_row_max / itemlist.row_max).floor
-      boxheight += [(sliderheight - boxheight) / 2, sliderheight / 6].min
-      boxheight = [boxheight.floor, 38].max
-      y = 54
+      boxheight += [(sliderheight - boxheight) / 2, sliderheight / SLIDER_MIN_DIV].min
+      boxheight = [boxheight.floor, SLIDER_BOX_MIN_HEIGHT].max
+      y = SLIDER_BOX_START_Y
       y += ((sliderheight - boxheight) * itemlist.top_row / (itemlist.row_max - itemlist.page_row_max)).floor
-      overlay.blt(470, y, @sliderbitmap.bitmap, Rect.new(36, 0, 36, 4))
+      overlay.blt(SLIDER_X, y, @sliderbitmap.bitmap, Rect.new(SLIDER_BAR_SRC_X, SLIDER_BAR_TOP_SRC_Y, SLIDER_ARROW_SRC_WIDTH, SLIDER_BAR_TOP_SRC_HEIGHT))
       i = 0
-      while i * 16 < boxheight - 4 - 18
-        height = [boxheight - 4 - 18 - (i * 16), 16].min
-        overlay.blt(470, y + 4 + (i * 16), @sliderbitmap.bitmap, Rect.new(36, 4, 36, height))
+      while i * SLIDER_BAR_FILL_CHUNK_HEIGHT < boxheight - SLIDER_BAR_TOP_SRC_HEIGHT - SLIDER_BAR_BOTTOM_SRC_HEIGHT
+        height = [boxheight - SLIDER_BAR_TOP_SRC_HEIGHT - SLIDER_BAR_BOTTOM_SRC_HEIGHT - (i * SLIDER_BAR_FILL_CHUNK_HEIGHT), SLIDER_BAR_FILL_CHUNK_HEIGHT].min
+        overlay.blt(SLIDER_X, y + SLIDER_BAR_TOP_SRC_HEIGHT + (i * SLIDER_BAR_FILL_CHUNK_HEIGHT), @sliderbitmap.bitmap, Rect.new(SLIDER_BAR_SRC_X, SLIDER_BAR_FILL_SRC_Y, SLIDER_ARROW_SRC_WIDTH, height))
         i += 1
       end
-      overlay.blt(470, y + boxheight - 18, @sliderbitmap.bitmap, Rect.new(36, 20, 36, 18))
+      overlay.blt(SLIDER_X, y + boxheight - SLIDER_BAR_BOTTOM_SRC_HEIGHT, @sliderbitmap.bitmap, Rect.new(SLIDER_BAR_SRC_X, SLIDER_BAR_BOTTOM_SRC_Y, SLIDER_ARROW_SRC_WIDTH, SLIDER_BAR_BOTTOM_SRC_HEIGHT))
     end
     # Set the selected item's icon
     @sprites["itemicon"].item = itemlist.item
@@ -495,7 +561,7 @@ class PokemonBagScreen
       commands[commands.length]                 = _INTL("Cancelar")
       # Show commands generated above
       itemname = itm.name
-      command = @scene.pbShowCommands(_INTL("Has selecccionado {1}.", itemname), commands)
+      command = @scene.pbShowCommands(_INTL("Has seleccionado {1}.", itemname), commands)
       if cmdRead >= 0 && command == cmdRead   # Read mail
         pbFadeOutIn do
           pbDisplayMail(Mail.new(item, "", ""))
@@ -559,7 +625,7 @@ class PokemonBagScreen
             params.setRange(0, Settings::BAG_MAX_PER_SLOT)
             params.setDefaultValue(qty)
             newqty = pbMessageChooseNumber(
-              _INTL("Elige la nueva calidad de {1} (máx. {2}).", itemplural, Settings::BAG_MAX_PER_SLOT), params
+              _INTL("Elige la nueva cantidad de {1} (máx. {2}).", itemplural, Settings::BAG_MAX_PER_SLOT), params
             ) { @scene.pbUpdate }
             if newqty > qty
               @bag.add(item, newqty - qty)

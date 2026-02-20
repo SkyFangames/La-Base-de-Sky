@@ -1,6 +1,8 @@
+#===============================================================================
 # All weather particles are assumed to start at the top/right and move to the
 # bottom/left. Particles are only reset if they are off-screen to the left or
 # bottom.
+#===============================================================================
 module RPG
   class Weather
     attr_reader   :type
@@ -499,6 +501,7 @@ module RPG
         ensureSprites
         MAX_SPRITES.times do |i|
           update_sprite_position(@sprites[i], i, false)
+          pbDayNightTint(@sprites[i])
         end
       elsif @sprites.length > 0
         @sprites.each { |sprite| sprite&.dispose }
@@ -509,6 +512,7 @@ module RPG
         ensureSprites
         MAX_SPRITES.times do |i|
           update_sprite_position(@new_sprites[i], i, true)
+          pbDayNightTint(@new_sprites[i])
         end
       elsif @new_sprites.length > 0
         @new_sprites.each { |sprite| sprite&.dispose }
@@ -518,7 +522,10 @@ module RPG
       if @tiles_wide > 0 && @tiles_tall > 0
         ensureTiles
         recalculate_tile_positions
-        @tiles.each_with_index { |sprite, i| update_tile_position(sprite, i) }
+        @tiles.each_with_index do |sprite, i|
+          update_tile_position(sprite, i)
+          pbDayNightTint(sprite)
+        end
       elsif @tiles.length > 0
         @tiles.each { |sprite| sprite&.dispose }
         @tiles.clear
@@ -526,4 +533,3 @@ module RPG
     end
   end
 end
-

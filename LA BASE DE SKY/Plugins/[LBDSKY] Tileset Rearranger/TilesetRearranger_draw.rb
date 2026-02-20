@@ -150,17 +150,17 @@ class TilesetRearranger
         case @mode
         when :swap
           pbDrawTextPositions(bitmap, [
-            [_INTL("Choose tile(s) to swap"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
+            [_INTL("Elegir tile(s) a intercambiar"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
              Color.new(248, 248, 248), Color.new(40, 40, 40)]
           ])
         when :cut_insert
           pbDrawTextPositions(bitmap, [
-            [_INTL("Choose tile(s) to cut"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
+            [_INTL("Elegir tile(s) a cortar"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
              Color.new(248, 248, 248), Color.new(40, 40, 40)]
           ])
         when :move_row
           pbDrawTextPositions(bitmap, [
-            [_INTL("Choose row(s) to move"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
+            [_INTL("Elegir tile(s) a mover"), bitmap.width / 2, (bitmap.height / 2) - 10, 2,
              Color.new(248, 248, 248), Color.new(40, 40, 40)]
           ])
         end
@@ -190,7 +190,7 @@ class TilesetRearranger
       end
     when :add_row
       pbDrawTextPositions(bitmap, [
-        [_INTL("Insert new row"), bitmap.width / 2, (bitmap.height / 2) - 10, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
+        [_INTL("Insertar nueva fila"), bitmap.width / 2, (bitmap.height / 2) - 10, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
       ])
     when :erase
       # Draw blank tile
@@ -204,7 +204,7 @@ class TilesetRearranger
       bitmap.fill_rect(start_x + TILE_SIZE, start_y - 1,         1, TILE_SIZE + 2, Color.new(255, 255, 255))
       # Draw text
       pbDrawTextPositions(bitmap, [
-        [_INTL("Erase tile(s)"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
+        [_INTL("Borrar tile(s)"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
       ])
     when :delete_row
       # Draw blank tiles
@@ -221,7 +221,7 @@ class TilesetRearranger
       bitmap.fill_rect(start_x + (TILES_PER_ROW * TILE_SIZE), start_y - 1,         1, TILE_SIZE + 2,                   Color.new(255, 255, 255))
       # Draw text
       pbDrawTextPositions(bitmap, [
-        [_INTL("Delete row"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
+        [_INTL("Eliminar fila"), bitmap.width / 2, start_y + TILE_SIZE + 16, 2, Color.new(248, 248, 248), Color.new(40, 40, 40)]
       ])
     end
   end

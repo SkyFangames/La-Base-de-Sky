@@ -18,7 +18,6 @@ module GameData
     DATA = {}
     DATA_FILENAME = "moves.dat"
     PBS_BASE_FILENAME = "moves"
-
     SCHEMA = {
       "SectionName"  => [:id,               "m"],
       "Name"         => [:real_name,        "s"],
@@ -38,6 +37,8 @@ module GameData
 
     extend ClassMethodsSymbols
     include InstanceMethods
+
+    #---------------------------------------------------------------------------
 
     def initialize(hash)
       @id               = hash[:id]
@@ -121,7 +122,8 @@ module GameData
             item_data.flags.each do |flag|
               next if !flag[/^NaturalGift_(\w+)_(?:\d+)$/i]
               typ = $~[1].to_sym
-              return typ if GameData::Type.exists?(typ)
+              ret = typ if GameData::Type.exists?(typ)
+              break
             end
           end
           return :NORMAL
@@ -189,6 +191,18 @@ module GameData
           end
         when "TypeIsUserFirstType"
           return pkmn.types[0]
+        when "TypeDependsOnUserOgerponForm"
+          if pkmn.isSpecies?(:OGERPON)
+            return :WATER if pkmn.form == 1
+            return :FIRE if pkmn.form == 2
+            return :ROCK if pkmn.form == 3
+          end
+        when "TypeDependsOnUserTaurosFormRemoveScreens"
+          if pkmn.isSpecies?(:TAUROS)
+            return :FIGHTING if pkmn.form == 1
+            return :FIRE if pkmn.form == 2
+            return :WATER if pkmn.form == 3
+          end
         end
       end
       return @type
@@ -421,7 +435,7 @@ module GameData
         when "PowerHigherWithUserHappiness"
           return [(pkmn.happiness * 2 / 5).floor, 1].max
         when "PowerLowerWithUserHappiness"
-          return [((255 - pkmn.happiness) * 2 / 5).floor, 1].max
+          return [((Settings::MAX_HAPPINESS - pkmn.happiness) * 2 / 5).floor, 1].max
         when "PowerHigherWithLessPP"
           dmgs = [200, 80, 60, 50, 40]
           ppLeft = [[(move&.pp || @total_pp) - 1, 0].max, dmgs.length - 1].min
@@ -442,4 +456,3 @@ module GameData
     end
   end
 end
-

@@ -140,12 +140,18 @@ def pbSpindaSpots(pkmn, bitmap)
 end
 
 #===============================================================================
-# Regular form differences
+# Regular form differences.
 #===============================================================================
 
 MultipleForms.register(:UNOWN, {
   "getFormOnCreation" => proc { |pkmn|
     next rand(28)
+  }
+})
+
+MultipleForms.register(:DUNSPARCE, {
+  "getFormOnCreation" => proc { |pkmn|
+    next (rand(100) == 0) ? 1 : 0   # 99% form 0, 1% form 1
   }
 })
 
@@ -255,7 +261,7 @@ MultipleForms.register(:ROTOM, {
         pkmn.moves[old_move_index].id = new_move_id
         new_move_name = pkmn.moves[old_move_index].name
         pbMessage(_INTL("{1} olvidó {2}...", pkmn.name, old_move_name) + "\1")
-        pbMessage("\\se[]" + _INTL("¡{1} aprendió {2}!", pkmn.name, new_move_name) + "\\se[Pkmn move learnt]")
+        pbMessage("\\se[]" + _INTL("¡{1} aprendió {2}!", pkmn.name, new_move_name) + "\\se[Pkmn move learnt]\\wtnp[30]")
       end
     elsif !new_move_id.nil?
       # Just learn the new move
@@ -264,9 +270,22 @@ MultipleForms.register(:ROTOM, {
   }
 })
 
+MultipleForms.register(:DIALGA, {
+  "getForm" => proc { |pkmn|
+    next pkmn.hasItem?(:ADAMANTCRYSTAL) ? 1 : 0
+  }
+})
+
+MultipleForms.register(:PALKIA, {
+  "getForm" => proc { |pkmn|
+    next pkmn.hasItem?(:LUSTROUSGLOBE) ? 1 : 0
+  }
+})
+
 MultipleForms.register(:GIRATINA, {
   "getForm" => proc { |pkmn|
-    next 1 if pkmn.hasItem?(:GRISEOUSORB)
+    next 1 if pkmn.hasItem?(:GRISEOUSCORE)
+    next 1 if pkmn.hasItem?(:GRISEOUSORB) && Settings::MECHANICS_GENERATION <= 8
     next 1 if $game_map&.metadata&.has_flag?("DistortionWorld")
     next 0
   }
@@ -411,13 +430,15 @@ MultipleForms.register(:GRENINJA, {
   }
 })
 
-MultipleForms.register(:SCATTERBUG, {
-  "getFormOnCreation" => proc { |pkmn|
-    next $player.secret_ID % 18
-  }
-})
+if Settings::LINEA_DE_SPEWPA_POR_ID
+  MultipleForms.register(:SCATTERBUG, {
+    "getFormOnCreation" => proc { |pkmn|
+      next $player.secret_ID % 18
+    }
+  })
 
-MultipleForms.copy(:SCATTERBUG, :SPEWPA, :VIVILLON)
+  MultipleForms.copy(:SCATTERBUG, :SPEWPA, :VIVILLON)
+end
 
 MultipleForms.register(:FURFROU, {
   "getForm" => proc { |pkmn|
@@ -433,6 +454,14 @@ MultipleForms.register(:FURFROU, {
 
 MultipleForms.register(:ESPURR, {
   "getForm" => proc { |pkmn|
+    next if pkmn.form_simple >= 2   # Don't change form number if Mega Evolved
+    next pkmn.gender
+  },
+  # "getFormOnCreation" => proc { |pkmn|
+  #   next pkmn.gender
+  # },
+
+  "getFormOnGenderChange" => proc { |pkmn|
     next pkmn.gender
   }
 })
@@ -469,18 +498,38 @@ MultipleForms.register(:XERNEAS, {
 MultipleForms.register(:ZYGARDE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
+  },
+  "getMegaMoves" => proc { |_pkmn| next { :COREENFORCER => :NIHILLIGHT }  },
+  "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
+    if pkmn.fainted? || endBattle
+      pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
+    end
   }
 })
 
 MultipleForms.register(:HOOPA, {
   "getForm" => proc { |pkmn|
-    if !pkmn.time_form_set ||
+    if pkmn.time_form_set &&
        pbGetTimeNow.to_i > pkmn.time_form_set.to_i + (60 * 60 * 24 * 3)   # 3 days
       next 0
     end
   },
   "onSetForm" => proc { |pkmn, form, oldForm|
     pkmn.time_form_set = (form > 0) ? pbGetTimeNow.to_i : nil
+    if Settings::MECHANICS_GENERATION >= 9
+      if form == 0   # Confined
+        old_move = :HYPERSPACEHOLE
+        new_move = :HYPERSPACEFURY
+      elsif form == 1   # Unbound
+        old_move = :HYPERSPACEFURY
+        new_move = :HYPERSPACEHOLE
+      end
+      if GameData::Move.exists?(new_move)
+        pkmn.moves.each_with_index do |move, i|
+          move.id = new_move if move.id == old_move
+        end
+      end
+    end
   }
 })
 
@@ -543,19 +592,22 @@ MultipleForms.register(:SILVALLY, {
 
 MultipleForms.register(:MINIOR, {
   "getFormOnCreation" => proc { |pkmn|
-    next rand(7..13)   # Meteor forms are 0-6, Core forms are 7-13
+    next rand(7)   # Meteor forms are 0-6 (always created in Meteor form outside battle)
   },
   "getFormOnEnteringBattle" => proc { |pkmn, wild|
-    next pkmn.form - 7 if pkmn.form >= 7 && wild   # Wild Minior always appear in Meteor form
+    # Al entrar en combate, Minior siempre empieza en forma núcleo (Core)
+    # La comprobación de PS se hace después (manejada por la habilidad Escudo Limitado)
+    next pkmn.form + 7 if pkmn.form < 7   # Convert from Meteor (0-6) to Core (7-13)
   },
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next pkmn.form - 7 if pkmn.form >= 7
+    # Fuera de combate, Minior siempre vuelve a forma meteorito (Meteor)
+    next pkmn.form - 7 if pkmn.form >= 7   # Convert from Core (7-13) to Meteor (0-6)
   }
 })
 
 MultipleForms.register(:MIMIKYU, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next 0 if pkmn.fainted? || endBattle
+    next 0 if (pkmn.fainted? && Settings::MECHANICS_GENERATION == 7) || endBattle
   }
 })
 
@@ -634,7 +686,7 @@ MultipleForms.register(:ALCREMIE, {
 
 MultipleForms.register(:EISCUE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next 0 if pkmn.fainted? || endBattle
+    next 0 if (pkmn.fainted? && Settings::MECHANICS_GENERATION == 7) || endBattle
   }
 })
 
@@ -728,76 +780,59 @@ MultipleForms.register(:CALYREX, {
   }
 })
 
-#===============================================================================
-# Regional forms
-# This code is for determining the form of a Pokémon in an egg created at the
-# Day Care, where that Pokémon's species has regional forms. The regional form
-# chosen depends on the region in which the egg was produced (not where it
-# hatches).
-#===============================================================================
-
-# The code in this proc assumes that the appropriate regional form for a Pokémon
-# is equal to the region's number. This may not be true in your game.
-# Note that this proc only produces a non-zero form number if the species has a
-# defined form with that number, which means it can be used for both Alolan and
-# Galarian forms separately (and for Meowth which has both).
-MultipleForms.register(:RATTATA, {
-  "getFormOnEggCreation" => proc { |pkmn|
-    if $game_map
-      map_pos = $game_map.metadata&.town_map_position
-      next map_pos[0] if map_pos &&
-                         GameData::Species.get_species_form(pkmn.species, map_pos[0]).form == map_pos[0]
-    end
-    next 0
-  }
-})
-
-MultipleForms.copy(:RATTATA, :SANDSHREW, :VULPIX, :DIGLETT, :MEOWTH, :GEODUDE,
-                   :GRIMER, :PONYTA, :FARFETCHD, :CORSOLA, :ZIGZAGOON,
-                   :DARUMAKA, :YAMASK, :STUNFISK, :SLOWPOKE, :ARTICUNO, :ZAPDOS,
-                   :MOLTRES, :WOOPER, :TAUROS )
-
-#===============================================================================
-# Regional forms
-# These species don't have visually different regional forms, but they need to
-# evolve into different forms depending on the location where they evolve.
-#===============================================================================
-
-# Alolan forms
-MultipleForms.register(:PIKACHU, {
+MultipleForms.register(:BASCULEGION, {
   "getForm" => proc { |pkmn|
-    next if pkmn.form_simple >= 2
-    if $game_map
-      map_pos = $game_map.metadata&.town_map_position
-      next 1 if map_pos && map_pos[0] == 1   # Tiall region
-    end
-    next 0
+    next (pkmn.female?) ? 3 : 2
   }
 })
 
-MultipleForms.copy(:PIKACHU, :EXEGGCUTE, :CUBONE)
-
-# Galarian forms
-MultipleForms.register(:KOFFING, {
+MultipleForms.register(:LECHONK, {
   "getForm" => proc { |pkmn|
-    next if pkmn.form_simple >= 2
-    if $game_map
-      map_pos = $game_map.metadata&.town_map_position
-      next 1 if map_pos && map_pos[0] == 2   # Galar region
-    end
-    next 0
+    next pkmn.gender
   }
 })
 
+MultipleForms.copy(:LECHONK, :OINKOLOGNE)
 
-MultipleForms.copy(:KOFFING, :MIMEJR)
+MultipleForms.register(:TANDEMAUS, {
+  "getFormOnCreation" => proc { |pkmn|
+    next (rand(100) == 0) ? 1 : 0   # 99% form 0, 1% form 1
+  }
+})
 
+MultipleForms.copy(:TANDEMAUS, :MAUSHOLD)
+
+MultipleForms.register(:SQUAWKABILLY, {
+  "getFormOnCreation" => proc { |pkmn|
+    next rand(4)
+  }
+})
 
 MultipleForms.register(:PALAFIN, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next 0 if endBattle
+    next 1 if pkmn.able? && pkmn.hasAbility?(:ZEROTOHERO) && usedInBattle && !endBattle   # Switched out while unfainted
+    next pkmn.form
   }
 })
+
+MultipleForms.register(:TATSUGIRI, {
+  "getFormOnCreation" => proc { |pkmn|
+    next rand(3)
+  }
+})
+
+# NOTE: Wild Dudunsparce is always form 0.
+# NOTE: Wild Gimmighoul is always form 0.
+
+MultipleForms.register(:SINISCHA, {
+  "getFormOnCreation" => proc { |pkmn|
+    next 1 if rand(100) < 10   # Artisan
+    next 0                     # Counterfeit
+  }
+})
+
+MultipleForms.copy(:SINISCHA, :POLTCHAGEIST)
 
 MultipleForms.register(:OGERPON, {
   "getForm" => proc { |pkmn|
@@ -810,9 +845,105 @@ MultipleForms.register(:OGERPON, {
 
 MultipleForms.register(:TERAPAGOS, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next 0 if endBattle
+    next 0 if endBattle || (pkmn.fainted? && pkmn.form >= 2)
   }
 })
 
-# Cambio de forma en base al género
-MultipleForms.copy(:ESPURR, :LECHONK, :OINKOLOGNE, :BASCULEGION)
+#===============================================================================
+# Regional forms.
+# This code is for determining the form of a Pokémon in an egg created at the
+# Day Care, where that Pokémon's species has regional forms. The regional form
+# chosen depends on the region in which the egg was produced (not where it
+# hatches). The form should have a flag called "EggInRegion_2" where the number
+# is the number of the region in which the egg was produced.
+#===============================================================================
+
+MultipleForms.register(:RATTATA, {
+  "getFormOnEggCreation" => proc { |pkmn|
+    if $game_map
+      map_pos = $game_map.metadata&.town_map_position
+      region_num = map_pos[0]
+      found_form = -1
+      GameData::Species.each_form_for_species(pkmn.species) do |sp_data|
+        sp_data.flags.each do |flag|
+          if flag[/^EggInRegion_(\d+)$/i] && $~[1].to_i == region_num
+            found_form = sp_data.form
+            break
+          end
+        end
+        break if found_form >= 0
+      end
+      next found_form if found_form >= 0
+    end
+    next 0
+  }
+})
+
+MultipleForms.copy(
+  # Alolan forms
+  :RATTATA, :SANDSHREW, :VULPIX, :DIGLETT, :MEOWTH, :GEODUDE, :GRIMER,
+  # Galarian forms (excluding Meowth which is above)
+  :PONYTA, :SLOWPOKE, :FARFETCHD, :ARTICUNO, :ZAPDOS, :MOLTRES, :CORSOLA,
+  :ZIGZAGOON, :DARUMAKA, :YAMASK, :STUNFISK,
+  # Hisuian forms
+  :GROWLITHE, :VOLTORB, :QWILFISH, :SNEASEL, :ZORUA,
+  # Paldean forms
+  :TAUROS, :WOOPER
+)
+
+#===============================================================================
+# Regional forms.
+# These species don't have visually different regional forms, but they need to
+# evolve into different forms depending on the location where they evolve.
+#===============================================================================
+
+if Settings::REGIONAL_FORMS_DEPEND_ON_MAP_REGION
+  # Alolan forms.
+  MultipleForms.register(:PIKACHU, {
+    "getForm" => proc { |pkmn|
+      next if pkmn.form_simple >= 2
+      if $game_map
+        map_pos = $game_map.metadata&.town_map_position
+        next 1 if map_pos && map_pos[0] == 1   # Tiall region
+      end
+      next 0
+    }
+  })
+
+  MultipleForms.copy(:PIKACHU, :EXEGGCUTE, :CUBONE)
+
+  # Galarian forms.
+  MultipleForms.register(:KOFFING, {
+    "getForm" => proc { |pkmn|
+      next if pkmn.form_simple >= 2
+      if $game_map
+        map_pos = $game_map.metadata&.town_map_position
+        next 1 if map_pos && map_pos[0] == 2   # Galar region
+      end
+      next 0
+    }
+  })
+
+  MultipleForms.copy(:KOFFING, :MIMEJR)
+
+  # Hisuian forms.
+  MultipleForms.register(:QUILAVA, {
+    "getForm" => proc { |pkmn|
+      next if pkmn.form_simple >= 2
+      if $game_map
+        map_pos = $game_map.metadata&.town_map_position
+        next 1 if map_pos && map_pos[0] == 3   # Hisui region
+      end
+      next 0
+    }
+  })
+
+  MultipleForms.copy(:QUILAVA,
+                    :DEWOTT, :PETILIL, :RUFFLET, :GOOMY, :BERGMITE, :DARTRIX)
+end
+
+# Formas en base al género
+MultipleForms.copy(:INDEEDEE, :LECHONK, :OINKOLOGNE, :BASCULEGION)
+
+# Paldean forms.
+# None!

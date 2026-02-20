@@ -291,7 +291,7 @@ module BattleAnimationEditor
     set7 = sliderwin2.addSlider(_INTL("Fusión:"), 0, 2, cel[AnimFrame::BLENDTYPE])
     set8 = sliderwin2.addTextSlider(_INTL("Voltear:"), [_INTL("Falso"), _INTL("Verdadero")], cel[AnimFrame::MIRROR])
     prio = [_INTL("Atrás"), _INTL("Al frente"), _INTL("Detrás del foco"), _INTL("Sobre el foco")]
-    set9 = sliderwin2.addTextSlider(_INTL("Priority:"), prio, cel[AnimFrame::PRIORITY] || 1)
+    set9 = sliderwin2.addTextSlider(_INTL("Prioridad:"), prio, cel[AnimFrame::PRIORITY] || 1)
     foc = [_INTL("Usuario"), _INTL("Objetivo"), _INTL("Usuario y objetivo"), _INTL("Pantalla")]
     curfoc = [3, 1, 0, 2, 3][cel[AnimFrame::FOCUS] || canvas.animation.position || 4]
     set10 = sliderwin2.addTextSlider(_INTL("Foco:"), foc, curfoc)
@@ -486,7 +486,7 @@ module BattleAnimationEditor
           cmdwin.commands.compact!
           cmdwin.commands.push(canvas.animation.timing[canvas.animation.timing.length - 1].to_s)
           cmdwin.commands[cmdNewSound = cmdwin.commands.length] = _INTL("Añadir: Reproducir sonido...")
-          cmdwin.commands[cmdNewBG = cmdwin.commands.length] = _INTL("Añadir: Definir gráfico de fondo..")
+          cmdwin.commands[cmdNewBG = cmdwin.commands.length] = _INTL("Añadir: Definir gráfico de fondo...")
           cmdwin.commands[cmdEditBG = cmdwin.commands.length] = _INTL("Añadir: Editar color/localización del fondo...")
           cmdwin.commands[cmdNewFO = cmdwin.commands.length] = _INTL("Añadir: Establecer gráfico en primer plano...")
           cmdwin.commands[cmdEditFO = cmdwin.commands.length] = _INTL("Añadir: Editar color/localiz. de gráfico en primer plano...")
@@ -508,8 +508,8 @@ module BattleAnimationEditor
     ret = false
     pbRgssChdir(File.join("Audio", "SE", "Anim")) do
       animfiles.concat(Dir.glob("*.wav"))
-  #    animfiles.concat(Dir.glob("*.mp3"))
       animfiles.concat(Dir.glob("*.ogg"))
+      animfiles.concat(Dir.glob("*.mp3"))
       animfiles.concat(Dir.glob("*.wma"))
     end
     animfiles.uniq!
@@ -624,7 +624,7 @@ module BattleAnimationEditor
   def pbEditBG(canvas, timing)
     ret = false
     maxsizewindow = ControlWindow.new(0, 0, 320, 32 * 11)
-    maxsizewindow.addSlider(_INTL("Duration:"), 0, 50, timing.duration)
+    maxsizewindow.addSlider(_INTL("Duración:"), 0, 50, timing.duration)
     maxsizewindow.addOptionalSlider(_INTL("X:"), -500, 500, timing.bgX || 0)
     maxsizewindow.addOptionalSlider(_INTL("Y:"), -500, 500, timing.bgY || 0)
     maxsizewindow.addOptionalSlider(_INTL("Opacidad:"), 0, 255, timing.opacity || 0)
@@ -850,7 +850,7 @@ module BattleAnimationEditor
     set8 = sliderwin2.addOptionalTextSlider(_INTL("Voltear:"), [_INTL("Falso"), _INTL("Verdadero")], 0)
     prio = [_INTL("Atrás"), _INTL("Al frente"), _INTL("Detrás del foco"), _INTL("Sobre el foco")]
     set9 = sliderwin2.addOptionalTextSlider(_INTL("Prioridad:"), prio, 1)
-    foc = [_INTL("Usuario"), _INTL("Objetivo"), _INTL("usuario y objetivo"), _INTL("Pantalla")]
+    foc = [_INTL("Usuario"), _INTL("Objetivo"), _INTL("Usuario y objetivo"), _INTL("Pantalla")]
     curfoc = [3, 1, 0, 2, 3][canvas.animation.position || 4]
     set10 = sliderwin2.addOptionalTextSlider(_INTL("Foco:"), foc, curfoc)
     okbutton = sliderwin2.addButton(_INTL("OK"))
@@ -1106,7 +1106,7 @@ module BattleAnimationEditor
       end
       pbTimingList(canvas) if sidewin.changed?(0)
       if sidewin.changed?(1)
-        positions = [_INTL("User"), _INTL("Objetivo"), _INTL("Usuario y objetivo"), _INTL("Pantalla")]
+        positions = [_INTL("Usuario"), _INTL("Objetivo"), _INTL("Usuario y objetivo"), _INTL("Pantalla")]
         indexes = [2, 1, 3, 4]   # Keeping backwards compatibility
         positions.length.times do |i|
           selected = "[  ]"
@@ -1163,10 +1163,10 @@ def pbAnimationEditor
     animation[0].graphic = ""
   end
   Graphics.resize_screen(Settings::SCREEN_WIDTH + 288, Settings::SCREEN_HEIGHT + 288)
-  pbSetResizeFactor(1)
+  pbSetResizeFactor(1, false)
   BattleAnimationEditor.animationEditorMain(animation)
   Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
-  pbSetResizeFactor($PokemonSystem.screensize)
+  pbSetResizeFactor($PokemonSystem.screensize, false)
   $game_map&.autoplay
 end
 
