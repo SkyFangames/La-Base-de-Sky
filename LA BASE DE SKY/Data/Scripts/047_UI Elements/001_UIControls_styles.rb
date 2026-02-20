@@ -38,7 +38,7 @@ module UIControls::StyleMixin
       :se_background       => Color.gray,
       :property_background => Color.new(224, 224, 224),
       # ListedParticle and Canvas
-      :focus_colors              => {
+      :focus_colors        => {
         :foreground             => Color.new(128, 160, 248),   # Blue
         :midground              => Color.new(128, 160, 248),   # Blue
         :background             => Color.new(128, 160, 248),   # Blue
@@ -80,7 +80,7 @@ module UIControls::StyleMixin
       :se_background       => Color.new(160, 160, 160),
       :property_background => Color.new(96, 96, 96),
       # ListedParticle and Canvas
-      :focus_colors              => {
+      :focus_colors        => {
         :foreground             => Color.new(80, 112, 248),   # Blue
         :midground              => Color.new(80, 112, 248),   # Blue
         :background             => Color.new(80, 112, 248),   # Blue
