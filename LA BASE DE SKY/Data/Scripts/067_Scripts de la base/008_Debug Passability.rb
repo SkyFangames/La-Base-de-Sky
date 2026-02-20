@@ -81,7 +81,7 @@ class Debug_Passability
     else
       $passa_terrain_bitmap = BitmapSprite.new($game_map.width*32, $game_map.height*32)
       $passa_terrain_bitmap.z = $passa_sprite.z
-      $passa_terrain_bitmap.bitmap.font.name = "Sword"
+      $passa_terrain_bitmap.bitmap.font.name = "Power green"
       $passa_terrain_bitmap.bitmap.font.size = 20
     end
     

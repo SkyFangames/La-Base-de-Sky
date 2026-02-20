@@ -4,6 +4,16 @@
 # Website    = https://www.youtube.com/watch?v=dQw4w9WgXcQ
 #===============================================================================
 module OWShadowSettings
+  
+  # If true, calculates the shadow size based on the sprite's pixels.
+  # If false, uses the size defined in FIXED_SHADOW_SIZE for all.
+  AUTOMATIC_SHADOW_GENERATION = false
+
+  # Fixed shadow size when automatic generation is disabled (false).
+  # A value of 10 to 14 is standard for normal-sized characters.
+  FIXED_SHADOW_SIZE = 12
+
+  # ============================================================================
   # Set this to true if you want the event name and character name blacklists to be case sensitive.
   CASE_SENSITIVE_BLACKLISTS = false
 
@@ -26,10 +36,10 @@ module OWShadowSettings
 
   # Hash to adjust the shadow radius for specific character files.
   # Key: Part of the filename (e.g., "PIKACHU").
-  # Value: Integer to add/subtract from the calculated logical width (e.g., -2).
-  CHARACTER_RADIUS_FIX = {
-    "PIKACHU" => -2,
-    "SNORLAX" => 8
+  # Value: [RADIUS, X, Y]
+  CHARACTER_SHADOW_FIX = {
+    "PIKACHU" => [-2, 0, 0],
+    "SNORLAX" => [8, 0, 0],
   }
 end
 
@@ -48,6 +58,9 @@ class Sprite_OWShadow
     @sprite   = Sprite.new(viewport)
     @disposed = false
     @remove   = false
+    @fix_radius = 0
+    @fix_x      = 0
+    @fix_y      = 0
     
     # Store data for both directions
     @shadow_data_down = nil
@@ -227,22 +240,26 @@ class Sprite_OWShadow
     
     # Get coordinates for the specific frame (Down or Up)
     sx, sy = get_frame_coordinates(row_direction)
-    real_width, offset_x = analyze_footprint(bitmap, sx, sy, cw, ch)
 
-    # --- Draw Bitmap ---
-    logical_width = (real_width * 0.9 / 2).ceil + 4
-    
-    # Apply Character Radius Fix
-    if @event.respond_to?(:character_name) && @event.character_name
-      char_name = @event.character_name
-      OWShadowSettings::CHARACTER_RADIUS_FIX.each do |key, value|
-        if char_name.include?(key)
-          logical_width += value
-          break
-        end
-      end
+    if OWShadowSettings::AUTOMATIC_SHADOW_GENERATION
+      real_width, offset_x = analyze_footprint(bitmap, sx, sy, cw, ch)
+      logical_width = (real_width * 0.9 / 2).ceil + 4
+    else
+      offset_x = 0
+      logical_width = OWShadowSettings::FIXED_SHADOW_SIZE
+    end
+
+    # Apply Character Fix
+    if OWShadowSettings::AUTOMATIC_SHADOW_GENERATION
+      real_width, offset_x = analyze_footprint(bitmap, sx, sy, cw, ch)
+      logical_width = (real_width * 0.9 / 2).ceil + 4
+    else
+      offset_x = 0
+      logical_width = OWShadowSettings::FIXED_SHADOW_SIZE
     end
     
+    # Apply Character Radius Fix
+    logical_width += @fix_radius    
     logical_width = [logical_width, 8].max
     logical_width -= 1 if logical_width.odd?    
     logical_height = (logical_width * 0.5).ceil
@@ -317,6 +334,20 @@ class Sprite_OWShadow
     # Invalidate if character name changed
     if current_char_name != @last_character_name
       @last_character_name = current_char_name
+      @fix_radius = 0
+      @fix_x      = 0
+      @fix_y      = 0
+      if current_char_name
+        OWShadowSettings::CHARACTER_SHADOW_FIX.each do |key, value|
+          if current_char_name.include?(key)
+            @fix_radius = value[0]
+            @fix_x      = value[1]
+            @fix_y      = value[2]
+            break
+          end
+        end
+      end
+      
       invalidate_shadow_data
     end
     
@@ -356,8 +387,8 @@ class Sprite_OWShadow
     s_off_x = (@event.respond_to?(:shadow_offset_x) ? @event.shadow_offset_x.to_i : 0)
     s_off_y = (@event.respond_to?(:shadow_offset_y) ? @event.shadow_offset_y.to_i : 0)
     @sprite.bitmap  = current_data[:bitmap]
-    @sprite.x       = @rsprite.x + s_off_x
-    @sprite.y       = ground_y + s_off_y
+    @sprite.x       = @rsprite.x + s_off_x + @fix_x
+    @sprite.y       = ground_y + s_off_y + @fix_y
     @sprite.ox      = (current_data[:bitmap].width / 2) - current_data[:offset]
     @sprite.oy      = current_data[:bitmap].height
     @sprite.z       = @event.screen_z(current_data[:bitmap].height) - 1
