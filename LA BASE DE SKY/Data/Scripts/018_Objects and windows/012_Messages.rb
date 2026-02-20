@@ -405,6 +405,12 @@ def pbReplaceMessageText(text, msg_window)
   text.gsub!(/\\pg/i, "\\r") if $player&.female?
   text.gsub!(/\\pog/i, "\\r") if $player&.male?
   text.gsub!(/\\pog/i, "\\b") if $player&.female?
+
+  text.gsub!(/\\@a/i,"a") if $player&.female?
+  text.gsub!(/\\@a/i,"") if $player&.male?
+  text.gsub!(/\\@/i,"a") if $player&.female?
+  text.gsub!(/\\@/i,"o") if $player&.male?
+
   text.gsub!(/\\pg/i, "")
   text.gsub!(/\\pog/i, "")
   male_text_tag = shadowc3tag(MessageConfig::MALE_TEXT_MAIN_COLOR, MessageConfig::MALE_TEXT_SHADOW_COLOR)
