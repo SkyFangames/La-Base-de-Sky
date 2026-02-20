@@ -9,6 +9,15 @@ module Settings
   # Esta es la versión de tu juego. El formato debe ser MAYOR.MENOR.PARCHE.
   GAME_VERSION = "1.0.0"
 
+
+  # El ANCHO por defecto de la pantalla en píxeles (en escala 1.0).
+  SCREEN_WIDTH  = 512
+  # El ALTO de la pantalla en píxelex (en escala 1.0).
+  SCREEN_HEIGHT = 384
+  # El tamaño de la pantalla por defecto. 
+  #   * Posibles valores: 0.5, 1.0, 1.5 y 2.0.
+  SCREEN_SCALE  = 1.0
+
   # Esto indica de qué generación son las mecánicas que se apliquen en tu juego.
   # Esto se usa en batallas, scripts y otras secciones que son usadas dentro y
   # fuera de batalla, como por ejemplo perder vida por veneno fuera de comabte.
@@ -70,6 +79,9 @@ module Settings
   SHINY_POKEMON_CHANCE = (MECHANICS_GENERATION >= 6) ? 16 : 8
   # Si los Super Variocolor están activados (usan una animación distinta).
   SUPER_SHINY          = (MECHANICS_GENERATION >= 8)
+  # Si quieres que, en caso de haber super variocolor, el % sea 1 de cada 10
+  # (en lugar de 1 de cada 65536).
+  SUPER_SHINY_1_DE_10  = true
 
   LEGENDARIES_HAVE_SOME_PERFECT_IVS   = (MECHANICS_GENERATION >= 6)
   # La posibilidad de que un Pokémon salvaje o de Huevo tenga Pokérus
@@ -79,6 +91,9 @@ module Settings
   # estadísticas de un Pokémon. A pesar de ello, seguirán existiendo ya que son
   # utilizados para cosas como el Poder Oculto.
   DISABLE_IVS_AND_EVS  = false
+
+  # La felicidad máxima que puede tener un Pokémon.
+  MAX_HAPPINESS = 255
 
   #=============================================================================
 
@@ -373,15 +388,67 @@ module Settings
 
   #=============================================================================
   
-  # Par de IDs de mapas, en los que el mensaje con el nombre de la zona no se 
-  # muestra al cambiar de un mapa a otro (y viceversa). Útil para rutas largas
-  # que las separas en diferentes mapas.
-  #   Ej.: [4,5,16,17,42,43] hace que los mapas 4 y 5 estén conectados, el 16 
-  # con el 17 también, y el 42 con el 43. De todos modos, esto no te hace falta
-  # si los dos mapas se llaman exactamente igual, puesto que en esos casos no
-  # se ve tampoco el nombre al cambiar entre ellos (y no hace falta ponerlos
-  # aquí).
-  NO_SIGNPOSTS = []
+  #-----------------------------------------------------------------------------
+  # Location signpost.
+  #-----------------------------------------------------------------------------
+
+  # Si quieres desactivar completamente los carteles de ubicación, pon esto en true.
+  DISABLE_LOCATION_SIGNS = false
+
+  # Si quieres que el cartel de ubicación se muestre también en el menú de pausa, pon esto en true.
+  SHOW_LOCATION_SIGN_IN_PAUSE_MENU = true
+
+  # Pares de IDs de mapas, donde no se muestran los carteles de ubicación al moverse de uno
+  # de los mapas en un par al otro (y viceversa). Útil para rutas/ciudades largas que se extienden
+  # a través de múltiples mapas.
+  #   e.g. [4,5,16,17,42,43] serán los pares de mapas 4,5 y 16,17 y 42,43.
+  # Moverse entre dos mapas que tienen el mismo nombre exacto no mostrará el
+  # cartel de ubicación de todos modos, por lo que no necesitas listar esos mapas aquí.
+  NO_LOCATION_SIGNS = []
+
+  # El nombre de archivo de un gráfico de cartel de ubicación que se usará si los metadatos del mapa
+  # no definen uno. Pon esto en nil para usar el windowskin de menú predeterminado.
+  DEFAULT_LOCATION_SIGN_GRAPHIC = "HGSS default"
+  
+  # Asigna gráficos de carteles de ubicación a estilos de texto (números). Estos se usan en
+  # la clase LocationWindow para mostrar el texto de manera apropiada para el gráfico que se
+  # está utilizando. El estilo :none está reservado para el estilo "sin gráfico". Un nombre de archivo
+  # para cada tipo de cartel puede ser un array de Hash con los diferentes graficos de ese estilo, cada hash puede contener las siguientes claves:
+  # { :graphic => nombre de archivo(nombre del archivo que debe estar en Graphics/UI/Location), -- OBLIGATORIO 
+  #   :text_color => color base del texto, -- OBLIGATORIO
+  #   :shadow_color => color de sombra del texto, -- OBLIGATORIO
+  #   :zoomx => zoom horizontal (int o float), -- OPCIONAL, por defecto 1
+  #   :zoomy => zoom vertical (int o float),  -- OPCIONAL, por defecto 1
+  #   :graphic_offset => desplazamiento del gráfico (array [x, y]), -- OPCIONAL, por defecto [0, 0]
+  #   :text_offset => desplazamiento del texto con respecto al grafico (array [x, y]), -- OPCIONAL, por defecto [0, 0]
+  #   :center_text => centrar el texto (boolean true / false) -- OPCIONAL, por defecto false
+  # }
+  # Tambien podria ser un array de nombres de archivo, en cuyo caso se usaría el mismo estilo de texto para todos los gráficos de ese estilo.
+  # Los valores para los estilos en los que solo se ingresa el grafico están definidos en la clase LocationWindow, y se pueden modificar editando esa clase.
+  LOCATION_SIGN_GRAPHIC_STYLES = {
+    :dp       => [ { :graphic => "DP",           
+                     :text_color => Color.new(72, 80, 72),    :shadow_color => Color.new(144, 160, 160), 
+                     :text_offset => [8, -10] }],
+    :hgss     => [ { :graphic => "HGSS cave",    :text_color => Color.new(232, 232, 232), :shadow_color => Color.new(120, 144, 160), :center_text => true },
+                   { :graphic => "HGSS city",    :text_color => Color.new(56, 64, 72),    :shadow_color => Color.new(152, 152, 144), :center_text => true },
+                   { :graphic => "HGSS default", :text_color => Color.new(48, 64, 72),    :shadow_color => Color.new(144, 144, 96),  :center_text => true },
+                   { :graphic => "HGSS forest",  :text_color => Color.new(232, 232, 232), :shadow_color => Color.new(120, 176, 144), :center_text => true },
+                   { :graphic => "HGSS lake",    :text_color => Color.new(40, 48, 56),    :shadow_color => Color.new(104, 144, 192), :center_text => true },
+                   { :graphic => "HGSS park",    :text_color => Color.new(40, 48, 56),    :shadow_color => Color.new(120, 136, 152), :center_text => true },
+                   { :graphic => "HGSS route",   :text_color => Color.new(48, 64, 72),    :shadow_color => Color.new(136, 136, 104), :center_text => true },
+                   { :graphic => "HGSS sea",     :text_color => Color.new(216, 240, 248), :shadow_color => Color.new(24, 96, 144),   :center_text => true },
+                   { :graphic => "HGSS town",    :text_color => Color.new(48, 56, 64),    :shadow_color => Color.new(144, 120, 80),  :center_text => true } 
+                  ],
+    :platinum => ["Pt cave", "Pt city", "Pt default", "Pt forest", "Pt lake",
+                  "Pt park", "Pt route", "Pt sea", "Pt town"],
+    :oras     => [{ :graphic => "ORAS", :text_color => Color.new(255, 255, 255), :shadow_color => Color.new(0, 0, 0, 128), 
+                    :text_offset => [0, 0], :graphic_offset => [0, 0], :zoomx => 2, :zoomy => 2,
+                    :center_text => true }],
+    :xy       => [{ :graphic => "XY",   :text_color => Color.new(255, 255, 255), :shadow_color => Color.new(0, 0, 0, 128), 
+                    :text_offset => [60, 10], :graphic_offset => [Settings::SCREEN_WIDTH / 4 - 20, Settings::SCREEN_HEIGHT - 100], :zoomx => 2, :zoomy => 2,
+                    :center_text => true }],
+  }
+
 
   #=============================================================================
 
@@ -479,15 +546,8 @@ module Settings
   # quieta (muestra una ondulación de agua).
   WATER_RIPPLE_ANIMATION_ID    = 8
 
-  #=============================================================================
-
-  # El ANCHO por defecto de la pantalla en píxeles (en escala 1.0).
-  SCREEN_WIDTH  = 512
-  # El ALTO de la pantalla en píxelex (en escala 1.0).
-  SCREEN_HEIGHT = 384
-  # El tamaño de la pantalla por defecto. 
-  #   * Posibles valores: 0.5, 1.0, 1.5 y 2.0.
-  SCREEN_SCALE  = 1.0
+  # Animación que aparece cuando el jugador anda por la hierba (grass rustling) - SIN SONIDO.
+  GRASS_MUTED_ANIMATION_ID    = 20
 
   #=============================================================================
 
@@ -603,10 +663,11 @@ module Settings
   # Este numero deberia ser mayor a NUM_STORAGE_BOXES
   MAX_STORAGE_BOXES_EXTEND = 70
 
-  
+  # Elige si quieres que se puedan liberar Huevos del juego.
+  CAN_RELEASE_EGGS = false
+
   # Si quieres usar la nueva interfaz de opciones (true) o la clásica (false).
   USE_NEW_OPTIONS_UI = true
-
 
   # Si las capturas de pantalla se guardan en la carpeta "Saves" junto a las
   # partidas guardadas (true) o en la carpeta "Screenshots" del juego (false).
@@ -651,7 +712,7 @@ module Settings
       "letting people use their resources.",
       "You are awesome.",
       "Thanks to BellBlitzKing for",
-      "his Pokemon Sound Effects Pack:",
+      "his Pokémon Sound Effects Pack:",
       "Gen 1 to Gen 7 - All Attacks SFX.",
       "Kirik<s>Marin",
       "Maruno<s>AiurJordan",

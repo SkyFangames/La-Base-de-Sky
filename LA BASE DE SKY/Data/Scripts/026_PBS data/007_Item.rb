@@ -65,7 +65,7 @@ module GameData
         ["BattleUse",         EnumProperty.new(battle_use_array),      _INTL("Como se puede usar este objeto en combate.")],
         ["Flags",             StringListProperty,                      _INTL("Palabras/frases que pueden usarse para agrupar ciertos tipos de objetos.")],
         ["Consumable",        BooleanProperty,                         _INTL("Si este objeto es consumido tras usarlo o no.")],
-        ["ShowQuantity",      BooleanProperty,                         _INTL("Si la Mochila muestra cuantas unidades de este objeto ahi o no.")],
+        ["ShowQuantity",      BooleanProperty,                         _INTL("Si la Mochila muestra cuantas unidades de este objeto hay o no.")],
         ["Move",              MoveProperty,                            _INTL("Movimiento enseñado por esta MO, MT o DT.")],
         ["Description",       StringProperty,                          _INTL("Descripción de este objeto.")]
       ]

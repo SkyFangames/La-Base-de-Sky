@@ -7,7 +7,7 @@ module Console
   def setup_console
     return unless $DEBUG
     echoln "GPU Cache Máximo: #{Bitmap.max_size}"
-    echoln Console.markup_style("Puedes ignorar cualquier mensaje anterior sobre fluidsynth y la fuente primaria no encontrada.", text: :brown)
+    echoln Console.markup_style("Puedes ignorar cualquier mensaje anterior sobre fluidsynth.", text: :brown)
     echoln ""
     echoln Console.markup_style("===============================================================================", text: :yellow)
     echoln Console.markup_style("JUEGO: \"#{System.game_title}\" - Ventana de Salida", text: :yellow)

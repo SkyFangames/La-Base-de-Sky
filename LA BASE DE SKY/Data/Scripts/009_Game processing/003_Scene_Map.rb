@@ -98,6 +98,7 @@ class Scene_Map
     $game_map.autoplay
     Graphics.frame_reset
     Input.update
+    $game_player.clear_stair_data
   end
 
   def call_interact

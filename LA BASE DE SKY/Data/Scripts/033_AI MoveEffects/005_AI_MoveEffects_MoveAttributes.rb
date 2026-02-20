@@ -515,11 +515,11 @@ Battle::AI::Handlers::MoveEffectScore.add("EnsureNextCriticalHit",
     crit_stage = -1 if user.battler.pbOwnSide.effects[PBEffects::LuckyChant] > 0
     if crit_stage >= 0 && user.ability_active? && ![:MERCILESS].include?(user.ability_id)
       crit_stage = Battle::AbilityEffects.triggerCriticalCalcFromUser(user.battler.ability,
-         user.battler, user.battler, move.move, crit_stage)
+         user.battler, user.battler, crit_stage, move.move)
     end
     if crit_stage >= 0 && user.item_active?
       crit_stage = Battle::ItemEffects.triggerCriticalCalcFromUser(user.battler.item,
-         user.battler, user.battler, move.move, crit_stage)
+         user.battler, user.battler, crit_stage, move.move)
     end
     if crit_stage >= 0 && crit_stage < 50
       crit_stage += user.criticalHitRate
@@ -554,12 +554,12 @@ Battle::AI::Handlers::MoveEffectScore.add("StartPreventCriticalHitsAgainstUserSi
       crit_stage = 0
       if b.ability_active?
         crit_stage = Battle::AbilityEffects.triggerCriticalCalcFromTarget(b.battler.ability,
-           b.battler, b.battler, move.move, crit_stage)
+           b.battler, b.battler, crit_stage, move.move)
         next if crit_stage < 0
       end
       if b.item_active?
         crit_stage = Battle::ItemEffects.triggerCriticalCalcFromTarget(b.battler.item,
-           b.battler, b.battler, move.move, crit_stage)
+           b.battler, b.battler, crit_stage, move.move)
         next if crit_stage < 0
       end
       user_side_immune = false
@@ -572,12 +572,12 @@ Battle::AI::Handlers::MoveEffectScore.add("StartPreventCriticalHitsAgainstUserSi
       crit_stage = 0
       if crit_stage >= 0 && b.ability_active?
         crit_stage = Battle::AbilityEffects.triggerCriticalCalcFromUser(b.battler.ability,
-           b.battler, user.battler, move.move, crit_stage)
+           b.battler, user.battler, crit_stage, move.move)
         next if crit_stage < 0
       end
       if crit_stage >= 0 && b.item_active?
         crit_stage = Battle::ItemEffects.triggerCriticalCalcFromUser(b.battler.item,
-           b.battler, user.battler, move.move, crit_stage)
+           b.battler, user.battler, crit_stage, move.move)
         next if crit_stage < 0
       end
       if crit_stage >= 0 && crit_stage < 50

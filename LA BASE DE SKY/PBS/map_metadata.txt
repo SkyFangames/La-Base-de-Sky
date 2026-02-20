@@ -6,6 +6,7 @@
 Outdoor = true
 ShowArea = true
 MapPosition = 0,13,12
+LocationSign = Pt town
 BattleBack = field
 #-------------------------------
 [003]   # Casa del jugador

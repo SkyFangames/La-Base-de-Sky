@@ -15,13 +15,13 @@ class TilesetRearranger
 
   def open_menu
     commands = [
-       _INTL("Go to bottom"),
-       _INTL("Go to top"),
-       _INTL("Clear all unused tiles"),
-       _INTL("Delete all unused rows"),
-       _INTL("List maps using this tileset"),
-       _INTL("Change tileset"),
-       _INTL("Cancel")
+       _INTL("Ir hasta abajo"),
+       _INTL("Ir hasta arriba"),
+       _INTL("Borrar todos los tiles no usados"),
+       _INTL("Eliminar todas las filas no usadas"),
+       _INTL("Listar mapas que usan este tileset"),
+       _INTL("Cambiar tileset"),
+       _INTL("Cancelar")
     ]
     case pbShowCommands(nil, commands, -1)
     when 0   # Go to bottom

@@ -21,6 +21,13 @@ class PokemonLoadPanel < Sprite
   # Desplazamiento Y aplicado al usar la versión seleccionada del panel nuevo
   PANEL_NEW_SELECTED_OFFSET_Y    = 46
 
+  # Desplazamiento horizontal del menú
+  DESPLAZ_HORIZ_MENU  = 0
+  # Desplazamiento horizontal de los datos (medallas, pokédex, tiempo) respecto al menú
+  DESPLAZ_HORIZ_DATOS = 0
+  # Desplazamiento horizontal del texto del mapa
+  DESPLAZ_TEXTO_MAPA  = 0
+
   def initialize(index, title, isContinue, trainer, stats, mapid, viewport = nil)
     super(viewport)
     @index = index
@@ -72,31 +79,31 @@ class PokemonLoadPanel < Sprite
       end
       textpos = []
       if @isContinue
-        textpos.push([@title, 32, 16, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([_INTL("Medallas:"), 32, 118, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([@trainer.badge_count.to_s, 206, 118, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([_INTL("Pokédex:"), 32, 150, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([@trainer.pokedex.seen_count.to_s, 206, 150, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
-        textpos.push([_INTL("Tiempo:"), 32, 182, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@title, 32 + DESPLAZ_HORIZ_MENU, 16, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([_INTL("Medallas:"), 32 + DESPLAZ_HORIZ_MENU, 118, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@trainer.badge_count.to_s, 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 118, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([_INTL("Pokédex:"), 32 + DESPLAZ_HORIZ_MENU, 150, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@trainer.pokedex.seen_count.to_s, 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 150, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([_INTL("Tiempo:"), 32 + DESPLAZ_HORIZ_MENU, 182, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
         hour = @totalsec / 60 / 60
         min  = @totalsec / 60 % 60
         if hour > 0
-          textpos.push([_INTL("{1}h {2}m", hour, min), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+          textpos.push([_INTL("{1}h {2}m", hour, min), 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
         else
-          textpos.push([_INTL("{1}m", min), 206, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+          textpos.push([_INTL("{1}m", min), 206 + DESPLAZ_HORIZ_MENU + DESPLAZ_HORIZ_DATOS, 182, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
         end
         if @trainer.male?
-          textpos.push([@trainer.name, 112, 70, :left, MALE_TEXT_COLOR, MALE_TEXT_SHADOW_COLOR])
+          textpos.push([@trainer.name, 112 + DESPLAZ_HORIZ_MENU, 70, :left, MALE_TEXT_COLOR, MALE_TEXT_SHADOW_COLOR])
         elsif @trainer.female?
-          textpos.push([@trainer.name, 112, 70, :left, FEMALE_TEXT_COLOR, FEMALE_TEXT_SHADOW_COLOR])
+          textpos.push([@trainer.name, 112 + DESPLAZ_HORIZ_MENU, 70, :left, FEMALE_TEXT_COLOR, FEMALE_TEXT_SHADOW_COLOR])
         else
-          textpos.push([@trainer.name, 112, 70, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+          textpos.push([@trainer.name, 112 + DESPLAZ_HORIZ_MENU, 70, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
         end
         mapname = pbGetMapNameFromId(@mapid)
         mapname.gsub!(/\\PN/, @trainer.name)
-        textpos.push([mapname, 386, 16, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([mapname, 386 + DESPLAZ_HORIZ_MENU + DESPLAZ_TEXTO_MAPA, 16, :right, TEXT_COLOR, TEXT_SHADOW_COLOR])
       else
-        textpos.push([@title, 32, 14, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
+        textpos.push([@title, 32 + DESPLAZ_HORIZ_MENU, 14, :left, TEXT_COLOR, TEXT_SHADOW_COLOR])
       end
       pbDrawTextPositions(self.bitmap, textpos)
     end
@@ -269,7 +276,7 @@ class PokemonLoadScreen
     save_data = SaveData.read_from_file(file_path)
     unless SaveData.valid?(save_data)
       if File.file?(file_path + ".bak")
-        pbMessage(_INTL("El archivo está corrupto. Se va a cargar un reespaldo."))
+        pbMessage(_INTL("El archivo está corrupto. Se va a cargar un respaldo."))
         save_data = load_save_file(file_path + ".bak")
       else
         self.prompt_save_deletion
@@ -326,7 +333,7 @@ class PokemonLoadScreen
     cmd_options      = -1
     cmd_language     = -1
     cmd_mystery_gift = -1
-    cmd_update     = -1
+    cmd_update       = -1
     cmd_debug        = -1
     cmd_quit         = -1
     show_continue = !@save_data.empty?
@@ -336,7 +343,7 @@ class PokemonLoadScreen
         commands[cmd_mystery_gift = commands.length] = _INTL("Regalo Misterioso")
       end
     end
-    commands[cmd_new_game = commands.length]  = _INTL("Juego Nuevo")
+    commands[cmd_new_game = commands.length]  = _INTL("Nueva partida")
     commands[cmd_options = commands.length]   = _INTL("Opciones")
     commands[cmd_language = commands.length]  = _INTL("Idioma") if Settings::LANGUAGES.length >= 2
     commands[cmd_update=commands.length]      = _INTL("Buscar actualizaciones") if PluginManager.installed?("Pokemon Essentials Game Updater")
@@ -364,12 +371,12 @@ class PokemonLoadScreen
         if Settings::USE_NEW_OPTIONS_UI
           UI::Options.new(true).main
         else
-        pbFadeOutIn do
-          UI::Options.new.main
-          # pbUpdateSceneMap
-          # menu.refresh
+          pbFadeOutIn do
+            scene = PokemonOption_Scene.new
+            screen = PokemonOptionScreen.new(scene)
+            screen.pbStartScreen(true)
+          end
         end
-      end
       when cmd_language
         @scene.pbEndScene
         $PokemonSystem.language = pbChooseLanguage

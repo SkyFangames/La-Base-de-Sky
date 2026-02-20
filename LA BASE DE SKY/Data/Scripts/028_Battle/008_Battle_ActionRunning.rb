@@ -80,7 +80,7 @@ class Battle
       
         if Settings::CAN_FORFEIT_TRAINER_BATTLES
           pbDisplayPaused(_INTL("¿Quieres perder el combate y abandonar ahora?"))
-          if pbDisplayConfirm(_INTL("Abandonar el combate es lo mismo  que perderlo. ¿Estás seguro?"))
+          if pbDisplayConfirm(_INTL("Abandonar el combate es lo mismo que perderlo. ¿Estás seguro?"))
             @decision = Outcome::LOSE   # Treated as a loss
             return 1
           end

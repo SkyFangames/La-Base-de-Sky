@@ -308,7 +308,7 @@ class Battle::Battler
        self.ability == :TERASHIFT && @form == 0
       @battle.pbShowAbilitySplash(self, true)
       @battle.pbHideAbilitySplash(self)
-      pbChangeForm(1, _INTL("{1} transformed!", pbThis))
+      pbChangeForm(1, _INTL("¡{1} se ha transformado!", pbThis))
     end
   end
 

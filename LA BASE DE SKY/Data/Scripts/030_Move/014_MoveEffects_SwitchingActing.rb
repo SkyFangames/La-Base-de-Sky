@@ -209,13 +209,14 @@ end
 #===============================================================================
 class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   def pbDisplayChargeMessage(user)
-    @battle.pbDisplay(_INTL("{1} is preparing to tell a chillingly bad joke!", user.pbThis))
+    @battle.pbDisplay(_INTL("¡{1} se está preparando para contar un chiste escalofriantemente malo!", user.pbThis))
   end
 
   def pbMoveFailed?(user, targets)
     if user.wild? || !@battle.pbCanChooseNonActive?(user.index)
-      if !@battle.pbCanStartWeather?(:Snowstorm)
-        @battle.pbDisplay(_INTL("But it failed!"))
+      weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm 
+      if !@battle.pbCanStartWeather?(weather)
+        @battle.pbDisplay(_INTL("¡Pero ha fallado!"))
         return true
       end
     end
@@ -223,7 +224,8 @@ class Battle::Move::StartSnowstormWeatherSwitchOutUser < Battle::Move
   end
 
   def pbEffectGeneral(user)
-    @battle.pbStartWeather(user, :Snowstorm, true, false)
+    weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm 
+    @battle.pbStartWeather(user, weather, true, false)
   end
 
   def pbEndOfMoveUsageEffect(user, targets, numHits, switchedBattlers)
@@ -484,7 +486,7 @@ class Battle::Move::TrapUserAndTargetInBattle < Battle::Move
     return if Settings::MORE_TYPE_EFFECTS && target.pbHasType?(:GHOST)
     return if user.trappedInBattle? || target.trappedInBattle?
     target.effects[PBEffects::JawLock] = user.index
-    @battle.pbDisplay(_INTL("¡Ningún Pokemon puede huir!!"))
+    @battle.pbDisplay(_INTL("¡Ningún Pokémon puede huir!!"))
   end
 end
 

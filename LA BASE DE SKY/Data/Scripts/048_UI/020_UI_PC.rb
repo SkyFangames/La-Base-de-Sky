@@ -57,7 +57,7 @@ end
 #===============================================================================
 def pbPCMailbox
   if !$PokemonGlobal.mailbox || $PokemonGlobal.mailbox.length == 0
-    pbMessage(_INTL("No tines cartas guardadas."))
+    pbMessage(_INTL("No tienes cartas guardadas."))
   else
     loop do
       command = 0
@@ -202,7 +202,7 @@ MenuHandlers.add(:pc_menu, :pokemon_storage, {
           count += 1 if p && !p.egg? && p.hp > 0
         end
         if count <= 1
-          pbMessage(_INTL("¡No puedes dejar a tu útimo Pokémon!"))
+          pbMessage(_INTL("¡No puedes dejar a tu último Pokémon!"))
           next
         end
         pbFadeOutIn do

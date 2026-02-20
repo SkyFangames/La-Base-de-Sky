@@ -28,7 +28,7 @@ def pbSafeCopyFile(x, y, z = nil)
         different = true
       end
       if different
-        safetocopy = pbConfirmMessage(_INTL("Un archivo distinto llamado '{1}' ya existe. ¿Sobreescribirlo?", y))
+        safetocopy = pbConfirmMessage(_INTL("Un archivo distinto llamado '{1}' ya existe. ¿Sobrescribirlo?", y))
       else
         # No need to copy
         return

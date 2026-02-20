@@ -315,11 +315,12 @@ class PokemonRegionMap_Scene
            ($DEBUG && Input.press?(Input::CTRL)))
           return healspot if @fly_map
           name = pbGetMapNameFromId(healspot[0])
-          return healspot if pbConfirmMessage(_INTL("¿Quieres usar Vuelo para viajar a {1}?", name)) { pbUpdate }
+          return healspot if pbConfirmMessage(_INTL("¿Quieres usar Vuelo para ir a {1}?", name)) { pbUpdate }
         end
       elsif Input.trigger?(Input::USE) && @editor   # Intentionally after other USE input check
         pbChangeMapLocation(@map_x, @map_y)
-      elsif Input.trigger?(Input::ACTION) && !@wallmap && !@fly_map && pbCanFly?
+      elsif Input.trigger?(Input::ACTION) && Settings::CAN_FLY_FROM_TOWN_MAP &&
+            !@wallmap && !@fly_map && pbCanFly?
         pbPlayDecisionSE
         @mode = (@mode == 1) ? 0 : 1
         refresh_fly_screen

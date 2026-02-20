@@ -132,9 +132,9 @@ module Battle::CatchAndStoreMixin
     return if battler.fainted?   # Messages are shown in def pbThrowPokeBallNegated? for this
     item_name = GameData::Item.get(ball).name
     if item_name.starts_with_vowel?
-      pbDisplayBrief(_INTL("{1} lanzó un {2}!", pbPlayer.name, item_name))
+      pbDisplayBrief(_INTL("¡{1} lanzó un {2}!", pbPlayer.name, item_name))
     else
-      pbDisplayBrief(_INTL("{1} lanzó una {2}!", pbPlayer.name, item_name))
+      pbDisplayBrief(_INTL("¡{1} lanzó una {2}!", pbPlayer.name, item_name))
     end
   end
 

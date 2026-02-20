@@ -149,9 +149,9 @@ module GameData
       if GameData::Species.exists?(species)
         prefix = ""
         if @id.to_s.downcase.include?("female")
-          prefix = " siendo hembra"
+          prefix = _INTL(" siendo hembra")
         elsif @id.to_s.downcase.include?("male")
-          prefix = " siendo macho"
+          prefix = _INTL(" siendo macho")
         end
         form = false if evo == :MOTHIM
         species_data = GameData::Species.get(species)
@@ -179,12 +179,12 @@ module GameData
         end
         prefix = ""
         if [:Type, :Item, :Species].include?(@parameter)
-          prefix = ' ' #(par.starts_with_vowel?) ? "an " : "a "
+          prefix = '' #(par.starts_with_vowel?) ? "an " : "a "
         end
         param = c[2] + par + c[0] if !c.empty?
-        param_name = _INTL("{1}{2}", prefix, param)
+        param_name = "#{prefix}#{param}" 
         param = c[2] + par2 + c[0] if !c.empty? && par2
-        param_name2 = _INTL("{1}", param)
+        param_name2 = "#{param}" 
       when Integer
         case @id
         when :Region
@@ -205,54 +205,54 @@ module GameData
         end
       else
         case param
-        when "  "
-          location = (c.empty?) ? "Roca Musgosa" : c[2] + "Roca Musgosa" + c[0]
+        when "MossRock"
+          location = (c.empty?) ? _INTL("Roca Musgosa") : c[2] + _INTL("Roca Musgosa") + c[0]
           param_name = _INTL("cerca de una {1}", location)
         when "IceRock"
-          location = (c.empty?) ? "Roca Helada" : c[2] + "Roca Helada" + c[0]
+          location = (c.empty?) ? _INTL("Roca Helada") : c[2] + _INTL("Roca Helada") + c[0]
           param_name = _INTL("cerca de una {1}", location)
         when "Magnetic"
-          location = (c.empty?) ? "Área Magnética" : c[2] + "Área Magnética" + c[0]
+          location = (c.empty?) ? _INTL("Área Magnética") : c[2] + _INTL("Área Magnética") + c[0]
           param_name = _INTL("en un {1}", location)
         else
-          location = (c.empty?) ? "Área Especial" : c[2] + "Área Especial" + c[0]
-          param_name = _INTL("En un {1}", location)
+          location = (c.empty?) ? _INTL("Área Especial") : c[2] + _INTL("Área Especial") + c[0]
+          param_name = _INTL("en un {1}", location)
         end
       end
       #-------------------------------------------------------------------------
       # Determines the first portion of the description based on proc type.
       if @event_proc
-        desc = (full) ? "Tiene #{full_name}" : "O" 
+        desc = (full) ? _INTL("Tiene {1}", full_name) : _INTL("O")
         desc = _INTL("{1} lanza un evento especial", desc)
       elsif @use_item_proc
-        desc = (full) ? "Usando #{param_name} en #{full_name} " : "Usar #{param_name}"
+        desc = (full) ? _INTL("Usando {1} en {2}", param_name, full_name) : _INTL("Usar {1}", param_name)
         #desc = _INTL("{1} {2}", desc, param_name)
       elsif @on_trade_proc
         desc = (full) ? _INTL("Intercambio {1}", full_name) : _INTL("Intercambio")
       elsif @after_battle_proc
-        desc = (full) ? "Tiene #{full_name}" : ""
+        desc = (full) ? _INTL("Tiene {1}", full_name) : _INTL("O") 
         desc = _INTL("{1} finaliza una batalla", desc)
       elsif @level_up_proc
         if @any_level_up
           desc = (full) ? _INTL("Subir de nivel a {1}", full_name) : _INTL("Nivel")
         else
-          desc = (full) ? "Subir a #{full_name}" : "O"
+          desc = (full) ? _INTL("Subir a {1}", full_name) : _INTL("O")
           desc = _INTL("{1} al nivel {2}", desc, param)
         end
       elsif @id == :Shedinja
-        desc = (full) ? "#{full_name} evoluciona" : "evolución"
+        desc = (full) ? _INTL("{1} evoluciona", full_name) : _INTL("evolución")
         desc = _INTL("Puede dejarse en una ranura vacía del equipo después de {1}", desc)
       else
-        desc = (full) ? "#{full_name} evoluciona" : "O"
+        desc = (full) ? _INTL("{1} evoluciona", full_name) : _INTL("O")
         desc = _INTL("{1} a través de un método desconocido", desc)
       end
       #-------------------------------------------------------------------------
       # Determines the full description by combining method-specific details.
       if !nil_or_empty?(@description)
-        desc2 = _INTL("#{@description}", param_name, param_name2)
-        full_desc = _INTL("{1} {2}.", desc, desc2)
+        desc2 = _INTL(@description, param_name, param_name2)
+        full_desc = _INTL("{1} {2}", desc, desc2)
       else
-        full_desc = _INTL("{1}.", desc)
+        full_desc = _INTL("{1}", desc)
       end
       return full_desc
     end
@@ -301,10 +301,10 @@ GameData::Evolution.each do |evo|
   when :HasMoveType                            then evo.description = _INTL("sabiendo un movimiento tipo {1}")
   when :HasInParty                             then evo.description = _INTL("teniendo a {1} en el equipo")
   when :Location                               then evo.description = _INTL("estando en {1}")
-  when :LocationFlag                           then evo.description = _INTL("mientras {1}")
-  when :Region                                 then evo.description = _INTL("estando el la región {1}")
+  when :LocationFlag                           then evo.description = _INTL("estando {1}")
+  when :Region                                 then evo.description = _INTL("estando en la región {1}")
   when :TradeSpecies                           then evo.description = _INTL("por {1}")
-  when :BattleDealCriticalHit                  then evo.description = _INTL("causando {1} or mas golpes críticos")
+  when :BattleDealCriticalHit                  then evo.description = _INTL("causando {1} o más golpes críticos")
   when :EventAfterDamageTaken                  then evo.description = _INTL("tras perder al menos 49 PS")
   when :LevelWalk                              then evo.description = _INTL("tras dar {1} pasos estando como primer pokémon del equipo")
   when :LevelWithPartner                       then evo.description = _INTL("subiendo de nivel junto a un aliado")
@@ -379,7 +379,7 @@ module GameData
     end
 	
     #---------------------------------------------------------------------------
-    # Includes special form moves in tutor move lists.
+    # Returns all tutor moves including special form moves.
     #---------------------------------------------------------------------------
     def get_tutor_moves
       case @id
@@ -398,8 +398,19 @@ module GameData
       when :CALYREX_1   then moves = [:GLACIALLANCE]
       when :CALYREX_2   then moves = [:ASTRALBARRAGE]
       end
-      return @tutor_moves if !moves
-      return moves.concat(@tutor_moves.clone)
+      return self.tutor_moves.sort unless moves
+      return (self.tutor_moves + moves).sort
+    end
+	
+    #---------------------------------------------------------------------------
+    # Returns all egg moves including special inherited moves.
+    #---------------------------------------------------------------------------
+    def get_inherited_moves
+      case self.get_baby_species
+      when :PICHU then moves = [:VOLTTACKLE]
+      else             moves = []
+      end
+      return (self.get_egg_moves + moves).sort
     end
 	
     #---------------------------------------------------------------------------

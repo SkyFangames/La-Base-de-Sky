@@ -5,6 +5,7 @@ class PokemonSummary_Scene
 
   CENTER_ALIGNMENT_X_OFFSET = -6
   RIGHT_ALIGNMENT_X_OFFSET = -6
+  PAGE_ICON_X_ADJUST = 3
   LEFT_ARROW_X_OFFSET = -14
   LEFT_ARROW_Y_OFFSET = 20
   # Page arrows image source coordinates and size
@@ -57,7 +58,7 @@ class PokemonSummary_Scene
       suffix = UIHandlers.get_info(:summary, @page_list[i], :suffix)
       path = "Graphics/UI/Summary/page_#{suffix}"
       iconRectX = (page == i) ? w : 0
-      imagepos.push([path, xpos + offset + (iconPos * w), ypos, iconRectX, 0, w, h])
+      imagepos.push([path, xpos + offset + (iconPos * w) + PAGE_ICON_X_ADJUST, ypos, iconRectX, 0, w, h])
       iconPos += 1
     end
     if PAGE_ICONS_SHOW_ARROWS

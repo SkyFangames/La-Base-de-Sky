@@ -5,40 +5,49 @@ class PokemonPokedexInfo_Scene
   #-----------------------------------------------------------------------------
   # Utility for generating lists of a species' learnable moves.
   #-----------------------------------------------------------------------------
-  def pbGenerateMoveList
+  def pbGenerateMoveList(species_data, special_form)
     @moveCommands.clear
     @moveList.clear
-    species_data = GameData::Species.get_species_form(@species, @form)
-    special_form, _check_form, _check_item = pbGetSpecialFormData(species_data)
     case @moveListIndex
     when 0  # Level-up moves
       species_data.moves.each do |m|
+        next if @moveList.include?(m)
         @moveCommands.push(GameData::Move.get(m[1]).name)
         @moveList.push(m)
       end
     when 1  # Tutor moves
-      species_data.get_tutor_moves.each do |m| 
+      species_data.get_tutor_moves.each do |m|
+        next if @moveList.include?(m)
         @moveCommands.push(GameData::Move.get(m).name)
         @moveList.push(m)
       end
     when 2  # Egg moves
-      species_data.get_egg_moves.each do |m| 
+      species_data.get_inherited_moves.each do |m|
+        next if @moveList.include?(m)
         @moveCommands.push(GameData::Move.get(m).name)
         @moveList.push(m)
       end
-    when 3  # Z-Moves
-      if @zcrystals
-        pbGenerateZMoves(species_data, special_form)
-      else
-        pbGenerateMaxMoves(species_data, special_form)
-      end
-    when 4  # Max Moves
+    when 3  # Mega Moves
+      pbGenerateMegaMoves(species_data, special_form)
+    when 4  # Z-Moves
+      pbGenerateZMoves(species_data, special_form)
+    when 5  # Max Moves
       pbGenerateMaxMoves(species_data, special_form)
     end
-    @moveCommands.uniq!
-    @moveList.uniq!
     @sprites["movecmds"].commands = @moveCommands
     @sprites["movecmds"].index = 0
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Utility for generating list of all compatible Z-Moves.
+  #-----------------------------------------------------------------------------
+  def pbGenerateMegaMoves(species, special_form)
+    return if special_form != :mega
+    return if !MultipleForms.hasFunction?(species.species, "getMegaMoves")
+    MultipleForms.call("getMegaMoves", species).each_value do |m|
+      @moveCommands.push(GameData::Move.get(m).name)
+      @moveList.push(m)
+    end
   end
   
   #-----------------------------------------------------------------------------
@@ -50,7 +59,7 @@ class PokemonPokedexInfo_Scene
     allMoves = []
     species.moves.each { |m| allMoves.push(m[1]) }
     allMoves.concat(species.get_tutor_moves.clone)
-    allMoves.concat(species.get_egg_moves.clone)
+    allMoves.concat(species.get_inherited_moves.clone)
     allMoves.uniq!
     @zcrystals.each do |item|
       if item.has_zmove_combo?
@@ -82,7 +91,7 @@ class PokemonPokedexInfo_Scene
     allMoves = []
     species.moves.each { |m| allMoves.push(m[1]) }
     allMoves.concat(species.get_tutor_moves.clone)
-    allMoves.concat(species.get_egg_moves.clone)
+    allMoves.concat(species.get_inherited_moves.clone)
     allMoves.uniq!
     maxGuard = false
     @maxmoves.each do |type, id|
@@ -109,16 +118,24 @@ class PokemonPokedexInfo_Scene
   #-----------------------------------------------------------------------------
   # Controls for navigating the move list UI.
   #-----------------------------------------------------------------------------
-  def pbChooseMove
+  def pbChooseMove(species_data, special_form = nil)
+    pages = []
+    pages.push(0) if !species_data.moves.empty?
+    pages.push(1) if !species_data.get_tutor_moves.empty?
+    pages.push(2) if !species_data.get_inherited_moves.empty?
+    if special_form == :mega && MultipleForms.hasFunction?(species_data.species, "getMegaMoves")
+      pages.push(3) if !MultipleForms.call("getMegaMoves", species_data).empty?
+    end
+    pages.push(4) if @zcrystals && [:ultra, nil].include?(special_form)
+    pages.push(5) if @maxmoves && [:gmax, :emax, nil].include?(special_form)
     oldcmd = -1
+    idxPage = 0
+    maxPage = pages.length - 1
+    @moveListIndex = pages[idxPage]
+    @viewingMoves = true
     pbResetFamilyIcons
     pbSEPlay("GUI storage show party panel")
-    @moveListIndex = 0
-    maxPage = 2
-    maxPage += 1 if @zcrystals
-    maxPage += 1 if @maxmoves
-    @viewingMoves = true
-    pbGenerateMoveList
+    pbGenerateMoveList(species_data, special_form)
     pbDrawMoveList
     pbActivateWindow(@sprites, "movecmds") do
       loop do
@@ -127,17 +144,19 @@ class PokemonPokedexInfo_Scene
         Input.update
         pbUpdate
         #-----------------------------------------------------------------------
-        # Scrolls through the three different types of movelists.
+        # Scrolls through the different types of movelists.
         if Input.trigger?(Input::LEFT)
-          @moveListIndex -= 1
-          @moveListIndex = maxPage if @moveListIndex < 0
-          pbGenerateMoveList
+          idxPage -= 1
+          idxPage = maxPage if idxPage < 0
+          @moveListIndex = pages[idxPage]
+          pbGenerateMoveList(species_data, special_form)
           pbPlayCursorSE
           pbDrawMoveList
         elsif Input.trigger?(Input::RIGHT)
-          @moveListIndex += 1
-          @moveListIndex = 0 if @moveListIndex > maxPage
-          pbGenerateMoveList
+          idxPage += 1
+          idxPage = 0 if idxPage > maxPage
+          @moveListIndex = pages[idxPage]
+          pbGenerateMoveList(species_data, special_form)
           pbPlayCursorSE
           pbDrawMoveList
         #-----------------------------------------------------------------------
@@ -174,8 +193,7 @@ class PokemonPokedexInfo_Scene
           drawPage(@page)
           pbDrawDataNotes
           break
-        end  
-        if @sprites["movecmds"].index != oldcmd
+        elsif @sprites["movecmds"].index != oldcmd
           pbDrawMoveList
         end
       end
@@ -225,8 +243,9 @@ class PokemonPokedexInfo_Scene
     when 0 then title = _INTL("NIVEL")
     when 1 then title = _INTL("MT/TUTOR")
     when 2 then title = _INTL("CRIANZA")
-    when 3 then title = (@zcrystals) ? _INTL("MOVS. Z") : _INTL("MOVS. DINA.")
-    when 4 then title = _INTL("MOVS. DINA.")
+    when 3 then title = _INTL("MOVS. MEGA")
+    when 4 then title = _INTL("MOVS. Z")
+    when 5 then title = _INTL("MOVS. DINA.")
     end
     textpos.push([title, 130, 51, :center, base, shadow, :outline])
     #---------------------------------------------------------------------------
@@ -281,21 +300,19 @@ class PokemonPokedexInfo_Scene
       when 2  # Egg moves
         imagepos.push([_INTL("Graphics/Pokemon/Eggs/000_icon"), -4, yPos - 14, 0, 0, 64, 64])
       #-------------------------------------------------------------------------
-      when 3  # Z-Moves
-        if @zcrystals
-          @zcrystals.each do |item|
-            next if moveData.id != item.zmove
-            imagepos.push([_INTL("Graphics/Items/#{item.id}"), 4, yPos + 2])
-            break		  
-          end
-        elsif @maxmoves
-          icon = Settings::DYNAMAX_GRAPHICS_PATH + "icon_dynamax"
-          imagepos.push([icon, + 11, yPos + 8])
+      when 3  # Mega Moves
+        imagepos.push([_INTL("Graphics/UI/Battle/icon_mega"), 14, yPos + 11])
+      #-------------------------------------------------------------------------
+      when 4  # Z-Moves
+        @zcrystals.each do |item|
+          next if moveData.id != item.zmove
+          imagepos.push([_INTL("Graphics/Items/#{item.id}"), 4, yPos + 2])
+          break		  
         end
       #-------------------------------------------------------------------------
-      when 4  # Max Moves
+      when 5  # Max Moves
         icon = Settings::DYNAMAX_GRAPHICS_PATH + "icon_dynamax"
-        imagepos.push([icon, + 11, yPos + 8])
+        imagepos.push([icon, 11, yPos + 8])
       end
       yPos += 64
     end

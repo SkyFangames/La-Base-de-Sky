@@ -17,6 +17,7 @@ class Battle::Move
     user.effects[PBEffects::ProtectRate]    = 1
     @battle.field.effects[PBEffects::FusionBolt]  = false
     @battle.field.effects[PBEffects::FusionFlare] = false
+    user.pokemon.move_count_evolution(@id) if user.pbOwnedByPlayer?
   end
 
   def pbDisplayUseMessage(user)

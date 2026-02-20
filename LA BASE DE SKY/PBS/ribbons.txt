@@ -288,7 +288,7 @@ Description = Una cinta para recordar un evento vigorizante que creó energía v
 [SHOCK]
 Name = Cinta Impacto
 IconPosition = 57
-Description = Una cinta para recordar un evento excionante que hizo la vida más interesante.
+Description = Una cinta para recordar un evento emocionante que hizo la vida más interesante.
 #-------------------------------
 [DOWNCAST]
 Name = Cinta Abatimiento

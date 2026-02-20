@@ -111,6 +111,9 @@ module PluginManager
   # Contiene todos los datos registrados de los plugins.
   @@Plugins = {}
 
+  EXCLUDED_REQUIRES = ["v21.1 Hotfixes", "Modular UI Scenes", "Luka's Scripting Utilities", "Marin's Scripting Utilities", 
+                       "Tileset Rearranger", "DP Scripting Utilities", "Easy Mouse", "Event Reporting"]
+
   # Registra un plugin y prueba sus dependencias e incompatibilidades.
   def self.register(options)
     name         = nil
@@ -155,7 +158,7 @@ module PluginManager
         value.each do |dep|
           case dep
           when String   # "plugin name"
-            if !self.installed?(dep)
+            if !self.installed?(dep) && !EXCLUDED_REQUIRES.include?(dep)
               self.error("El plugin '#{name}' requiere que el plugin '#{dep}' esté instalado antes que él.")
             end
           when Array
@@ -163,7 +166,7 @@ module PluginManager
             when 1   # ["nombre del plugin"]
               if dep[0].is_a?(String)
                 dep_name = dep[0]
-                if !self.installed?(dep_name)
+                if !self.installed?(dep_name) && !EXCLUDED_REQUIRES.include?(dep_name) 
                   self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' esté instalado antes que él.")
                 end
               else
@@ -176,7 +179,7 @@ module PluginManager
                 dep_name    = dep[0]
                 dep_version = dep[1]
                 next if self.installed?(dep_name, dep_version)
-                if self.installed?(dep_name)   # Tiene el plugin pero en una versión más baja
+                if self.installed?(dep_name) && !EXCLUDED_REQUIRES.include?(dep_name)    # Tiene el plugin pero en una versión más baja
                   msg = "El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} o superior, " +
                         "pero la versión instalada es #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
@@ -185,8 +188,10 @@ module PluginManager
                   end
                   self.error(msg)
                 else   # No tiene el plugin
-                  self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} " +
-                      "o superior para estar instalado antes que él.")
+                  if !EXCLUDED_REQUIRES.include?(dep_name) 
+                    self.error("El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} " +
+                        "o superior para estar instalado antes que él.")
+                  end
                 end
               end
             when 3   # [:optional/:exact/:optional_exact, "plugin name", "version"]
@@ -228,18 +233,18 @@ module PluginManager
                   end
                   self.error(msg)
                 end
-              elsif !self.installed?(dep_name, dep_version, exact)
+              elsif !self.installed?(dep_name, dep_version, exact) && !EXCLUDED_REQUIRES.include?(dep_name)
                 if self.installed?(dep_name)   # Tiene el plugin pero en una versión más baja
                   msg = "El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version}"
                   msg << " o posterior" if !exact
-                  msg << ", but the installed version was #{self.version(dep_name)}."
+                  msg << ", pero la versión instalada fue #{self.version(dep_name)}."
                   dep_link = self.link(dep_name)
                   if dep_link
-                    msg << "\r\nCheck #{dep_link} for an update to plugin '#{dep_name}'."
+                    msg << "\r\nVerifica #{dep_link} para obtener una actualización del plugin '#{dep_name}'."
                   end
                 else   # Don't have plugin
-                  msg = "El plugin '#{name}' requires plugin '#{dep_name}' version #{dep_version} "
-                  msg << "or later " if !exact
+                  msg = "El plugin '#{name}' requiere que el plugin '#{dep_name}' sea la versión #{dep_version} "
+                  msg << "o posterior " if !exact
                   msg << "para estar instalado antes que él."
                 end
                 self.error(msg)
@@ -322,6 +327,7 @@ module PluginManager
   # Si mustequal es true, la versión debe coincidir con la versión especificada.
   def self.installed?(plugin_name, plugin_version = nil, mustequal = false)
     plugin = @@Plugins[plugin_name]
+    return true if EXCLUDED_REQUIRES.include?(plugin_name)
     return false if plugin.nil?
     return true if plugin_version.nil?
     comparison = compare_versions(plugin[:version], plugin_version)
@@ -410,6 +416,7 @@ module PluginManager
     # comenzar formateo del mensaje
     message = "[Pokémon Essentials versión #{Essentials::VERSION}]\r\n"
     message += "#{Essentials::ERROR_TEXT}\r\n"   # Para que los scripts de terceros lo añadan
+    message += "[LA BASE DE SKY versión #{LBDSKY::VERSION}]\r\n"
     message += "Error en el Plugin: [#{name}]\r\n"
     message += "Excepción: #{e.class}\r\n"
     message += "Mensaje: "
@@ -570,6 +577,7 @@ module PluginManager
         # capturar dependencia faltante
         if !order.include?(dname)
           next if optional
+          next if EXCLUDED_REQUIRES.include?(dname)
           self.error("El plugin '#{o}' requiere que el plugin '#{dname}' esté presente para funcionar correctamente.")
         end
         # saltar si ya está ordenado

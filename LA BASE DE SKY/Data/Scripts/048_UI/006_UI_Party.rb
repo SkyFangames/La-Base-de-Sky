@@ -549,7 +549,7 @@ class PokemonParty_Scene
     @sprites["messagebox"].letterbyletter = true
     pbBottomLeftLines(@sprites["messagebox"], 2)
     @sprites["storagetext"] = Window_UnformattedTextPokemon.new(
-      @can_access_storage ? _INTL("[Especial]: Cajas del PC") : ""
+      @can_access_storage ? _INTL("[D]: Cajas del PC") : ""
     )
     @sprites["storagetext"].x           = 0
     @sprites["storagetext"].y           = Graphics.height - @sprites["messagebox"].height - 16
@@ -1531,7 +1531,7 @@ MenuHandlers.add(:party_menu_item, :move, {
       else
         screen.pbDisplay(_INTL("{1} ya tiene equipado {2}.", newpkmn.name, newitemname) + "\1")
       end
-      next if !screen.pbConfirm(_INTL("Quieres intercambiar estos dos objetos?"))
+      next if !screen.pbConfirm(_INTL("¿Quieres intercambiar estos dos objetos?"))
       newpkmn.item = item
       pkmn.item = newitem
       screen.scene.pbClearSwitching

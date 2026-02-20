@@ -394,7 +394,7 @@ MenuHandlers.add(:debug_menu, :test_trainer_battle_advanced, {
       trainerCmds.push(_INTL("[Añadir entrenador]"))
       trainerCmds.push(_INTL("[Elegir tamaño bando jugador]"))
       trainerCmds.push(_INTL("[Elegir tamaño bando rival]"))
-      trainerCmds.push(_INTL("[Empezar batalla {1}vs{2}]", size0, size1))
+      trainerCmds.push(_INTL("[Empezar combate {1}vs{2}]", size0, size1))
       trainerCmd = pbShowCommands(nil, trainerCmds, -1, trainerCmd)
       break if trainerCmd < 0
       if trainerCmd == trainerCmds.length - 1      # Start battle
@@ -686,7 +686,7 @@ end
 MenuHandlers.add(:debug_menu, :give_demo_party, {
   "name"        => _INTL("Dar equipo de prueba"),
   "parent"      => :pokemon_menu,
-  "description" => _INTL("Te da 6 Pokémon predefinidos. Sobreescriben el equipo actual."),
+  "description" => _INTL("Te da 6 Pokémon predefinidos. Sobrescriben el equipo actual."),
   "effect"      => proc {
     darEquipoDePrueba()
     pbMessage(_INTL("Equipo entregado con Pokémon de prueba."))
@@ -1300,7 +1300,7 @@ MenuHandlers.add(:debug_menu, :import_animations, {
 MenuHandlers.add(:debug_menu, :export_animations, {
   "name"        => _INTL("Exportar animaciones de combate"),
   "parent"      => :editors_menu,
-  "description" => _INTL("Exporta todas las animaciones de comabte deforma individual a la carpeta \"Animations\"."),
+  "description" => _INTL("Exporta todas las animaciones de combate deforma individual a la carpeta \"Animations\"."),
   "effect"      => proc {
     pbExportAllAnimations
   }

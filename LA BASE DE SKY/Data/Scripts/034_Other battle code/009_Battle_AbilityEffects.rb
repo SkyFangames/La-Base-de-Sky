@@ -217,12 +217,12 @@ module Battle::AbilityEffects
     DamageCalcFromTargetAlly.trigger(ability, user, target, move, mults, power, type)
   end
 
-  def self.triggerCriticalCalcFromUser(ability, user, target, move, crit_stage)
-    return trigger(CriticalCalcFromUser, ability, user, target, move, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromUser(ability, user, target, crit_stage, move = nil)
+    return trigger(CriticalCalcFromUser, ability, user, target, crit_stage, move, ret: crit_stage)
   end
 
-  def self.triggerCriticalCalcFromTarget(ability, user, target, move, crit_stage)
-    return trigger(CriticalCalcFromTarget, ability, user, target, move, crit_stage, ret: crit_stage)
+  def self.triggerCriticalCalcFromTarget(ability, user, target, crit_stage, move = nil)
+    return trigger(CriticalCalcFromTarget, ability, user, target, crit_stage, move, ret: crit_stage)
   end
 
   #-----------------------------------------------------------------------------
@@ -1047,7 +1047,7 @@ Battle::AbilityEffects::PriorityBracketChange.add(:MYCELIUMMIGHT,
 Battle::AbilityEffects::PriorityBracketUse.add(:QUICKDRAW,
   proc { |ability, battler, battle|
     battle.pbShowAbilitySplash(battler)
-    battle.pbDisplay(_INTL("¡La habilidad {2} de {1} hizó que se mueva más rápido!", battler.abilityName, battler.pbThis(true)))
+    battle.pbDisplay(_INTL("¡La habilidad {2} de {1} hizo que se mueva más rápido!", battler.abilityName, battler.pbThis(true)))
     battle.pbHideAbilitySplash(battler)
   }
 )
@@ -2354,7 +2354,7 @@ Battle::AbilityEffects::OnBeingHit.add(:WANDERINGSPIRIT,
     if Battle::Scene::USE_ABILITY_SPLASH
         battle.pbDisplay(_INTL("¡{1} ha cambiado habilidades con {2}!", target.pbThis, user.pbThis(true)))
     else
-        battle.pbDisplay(_INTL("¡{1} combió su habilidad {2} con la habilidad {4} de {3}!",
+        battle.pbDisplay(_INTL("¡{1} cambió su habilidad {2} con la habilidad {4} de {3}!",
            target.pbThis, user.abilityName, user.pbThis(true), target.abilityName))
     end
     battle.pbHideAbilitySplash(target)
@@ -2715,7 +2715,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HEALER,
         when :SLEEP
           battle.pbDisplay(_INTL("¡La habilidad {2} de {1} despertó a su compañero!", battler.pbThis(true), battler.abilityName))
         when :POISON
-          battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó el envenamiento de su compañero!", battler.pbThis(true), battler.abilityName))
+          battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó el envenenamiento de su compañero!", battler.pbThis(true), battler.abilityName))
         when :BURN
           battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó la quemadura de su compañero!", battler.pbThis(true), battler.abilityName))
         when :PARALYSIS
@@ -2741,7 +2741,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:HYDRATION,
       when :SLEEP
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} le despertó!", battler.pbThis(true), battler.abilityName))
       when :POISON
-        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenamiento!", battler.pbThis(true), battler.abilityName))
+        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenenamiento!", battler.pbThis(true), battler.abilityName))
       when :BURN
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su quemadura!", battler.pbThis(true), battler.abilityName))
       when :PARALYSIS
@@ -2766,7 +2766,7 @@ Battle::AbilityEffects::EndOfRoundHealing.add(:SHEDSKIN,
       when :SLEEP
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} le despertó!", battler.pbThis(true), battler.abilityName))
       when :POISON
-        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenamiento!", battler.pbThis(true), battler.abilityName))
+        battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su envenenamiento!", battler.pbThis(true), battler.abilityName))
       when :BURN
         battle.pbDisplay(_INTL("¡La habilidad {2} de {1} curó su quemadura!", battler.pbThis(true), battler.abilityName))
       when :PARALYSIS
@@ -3229,7 +3229,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:FRISK,
     battle.pbShowAbilitySplash(battler)
     if Settings::MECHANICS_GENERATION >= 6
       foes.each do |b|
-        battle.pbDisplay(_INTL("{1} ha cacheado a {2} y ha hallado {3}!", battler.pbThis, b.pbThis(true), b.itemName))
+        battle.pbDisplay(_INTL("¡{1} ha cacheado a {2} y ha hallado {3}!", battler.pbThis, b.pbThis(true), b.itemName))
       end
     else
       foe = foes[battle.pbRandom(foes.length)]
@@ -3496,7 +3496,8 @@ Battle::AbilityEffects::OnSwitchIn.add(:SLOWSTART,
 
 Battle::AbilityEffects::OnSwitchIn.add(:SNOWWARNING,
   proc { |ability, battler, battle, switch_in|
-    battle.pbStartWeatherAbility(:Hail, battler)
+    weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm
+    battle.pbStartWeatherAbility(weather, battler)
   }
 )
 
@@ -3505,7 +3506,7 @@ Battle::AbilityEffects::OnSwitchIn.add(:SUPERSWEETSYRUP,
     next if battler.abilityUsedOnce?
     battler.markAbilityUsedOnce
     battle.pbShowAbilitySplash(battler)
-    battle.pbDisplay(_INTL("¡La cubierta de caramelo de {1} emana un aroma super dulce!", battler.pbThis(true)))
+    battle.pbDisplay(_INTL("¡La cubierta de caramelo de {1} emana un aroma súper dulce!", battler.pbThis(true)))
     battle.allOtherSideBattlers(battler.index).each do |b|
       next if !b.near?(battler)
       b.pbLowerEvasionStatStageSupersweetSyrup(battler)

@@ -255,7 +255,7 @@ class PokemonSummary_Scene
       when :HP then xpos, ypos, align = ENHANCED_HP_X, STATS_HP_Y, :center
       else xpos, ypos, align = STATS_DEFAULT_X, STATS_FIRST_Y + (STATS_Y_SPACING * index), :left
       end
-      name = (s.id == :SPECIAL_ATTACK) ? "Atq. Esp." : (s.id == :SPECIAL_DEFENSE) ? "Def. Esp." : s.name
+      name = (s.id == :SPECIAL_ATTACK) ? _INTL("Atq. Esp.") : (s.id == :SPECIAL_DEFENSE) ? _INTL("Def. Esp.") : s.name
       statshadow = shadow
       if !@pokemon.shadowPokemon? || @pokemon.heartStage <= 3
         @pokemon.nature_for_stats.stat_changes.each do |change|

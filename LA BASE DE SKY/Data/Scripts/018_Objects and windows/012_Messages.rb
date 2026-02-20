@@ -405,6 +405,12 @@ def pbReplaceMessageText(text, msg_window)
   text.gsub!(/\\pg/i, "\\r") if $player&.female?
   text.gsub!(/\\pog/i, "\\r") if $player&.male?
   text.gsub!(/\\pog/i, "\\b") if $player&.female?
+
+  text.gsub!(/\\@a/i,"a") if $player&.female?
+  text.gsub!(/\\@a/i,"") if $player&.male?
+  text.gsub!(/\\@/i,"a") if $player&.female?
+  text.gsub!(/\\@/i,"o") if $player&.male?
+
   text.gsub!(/\\pg/i, "")
   text.gsub!(/\\pog/i, "")
   male_text_tag = shadowc3tag(MessageConfig::MALE_TEXT_MAIN_COLOR, MessageConfig::MALE_TEXT_SHADOW_COLOR)
@@ -760,7 +766,7 @@ def pbMessageDisplay(msgwindow, message, letterbyletter = true, commandProc = ni
       elsif !appear_timer_start
         break
       end
-    elsif Input.press?(Input::ACTION) && ( $DEBUG || Settings::ENABLE_SKIP_TEXT )
+    elsif Input.press?(Input::ACTION) && ( $DEBUG || (Settings::ENABLE_SKIP_TEXT && $PokemonSystem.skip_texts==0))
       msgwindow.textspeed=-999
       msgwindow.update
       if msgwindow.busy?

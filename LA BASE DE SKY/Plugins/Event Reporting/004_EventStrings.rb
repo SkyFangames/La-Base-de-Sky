@@ -61,7 +61,7 @@ module EventReporting
     end
     
     if lines.empty?
-      pbMessage(_INTL("No usage found."))
+      pbMessage(_INTL("No se encontraron usos."))
       return false
     end
     

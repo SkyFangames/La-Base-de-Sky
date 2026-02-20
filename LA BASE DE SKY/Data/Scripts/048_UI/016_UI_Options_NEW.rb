@@ -11,13 +11,13 @@ class PokemonSystem
   attr_accessor :frame
   attr_accessor :textskin
   attr_accessor :language
-  attr_accessor :runstyle
-  
-  attr_reader :skip_move_learning
-  attr_reader :main_volume
-  attr_reader :bgmvolume
-  attr_reader :sevolume
-  attr_reader :pokemon_cry_volume
+
+  attr_reader :skip_texts
+  attr_reader   :skip_move_learning
+  attr_reader   :main_volume
+  attr_reader   :bgmvolume
+  attr_reader   :sevolume
+  attr_reader   :pokemon_cry_volume
   
   attr_accessor :textinput
   attr_reader   :bgmvolume
@@ -34,22 +34,23 @@ class PokemonSystem
   attr_accessor :autotile_animations
 
   def initialize
-    @battlestyle        = 0     # Battle style (0=switch, 1=set)
-    @runstyle           = 0     # Default movement speed (0=walk, 1=run)
-    @sendtoboxes        = 0     # Send to Boxes (0=manual, 1=automatic)
-    @givenicknames      = 0     # Give nicknames (0=give, 1=don't give)
-    @skip_move_learning = 1  # Skip move learning (0=Sí, 1=No)
-    @textinput          = 0     # Text input mode (0=cursor, 1=keyboard)
-    @language           = 0     # Language (see also Settings::LANGUAGES)
-    @main_volume        = 100
-    @bgmvolume          = 80    # Volume of background music and ME
-    @sevolume           = 100   # Volume of sound effects (except cries)
-    @pokemon_cry_volume = 100
-    @textspeed          = 1     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
-    @battlescene        = 0     # Battle effects (animations) (0=on, 1=off)
-    @textskin           = 0     # Speech frame
-    @frame              = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
-    @screensize         = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
+    @battlestyle         = 0     # Battle style (0=switch, 1=set)
+    @runstyle            = 0     # Default movement speed (0=walk, 1=run)
+    @sendtoboxes         = 0     # Send to Boxes (0=manual, 1=automatic)
+    @givenicknames       = 0     # Give nicknames (0=give, 1=don't give)
+    @skip_move_learning  = 1     # Skip move learning (0=Sí, 1=No)
+    @textinput           = 0     # Text input mode (0=cursor, 1=keyboard)
+    @skip_texts          = 1     # Skip text (0=Sí, 1=No)
+    @language            = 0     # Language (see also Settings::LANGUAGES)
+    @main_volume         = 100
+    @bgmvolume           = 80    # Volume of background music and ME
+    @sevolume            = 100   # Volume of sound effects (except cries)
+    @pokemon_cry_volume  = 100
+    @textspeed           = 1     # Text speed (0=slow, 1=medium, 2=fast, 3=instant)
+    @battlescene         = 0     # Battle effects (animations) (0=on, 1=off)
+    @textskin            = 0     # Speech frame
+    @frame               = 0     # Default window frame (see also Settings::MENU_WINDOWSKINS)
+    @screensize          = (Settings::SCREEN_SCALE * 2).floor - 1   # 0=half size, 1=full size, 2=full-and-a-half size, 3=double size
     @vsync               = vsync_initial_value?
     @autotile_animations = 0
   end
@@ -65,7 +66,7 @@ class PokemonSystem
       # Check the vsync value
       vsync_value = config['vsync']
       return vsync_value == true ? 0 : 1
-    rescue HTTPLite::JSON::ParserError => e
+    rescue MKXPError => e
       echoln "Error parsing JSON: #{e.message}"
     end
   end
@@ -219,6 +220,15 @@ class PokemonSystem
     return if @screensize == value && !@force_set_options
     @screensize = value
     pbSetResizeFactor(@screensize)
+  end
+
+  def skip_texts
+    return @skip_texts || 1
+  end
+
+  def skip_texts=(value)
+    return if @skip_texts == value && !@force_set_options
+    @skip_texts = value
   end
 
   # def controls
@@ -994,14 +1004,16 @@ class UI::Options < UI::BaseScreen
       page = hash["page"] || auto_detect_page(hash["type"], hash["name"] || name)
       # Convert old option types to new format
       type = convert_option_type(hash["type"])
-      
+
+      raw_params = hash["parameters"]
+      final_params = raw_params.is_a?(Proc) ? raw_params.call : raw_params
       option_data = {
         :option      => option,
         :page        => page,
         :name        => name,
         :description => description,
         :type        => type,
-        :parameters  => hash["parameters"],
+        :parameters  => final_params,
         :on_select   => hash["on_select"],
         :get_proc    => hash["get_proc"],
         :set_proc    => hash["set_proc"],
@@ -1091,12 +1103,19 @@ PageHandlers.add(:options_menu, :controls, {
   :description => proc { next _INTL("Edita los controles del juego.") }
 })
 
+PageHandlers.add(:options_menu, :plugins, {
+  :name  => proc { next _INTL("Plugins") },
+  :order => 50,
+  :condition => proc { next PageHandlers.has_any?(:options_menu, :plugins) },
+  :description => proc { next _INTL("Configuraciones de Plugins.") }
+})
+
 MenuHandlers.add(:options_menu, :text_speed, {
   "page"        => :gameplay,
-  "name"        => _INTL("Vel. Texto"),
+  "name"        => _INTL("Velocidad de texto"),
   "order"       => 10,
   "type"        => :array,
-  "parameters"  => [_INTL("Len."), _INTL("Med."), _INTL("Ráp."), _INTL("Inst.")],
+  "parameters"  => proc { [_INTL("Len"), _INTL("Med"), _INTL("Ráp"), _INTL("Inst")] },
   "description" => _INTL("Elige la velocidad a la que aparece el texto."),
   "on_select"   => proc { |screen| screen.sprites[:speech_box].letterbyletter = true },
   "get_proc"    => proc { next $PokemonSystem.textspeed },
@@ -1116,18 +1135,18 @@ MenuHandlers.add(:options_menu, :battle_style, {
   "name"        => _INTL("Estilo de combate"),
   "order"       => 20,
   "type"        => :array,
-  "parameters"  => [_INTL("Cambios"), _INTL("Fijo")],
-  "description" => _INTL("Elige si quieres que se te ofrezca la opcion de cambiar de Pokemon cuando se debilita un Pokémon del rival."),
+  "parameters"  => proc { [_INTL("Cambio"), _INTL("Fijo")] }, 
+  "description" => _INTL("Elige si quieres que se te ofrezca la opción de cambiar de Pokémon cuando se debilita el del rival."),
   "get_proc"    => proc { next $PokemonSystem.battlestyle },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.battlestyle = value }
 })
 
 MenuHandlers.add(:options_menu, :movement_style, {
   "page"        => :gameplay,
-  "name"        => _INTL("Mov. por Defecto"),
+  "name"        => _INTL("Mov. por defecto"),
   "order"       => 30,
   "type"        => :array,
-  "parameters"  => [_INTL("Andar"), _INTL("Correr")],
+  "parameters"  => proc { [_INTL("Andar"), _INTL("Correr")] },
   "description" => _INTL("Elige tu velocidad de movimiento. Mantén Presionar hacia atrás mientras te mueves para moverte a la otra velocidad."),
   "condition"   => proc { next $player&.has_running_shoes },
   "get_proc"    => proc { next $PokemonSystem.runstyle },
@@ -1139,7 +1158,7 @@ MenuHandlers.add(:options_menu, :send_to_boxes, {
   "name"        => _INTL("Enviar a las Cajas"),
   "order"       => 40,
   "type"        => :array,
-  "parameters"  => [_INTL("Manual"), _INTL("Automático")],
+  "parameters"  => proc { [_INTL("Manual"), _INTL("Automático")] },
   "description" => _INTL("Elige si los Pokémon capturados se envían a tus Cajas cuando tu equipo está lleno."),
   "condition"   => proc { next Settings::NEW_CAPTURE_CAN_REPLACE_PARTY_MEMBER },
   "get_proc"    => proc { next $PokemonSystem.sendtoboxes },
@@ -1148,11 +1167,11 @@ MenuHandlers.add(:options_menu, :send_to_boxes, {
 
 MenuHandlers.add(:options_menu, :give_nicknames, {
   "page"        => :gameplay,
-  "name"        => _INTL("Dar Motes"),
+  "name"        => _INTL("Motes al capturar"),
   "order"       => 50,
   "type"        => :array,
-  "parameters"  => [_INTL("Dar"), _INTL("No dar")],
-  "description" => _INTL("Elige si puedes dar un mote a un Pokémon cuando lo obtienes."),
+  "parameters"  => proc { [_INTL("Dar"), _INTL("No dar")] },
+  "description" => _INTL("Elige si poner mote a un Pokémon cuando lo obtienes."),
   "get_proc"    => proc { next $PokemonSystem.givenicknames },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.givenicknames = value }
 })
@@ -1162,29 +1181,53 @@ MenuHandlers.add(:options_menu, :text_input_style, {
   "name"        => _INTL("Escritura"),
   "order"       => 60,
   "type"        => :array,
-  "parameters"  => [_INTL("Cursor"), _INTL("Teclado")],
+  "parameters"  => proc { [_INTL("Cursor"), _INTL("Teclado")] },
   "description" => _INTL("Elige el método de escritura."),
   "get_proc"    => proc { next $PokemonSystem.textinput },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.textinput = value }
 })
 
+MenuHandlers.add(:options_menu, :jump_texts, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Saltar textos"),
+  "order"       => 70,
+  "type"        => :array,
+  "parameters"  => proc { [_INTL("Sí"), _INTL("No")] },
+  "description" => _INTL("Elige si quieres saltar rápido los textos pulsando la Z."),
+  "condition"   => proc { next Settings::ENABLE_SKIP_TEXT },
+  "get_proc"    => proc { next $PokemonSystem.skip_texts },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.skip_texts = value }
+})
+
 MenuHandlers.add(:options_menu, :language, {
   "page"        => :gameplay,
   "name"        => _INTL("Idioma"),
-  "order"       => 70,
+  "order"       => 80,
   "type"        => (Settings::LANGUAGES.length == 2) ? :array : :array_one,
-  "parameters"  => Settings::LANGUAGES.map { |lang| lang[0] },
+  "parameters"  => proc { Settings::LANGUAGES.map { |lang| lang[0] } },
   "description" => _INTL("Elige el idioma del juego."),
   "condition"   => proc { next Settings::LANGUAGES.length >= 2 },
   "get_proc"    => proc { next $PokemonSystem.language },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.language = value }
 })
 
+MenuHandlers.add(:options_menu, :skip_move_learning, {
+  "page"        => :gameplay,
+  "name"        => _INTL("Saltar aprender Movs."),
+  "order"       => 81,
+  "type"        => EnumOption,
+  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "description" => _INTL("Elige si quieres saltarte el aprendizaje de movimientos al subir de nivel.\nPuedes aprenderlos más tarde desde el recordador de movimientos."),
+  "condition"   => proc { next Settings::ALLOW_SKIPPING_MOVE_LEARNING },
+  "get_proc"    => proc { next $PokemonSystem.skip_move_learning },
+  "set_proc"    => proc { |value, _screen| $PokemonSystem.skip_move_learning = value }
+})
+
 #-------------------------------------------------------------------------------
 
 MenuHandlers.add(:options_menu, :main_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Volumen General"),
+  "name"        => _INTL("Volumen general"),
   "order"       => 10,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1195,7 +1238,7 @@ MenuHandlers.add(:options_menu, :main_volume, {
 
 MenuHandlers.add(:options_menu, :bgm_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Música de Fondo"),
+  "name"        => _INTL("Música de fondo"),
   "order"       => 20,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1206,7 +1249,7 @@ MenuHandlers.add(:options_menu, :bgm_volume, {
 
 MenuHandlers.add(:options_menu, :se_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Efectos de Sonido"),
+  "name"        => _INTL("Efectos de sonido"),
   "order"       => 30,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1221,7 +1264,7 @@ MenuHandlers.add(:options_menu, :se_volume, {
 
 MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
   "page"        => :audio,
-  "name"        => _INTL("Volumen Gritos Pkmn"),
+  "name"        => _INTL("Volumen gritos Pkmn."),
   "order"       => 40,
   "type"        => :number_slider,
   "parameters"  => [0, 100, 5],   # [minimum_value, maximum_value, interval]
@@ -1238,10 +1281,10 @@ MenuHandlers.add(:options_menu, :pokemon_cry_volume, {
 
 MenuHandlers.add(:options_menu, :battle_animations, {
   "page"        => :graphics,
-  "name"        => _INTL("Efectos de Batalla"),
+  "name"        => _INTL("Efectos de combate"),
   "order"       => 20,
   "type"        => :array,
-  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "parameters"  => proc { [_INTL("Sí"), _INTL("No")] },
   "description" => _INTL("Elige si deseas ver las animaciones de movimiento en batalla."),
   "get_proc"    => proc { next $PokemonSystem.battlescene },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.battlescene = value }
@@ -1249,7 +1292,7 @@ MenuHandlers.add(:options_menu, :battle_animations, {
 
 MenuHandlers.add(:options_menu, :speech_frame, {
   "page"        => :graphics,
-  "name"        => _INTL("Marco de Diálogo"),
+  "name"        => _INTL("Marco de diálogo"),
   "order"       => 30,
   "type"        => :number_type,
   "parameters"  => 1..Settings::SPEECH_WINDOWSKINS.length,
@@ -1265,7 +1308,7 @@ MenuHandlers.add(:options_menu, :speech_frame, {
 
 MenuHandlers.add(:options_menu, :menu_frame, {
   "page"        => :graphics,
-  "name"        => _INTL("Marco de Menú"),
+  "name"        => _INTL("Marco de menú"),
   "order"       => 40,
   "type"        => :number_type,
   "parameters"  => 1..Settings::MENU_WINDOWSKINS.length,
@@ -1281,10 +1324,10 @@ MenuHandlers.add(:options_menu, :menu_frame, {
 
 MenuHandlers.add(:options_menu, :screen_size, {
   "page"        => :graphics,
-  "name"        => _INTL("Tamaño de Ventana"),
+  "name"        => _INTL("Tamaño de ventana"),
   "order"       => 50,
   "type"        => :array,
-  "parameters"  => [_INTL("S"), _INTL("M"), _INTL("L"), _INTL("XL"), _INTL("Completa")],
+  "parameters"  => proc { [_INTL("S"), _INTL("M"), _INTL("L"), _INTL("XL"), _INTL("Completa")] },
   "description" => _INTL("Elije el tamaño de la ventana del juego."),
   "get_proc"    => proc { next [$PokemonSystem.screensize, 4].min },
   "set_proc"    => proc { |value, _screen| $PokemonSystem.screensize = value }
@@ -1295,7 +1338,7 @@ MenuHandlers.add(:options_menu, :vsync, {
   "name"        => _INTL("VSync"),
   "order"       => 60,
   "type"        => :array,
-  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "parameters"  => proc { [_INTL("Sí"), _INTL("No")] },
   "condition"   => proc { next !$joiplay },
   "description" => _INTL("Si el juego va muy rápido desactiva el VSync.\nRequiere reiniciar el juego"),
   "get_proc"    => proc { next $PokemonSystem.vsync },
@@ -1311,7 +1354,7 @@ MenuHandlers.add(:options_menu, :autotile_animations, {
   "name"        => _INTL("Anim. de mapas"),
   "order"       => 70,
   "type"        => :array,
-  "parameters"  => [_INTL("Sí"), _INTL("No")],
+  "parameters"  => proc { [_INTL("Sí"), _INTL("No")] },
   "description" => _INTL("Activa o desactiva las animaciones de los mapas."),
   "get_proc"    => proc { next $PokemonSystem.autotile_animations || 0 },
   "set_proc"    => proc { |value, _scene| $PokemonSystem.autotile_animations = value }

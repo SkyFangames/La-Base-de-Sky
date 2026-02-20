@@ -278,7 +278,7 @@ class Battle::Move::HealUserAndAlliesQuarterOfTotalHPCureStatus < Battle::Move
       when :BURN
         @battle.pbDisplay(_INTL("¡La quemadura de {1} se ha curado!", target.pbThis(true)))
       when :PARALYSIS
-        @battle.pbDisplay(_INTL("¡{1} se ha curado de paralisis!", target.pbThis))
+        @battle.pbDisplay(_INTL("¡{1} se ha curado de la parálisis!", target.pbThis))
       when :FROZEN, :FROSTBITE
         @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", target.pbThis))
       end
@@ -402,7 +402,7 @@ class Battle::Move::StartHealUserEachTurnTrapUserInBattle < Battle::Move
 
   def pbEffectGeneral(user)
     user.effects[PBEffects::Ingrain] = true
-    @battle.pbDisplay(_INTL("!{1} echó raices!", user.pbThis))
+    @battle.pbDisplay(_INTL("!{1} echó raíces!", user.pbThis))
   end
 end
 

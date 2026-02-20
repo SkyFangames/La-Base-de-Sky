@@ -475,7 +475,7 @@ MenuHandlers.add(:pokemon_debug_menu, :forget_move, {
   "parent" => :moves,
   "effect" => proc { |pkmn, pkmnid, heldpoke, settingUpBattle, screen|
     moveindex = screen.pbChooseMove(pkmn, _INTL("Elige un movimiento para olvidarlo."))
-    if moveindex >= 0
+    if moveindex >= 0 && !pkmn.moves.empty? && moveindex < pkmn.moves.length && pkmn.moves[moveindex]
       movename = pkmn.moves[moveindex].name
       pkmn.forget_move_at_index(moveindex)
       screen.pbDisplay(_INTL("{1} olvidó {2}.", pkmn.name, movename))
@@ -784,7 +784,7 @@ MenuHandlers.add(:pokemon_debug_menu, :species_and_form, {
           f = formcmds[0][cmd2]
           if f != pkmn.form
             if MultipleForms.hasFunction?(pkmn, "getForm")
-              next if !screen.pbConfirm(_INTL("Esta especie decide su propia forma. ¿Sobreescribir?"))
+              next if !screen.pbConfirm(_INTL("Esta especie decide su propia forma. ¿Sobrescribir?"))
               pkmn.forced_form = f
             end
             pkmn.form = f
@@ -816,8 +816,8 @@ MenuHandlers.add(:pokemon_debug_menu, :set_shininess, {
     cmd = 0
     loop do
       msg_idx = pkmn.shiny? ? (pkmn.super_shiny? ? 1 : 0) : 2
-      msg = [_INTL("Es variocolor."), _INTL("Es super variocolor."), _INTL("Es normal (no variocolor).")][msg_idx]
-      cmd = screen.pbShowCommands(msg, [_INTL("Hacer variocolor"), _INTL("Hacer super variocolor"),
+      msg = [_INTL("Es variocolor."), _INTL("Es súper variocolor."), _INTL("Es normal (no variocolor).")][msg_idx]
+      cmd = screen.pbShowCommands(msg, [_INTL("Hacer variocolor"), _INTL("Hacer súper variocolor"),
                                         _INTL("Hacer normal"), _INTL("Resetear")], cmd)
       break if cmd < 0
       case cmd
@@ -1054,7 +1054,7 @@ MenuHandlers.add(:pokemon_debug_menu, :shadow_pkmn, {
     cmd = 0
     loop do
       msg = [_INTL("No es un Pokémon Oscuro."),
-             _INTL("La puerta del corazón es {1} (estapa {2}).", pkmn.heart_gauge, pkmn.heartStage)][pkmn.shadowPokemon? ? 1 : 0]
+             _INTL("La puerta del corazón es {1} (etapa {2}).", pkmn.heart_gauge, pkmn.heartStage)][pkmn.shadowPokemon? ? 1 : 0]
       cmd = screen.pbShowCommands(msg, [_INTL("Hacer oscuro"), _INTL("Definir puerta del corazón")], cmd)
       break if cmd < 0
       case cmd
