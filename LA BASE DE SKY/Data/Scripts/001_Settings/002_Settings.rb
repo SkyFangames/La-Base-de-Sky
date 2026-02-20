@@ -92,6 +92,9 @@ module Settings
   # utilizados para cosas como el Poder Oculto.
   DISABLE_IVS_AND_EVS  = false
 
+  # La felicidad máxima que puede tener un Pokémon.
+  MAX_HAPPINESS = 255
+
   #=============================================================================
 
   # Si la iluminación de los mapas dependa de la hora del día.

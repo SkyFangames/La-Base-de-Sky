@@ -1116,7 +1116,7 @@ class Pokemon
         gain = (@happiness >= 179) ? 0 : gain.clamp(0, 179 - @happiness)
       end
     end
-    @happiness = (@happiness + gain).clamp(0, 255)
+    @happiness = (@happiness + gain).clamp(0, Settings::MAX_HAPPINESS)
   end
 
   #=============================================================================

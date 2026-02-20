@@ -222,7 +222,7 @@ end
 #===============================================================================
 class Battle::Move::PowerLowerWithUserHappiness < Battle::Move
   def pbBasePower(base_power, user, target)
-    return [((255 - user.happiness) * 2 / 5).floor, 1].max
+    return [((Settings::MAX_HAPPINESS - user.happiness) * 2 / 5).floor, 1].max
   end
 end
 

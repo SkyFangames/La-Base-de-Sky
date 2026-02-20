@@ -754,7 +754,7 @@ def pbMaxUsesOfEVLoweringBerry(stat, pkmn)
   ret = (pkmn.ev[stat].to_f / 10).ceil
   happiness = pkmn.happiness
   uses = 0
-  if happiness < 255
+  if happiness < Settings::MAX_HAPPINESS
     bonus_per_use = 0
     bonus_per_use += 1 if pkmn.obtain_map == $game_map.map_id
     bonus_per_use += 1 if pkmn.poke_ball == :LUXURYBALL
@@ -765,14 +765,14 @@ def pbMaxUsesOfEVLoweringBerry(stat, pkmn)
       gain += bonus_per_use
       gain = (gain * 1.5).floor if has_soothe_bell
       happiness += gain
-      break if happiness >= 255
+      break if happiness >= Settings::MAX_HAPPINESS
     end
   end
   return [ret, uses].max
 end
 
 def pbRaiseHappinessAndLowerEV(pkmn, scene, stat, qty, messages)
-  h = pkmn.happiness < 255
+  h = pkmn.happiness < Settings::MAX_HAPPINESS
   e = pkmn.ev[stat] > 0
   if !h && !e
     scene.pbDisplay(_INTL("No tendría ningún efecto."))

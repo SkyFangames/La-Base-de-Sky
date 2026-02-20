@@ -78,6 +78,9 @@ module Settings
     # de afecto solo comienzan a aplicarse por encima de una felicidad de 179. 
     # También reduce el umbral de evolución por felicidad a 160.
     APPLY_HAPPINESS_SOFT_CAP = AFFECTION_EFFECTS
+
+    # Cambia que el umbral de evolución por felicidad a 160.
+    APPLY_HAPPINESS_SOFT_CAP_EVOS = true
   
     #=============================================================================
   

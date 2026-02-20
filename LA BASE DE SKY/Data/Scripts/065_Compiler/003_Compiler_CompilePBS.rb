@@ -912,8 +912,8 @@ module Compiler
       end
       # Ensure valid happiness
       if pkmn[:happiness]
-        if pkmn[:happiness] > 255
-          raise _INTL("Felicidad incorrecta: {1} (debe estar entre 0 y 255).\n{2}", pkmn[:happiness], FileLineData.linereport)
+        if pkmn[:happiness] > Settings::MAX_HAPPINESS
+          raise _INTL("Felicidad incorrecta: {1} (debe estar entre 0 y {2}).\n{3}", pkmn[:happiness], Settings::MAX_HAPPINESS, FileLineData.linereport)
         end
       end
       # Ensure valid Poké Ball

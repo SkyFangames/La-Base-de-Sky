@@ -1185,7 +1185,7 @@ ItemHandlers::UseOnPokemon.add(:EXPCANDYXL, proc { |item, qty, pkmn, scene|
 #-------------------------------------------------------------------------------
 
 ItemHandlers::UsableOnPokemon.add(:POMEGBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:HP] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:HP] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:POMEGBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:HP, pkmn)
@@ -1202,7 +1202,7 @@ ItemHandlers::UseOnPokemon.add(:POMEGBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:KELPSYBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:ATTACK] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:ATTACK] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:KELPSYBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:ATTACK, pkmn)
@@ -1219,7 +1219,7 @@ ItemHandlers::UseOnPokemon.add(:KELPSYBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:QUALOTBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:DEFENSE] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:DEFENSE] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:QUALOTBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:DEFENSE, pkmn)
@@ -1236,7 +1236,7 @@ ItemHandlers::UseOnPokemon.add(:QUALOTBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:HONDEWBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:SPECIAL_ATTACK] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:SPECIAL_ATTACK] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:HONDEWBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:SPECIAL_ATTACK, pkmn)
@@ -1253,7 +1253,7 @@ ItemHandlers::UseOnPokemon.add(:HONDEWBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:GREPABERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:SPECIAL_DEFENSE] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:SPECIAL_DEFENSE] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:GREPABERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:SPECIAL_DEFENSE, pkmn)
@@ -1270,7 +1270,7 @@ ItemHandlers::UseOnPokemon.add(:GREPABERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:TAMATOBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:SPEED] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:SPEED] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:TAMATOBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:SPEED, pkmn)
