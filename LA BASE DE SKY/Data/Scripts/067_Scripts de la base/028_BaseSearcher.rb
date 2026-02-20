@@ -30,9 +30,9 @@ class BaseSearcher
 
   # Opens the search box and initiates the search process.
   # @return [Boolean, Integer] Returns false if search is cancelled, otherwise returns search result.
-  def open_search_box
+  def open_search_box(position = :right)
     on_input = ->(text, char = '') { search_by_name(text, char) }
-    term = pb_message_free_text_with_on_input(search_prompt, "", false, SEARCH_BOX_MAX_LENGTH, width = SEARCH_BOX_WIDTH, on_input = on_input)
+    term = pb_message_free_text_with_on_input(search_prompt, "", false, SEARCH_BOX_MAX_LENGTH, width = SEARCH_BOX_WIDTH, on_input = on_input, position = position)
 
     return false if ['', nil].include?(term)
 
@@ -80,7 +80,7 @@ class BaseSearcher
   # @param text [String] The search text.
   # @return [Boolean] True if the name contains the search text.
   def matches_name?(item_name, text)
-    item_name.downcase.include?(text.downcase)
+    pbSmartMatch?(item_name, text)
   end
 
   # Validates whether an item should be included in the search.
@@ -107,28 +107,28 @@ class BaseSearcher
   # @param item [Object] The item to get the name from.
   # @return [String] The item's name.
   def get_item_name(item)
-    raise NotImplementedError, "#{self.class} must implement #get_item_name"
+    raise NotImplementedError, "#{self.class} debe implementar #get_item_name"
   end
 
   # Gets the list to search through.
   # @abstract
   # @return [Array] The searchable list.
   def get_search_list
-    raise NotImplementedError, "#{self.class} must implement #get_search_list"
+    raise NotImplementedError, "#{self.class} debe implementar #get_search_list"
   end
 
   # Gets the current index in the list.
   # @abstract
   # @return [Integer] The current index.
   def get_current_index
-    raise NotImplementedError, "#{self.class} must implement #get_current_index"
+    raise NotImplementedError, "#{self.class} debe implementar #get_current_index"
   end
 
   # Refreshes the display with the new index.
   # @abstract
   # @param index [Integer] The index to display.
   def refresh_display(index)
-    raise NotImplementedError, "#{self.class} must implement #refresh_display"
+    raise NotImplementedError, "#{self.class} debe implementar #refresh_display"
   end
 
   # Gets the prompt text for the search box.

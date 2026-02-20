@@ -1,0 +1,6 @@
+Name       = Event Reporting
+Version    = 2.0
+Essentials = 20.1,21.1
+Conflicts  = Switch and Variable Usage Report
+Credits    = wrigty12
+

@@ -4741,7 +4741,7 @@ ShadowX = 0
 ShadowSize = 2
 #-------------------------------
 [GOLISOPOD]
-BackSprite = 0,0
+BackSprite = -2,0
 FrontSprite = -1,11
 ShadowX = 0
 ShadowSize = 3
@@ -6338,7 +6338,7 @@ ShadowSize = 3
 #-------------------------------
 [BAXCALIBUR]
 BackSprite = 0,0
-FrontSprite = 7,14
+FrontSprite = 6,12
 ShadowX = 0
 ShadowSize = 3
 #-------------------------------
@@ -6724,7 +6724,7 @@ ShadowSize = 3
 BackSprite = 0,0
 FrontSprite = 3,8
 ShadowX = 0
-ShadowSize = 1
+ShadowSize = 2
 #-------------------------------
 [MEWTWO,2]
 BackSprite = 0,0
@@ -7337,3 +7337,135 @@ BackSprite = 0,0
 FrontSprite = 1,19
 ShadowX = 0
 ShadowSize = 2
+#-------------------------------
+[RAICHU,2]
+BackSprite = -4,0
+FrontSprite = 1,16
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[RAICHU,3]
+BackSprite = -4,0
+FrontSprite = 4,19
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[CHIMECHO,1]
+BackSprite = 0,0
+FrontSprite = 3,6
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[ABSOL,2]
+BackSprite = 0,0
+FrontSprite = 1,15
+ShadowX = 3
+ShadowSize = 3
+#-------------------------------
+[STARAPTOR,1]
+BackSprite = -3,0
+FrontSprite = 2,14
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[GARCHOMP,2]
+BackSprite = 6,0
+FrontSprite = 7,9
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[LUCARIO,2]
+BackSprite = -7,0
+FrontSprite = 0,5
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[HEATRAN,1]
+BackSprite = 1,0
+FrontSprite = 1,18
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[DARKRAI,1]
+BackSprite = 0,0
+FrontSprite = 4,6
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[GOLURK,1]
+BackSprite = 0,0
+FrontSprite = 3,10
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[MEOWSTIC,2]
+BackSprite = 0,0
+FrontSprite = 2,5
+ShadowX = 0
+ShadowSize = 2
+#-------------------------------
+[CRABOMINABLE,1]
+BackSprite = 0,0
+FrontSprite = 1,3
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[GOLISOPOD,1]
+BackSprite = -2,0
+FrontSprite = 4,10
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[MAGEARNA,2]
+BackSprite = 0,0
+FrontSprite = 1,8
+ShadowX = 0
+ShadowSize = 2
+#-------------------------------
+[MAGEARNA,3]
+BackSprite = 0,0
+FrontSprite = 1,8
+ShadowX = 0
+ShadowSize = 2
+#-------------------------------
+[ZERAORA,1]
+BackSprite = 0,0
+FrontSprite = 1,7
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[SCOVILLAIN,1]
+BackSprite = -2,0
+FrontSprite = -2,14
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[GLIMMORA,1]
+BackSprite = 0,0
+FrontSprite = 0,5
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[TATSUGIRI,3]
+BackSprite = 0,0
+FrontSprite = 4,12
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[TATSUGIRI,4]
+BackSprite = -3,0
+FrontSprite = 0,10
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[TATSUGIRI,5]
+BackSprite = 0,0
+FrontSprite = 3,14
+ShadowX = 0
+ShadowSize = 3
+#-------------------------------
+[BAXCALIBUR,1]
+BackSprite = 0,0
+FrontSprite = 4,8
+ShadowX = 0
+ShadowSize = 3

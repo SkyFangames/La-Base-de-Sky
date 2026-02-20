@@ -252,6 +252,7 @@ class Game_FollowerFactory
         follower.invisible_after_transfer = false
         event.turn_towards_leader($game_player)
       end
+      event.through = event.on_stair?
       event.move_speed  = leader.move_speed
       event.transparent = !follower.visible?
       if $PokemonGlobal.ice_sliding

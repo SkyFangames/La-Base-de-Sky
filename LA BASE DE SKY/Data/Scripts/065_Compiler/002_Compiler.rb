@@ -384,17 +384,17 @@ module Compiler
   def cast_csv_value(value, schema, enumer = nil)
     case schema.downcase
     when "i"   # Integer
-      if !value[/^\-?\d+$/]
+      if !value || !value[/^\-?\d+$/]
         raise _INTL("El campo {1} no es un número entero (int)\n{2}", value, FileLineData.linereport)
       end
       return value.to_i
     when "u"   # Positive integer or zero
-      if !value[/^\d+$/]
+      if !value || !value[/^\d+$/]
         raise _INTL("El campo {1} no es un número entero (int) positivo o 0\n{2}", value, FileLineData.linereport)
       end
       return value.to_i
     when "v"   # Positive integer
-      if !value[/^\d+$/]
+      if !value || !value[/^\d+$/]
         raise _INTL("El campo {1} no es un número entero (int) positivo\n{2}", value, FileLineData.linereport)
       end
       if value.to_i == 0
@@ -402,34 +402,34 @@ module Compiler
       end
       return value.to_i
     when "x"   # Hexadecimal number
-      if !value[/^[A-F0-9]+$/i]
+      if !value || !value[/^[A-F0-9]+$/i]
         raise _INTL("El campo '{1}' no es un número hexadecimal\n{2}", value, FileLineData.linereport)
       end
       return value.hex
     when "f"   # Floating point number
-      if !value[/^\-?^\d*\.?\d*$/]
+      if !value || !value[/^\-?^\d*\.?\d*$/]
         raise _INTL("El campo {1} no es un número\n{2}", value, FileLineData.linereport)
       end
       return value.to_f
     when "b"   # Boolean
-      return true if value[/^(?:1|TRUE|YES|Y)$/i]
-      return false if value[/^(?:0|FALSE|NO|N)$/i]
+      return true if value && value[/^(?:1|TRUE|YES|Y)$/i]
+      return false if value && value[/^(?:0|FALSE|NO|N)$/i]
       raise _INTL("El campo {1} no es un valor booleano (true, false, 1, 0)\n{2}", value, FileLineData.linereport)
     when "n"   # Name
-      if !value[/^(?![0-9])\w+$/]
+      if !value || !value[/^(?![0-9])\w+$/]
         raise _INTL("El campo '{1}' solo puede contener letras, dígitos y guiones bajos, y no debe comenzar con un número.\n{2}", value, FileLineData.linereport)
       end
     when "s"   # String
     when "q"   # Unformatted text
     when "m"   # Symbol
-      if !value[/^(?![0-9])\w+$/]
+      if !value || !value[/^(?![0-9])\w+$/]
         raise _INTL("El campo '{1}' debe contener solo letras, dígitos y guiones bajos, y no puede comenzar con un número.\n{2}", value, FileLineData.linereport)
       end
       return value.to_sym
     when "e"   # Enumerable
       return checkEnumField(value, enumer)
     when "y"   # Enumerable or integer
-      return value.to_i if value[/^\-?\d+$/]
+      return value.to_i if value && value[/^\-?\d+$/]
       return checkEnumField(value, enumer)
     end
     return value
@@ -739,7 +739,7 @@ module Compiler
   #=============================================================================
   # Write values to a file using a schema
   #=============================================================================
-  def pbWriteCsvRecord(record, file, schema)
+    def pbWriteCsvRecord(record, file, schema)
     rec = (record.is_a?(Array)) ? record.flatten : [record]
     start = (["*", "^"].include?(schema[1][0, 1])) ? 1 : 0
     index = -1
@@ -760,69 +760,79 @@ module Compiler
           end
         end
         file.write(",") if index > 0
-        if value.nil?
-          # do nothing
-        elsif value.is_a?(String)
-          if schema[1][i, 1].downcase == "q"
-            file.write(value)
-          else
-            file.write(csvQuote(value))
-          end
-        elsif value.is_a?(Symbol)
-          file.write(csvQuote(value.to_s))
-        elsif value == true
-          file.write("true")
-        elsif value == false
-          file.write("false")
-        elsif value.is_a?(Numeric)
-          case schema[1][i, 1]
-          when "e", "E"   # Enumerable
-            enumer = schema[2 + i]
-            case enumer
-            when Array
-              file.write(enumer[value])
-            when Symbol, String
+        next if value.nil?
+        case schema[1][i, 1]
+        when "e", "E"   # Enumerable
+          enumer = schema[2 + i - start]
+          case enumer
+          when Array
+            file.write((value.is_a?(Integer) && !enumer[value].nil?) ? enumer[value] : value)
+          when Symbol, String
+            if GameData.const_defined?(enumer.to_sym)
+              mod = GameData.const_get(enumer.to_sym)
+              file.write(mod.get(value).id.to_s)
+            else
               mod = Object.const_get(enumer.to_sym)
               file.write(getConstantName(mod, value))
-            when Module
-              file.write(getConstantName(enumer, value))
-            when Hash
-              enumer.each_key do |key|
-                if enumer[key] == value
-                  file.write(key)
-                  break
-                end
-              end
             end
-          when "y", "Y"   # Enumerable or integer
-            enumer = schema[2 + i]
-            case enumer
-            when Array
-              if enumer[value].nil?
-                file.write(value)
-              else
-                file.write(enumer[value])
-              end
-            when Symbol, String
-              mod = Object.const_get(enumer.to_sym)
-              file.write(getConstantNameOrValue(mod, value))
-            when Module
-              file.write(getConstantNameOrValue(enumer, value))
-            when Hash
-              hasenum = false
+          when Module
+            file.write(getConstantName(enumer, value))
+          when Hash
+            if value.is_a?(String)
+              file.write(value)
+            else
               enumer.each_key do |key|
                 next if enumer[key] != value
                 file.write(key)
-                hasenum = true
                 break
               end
-              file.write(value) unless hasenum
             end
-          else   # Any other record type
-            file.write(value.inspect)
+          end
+        when "y", "Y"   # Enumerable or integer
+          enumer = schema[2 + i - start]
+          case enumer
+          when Array
+            file.write((value.is_a?(Integer) && !enumer[value].nil?) ? enumer[value] : value)
+          when Symbol, String
+            if !Kernel.const_defined?(enumer.to_sym) && GameData.const_defined?(enumer.to_sym)
+              mod = GameData.const_get(enumer.to_sym)
+              if mod.exists?(value)
+                file.write(mod.get(value).id.to_s)
+              else
+                file.write(value.to_s)
+              end
+            else
+              mod = Object.const_get(enumer.to_sym)
+              file.write(getConstantNameOrValue(mod, value))
+            end
+          when Module
+            file.write(getConstantNameOrValue(enumer, value))
+          when Hash
+            if value.is_a?(String)
+              file.write(value)
+            else
+              has_enum = false
+              enumer.each_key do |key|
+                next if enumer[key] != value
+                file.write(key)
+                has_enum = true
+                break
+              end
+              file.write(value) if !has_enum
+            end
           end
         else
-          file.write(value.inspect)
+          if value.is_a?(String)
+            file.write((schema[1][i, 1].downcase == "q") ? value : csvQuote(value))
+          elsif value.is_a?(Symbol)
+            file.write(csvQuote(value.to_s))
+          elsif value == true
+            file.write("true")
+          elsif value == false
+            file.write("false")
+          else
+            file.write(value.inspect)
+          end
         end
       end
       break if start > 0 && index >= rec.length - 1
@@ -1018,7 +1028,7 @@ module Compiler
     compile_pbs_files
     compile_animations
     compile_trainer_events(mustCompile)
-    Console.echo_li(_INTL("Saving messages..."))
+    Console.echo_li(_INTL("Guardando mensajes..."))
     Translator.gather_script_and_event_texts
     MessageTypes.save_default_messages
     MessageTypes.load_default_messages if FileTest.exist?("Data/messages_core.dat")

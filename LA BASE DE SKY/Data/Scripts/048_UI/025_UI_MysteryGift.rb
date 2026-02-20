@@ -6,7 +6,7 @@
 # You should change it to your file's url once you upload it.
 #===============================================================================
 module MysteryGift
-  URL = "https://pastebin.com/raw/VRDjyp8q"
+  URL = "https://pastebin.com/raw/tupastebin"   # Cambia esta URL por la de tu archivo de regalos misteriosos
 end
 
 #===============================================================================
@@ -196,7 +196,7 @@ def pbManageMysteryGifts
         pbMessage(_INTL("No se han podido guardar los datos en el archivo MysteryGift.txt. Inténtalo de nuevo."))
       end
     elsif command == commands.length - 3   # Borrar los regalos recibidos
-      if pbConfirmMessage(_INTL("¿Quieres eliminar el registro de tu jugaror de regalos misteriosos? Esto hará que puedas recibirlos todos de nuevo."))
+      if pbConfirmMessage(_INTL("¿Quieres eliminar el registro de tu jugador de regalos misteriosos? Esto hará que puedas recibirlos todos de nuevo."))
         $player.mystery_gifts = []
         pbMessage(_INTL("Has eliminado correctamente los regalos recibidos."))
 
@@ -214,13 +214,13 @@ def pbManageMysteryGifts
       pbMessage(_INTL("Puedes usar servicios como la web de Pastebin para subir ahí tus regalos y que así tus jugadores puedan descargarlos."))
       pbMessage(_INTL("Recuerda que debes poner la URL de tu Pastebin en el script \"UI_MysteryGift\" dentro de los scripts del juego, a los que se accede desde el editor."))
       pbMessage(_INTL("Puedes encontrarlo rápidamente si entras en el editor de scripts, pulsas \"cntrl + shift + F\" y escribes \"module MysteryGift\"."))
-      pbMessage(_INTL("¡IMPORTANTE! En el archibo \"MysteryGiftMaster.txt\" se pueden leer todos los datos de tus regalos y sus contraseñas. Te recomiendo que lo elimines de la carpeta del juego cuando lo vayas a compartir, para que nadie tenga acceso al mismo."))
+      pbMessage(_INTL("¡IMPORTANTE! En el archivo \"MysteryGiftMaster.txt\" se pueden leer todos los datos de tus regalos y sus contraseñas. Te recomiendo que lo elimines de la carpeta del juego cuando lo vayas a compartir, para que nadie tenga acceso al mismo."))
     elsif command >= 0 && command < commands.length - 4   # A gift
       cmd = 0
       loop do
         commands = pbRefreshMGCommands(master, online)
         gift = master[command]
-        cmds = [_INTL("Marcar/desmarcar regalo"),
+        cmds = [_INTL("Marcar/Desmarcar regalo"),
                 _INTL("Editar el regalo"),
                 _INTL("Recibir el regalo"),
                 _INTL("Eliminar el regalo"),
@@ -279,9 +279,11 @@ def pbRefreshMGCommands(master, online)
   commands = []
   master.each do |gift|
     itemname = "BLANK"
-    if gift[1] == 0
+    if gift[2].is_a?(Pokemon)
       itemname = gift[2].speciesName
-    elsif gift[1] > 0
+    elsif gift[2].is_a?(Hash)
+      itemname = gift[2][:name]
+    else
       itemname = GameData::Item.get(gift[2]).name + sprintf(" x%d", gift[1])
     end
     ontext = ["[  ]", "[X]"][(online.include?(gift[0])) ? 1 : 0]
@@ -496,6 +498,11 @@ end
 # Converts an array of gifts into a string and back.
 #===============================================================================
 def pbMysteryGiftEncrypt(gift, master = true)
+  gift.each do |gft|
+    if gft[2].is_a?(Pokemon)
+      gft[2] = create_hash_from_pkmn(gft[2])
+    end
+  end
   if Settings::ENCRIPTAR_REGALOS_MISTERIOSOS_EN_MASTER || !master
     ret = [Zlib::Deflate.deflate(Marshal.dump(gift))].pack("m")
   else
@@ -507,14 +514,15 @@ end
 def pbMysteryGiftDecrypt(gift, master = true)
   return [] if nil_or_empty?(gift)
   if Settings::ENCRIPTAR_REGALOS_MISTERIOSOS_EN_MASTER || !master
-    ret = Marshal.restore(Zlib::Inflate.inflate(gift.unpack("m")[0]))
+    ret = Marshal.load(Zlib::Inflate.inflate(gift.unpack("m")[0]))
   else
     ret = eval(gift)
   end
   if ret
     ret.each do |gft|
       if gft[1] == 0   # Pokémon
-        gft[2] = gft[2]
+        # Cargamos el Pokémon
+        gft[2] = create_pkmn_from_hash(gft[2])
       else   # Item
         gft[2] = GameData::Item.get(gft[2]).id
       end
@@ -546,27 +554,21 @@ def pbReceiveMysteryGift(id)
     return false
   end
   gift = $player.mystery_gifts[index]
-  if gift[1] == 0   # Pokémon
-    gift[2].personalID = rand(2**16) | (rand(2**16) << 16)
-    gift[2].calc_stats
-    gift[2].timeReceived = Time.now.to_i
-    gift[2].obtain_method = 4   # Fateful encounter
-    gift[2].record_first_moves
-    gift[2].obtain_level = gift[2].level
-    gift[2].obtain_map = $game_map&.map_id || 0
-    was_owned = $player.owned?(gift[2].species)
-    if pbAddPokemonSilent(gift[2])
-      pbMessage(_INTL("¡{1} recibió {2}!", $player.name, gift[2].name) + "\\me[Pkmn get]\\wtnp[80]")
+  if gift[2].is_a?(Pokemon)   # Pokémon
+    pokemon = gift[2]
+    was_owned = $player.owned?(pokemon.species)
+    if pbAddPokemonSilent(pokemon)
+      pbMessage(_INTL("¡{1} recibió {2}!", $player.name, pokemon.name) + "\\me[Pkmn get]\\wtnp[80]")
       $player.mystery_gifts[index] = [id]
       # Show Pokédex entry for new species if it hasn't been owned before
       if Settings::SHOW_NEW_SPECIES_POKEDEX_ENTRY_MORE_OFTEN && !was_owned &&
-         $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(gift[2].species)
-        pbMessage(_INTL("Los datos de {1} se han añadido a la Pokédex.", gift[2].name))
-        $player.pokedex.register_last_seen(gift[2])
+         $player.has_pokedex && $player.pokedex.species_in_unlocked_dex?(pokemon.species)
+        pbMessage(_INTL("Los datos de {1} se han añadido a la Pokédex.", pokemon.name))
+        $player.pokedex.register_last_seen(pokemon)
         pbFadeOutIn do
           scene = PokemonPokedexInfo_Scene.new
           screen = PokemonPokedexInfoScreen.new(scene)
-          screen.pbDexEntry(gift[2].species)
+          screen.pbDexEntry(pokemon.species)
         end
       end
       return true
@@ -600,4 +602,112 @@ def pbReceiveMysteryGift(id)
     end
   end
   return false
+end
+
+#===============================================================================
+# Converts a Pokémon into a hash.
+#===============================================================================
+def create_hash_from_pkmn(pokemon)
+  # Creamos un array con las IDs de los movs.
+  movs_array = []
+  for i in pokemon.moves
+    movs_array.push(i.id)
+  end
+  owner_id = pokemon.owner.id
+  owner_name = pokemon.owner.name
+  owner_gender = pokemon.owner.gender
+  return {
+    species: pokemon.species,
+    nivel: pokemon.level,
+    nombre: pokemon.name,
+    forma: pokemon.form,
+    felicidad: pokemon.happiness,
+    pokeball: pokemon.poke_ball,
+    genero: pokemon.gender,
+    naturaleza: pokemon.nature.id,
+    ivs: pokemon.iv,
+    evs: pokemon.ev,
+    habilidad: pokemon.ability.id,
+    movimientos: movs_array,
+    item: pokemon.item.id,
+    cinta_aplicada: pokemon.ribbons,
+    steps_to_hatch: pokemon.steps_to_hatch,
+    shiny: pokemon.shiny?,
+    super_shiny: pokemon.super_shiny?,
+    cool: pokemon.cool,
+    beauty: pokemon.beauty,
+    cute: pokemon.cute,
+    smart: pokemon.smart,
+    tough: pokemon.tough,
+    sheen: pokemon.sheen,
+    pokerus: pokemon.pokerus,
+    owner_id: owner_id,
+    owner_name: owner_name,
+    owner_gender: owner_gender,
+    obtain_method: pokemon.obtain_method,
+    obtain_map: pokemon.obtain_map,
+    obtain_text: pokemon.obtain_text,
+    obtain_level: pokemon.obtain_level,
+    hatched_map: pokemon.hatched_map,
+    fused: pokemon.fused,
+    personalID: pokemon.personalID,
+    ready_to_evolve: pokemon.ready_to_evolve,
+    cannot_store: pokemon.cannot_store,
+    cannot_release: pokemon.cannot_release,
+    cannot_trade: pokemon.cannot_trade,
+    scale: pokemon.scale,
+    memento: pokemon.memento,
+    spot_hash: pokemon.spot_hash,
+    shiny_leaf: pokemon.shiny_leaf,
+  }
+end
+
+#===============================================================================
+# Converts a hash into a Pokémon.
+#===============================================================================
+def create_pkmn_from_hash(poke_hash)
+  pokemon = Pokemon.new(poke_hash[:species],poke_hash[:nivel].to_i)
+  pokemon.name = poke_hash[:nombre]
+  pokemon.form = poke_hash[:forma]
+  pokemon.happiness = poke_hash[:felicidad]
+  pokemon.poke_ball = poke_hash[:pokeball]
+  pokemon.gender = poke_hash[:genero]
+  pokemon.nature = poke_hash[:naturaleza]
+  pokemon.iv = poke_hash[:ivs]
+  pokemon.ev = poke_hash[:evs]
+  pokemon.ability = poke_hash[:habilidad]
+  pokemon.moves = poke_hash[:movimientos]
+  pokemon.item = poke_hash[:item]
+  pokemon.ribbons = poke_hash[:cinta_aplicada]
+  pokemon.steps_to_hatch = poke_hash[:steps_to_hatch]
+  pokemon.shiny = poke_hash[:shiny]
+  pokemon.super_shiny = poke_hash[:super_shiny]
+  pokemon.moves = poke_hash[:moves]
+  pokemon.cool = poke_hash[:cool]
+  pokemon.beauty = poke_hash[:beauty]
+  pokemon.cute = poke_hash[:cute]
+  pokemon.smart = poke_hash[:smart]
+  pokemon.tough = poke_hash[:tough]
+  pokemon.sheen = poke_hash[:sheen]
+  pokemon.pokerus = poke_hash[:pokerus]
+  pokemon.owner.id = poke_hash[:owner_id]
+  pokemon.owner.name = poke_hash[:owner_name]
+  pokemon.owner.gender = poke_hash[:owner_gender]
+  pokemon.obtain_method = poke_hash[:obtain_method]
+  pokemon.obtain_map = poke_hash[:obtain_map]
+  pokemon.obtain_text = poke_hash[:obtain_text]
+  pokemon.obtain_level = poke_hash[:obtain_level]
+  pokemon.hatched_map = poke_hash[:hatched_map]
+  pokemon.fused = poke_hash[:fused]
+  pokemon.personalID = poke_hash[:personalID]
+  pokemon.ready_to_evolve = poke_hash[:ready_to_evolve]
+  pokemon.cannot_store = poke_hash[:cannot_store]
+  pokemon.cannot_release = poke_hash[:cannot_release]
+  pokemon.cannot_trade = poke_hash[:cannot_trade]
+  pokemon.scale = poke_hash[:scale]
+  pokemon.memento = poke_hash[:memento]
+  pokemon.spot_hash = poke_hash[:spot_hash]
+  pokemon.shiny_leaf = poke_hash[:shiny_leaf]
+  pokemon.calc_stats
+  return pokemon
 end

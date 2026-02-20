@@ -438,6 +438,7 @@ class Battle::Move::RecoilMove < Battle::Move
     if user.pokemon.isSpecies?(:BASCULIN) && [2, 3].include?(user.pokemon.form)
       user.pokemon.evolution_counter += amt
     end
+    user.pokemon.recoil_evolution(amt)
     user.pbReduceHP(amt, false)
     @battle.pbDisplay(_INTL("¡{1} también se ha hecho daño!", user.pbThis))
     user.pbItemHPHealCheck
@@ -643,7 +644,7 @@ class Battle::Move::PledgeMove < Battle::Move
     when :Rainbow   # Fire + Water
       if user.pbOwnSide.effects[PBEffects::Rainbow] == 0
         user.pbOwnSide.effects[PBEffects::Rainbow] = 4
-        msg = _INTL("¡Ha aparecido un arcoiris sobre {1}!", user.pbTeam(true))
+        msg = _INTL("¡Ha aparecido un arcoíris sobre {1}!", user.pbTeam(true))
         animName = (user.opposes?) ? "RainbowOpp" : "Rainbow"
       end
     when :Swamp   # Water + Grass

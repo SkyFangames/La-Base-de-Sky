@@ -231,11 +231,11 @@ class Battle
   def pbMessageOnRecall(battler)
     if battler.pbOwnedByPlayer?
       if battler.hp <= battler.totalhp / 4
-        pbDisplayBrief(_INTL("¡Buen trabajo {1}! ¡Regresa!", battler.name))
+        pbDisplayBrief(_INTL("¡Buen trabajo, {1}! ¡Regresa!", battler.name))
       elsif battler.hp <= battler.totalhp / 2
         pbDisplayBrief(_INTL("¡OK, {1}! ¡Regresa!", battler.name))
       elsif battler.turnCount >= 5
-        pbDisplayBrief(_INTL("¡{1}, es suficiente ! ¡Regresa!", battler.name))
+        pbDisplayBrief(_INTL("¡{1}, es suficiente! ¡Regresa!", battler.name))
       elsif battler.turnCount >= 2
         pbDisplayBrief(_INTL("¡{1}, regresa!", battler.name))
       else
@@ -264,7 +264,7 @@ class Battle
       elsif opposing.hp >= opposing.totalhp / 4
         pbDisplayBrief(_INTL("¡Solo un poco más! ¡Aguanta, {1}!", newPkmnName))
       else
-        pbDisplayBrief(_INTL("¡Tu oponente está debil! ¡A por ellos, {1}!", newPkmnName))
+        pbDisplayBrief(_INTL("¡Tu oponente está débil! ¡A por él, {1}!", newPkmnName))
       end
     else
       owner = pbGetOwnerFromBattlerIndex(idxBattler)
@@ -422,7 +422,7 @@ class Battle
       battler.eachMove { |m| full_pp = false if m.pp < m.total_pp }
       if battler.canHeal? || battler.status != :NONE || !full_pp
         pbCommonAnimation("LunarDance", battler)
-        pbDisplay(_INTL("¡Un místico halo de luz de luna envuelve a {1}!", battler.pbThis))
+        pbDisplay(_INTL("¡Un místico halo de luz de luna envuelve a {1}!", battler.pbThis(true)))
         battler.pbRecoverHP(battler.totalhp)
         battler.pbCureStatus(false)
         battler.eachMove { |m| battler.pbSetPP(m, m.total_pp) }
@@ -442,7 +442,7 @@ class Battle
       eff = Effectiveness.calculate(:ROCK, *bTypes)
       if !Effectiveness.ineffective?(eff)
         battler.pbReduceHP(battler.totalhp * eff / 8, false)
-        pbDisplay(_INTL("¡Unas piedras puntiagudas han dañado a {1}!", battler.pbThis))
+        pbDisplay(_INTL("¡Unas piedras puntiagudas han dañado a {1}!", battler.pbThis(true)))
         battler.pbItemHPHealCheck
       end
     end

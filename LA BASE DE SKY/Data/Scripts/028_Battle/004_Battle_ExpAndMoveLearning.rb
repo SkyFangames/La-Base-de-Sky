@@ -248,6 +248,7 @@ class Battle
         battler.moves.push(Move.from_pokemon_move(self, pkmn.moves.last))
         battler.pbCheckFormOnMovesetChange
       end
+      $PokemonGlobal.add_seen_move(pkmn.species, newMove)
       return
     end
     # Pokémon already knows the maximum number of moves; try to forget one to learn the new move
@@ -264,6 +265,7 @@ class Battle
           pbDisplayPaused(_INTL("{1} olvidó como usar {2}. Y...", pkmnName, oldMoveName))
           pbDisplay(_INTL("¡{1} aprendió {2}!", pkmnName, moveName) + "\\se[Pkmn move learnt]\\wtnp[30]")
           battler&.pbCheckFormOnMovesetChange
+          $PokemonGlobal.add_seen_move(pkmn.species, newMove)
           break
         elsif pbDisplayConfirm(_INTL("¿Quieres que no aprenda {1}?", moveName))
           pbDisplay(_INTL("{1} no aprendió {2}.", pkmnName, moveName))

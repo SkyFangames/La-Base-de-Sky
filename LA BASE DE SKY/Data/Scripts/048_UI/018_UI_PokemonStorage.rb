@@ -1891,7 +1891,7 @@ class PokemonStorageScreen
           end
           next
         elsif selected < 0
-          next if pbConfirm(_INTL("¿Continuar con las operacions?"))
+          next if pbConfirm(_INTL("¿Continuar con las operaciones?"))
           break
         else
           pokemon = @storage[-1, selected]
@@ -2310,7 +2310,7 @@ class PokemonStorageScreen
     loop do
       selected = @scene.pbSelectBox(@storage.party)
       if selected && selected[0] == -3   # Close box
-        if pbConfirm(_INTL("¿Salir de la Caja"))
+        if pbConfirm(_INTL("¿Salir de la Caja?"))
           pbSEPlay("PC close")
           break
         end

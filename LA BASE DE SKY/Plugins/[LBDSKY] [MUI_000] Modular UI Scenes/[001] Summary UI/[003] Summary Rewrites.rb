@@ -279,6 +279,7 @@ class PokemonSummary_Scene
         @pokemon.play_cry
         @show_back = !@show_back
         if PluginManager.installed?("[DBK] Animated Pokémon System")
+          @sprites["pokemon"].display_values = [UI_POKEMON_SPRITE_X, UI_POKEMON_SPRITE_Y, UI_SPRITE_CONSTRICT_W, UI_SPRITE_CONSTRICT_H]
           @sprites["pokemon"].setSummaryBitmap(@pokemon, @show_back)
         else
           @sprites["pokemon"].setPokemonBitmap(@pokemon, @show_back)
@@ -289,6 +290,9 @@ class PokemonSummary_Scene
       elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_skills
         pbPlayDecisionSE
         showAbilityDescription(@pokemon)
+      elsif Input.trigger?(Input::SPECIAL) && @page_id == :page_info && @pokemon.shadowPokemon?
+        pbPlayDecisionSE
+        showShadowDescription(@pokemon)
       elsif Input.trigger?(Input::USE)
         dorefresh = pbPageCustomUse(@page_id)
         if !dorefresh

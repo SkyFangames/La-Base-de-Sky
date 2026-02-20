@@ -21,12 +21,15 @@ Font.default_shadow = false if Font.respond_to?(:default_shadow)
 Encoding.default_internal = Encoding::UTF_8
 Encoding.default_external = Encoding::UTF_8
 
+# Inicializar el tamaño de pantalla correcto desde el inicio
+Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
+
 def pbSetWindowText(string)
   System.set_window_title(string || System.game_title)
 end
 
-def pbSetResizeFactor(factor)
-  Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
+def pbSetResizeFactor(factor, refresh = true)
+  Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT) if refresh
   if factor < 0 || factor == 4
     Graphics.fullscreen = true if !Graphics.fullscreen
   else

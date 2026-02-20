@@ -28,7 +28,7 @@ end
 #
 #===============================================================================
 class PokemonSave_Scene
-  LOCATION_TEXT_BASE   = Color.new(32, 152, 8)   # Green
+  LOCATION_TEXT_BASE   = Color.new(32, 152, 8)    # Green
   LOCATION_TEXT_SHADOW = Color.new(144, 240, 144)
   MALE_TEXT_BASE       = Color.new(0, 112, 248)   # Blue
   MALE_TEXT_SHADOW     = Color.new(120, 184, 232)

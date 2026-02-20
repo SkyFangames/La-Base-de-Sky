@@ -180,17 +180,17 @@ class Battle::Move
     c = 0
     # Ability effects that alter critical hit rate
     if c >= 0 && user.abilityActive?
-      c = Battle::AbilityEffects.triggerCriticalCalcFromUser(user.ability, user, target, self, c)
+      c = Battle::AbilityEffects.triggerCriticalCalcFromUser(user.ability, user, target, c, self)
     end
     if c >= 0 && target.abilityActive? && !target.beingMoldBroken?
-      c = Battle::AbilityEffects.triggerCriticalCalcFromTarget(target.ability, user, target, self, c)
+      c = Battle::AbilityEffects.triggerCriticalCalcFromTarget(target.ability, user, target, c, self)
     end
     # Item effects that alter critical hit rate
     if c >= 0 && user.itemActive?
-      c = Battle::ItemEffects.triggerCriticalCalcFromUser(user.item, user, target, self, c)
+      c = Battle::ItemEffects.triggerCriticalCalcFromUser(user.item, user, target, c, self)
     end
     if c >= 0 && target.itemActive?
-      c = Battle::ItemEffects.triggerCriticalCalcFromTarget(target.item, user, target, self, c)
+      c = Battle::ItemEffects.triggerCriticalCalcFromTarget(target.item, user, target, c, self)
     end
     return false if c < 0
     # Move-specific "always/never a critical hit" effects
@@ -494,6 +494,11 @@ class Battle::Move
       end
     when :ShadowSky
       multipliers[:final_damage_multiplier] *= 1.5 if type == :SHADOW
+    when :Snowstorm
+      if target.pbHasType?(:ICE) && 
+         (physicalMove? || @function_code == "UseTargetDefenseInsteadOfTargetSpDef")
+        multipliers[:defense_multiplier] *= 1.5
+      end
     end
     # Aurora Veil, Reflect, Light Screen
     if !ignoresReflect? && !target.damageState.critical &&
@@ -556,7 +561,7 @@ class Battle::Move
     end
     ret = 100 if $DEBUG && Input.press?(Input::CTRL)
     return ret if [0, 100].include?(ret)
-    if @battle.pbWeather == :Hail &&
+    if [:Hail, :Snowstorm].include?(@battle.pbWeather) &&
        (@function_code.include?("FrostbiteTarget") ||
        (Settings::FREEZE_EFFECTS_CAUSE_FROSTBITE && @function_code.include?("FreezeTarget")))
       ret *= 2

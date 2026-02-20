@@ -183,7 +183,13 @@ module BattleCreationHelperMethods
     pokemon_array = $player.party
     party_starts  = [0]
     if partner_can_participate?(foe_party)
-      ally = NPCTrainer.new($PokemonGlobal.partner[1], $PokemonGlobal.partner[0])
+      tr_name = $PokemonGlobal.partner[1]
+      Settings::RIVAL_NAMES.each do |rival|
+        next if rival[0] != $PokemonGlobal.partner[0] || !$game_variables[rival[1]].is_a?(String)
+        tr_name = $game_variables[rival[1]]
+        break
+      end
+      ally = NPCTrainer.new(tr_name, $PokemonGlobal.partner[0])
       ally.id    = $PokemonGlobal.partner[2]
       ally.party = $PokemonGlobal.partner[3]
       data = GameData::Trainer.try_get($PokemonGlobal.partner[0], $PokemonGlobal.partner[1], $PokemonGlobal.partner[2])
@@ -226,7 +232,8 @@ module BattleCreationHelperMethods
       when :Rain, :Storm
         battle.defaultWeather = :Rain
       when :Hail
-        battle.defaultWeather = :Hail
+        weather = Settings::HAIL_WEATHER_TYPE == 0 ? :Hail : :Snowstorm
+        battle.defaultWeather = weather
       when :Sandstorm
         battle.defaultWeather = :Sandstorm
       when :Sun

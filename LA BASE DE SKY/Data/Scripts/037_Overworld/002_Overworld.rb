@@ -146,11 +146,16 @@ EventHandlers.add(:on_step_taken, :pick_up_soot,
 EventHandlers.add(:on_step_taken, :grass_rustling,
   proc { |event|
     next if !$scene.is_a?(Scene_Map)
-    next if event.respond_to?("name") && event.name[/airborne/i]
+    next if event.respond_to?("name") && GRASS_RUSTLE_EXCLUDED_EVENT_NAMES.any? { |name| event.name[/#{name}/i] }
     event.each_occupied_tile do |x, y|
       next if !$map_factory.getTerrainTagFromCoords(event.map.map_id, x, y, true).shows_grass_rustle
+      # Only show animation if it's the player or if the tile is visible on screen
+      if event != $game_player && MUTE_GRASS_RUSTLE_OUT_OF_SIGHT
+        next if !$game_map.tile_visible_by_player?(x, y)
+      end
       spriteset = $scene.spriteset(event.map_id)
-      spriteset&.addUserAnimation(Settings::GRASS_ANIMATION_ID, x, y, true, 1)
+      animation = MAPAS_SIN_SONIDO_HIERBA.include?(event.map_id) ? Settings::GRASS_MUTED_ANIMATION_ID : Settings::GRASS_ANIMATION_ID
+      spriteset&.addUserAnimation(animation, x, y, true, 1)
     end
   }
 )
@@ -188,8 +193,7 @@ EventHandlers.add(:on_step_taken, :auto_move_player,
 EventHandlers.add(:on_step_taken, :party_pokemon_distance_tracker,
   proc { |event|
     $player.pokemon_party.each do |pkmn|
-      next if ![:PAWMO, :BRAMBLIN, :RELLOR].include?(pkmn.species)
-      pkmn.evolution_counter += 1
+      pkmn.walking_evolution if pkmn.able?
     end
   }
 )
@@ -320,22 +324,46 @@ EventHandlers.add(:on_map_or_spriteset_change, :show_darkness,
 )
 
 # Show location signpost.
-EventHandlers.add(:on_map_or_spriteset_change, :show_location_window,
+# EventHandlers.add(:on_map_or_spriteset_change, :show_location_window,
+#   proc { |scene, map_changed|
+#     next if !scene || !scene.spriteset
+#     next if !map_changed || !$game_map.metadata&.announce_location
+#     nosignpost = false
+#     if $PokemonGlobal.mapTrail[1]
+#       (Settings::NO_SIGNPOSTS.length / 2).times do |i|
+#         nosignpost = true if Settings::NO_SIGNPOSTS[2 * i] == $PokemonGlobal.mapTrail[1] &&
+#                              Settings::NO_SIGNPOSTS[(2 * i) + 1] == $game_map.map_id
+#         nosignpost = true if Settings::NO_SIGNPOSTS[(2 * i) + 1] == $PokemonGlobal.mapTrail[1] &&
+#                              Settings::NO_SIGNPOSTS[2 * i] == $game_map.map_id
+#         break if nosignpost
+#       end
+#       nosignpost = true if $game_map.name == pbGetMapNameFromId($PokemonGlobal.mapTrail[1])
+#     end
+#     scene.spriteset.addUserSprite(LocationWindow.new($game_map.name)) if !nosignpost
+#   }
+# )
+
+# Show location sign.
+EventHandlers.add(:on_map_or_spriteset_change, :show_location_sign,
   proc { |scene, map_changed|
     next if !scene || !scene.spriteset
     next if !map_changed || !$game_map.metadata&.announce_location
-    nosignpost = false
+    next if Settings::DISABLE_LOCATION_SIGNS
+    no_sign = false
     if $PokemonGlobal.mapTrail[1]
-      (Settings::NO_SIGNPOSTS.length / 2).times do |i|
-        nosignpost = true if Settings::NO_SIGNPOSTS[2 * i] == $PokemonGlobal.mapTrail[1] &&
-                             Settings::NO_SIGNPOSTS[(2 * i) + 1] == $game_map.map_id
-        nosignpost = true if Settings::NO_SIGNPOSTS[(2 * i) + 1] == $PokemonGlobal.mapTrail[1] &&
-                             Settings::NO_SIGNPOSTS[2 * i] == $game_map.map_id
-        break if nosignpost
+      (Settings::NO_LOCATION_SIGNS.length / 2).times do |i|
+        no_sign = true if Settings::NO_LOCATION_SIGNS[2 * i] == $PokemonGlobal.mapTrail[1] &&
+                             Settings::NO_LOCATION_SIGNS[(2 * i) + 1] == $game_map.map_id
+        no_sign = true if Settings::NO_LOCATION_SIGNS[(2 * i) + 1] == $PokemonGlobal.mapTrail[1] &&
+                             Settings::NO_LOCATION_SIGNS[2 * i] == $game_map.map_id
+        break if no_sign
       end
-      nosignpost = true if $game_map.name == pbGetMapNameFromId($PokemonGlobal.mapTrail[1])
+      no_sign = true if $game_map.name == pbGetMapNameFromId($PokemonGlobal.mapTrail[1])
     end
-    scene.spriteset.addUserSprite(LocationWindow.new($game_map.name)) if !nosignpost
+    next if no_sign
+    map_name = $game_map.name
+    location_sign_graphic = $game_map.metadata&.location_sign || Settings::DEFAULT_LOCATION_SIGN_GRAPHIC
+    scene.spriteset.addUserSprite(LocationWindow.new(map_name, location_sign_graphic))
   }
 )
 
@@ -590,7 +618,13 @@ def pbTurnTowardEvent(event, otherEvent)
   end
   sx += (event.width - otherEvent.width) / 2.0
   sy -= (event.height - otherEvent.height) / 2.0
+  
   return if sx == 0 && sy == 0
+  
+  if event.on_middle_of_stair? && !otherEvent.on_middle_of_stair?
+    sx > 0 ? event.turn_left : event.turn_right
+    return
+  end  
   if sx.abs > sy.abs
     (sx > 0) ? event.turn_left : event.turn_right
   else

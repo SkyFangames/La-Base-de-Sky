@@ -76,17 +76,21 @@ class PokemonSprite < Sprite
     @should_be_grey = value
   end
 
+  def show_as_silhouette=(value)
+    @show_as_silhouette = value
+    # Aplicar el tono inmediatamente al cambiar el valor
+    if @show_as_silhouette
+      self.tone = Tone.new(-255, -255, -255, 255)
+    else
+      self.tone = Tone.new(0, 0, 0, 0) unless @should_be_grey
+    end
+  end
+
   def update
     super
     if @_iconbitmap
       @_iconbitmap.update
       self.bitmap = @_iconbitmap.bitmap
-    end
-    # Apply tone after any bitmap changes
-    if @should_be_grey
-      self.tone = Tone.new(0, 0, 0, 255)
-    else
-      self.tone = Tone.new(0, 0, 0, 0)
     end
   end
 end

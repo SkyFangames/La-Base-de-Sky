@@ -1517,7 +1517,7 @@ Accuracy = 0
 TotalPP = 20
 Target = UserAndAllies
 FunctionCode = RaisePlusMinusUserAndAlliesDefSpDef1
-Description = Aumentar la Defensa y la Defensa Espepecial de los aliados con las habilidades Más y Menos.
+Description = Aumentar la Defensa y la Defensa Especial de los aliados con las habilidades Más y Menos.
 #-------------------------------
 [THUNDERWAVE]
 Name = Onda Trueno
@@ -2012,7 +2012,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = UseUserDefenseInsteadOfUserAttack
 Flags = Contact,CanProtect,CanMirrorMove,CannotMetronome
-Description = El usuario embistie al objetivo. Cuanto más alta sea la Defensa del usuario, más daño inflingirá.
+Description = El usuario embiste al objetivo. Cuanto más alta sea la Defensa del usuario, más daño inflingirá.
 #-------------------------------
 [SUBMISSION]
 Name = Sumisión
@@ -2344,6 +2344,7 @@ Target = User
 Priority = 4
 FunctionCode = ProtectUser
 Description = Frena los ataques, pero puede fallar si se usa repetidamente.
+#-------------------------------
 [MATBLOCK]
 Name = Escudo Tatami
 Type = FIGHTING
@@ -2384,7 +2385,7 @@ TotalPP = 15
 Target = UserSide
 Priority = 3
 FunctionCode = ProtectUserSideFromPriorityMoves
-Description = Protege a el equipo de ataques con prioridad. Puede fallar si se utiliza repetidamente.
+Description = Protege al equipo de ataques con prioridad. Puede fallar si se utiliza repetidamente.
 #-------------------------------
 [VCREATE]
 Name = V de Fuego
@@ -2958,7 +2959,7 @@ TotalPP = 10
 Target = Other
 FunctionCode = HealUserByThreeQuartersOfDamageDone
 Flags = CanProtect,CanMirrorMove
-Description = Absorbe energía del Pokémon objetivo y recupera más de la mitad del daño inflingido.
+Description = Absorbe energía del Pokémon objetivo y recupera más de la mitad del daño infligido.
 #-------------------------------
 [AIRSLASH]
 Name = Tajo Aéreo
@@ -4753,7 +4754,7 @@ TotalPP = 5
 Target = NearOther
 FunctionCode = TypeDependsOnUserDrive
 Flags = CanProtect,CanMirrorMove,CannotMetronome
-Description = Ataca al objetivo con un gran laser. El tipo del ataque lo determina el cartucho que porta el usuario.
+Description = Ataca al objetivo con un gran láser. El tipo del ataque lo determina el cartucho que porta el usuario.
 #-------------------------------
 [THRASH]
 Name = Saña
@@ -5504,7 +5505,7 @@ Target = None
 Priority = 1
 FunctionCode = MultiTurnAttackBideThenReturnDoubleDamage
 Flags = Contact,CanProtect
-Description = Resiste dos golpes para liberar la energia acumulada.
+Description = Resiste dos golpes para liberar la energía acumulada.
 #-------------------------------
 [CRUSHGRIP]
 Name = Agarrón
@@ -9001,7 +9002,7 @@ Target = NearOther
 FunctionCode = DamageTargetAddSpikesToFoeSide
 Flags = Contact,CanProtect,CanMirrorMove,Slicing
 EffectChance = 100
-Description = Ataca con una espada de forma brusca y, al hacerlo, se deprenden púas que rodean al bando enemigo.
+Description = Ataca con una espada de forma brusca y, al hacerlo, se desprenden púas que rodean al bando enemigo.
 #-------------------------------
 [TAKEHEART]
 Name = Bálsamo Osado
@@ -9109,7 +9110,7 @@ Category = Status
 Accuracy = 0
 TotalPP = 10
 Target = BothSides
-FunctionCode = StartHailWeatherSwitchOutUser
+FunctionCode = StartSnowstormWeatherSwitchOutUser
 Flags = CannotMetronome
 Description = Cuenta un chiste con una acogida tan fría que hace que nieve, y se cambia por un Pokémon del equipo. 
 #-------------------------------
@@ -9856,7 +9857,7 @@ TotalPP = 10
 Target = NearOther
 FunctionCode = None
 Flags = Contact,CanProtect,CanMirrorMove
-Description = Movimiento cuyo tipo varia al del usuario en caso de que éste haya teracristalizado.
+Description = Movimiento cuyo tipo varía al del usuario en caso de que éste haya teracristalizado.
 #-------------------------------
 [NIHILLIGHT]
 Name = Luz Devastadora

@@ -15,8 +15,10 @@ class Battle::Scene::Animation::Intro < Battle::Scene::Animation
       makeSlideSprite("battle_bg2", 0.5, appearTime)
     end
     # Bases
-    makeSlideSprite("base_0", 1, appearTime, PictureOrigin::BOTTOM)
-    makeSlideSprite("base_1", -1, appearTime, PictureOrigin::CENTER)
+    if Settings::SHOW_BATTLE_BASES
+      makeSlideSprite("base_0", 1, appearTime, PictureOrigin::BOTTOM)
+      makeSlideSprite("base_1", -1, appearTime, PictureOrigin::CENTER)
+    end
     # Player sprite, partner trainer sprite
     @battle.player.each_with_index do |_p, i|
       makeSlideSprite("player_#{i + 1}", 1, appearTime, PictureOrigin::BOTTOM)

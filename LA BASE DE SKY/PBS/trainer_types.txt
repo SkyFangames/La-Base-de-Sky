@@ -103,7 +103,7 @@ Gender = Male
 BaseMoney = 32
 #-------------------------------
 [LADY]
-Name = Chica
+Name = Damisela
 Gender = Female
 BaseMoney = 160
 SkillLevel = 72

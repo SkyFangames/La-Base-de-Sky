@@ -257,7 +257,7 @@ MenuHandlers.add(:debug_menu, :item_ball_print_current_map, {
   "name"        => _INTL("Imprimir objetos en mapa actual"),
   "description" => _INTL("Imprime los eventos de objetos en el mapa actual."),
   "effect"      => proc{
-    receive_items = pbConfirmMessage(_INTL("¿Quieres imprimir tambien los objetos que dan los NPCs? (pbReceiveItem)"))
+    receive_items = pbConfirmMessage(_INTL("¿Quieres imprimir también los objetos que dan los NPCs? (pbReceiveItem)"))
     ItemBallPrinter.print_current_map(:item_balls)
     ItemBallPrinter.print_current_map(:receive_items) if receive_items
     pbMessage(_INTL("¡Impreso!"))}
@@ -266,7 +266,7 @@ MenuHandlers.add(:debug_menu, :item_ball_print_current_map, {
 MenuHandlers.add(:debug_menu, :item_ball_print_all, {
   "parent"      => :item_ball_printer,
   "name"        => _INTL("Imprime todos los mapas"),
-  "description" => _INTL("Imprime todos los mapas en {1}.", ItemBallPrinter.file_full_name),
+  "description" => proc { _INTL("Imprime todos los mapas en {1}.", ItemBallPrinter.file_full_name) },
   "effect"      => proc{
     msgwindow = pbCreateMessageWindow
     if FileTest.exist?(ItemBallPrinter.file_full_name) && !pbConfirmMessageSerious(

@@ -31,6 +31,7 @@ class Battle::Scene::PokemonDataBox < Sprite
   FOE_BOX_X           = -16
   FOE_BOX_Y           = 36
   FOE_BASE_X          = 16
+  DATABOX_BASE_Z      = 150
 
   # Side size offsets
   SIDE_2_X_OFFSETS          = [-12, 12, 0, 0]
@@ -46,8 +47,12 @@ class Battle::Scene::PokemonDataBox < Sprite
   EXP_BAR_Y         = 74
   HP_NUMBERS_X      = 80
   HP_NUMBERS_Y      = 52
+  HP_NUMBERS_WIDTH  = 124
+  HP_NUMBERS_HEIGHT = 16
   HP_PERCENT_X      = 131
-  HP_PERCENT_Y      = 61  
+  HP_PERCENT_Y      = 61
+  HP_PERCENT_WIDTH  = 124
+  HP_PERCENT_HEIGHT = 16 
   # Drawing coordinates
   NAME_X            = 8
   NAME_Y            = 12
@@ -65,10 +70,12 @@ class Battle::Scene::PokemonDataBox < Sprite
   SHINY_ICON_Y      = 36
   OWNED_ICON_X      = 8
   OWNED_ICON_Y      = 36
-  MEGA_ICON_X       = 8
-  MEGA_ICON_Y       = 34
-  PRIMAL_FOE_X      = 208
-  PRIMAL_PLYR_X     = -28
+  MEGA_ICON_FOE_X   = 212
+  MEGA_ICON_FOE_Y   = 8
+  MEGA_ICON_PLYR_X  = -28
+  MEGA_ICON_PLYR_Y  = 8
+  PRIMAL_FOE_X      = 210
+  PRIMAL_PLYR_X     = -30
   PRIMAL_ICON_Y     = 4
   # HP Number drawing
   HP_NUM_CURRENT_X  = 54
@@ -145,11 +152,11 @@ class Battle::Scene::PokemonDataBox < Sprite
     @hpBarBitmap   = AnimatedBitmap.new("Graphics/UI/Battle/overlay_hp")
     @expBarBitmap  = AnimatedBitmap.new("Graphics/UI/Battle/overlay_exp")
     # Create sprite to draw HP numbers on
-    @hpNumbers = BitmapSprite.new(124, 16, viewport)
+    @hpNumbers = BitmapSprite.new(HP_NUMBERS_WIDTH, HP_NUMBERS_HEIGHT, viewport)
     # pbSetSmallFont(@hpNumbers.bitmap)
     @sprites["hpNumbers"] = @hpNumbers
 
-    @hpPercent = BitmapSprite.new(124, 16, viewport)
+    @hpPercent = BitmapSprite.new(HP_PERCENT_WIDTH, HP_PERCENT_HEIGHT, viewport)
     pbSetSmallFont(@hpPercent.bitmap)
     @sprites["hpPercent"] = @hpPercent
     # Create sprite wrapper that displays HP bar
@@ -165,7 +172,7 @@ class Battle::Scene::PokemonDataBox < Sprite
     @contents = Bitmap.new(@databoxBitmap.width, @databoxBitmap.height)
     self.bitmap  = @contents
     self.visible = false
-    self.z       = 150 + ((@battler.index / 2) * 5)
+    self.z       = DATABOX_BASE_Z + ((@battler.index / 2) * 5)
     pbSetSystemFont(self.bitmap)
   end
 
@@ -345,7 +352,9 @@ class Battle::Scene::PokemonDataBox < Sprite
   def draw_special_form_icon
     # Mega Evolution/Primal Reversion icon
     if @battler.mega?
-      pbDrawImagePositions(self.bitmap, [["Graphics/UI/Battle/icon_mega", @spriteBaseX + MEGA_ICON_X, MEGA_ICON_Y]])
+      mega_x = (@battler.opposes?(0)) ? MEGA_ICON_FOE_X : MEGA_ICON_PLYR_X
+      mega_y = (@battler.opposes?(0)) ? MEGA_ICON_FOE_Y  : MEGA_ICON_PLYR_Y
+      pbDrawImagePositions(self.bitmap, [["Graphics/UI/Battle/icon_mega", @spriteBaseX + mega_x, mega_y]])
     elsif @battler.primal?
       filename = nil
       if @battler.isSpecies?(:GROUDON)
@@ -615,6 +624,8 @@ class Battle::Scene::BattlerSprite < RPG::Sprite
   # being chosen as a target. Set to nil to prevent blinking.
   TARGET_BLINKING_DURATION = 0.3
 
+  BATTLER_BASE_Z = 50
+
   def initialize(viewport, sideSize, index, battleAnimations)
     super(viewport)
     @pkmn             = nil
@@ -672,9 +683,9 @@ class Battle::Scene::BattlerSprite < RPG::Sprite
     return if !@_iconBitmap
     pbSetOrigin
     if @index.even?
-      self.z = 50 + (5 * @index / 2)
+      self.z = BATTLER_BASE_Z + (5 * @index / 2)
     else
-      self.z = 50 - (5 * (@index + 1) / 2)
+      self.z = BATTLER_BASE_Z - (5 * (@index + 1) / 2)
     end
     # Set original position
     p = Battle::Scene.pbBattlerPosition(@index, @sideSize)

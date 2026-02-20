@@ -343,7 +343,7 @@ class Battle::Battler
         @battle.pbDisplay(_INTL("¡{1} le ha dado {2} a {3}!",
                                 b.pbThis, b.itemName, pbThis(true)))
       else
-        @battle.pbDisplay(_INTL("¡{1} de {2} le ha permitdo dar {3} a {4}!",
+        @battle.pbDisplay(_INTL("¡{1} de {2} le ha permitido dar {3} a {4}!",
                                 b.pbThis, b.abilityName, b.itemName, pbThis(true)))
       end
       self.item = b.item

@@ -430,13 +430,15 @@ MultipleForms.register(:GRENINJA, {
   }
 })
 
-MultipleForms.register(:SCATTERBUG, {
-  "getFormOnCreation" => proc { |pkmn|
-    next $player.secret_ID % 18
-  }
-})
+if Settings::LINEA_DE_SPEWPA_POR_ID
+  MultipleForms.register(:SCATTERBUG, {
+    "getFormOnCreation" => proc { |pkmn|
+      next $player.secret_ID % 18
+    }
+  })
 
-MultipleForms.copy(:SCATTERBUG, :SPEWPA, :VIVILLON)
+  MultipleForms.copy(:SCATTERBUG, :SPEWPA, :VIVILLON)
+end
 
 MultipleForms.register(:FURFROU, {
   "getForm" => proc { |pkmn|
@@ -497,6 +499,7 @@ MultipleForms.register(:ZYGARDE, {
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     next pkmn.form - 2 if pkmn.form >= 2 && (pkmn.fainted? || endBattle)
   },
+  "getMegaMoves" => proc { |_pkmn| next { :COREENFORCER => :NIHILLIGHT }  },
   "changePokemonOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
     if pkmn.fainted? || endBattle
       pkmn.moves.each { |move| move.id = :COREENFORCER if move.id == :NIHILLIGHT }
@@ -589,13 +592,16 @@ MultipleForms.register(:SILVALLY, {
 
 MultipleForms.register(:MINIOR, {
   "getFormOnCreation" => proc { |pkmn|
-    next rand(7..13)   # Meteor forms are 0-6, Core forms are 7-13
+    next rand(7)   # Meteor forms are 0-6 (always created in Meteor form outside battle)
   },
   "getFormOnEnteringBattle" => proc { |pkmn, wild|
-    next pkmn.form - 7 if pkmn.form >= 7 && wild   # Wild Minior always appear in Meteor form
+    # Al entrar en combate, Minior siempre empieza en forma núcleo (Core)
+    # La comprobación de PS se hace después (manejada por la habilidad Escudo Limitado)
+    next pkmn.form + 7 if pkmn.form < 7   # Convert from Meteor (0-6) to Core (7-13)
   },
   "getFormOnLeavingBattle" => proc { |pkmn, battle, usedInBattle, endBattle|
-    next pkmn.form + 7 if pkmn.form < 7
+    # Fuera de combate, Minior siempre vuelve a forma meteorito (Meteor)
+    next pkmn.form - 7 if pkmn.form >= 7   # Convert from Core (7-13) to Meteor (0-6)
   }
 })
 
@@ -648,14 +654,14 @@ MultipleForms.register(:TOXEL, {
 
 MultipleForms.copy(:TOXEL, :TOXTRICITY)
 
-MultipleForms.register(:POLTEAGEIST, {
+MultipleForms.register(:SINISTEA, {
   "getFormOnCreation" => proc { |pkmn|
     next 1 if rand(100) < 10   # Antique
     next 0                     # Phony
   }
 })
 
-MultipleForms.copy(:POLTEAGEIST, :SINISTEA)
+MultipleForms.copy(:SINISTEA, :POLTEAGEIST)
 
 # A Milcery will always have the same flavor, but it is randomly chosen.
 MultipleForms.register(:MILCERY, {
@@ -819,14 +825,14 @@ MultipleForms.register(:TATSUGIRI, {
 # NOTE: Wild Dudunsparce is always form 0.
 # NOTE: Wild Gimmighoul is always form 0.
 
-MultipleForms.register(:POLTCHAGEIST, {
+MultipleForms.register(:SINISCHA, {
   "getFormOnCreation" => proc { |pkmn|
     next 1 if rand(100) < 10   # Artisan
     next 0                     # Counterfeit
   }
 })
 
-MultipleForms.copy(:POLTCHAGEIST, :SINISCHA)
+MultipleForms.copy(:SINISCHA, :POLTCHAGEIST)
 
 MultipleForms.register(:OGERPON, {
   "getForm" => proc { |pkmn|
@@ -891,49 +897,52 @@ MultipleForms.copy(
 # evolve into different forms depending on the location where they evolve.
 #===============================================================================
 
-# Alolan forms.
-MultipleForms.register(:PIKACHU, {
-  "getForm" => proc { |pkmn|
-    next if pkmn.form_simple >= 2
-    if $game_map
-      map_pos = $game_map.metadata&.town_map_position
-      next 1 if map_pos && map_pos[0] == 1   # Tiall region
-    end
-    next 0
-  }
-})
+if Settings::REGIONAL_FORMS_DEPEND_ON_MAP_REGION
+  # Alolan forms.
+  MultipleForms.register(:PIKACHU, {
+    "getForm" => proc { |pkmn|
+      next if pkmn.form_simple >= 2
+      if $game_map
+        map_pos = $game_map.metadata&.town_map_position
+        next 1 if map_pos && map_pos[0] == 1   # Tiall region
+      end
+      next 0
+    }
+  })
 
-MultipleForms.copy(:PIKACHU, :EXEGGCUTE, :CUBONE)
+  MultipleForms.copy(:PIKACHU, :EXEGGCUTE, :CUBONE)
 
-# Galarian forms.
-MultipleForms.register(:KOFFING, {
-  "getForm" => proc { |pkmn|
-    next if pkmn.form_simple >= 2
-    if $game_map
-      map_pos = $game_map.metadata&.town_map_position
-      next 1 if map_pos && map_pos[0] == 2   # Galar region
-    end
-    next 0
-  }
-})
+  # Galarian forms.
+  MultipleForms.register(:KOFFING, {
+    "getForm" => proc { |pkmn|
+      next if pkmn.form_simple >= 2
+      if $game_map
+        map_pos = $game_map.metadata&.town_map_position
+        next 1 if map_pos && map_pos[0] == 2   # Galar region
+      end
+      next 0
+    }
+  })
 
-MultipleForms.copy(:KOFFING, :MIMEJR)
+  MultipleForms.copy(:KOFFING, :MIMEJR)
 
-# Hisuian forms.
-MultipleForms.register(:QUILAVA, {
-  "getForm" => proc { |pkmn|
-    next if pkmn.form_simple >= 2
-    if $game_map
-      map_pos = $game_map.metadata&.town_map_position
-      next 1 if map_pos && map_pos[0] == 3   # Hisui region
-    end
-    next 0
-  }
-})
+  # Hisuian forms.
+  MultipleForms.register(:QUILAVA, {
+    "getForm" => proc { |pkmn|
+      next if pkmn.form_simple >= 2
+      if $game_map
+        map_pos = $game_map.metadata&.town_map_position
+        next 1 if map_pos && map_pos[0] == 3   # Hisui region
+      end
+      next 0
+    }
+  })
 
-MultipleForms.copy(:QUILAVA,
-                   :DEWOTT, :PETILIL, :RUFFLET, :GOOMY, :BERGMITE, :DARTRIX)
+  MultipleForms.copy(:QUILAVA,
+                    :DEWOTT, :PETILIL, :RUFFLET, :GOOMY, :BERGMITE, :DARTRIX)
+end
 
+# Formas en base al género
 MultipleForms.copy(:INDEEDEE, :LECHONK, :OINKOLOGNE, :BASCULEGION)
 
 # Paldean forms.

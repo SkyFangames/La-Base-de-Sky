@@ -1,3 +1,28 @@
+#-------------------------------------------------------------------------------
+# Initializes Mirror Herb step counter.
+#-------------------------------------------------------------------------------
+class PokemonGlobalMetadata
+  attr_accessor :mirrorherb_steps
+  attr_accessor :seen_moves
+  alias paldea_initialize initialize
+  def initialize
+    @mirrorherb_steps = 0
+    @seen_moves = {}
+    paldea_initialize
+  end
+
+  def add_seen_move(pokemon, move_id)
+    @seen_moves ||= {}
+    @seen_moves[pokemon] ||= []
+    @seen_moves[pokemon].push(move_id)
+  end
+
+  def seen_move?(pokemon, move_id)
+    return false if !@seen_moves || !@seen_moves[pokemon]
+    return @seen_moves[pokemon].include?(move_id)
+  end
+end
+
 #===============================================================================
 # Instances of this class are individual Pokémon.
 # The player's party Pokémon are stored in the array $player.party.
@@ -108,7 +133,7 @@ class Pokemon
 
   def inspect
     str = super.chop
-    str << sprintf(" %s Nv.%s>", @species, @level.to_s || "???")
+    str << sprintf(_INTL(" %s Nv.%s>"), @species, @level.to_s || "???")
     return str
   end
 
@@ -484,6 +509,11 @@ class Pokemon
     end
     return @shiny
   end
+  
+  def shiny=(value)
+    @shiny = value
+    @super_shiny = false if !@shiny
+  end
 
   # @return [Boolean] whether this Pokémon is super shiny (differently colored,
   #   square sparkles)
@@ -494,14 +524,21 @@ class Pokemon
       c = (a >> 16) & 0xFFFF
       d = b ^ c
       @super_shiny = (d == 0)
+      @super_shiny = (d < (Settings::SHINY_POKEMON_CHANCE)/10) if Settings::SUPER_SHINY_1_DE_10
     end
     return @super_shiny
   end
-
+  
   # @param value [Boolean] whether this Pokémon is super shiny
   def super_shiny=(value)
     @super_shiny = value
     @shiny = true if @super_shiny
+  end
+
+  # Makes this Pokémon not shiny.
+  def no_shinyness
+    @shiny = false
+    @super_shiny = false
   end
 
   #=============================================================================
@@ -727,6 +764,7 @@ class Pokemon
     first_move_index = 0 if first_move_index < 0
     (first_move_index...knowable_moves.length).each do |i|
       @moves.push(Pokemon::Move.new(knowable_moves[i]))
+      $PokemonGlobal.add_seen_move(self.species, knowable_moves[i])
     end
   end
 
@@ -744,8 +782,13 @@ class Pokemon
     end
     # Move is not already known; learn it
     @moves.push(Pokemon::Move.new(move_data.id))
+    $PokemonGlobal.add_seen_move(self.species, move_data.id)
     # Delete the first known move if self now knows more moves than it should
     @moves.shift if numMoves > MAX_MOVES
+  end
+
+  def seen_move?(move_id)
+    return $PokemonGlobal.seen_move?(self.species, move_id)
   end
 
   # Deletes the given move from the Pokémon.
@@ -1073,7 +1116,7 @@ class Pokemon
         gain = (@happiness >= 179) ? 0 : gain.clamp(0, 179 - @happiness)
       end
     end
-    @happiness = (@happiness + gain).clamp(0, 255)
+    @happiness = (@happiness + gain).clamp(0, Settings::MAX_HAPPINESS)
   end
 
   #=============================================================================
@@ -1278,6 +1321,104 @@ class Pokemon
     return ret
   end
 
+   #-----------------------------------------------------------------------------
+  # Move count evolution utilities.
+  #-----------------------------------------------------------------------------
+  def init_evo_move_count(move)
+    @evo_move_count = Hash.new if !@evo_move_count
+    @evo_move_count[move] = 0 if !@evo_move_count[move]
+  end
+  
+  def move_count_evolution(move, qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelUseMoveCount && evo[2] == move
+        init_evo_move_count(move)
+        @evo_move_count[move] += qty
+        break
+      end
+    end
+  end
+  
+  def evo_move_count(move)
+    init_evo_move_count(move)
+    return @evo_move_count[move]
+  end
+  
+  def set_evo_move_count(move, value)
+    init_evo_move_count(move)
+    @evo_move_count[move] = value
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Leader's crest evolution utilities.
+  #-----------------------------------------------------------------------------
+  def init_evo_crest_count(item)
+    @evo_crest_count = Hash.new if !@evo_crest_count
+    @evo_crest_count[item] = 0 if !@evo_crest_count[item]
+  end
+  
+  def leaders_crest_evolution(item, qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelDefeatItsKindWithItem && evo[2] == item
+        init_evo_crest_count(item)
+        @evo_crest_count[item] += qty
+        break
+      end
+    end
+  end
+  
+  def evo_crest_count(item)
+    init_evo_crest_count(item)
+    return @evo_crest_count[item]
+  end
+  
+  def set_evo_crest_count(item, value)
+    init_crest_count(item)
+    @evo_crest_count[item] = value
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Recoil damage evolution utilities.
+  #-----------------------------------------------------------------------------
+  def recoil_evolution(qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelRecoilDamage || evo[1] == :LevelRecoilDamageForm0
+        @evo_recoil_count = 0 if !@evo_recoil_count
+        @evo_recoil_count += qty
+        break
+      end
+    end
+  end
+  
+  def evo_recoil_count
+    return @evo_recoil_count || 0
+  end
+  
+  def evo_recoil_count=(value)
+    @evo_recoil_count = value
+  end
+  
+  #-----------------------------------------------------------------------------
+  # Walking evolution utilities.
+  #-----------------------------------------------------------------------------
+  def walking_evolution(qty = 1)
+    species_data.get_evolutions.each do |evo|
+      if evo[1] == :LevelWalk
+        @evo_step_count = 0 if !@evo_step_count
+        @evo_step_count += qty
+        break
+      end
+    end
+  end
+    
+  def evo_step_count
+    return @evo_step_count || 0
+  end
+  
+  def evo_step_count=(value)
+    @evo_step_count = value
+  end
+
   # Creates a new Pokémon object.
   # @param species [Symbol, String, GameData::Species] Pokémon species
   # @param level [Integer] Pokémon level
@@ -1363,3 +1504,34 @@ def change_pokemon_gender(recheck_form = true)
   pokemon.changeGender(recheck_form)
   return true
 end
+
+#-------------------------------------------------------------------------------
+# Tracks steps taken while Pokemon in the party are holding a Mirror Herb.
+# Every 256 steps, inherits Egg moves from other party members if possible.
+#-------------------------------------------------------------------------------
+EventHandlers.add(:on_player_step_taken, :mirrorherb_step, proc {
+  if $player.able_party.any? { |p| p&.hasItem?(:MIRRORHERB) }
+    $PokemonGlobal.mirrorherb_steps = 0 if !$PokemonGlobal.mirrorherb_steps
+    $PokemonGlobal.mirrorherb_steps += 1
+    if $PokemonGlobal.mirrorherb_steps > 255
+      found_eggMove = false
+      $player.able_party.each_with_index do |pkmn, i|
+        next if pkmn.item != :MIRRORHERB
+        next if pkmn.numMoves == Pokemon::MAX_MOVES
+        baby_species = pkmn.species_data.get_baby_species
+        eggmoves = GameData::Species.get(baby_species).egg_moves.clone
+        eggmoves.shuffle.each do |move|
+          next if pkmn.hasMove?(move)
+          next if !$player.get_pokemon_with_move(move)
+          pkmn.learn_move(move)
+          found_eggMove = true
+          break
+        end
+        break if found_eggMove
+      end
+      $PokemonGlobal.mirrorherb_steps = 0
+    end
+  else
+    $PokemonGlobal.mirrorherb_steps = 0
+  end
+})

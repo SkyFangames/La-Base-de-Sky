@@ -684,7 +684,7 @@ class PokemonStorageScene
       box = @storage[i]
       if box
         if swapping  && i == @storage.currentBox
-          commands.push("No intercambiar")
+          commands.push(_INTL("No intercambiar"))
           next
         end
 		    commands.push(_INTL("{1} ({2}/{3})", box.name, box.nitems, box.length))
@@ -1015,10 +1015,12 @@ class PokemonStorageScreen
   def pbReleaseBox(box)
     released_count = 0
     stored_items = 0
+    pbDisplay(_INTL("ATENCIÓN. Estás a punto de liberar a todos los Pokémon de la caja."))
+    pbDisplay(_INTL("Una vez hecho no podrás recuperarlos."))
     if pbConfirmMessageSerious(_INTL("¿Quieres liberar a todos los Pokémon de la Caja?"))
       for i in 0...@storage.maxPokemon(box)
         pokemon = @storage[box, i]
-        next if !pokemon || pokemon.egg? || pokemon.mail || pokemon.cannot_release
+        next if !pokemon || pokemon.mail || pokemon.cannot_release || (pokemon.egg? && !Settings::CAN_RELEASE_EGGS)
         if pokemon.hasItem? # Recupera el objeto equipado si lleva alguno.
           stored_items += 1
           $bag.add(pokemon.item_id)

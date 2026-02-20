@@ -28,7 +28,7 @@ class Game_Map
   attr_reader   :display_x                # display x-coordinate * 128
   attr_reader   :display_y                # display y-coordinate * 128
   attr_accessor :need_refresh             # refresh request flag
-
+  attr_accessor :side_stairs              # Whether the map has side stairs on it.
   TILE_WIDTH  = 32
   TILE_HEIGHT = 32
   X_SUBPIXELS = 4
@@ -45,6 +45,7 @@ class Game_Map
   def setup(map_id)
     @map_id = map_id
     @map = load_data(sprintf("Data/Map%03d.rxdata", map_id))
+    @side_stairs = {}  # Keep side stair events here
     tileset = $data_tilesets[@map.tileset_id]
     updateTileset
     @fog_ox                  = 0
@@ -64,6 +65,13 @@ class Game_Map
     @map.events.each_key do |i|
       @events[i]             = Game_Event.new(@map_id, @map.events[i], self)
     end
+    
+    #mss stores all side stairs
+    @events.values.each do |event|
+      add_side_stair(map_id, event)
+    end
+    #mss
+    
     @common_events           = {}
     (1...$data_common_events.size).each do |i|
       @common_events[i]      = Game_CommonEvent.new(i)
@@ -71,6 +79,13 @@ class Game_Map
     @scroll_distance_x       = 0
     @scroll_distance_y       = 0
     @scroll_speed            = 4
+
+    passability_setup(map_id) if defined?(passability_setup)
+  end
+
+  def add_side_stair(map_id, event)
+    @side_stairs[map_id] ||= []
+    @side_stairs[map_id] << event if event.is_stair_event?
   end
 
   def updateTileset
@@ -346,15 +361,33 @@ class Game_Map
   end
 
   def scroll_down(distance)
+    return if $DisableScrollCounter == 1
     self.display_y += distance
   end
 
   def scroll_left(distance)
+    return if $DisableScrollCounter == 1
     self.display_x -= distance
   end
 
   def scroll_right(distance)
+    return if $DisableScrollCounter == 1  
     self.display_x += distance
+  end
+
+  def tile_visible_by_player?(x, y)
+    # Calculate actual visible screen bounds based on camera position
+    # display_x/y are in subpixel units: REAL_RES_X/Y = TILE_WIDTH/HEIGHT * X/Y_SUBPIXELS
+    # This makes the code resolution-independent for games with different screen sizes or tile sizes
+    screen_x = (self.display_x / Game_Map::REAL_RES_X.to_f).floor
+    screen_y = (self.display_y / Game_Map::REAL_RES_Y.to_f).floor
+    tiles_wide = (Graphics.width / Game_Map::TILE_WIDTH.to_f).ceil + 1
+    tiles_high = (Graphics.height / Game_Map::TILE_HEIGHT.to_f).ceil + 1
+    
+    # if tile is outside the visible screen area
+    return false if x < screen_x || x >= screen_x + tiles_wide || 
+                    y < screen_y || y >= screen_y + tiles_high
+    return true
   end
 
   # speed is:

@@ -370,7 +370,7 @@ class Battle::Battler
       @battle.pbShowAbilitySplash(user)
       user.pbChangeTypes(move.calcType)
       typeName = GameData::Type.get(move.calcType).name
-      @battle.pbDisplay(_INTL("{1}'s type changed to {2}!", user.pbThis, typeName))
+      @battle.pbDisplay(_INTL("¡{1} ha cambiado a tipo {2}!", user.pbThis, typeName))
       user.markAbilityUsedThisSwitchIn if Settings::MECHANICS_GENERATION >= 9
       @battle.pbHideAbilitySplash(user)
       # NOTE: The GF games say that if Curse is used by a non-Ghost-type

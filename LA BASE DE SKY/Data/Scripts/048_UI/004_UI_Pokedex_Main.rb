@@ -305,6 +305,9 @@ class PokemonPokedex_Scene
   CAPTURED_TEXT_Y = 346
   CAPTURED_NUMBER_X = 152
   CAPTURED_NUMBER_Y = 346
+  # Colores de texto en refresh
+  REFRESH_BASE_COLOR   = Color.new(88, 88, 80)
+  REFRESH_SHADOW_COLOR = Color.new(168, 184, 184)
 
   # Constantes para el control deslizante (slider) del listado
   SLIDER_X = 468                           # X del slider
@@ -327,7 +330,7 @@ class PokemonPokedex_Scene
   SLIDER_MIN_BOXHEIGHT = 40                # Altura mínima de la caja
 
   # Constantes de posición para la ventana de búsqueda del Pokédex
-  DEXSEARCH_TITLE_X   = Graphics.width / 2
+  DEXSEARCH_TITLE_X   = Settings::SCREEN_WIDTH / 2
   DEXSEARCH_TITLE_Y   = 10
   DEXSEARCH_ORDER_X   = 136
   DEXSEARCH_ORDER_Y   = 64
@@ -345,9 +348,9 @@ class PokemonPokedex_Scene
   DEXSEARCH_SHAPE_Y   = 174
   DEXSEARCH_RESET_X   = 80
   DEXSEARCH_RESET_Y   = 346
-  DEXSEARCH_START_X   = Graphics.width / 2
+  DEXSEARCH_START_X   = Settings::SCREEN_WIDTH / 2
   DEXSEARCH_START_Y   = 346
-  DEXSEARCH_CANCEL_X  = Graphics.width - 80
+  DEXSEARCH_CANCEL_X  = Settings::SCREEN_WIDTH - 80
   DEXSEARCH_CANCEL_Y  = 346
 
   # Constantes para las posiciones de los parámetros en pbRefreshDexSearch
@@ -387,11 +390,11 @@ class PokemonPokedex_Scene
   DEXSEARCH_PARAM_HW_BLT_Y   = 52
 
   # Constantes para posiciones del cuadro de parámetros (pbRefreshDexSearchParam)
-  DEXSEARCH_PARAM_TITLE_X    = Graphics.width / 2
+  DEXSEARCH_PARAM_TITLE_X    = Settings::SCREEN_WIDTH / 2
   DEXSEARCH_PARAM_TITLE_Y    = 10
   DEXSEARCH_PARAM_OK_X       = 80
   DEXSEARCH_PARAM_OK_Y       = 346
-  DEXSEARCH_PARAM_CANCEL_X   = Graphics.width - 80
+  DEXSEARCH_PARAM_CANCEL_X   = Settings::SCREEN_WIDTH - 80
   DEXSEARCH_PARAM_CANCEL_Y   = 346
 
   # Constantes para la posición del texto título en pbRefreshDexSearchParam
@@ -635,8 +638,8 @@ class PokemonPokedex_Scene
   def pbRefresh
     overlay = @sprites["overlay"].bitmap
     overlay.clear
-    base   = Color.new(88, 88, 80)
-    shadow = Color.new(168, 184, 184)
+    base   = REFRESH_BASE_COLOR
+    shadow = REFRESH_SHADOW_COLOR
     iconspecies = @sprites["pokedex"].species 
     iconspecies = nil if !$player.seen?(iconspecies) && !Settings::SHOW_SILHOUETTES_IN_DEX
     # Write various bits of text
@@ -950,15 +953,19 @@ class PokemonPokedex_Scene
   end
 
   def setIconBitmap(species)
-    gender, form, shiny = $player.pokedex.last_form_seen(species)
+    if species && $player.seen?(species)
+      gender, form, shiny = $player.pokedex.last_form_seen(species)
+    else
+      gender, form, shiny = 0, 0, false
+    end
     @sprites["icon"].setSpeciesBitmap(species, gender, form, shiny)
     if Settings::SHOW_SILHOUETTES_IN_DEX
       # species_id = (species) ? GameData::Species.get_species_form(species, form).id : nil
       # @sprites["icon"].pbSetDisplay([112, 196, 224, 216], species_id)
-      if !$player.seen?(@sprites["pokedex"].species)
-        @sprites["icon"].tone = Tone.new(-255,-255,-255,255)
+      if species && !$player.seen?(species)
+        @sprites["icon"].show_as_silhouette = true
       else
-        @sprites["icon"].tone = Tone.new(0,0,0,0)
+        @sprites["icon"].show_as_silhouette = false
       end
     end
   end
@@ -1497,4 +1504,3 @@ class PokemonPokedexScreen
     @scene.pbEndScene
   end
 end
-

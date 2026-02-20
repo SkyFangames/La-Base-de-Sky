@@ -19,7 +19,7 @@ class Battle::Move::UserTakesTargetItem < Battle::Move
     else
       @battle.swapHeldItems(user, target)
     end
-    @battle.pbDisplay(_INTL("{1} stole {2}'s {3}!", user.pbThis, target.pbThis(true), user.itemName))
+    @battle.pbDisplay(_INTL("{1} robó {3} de {2}!", user.pbThis, target.pbThis(true), user.itemName))
     user.pbHeldItemTriggerCheck
   end
 end
@@ -52,7 +52,7 @@ class Battle::Move::TargetTakesUserItem < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     @battle.swapHeldItems(user, target)
-    @battle.pbDisplay(_INTL("{1} recibió {2} de {3}!", target.pbThis, target.itemName, user.pbThis(true)))
+    @battle.pbDisplay(_INTL("¡{1} recibió {2} de {3}!", target.pbThis, target.itemName, user.pbThis(true)))
     target.pbHeldItemTriggerCheck
   end
 end
@@ -252,7 +252,7 @@ class Battle::Move::StartNegateHeldItems < Battle::Move
   def pbEffectGeneral(user)
     if @battle.field.effects[PBEffects::MagicRoom] > 0
       @battle.field.effects[PBEffects::MagicRoom] = 0
-      @battle.pbDisplay(_INTL("¡El area ha vuelto a la normalidad!"))
+      @battle.pbDisplay(_INTL("¡El área ha vuelto a la normalidad!"))
     else
       @battle.field.effects[PBEffects::MagicRoom] = 5
       @battle.pbDisplay(_INTL("¡Se ha creado un espacio en el que los efectos de los objetos desaparecen!"))

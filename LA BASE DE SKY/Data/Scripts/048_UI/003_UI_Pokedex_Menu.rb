@@ -116,12 +116,23 @@ class PokemonPokedexMenuScreen
     commands2 = []
     dexnames = Settings.pokedex_names
     $player.pokedex.accessible_dexes.each do |dex|
-      if dexnames[dex].nil?
-        commands.push(_INTL("Pokédex"))
-      elsif dexnames[dex].is_a?(Array)
-        commands.push(dexnames[dex][0])
+      # Handle National Dex (index -1) separately
+      if dex == -1
+        # National Dex is the last element in the array (not at index -1)
+        national_dex_entry = dexnames.last
+        if national_dex_entry.is_a?(Array)
+          commands.push(national_dex_entry[0])
+        else
+          commands.push(national_dex_entry)
+        end
       else
-        commands.push(dexnames[dex])
+        if dexnames[dex].nil?
+          commands.push(_INTL("Pokédex"))
+        elsif dexnames[dex].is_a?(Array)
+          commands.push(dexnames[dex][0])
+        else
+          commands.push(dexnames[dex])
+        end
       end
       commands2.push([$player.pokedex.seen_count(dex),
                       $player.pokedex.owned_count(dex),

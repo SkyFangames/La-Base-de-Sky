@@ -49,7 +49,7 @@ class TilesetRearranger
     @sprites = {}
     @sprites["title"] = Window_UnformattedTextPokemon.newWithSize("",
        TILESET_OFFSET_X + TILESET_WIDTH, 0, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 128, @viewport)
-    @sprites["help_text"] = Window_UnformattedTextPokemon.newWithSize(_INTL("Choose tileset to load"),
+    @sprites["help_text"] = Window_UnformattedTextPokemon.newWithSize(_INTL("Elegir tileset a cargar"),
        TILESET_OFFSET_X + TILESET_WIDTH, SCREEN_HEIGHT - 64, SCREEN_WIDTH - TILESET_OFFSET_X - TILESET_WIDTH, 64, @viewport)
     @sprites["scroll_bar"] = BitmapSprite.new(SCROLL_BAR_WIDTH, SCREEN_HEIGHT, @viewport)
     @sprites["tileset"] = BitmapSprite.new(TILESET_WIDTH, NUM_ROWS_VISIBLE * TILE_SIZE, @viewport)
@@ -146,7 +146,7 @@ class TilesetRearranger
 
   def open_screen
     Graphics.resize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
-    pbSetResizeFactor(1)
+    pbSetResizeFactor(1, false)
     return choose_tileset
   end
 
@@ -159,7 +159,7 @@ class TilesetRearranger
     @viewport.dispose
     @tilehelper.dispose if @tilehelper
     Graphics.resize_screen(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT)
-    pbSetResizeFactor($PokemonSystem.screensize)
+    pbSetResizeFactor($PokemonSystem.screensize, false)
   end
 
   def main
@@ -181,7 +181,7 @@ if Kernel.const_defined?(:MenuHandlers)   # Essentials v20+
   MenuHandlers.add(:debug_menu, :tileset_rearranger, {
     "name"        => _INTL("Tileset Rearranger"),
     "parent"      => :editors_menu,
-    "description" => _INTL("Rearrange tiles in tilesets."),
+    "description" => _INTL("Reordenar tiles en tilesets."),
     "effect"      => proc {
       pbFadeOutIn { TilesetRearranger.new.main }
     }
@@ -190,7 +190,7 @@ elsif Kernel.const_defined?(:DebugMenuCommands)   # Essentials v19.1 and earlier
   DebugMenuCommands.register("tileset_rearranger", {
     "parent"      => "editorsmenu",
     "name"        => _INTL("Tileset Rearranger"),
-    "description" => _INTL("Rearrange tiles in tilesets."),
+    "description" => _INTL("Reordenar tiles en tilesets."),
     "always_show" => true,
     "effect"      => proc { |sprites, viewport|
       pbFadeOutIn { TilesetRearranger.new.main }
