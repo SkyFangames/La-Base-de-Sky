@@ -12,6 +12,16 @@ EventHandlers.add(:on_wild_pokemon_created, :make_shiny_switch,
   }
 )
 
+# Make all wild Pokémon super shiny while a certain Switch is ON (see Settings).
+EventHandlers.add(:on_wild_pokemon_created, :make_super_shiny_switch,
+  proc { |pkmn|
+    if $game_switches[Settings::SUPER_SHINY_WILD_POKEMON_SWITCH]
+        pkmn.shiny = true
+        pkmn.super_shiny = true
+    end
+  }
+)
+
 # In the Safari Zone and Bug-Catching Contests, wild Pokémon reroll their IVs up
 # to 4 times if they don't have a perfect IV.
 EventHandlers.add(:on_wild_pokemon_created, :reroll_ivs_in_safari_and_bug_contest,

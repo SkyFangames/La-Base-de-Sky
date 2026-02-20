@@ -213,7 +213,7 @@ class Battle::Battler
     p = self.pokemon
     if @battle.pbRandom(p.heart_gauge) <= p.max_gauge_size / 4
       p.hyper_mode = true
-      @battle.pbDisplay(_INTL("¡Las emociones de {1} alcanzaron un punto álgido!\n¡Entró en Hiperestado!", self.pbThis))
+      @battle.pbDisplay(_INTL("¡Las emociones de {1} alcanzaron un punto álgido!\n¡Entró en Hiperestado!", self.pbThis(this)))
     end
   end
 

@@ -86,14 +86,14 @@ def pbStartOver(game_over = false)
   $player.heal_party
   if $PokemonGlobal.pokecenterMapId && $PokemonGlobal.pokecenterMapId >= 0
     if game_over
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+      pbMessage("\\w[]\\wm\\c[12]\\l[3]" +
                 _INTL("Tras la derrota, fuiste corriendo a un Centro Pokémon."))
     elsif $player.all_fainted?
-     pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
+     pbMessage("\\w[]\\wm\\c[12]\\l[3]" +
                 _INTL("Has salido corriendo hacia un Centro Pokémon para que tu equipo no sufra más daño..."))
     else
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
-                _INTL("Te fuiste corriendo al Centro Pokémon para reagruparte y reconsiderar tu estrategia de batalla..."))
+      pbMessage("\\w[]\\wm\\c[12]\\l[3]" +
+                _INTL("Te fuiste corriendo al Centro Pokémon para recomponerte y reconsiderar tu estrategia..."))
     end
     pbCancelVehicles
     Followers.clear
@@ -116,14 +116,14 @@ def pbStartOver(game_over = false)
       return
     end
     if game_over
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
+      pbMessage("\\w[]\\wm\\c[12]\\l[3]" +
                 _INTL("Tras la derrota, fuiste corriendo a un Centro Pokémon."))
     elsif $player.all_fainted?
-     pbMessage("\\w[]\\wm\\c[13]\\l[3]" +
+     pbMessage("\\w[]\\wm\\c[12]\\l[3]" +
                 _INTL("Has salido corriendo hacia un Centro Pokémon para que tu equipo no sufra más daño..."))
     else
-      pbMessage("\\w[]\\wm\\c[8]\\l[3]" +
-                _INTL("Te fuiste corriendo al Centro Pokémon para reagruparte y reconsiderar tu estrategia de batalla..."))
+      pbMessage("\\w[]\\wm\\c[12]\\l[3]" +
+                _INTL("Te fuiste corriendo al Centro Pokémon para recomponerte y reconsiderar tu estrategia..."))
     end
     if homedata
       pbCancelVehicles

@@ -549,7 +549,7 @@ Description = Un hueso de gran valor arqueológico que puede alcanzar un alto pr
 Name = Real de cobre
 NamePlural = Reales de cobre
 Pocket = 1
-Price = 0
+Price = 2000
 Flags = Fling_30
 Description = Moneda de cobre de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -557,7 +557,7 @@ Description = Moneda de cobre de más de tres mil años de antigüedad. Muy valo
 Name = Real de plata
 NamePlural = Reales de plata
 Pocket = 1
-Price = 0
+Price = 10000
 Flags = Fling_30
 Description = Moneda de plata de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -565,7 +565,7 @@ Description = Moneda de plata de más de tres mil años de antigüedad. Muy valo
 Name = Real de oro
 NamePlural = Reales de oro
 Pocket = 1
-Price = 60000
+Price = 20000
 Flags = Fling_30
 Description = Moneda de oro de más de tres mil años de antigüedad. Muy valorada por los coleccionistas.
 #-------------------------------
@@ -1089,7 +1089,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 10
 Flags = Fling_30
-Description = Objeto de un solo uso. Aumenta la Def. Esp. del Pokémon que la lleva si este recibe un ataque de tipo Agua.
+Description = Aumenta la Def. Esp. del Pokémon que la lleva si este recibe un ataque de tipo Agua. Es de un solo uso.
 #-------------------------------
 [SNOWBALL]
 Name = Bola de Nieve
@@ -1098,7 +1098,7 @@ Pocket = 1
 Price = 4000
 BPPrice = 10
 Flags = Fling_30
-Description = Objeto de un solo uso. Aumenta el Ataque del Pokémon que lo lleva si este recibe un ataque de tipo Hielo.
+Description = Aumenta el Ataque del Pokémon que lo lleva si este recibe un ataque de tipo Hielo. Es de un solo uso.
 #-------------------------------
 [WEAKNESSPOLICY]
 Name = Seguro Debilidad
@@ -1134,7 +1134,7 @@ Pocket = 1
 Price = 300
 BPPrice = 10
 Flags = Fling_30
-Description = Si lo lleva un Pokémon, sube la Velocidad al ser intimidado. De un solo uso.
+Description = Si lo lleva un Pokémon, sube la Velocidad al ser intimidado. Es de un solo uso.
 #-------------------------------
 [ROOMSERVICE]
 Name = Servicio Raro
@@ -1639,7 +1639,7 @@ Description = Debe llevarlas un Pokémon. Fortalecen los ataques de tipo Siniest
 #-------------------------------
 [METALCOAT]
 Name = Revestim. Metálico
-NamePlural = Revestim. Metálico
+NamePlural = Revestim. Metálicos
 Pocket = 1
 Price = 3000
 SellPrice = 1000
@@ -1647,8 +1647,8 @@ Flags = Fling_30
 Description = Película metálica que fortalece los ataques de tipo Acero. Debe llevarlo un Pokémon.
 #-------------------------------
 [SILKSCARF]
-Name = Pañuelo Seda
-NamePlural = Pañuelos Seda
+Name = Pañuelo de Seda
+NamePlural = Pañuelos de Seda
 Pocket = 1
 Price = 3000
 SellPrice = 500
@@ -2931,7 +2931,7 @@ Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Skar
 #-------------------------------
 [FROSLASSITE]
 Name = Froslassita
-NamePlural = Froslassita
+NamePlural = Froslassitas
 Pocket = 1
 Price = 0
 BPPrice = 50
@@ -2957,7 +2957,7 @@ Flags = MegaStone,Fling_80
 Description = Una de las misteriosas Megapiedras. Permite megaevolucionar a Excadril en combate.
 #-------------------------------
 [SCOLIPITE]
-Name = Scolipeditas
+Name = Scolipedita
 amePlural = Scolipeditas
 Pocket = 1
 Price = 0
@@ -3279,7 +3279,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 20 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 20 PS de un Pokémon.
 #-------------------------------
 [SUPERPOTION]
 Name = Superpoción
@@ -3289,7 +3289,7 @@ Price = 700
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 60 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 60 PS de un Pokémon.
 #-------------------------------
 [HYPERPOTION]
 Name = Hiperpoción
@@ -3299,7 +3299,7 @@ Price = 1500
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura 120 PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura 120 PS de un Pokémon.
 #-------------------------------
 [MAXPOTION]
 Name = Poción Máxima
@@ -3310,7 +3310,7 @@ BPPrice = 2
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura heridas y restaura todos los PS de un Pokémon.
+Description = Medicina en espray que cura heridas y restaura todos los PS de un Pokémon.
 #-------------------------------
 [FULLRESTORE]
 Name = Restaura Todo
@@ -3333,13 +3333,13 @@ Description = Reanima completamente a los Pokémon debilitados y restaura todos 
 #-------------------------------
 [AWAKENING]
 Name = Despertar
-NamePlural = Despertar
+NamePlural = Despertares
 Pocket = 2
 Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que libera a un Pokémon de las garras del sueño.
+Description = Medicina en espray que libera a un Pokémon de las garras del sueño.
 #-------------------------------
 [ANTIDOTE]
 Name = Antídoto
@@ -3349,7 +3349,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que contrarresta los efectos del veneno en un Pokémon.
+Description = Medicina en espray que contrarresta los efectos del veneno en un Pokémon.
 #-------------------------------
 [BURNHEAL]
 Name = Antiquemadura
@@ -3359,7 +3359,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing    
-Description = Medicina en spray que cura las quemaduras a un Pokémon.
+Description = Medicina en espray que cura las quemaduras a un Pokémon.
 #-------------------------------
 [PARALYZEHEAL]
 Name = Antiparalizante
@@ -3369,7 +3369,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura a un Pokémon paralizado.
+Description = Medicina en espray que cura a un Pokémon paralizado.
 #-------------------------------
 [ICEHEAL]
 Name = Antihielo
@@ -3379,7 +3379,7 @@ Price = 200
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que descongela a un Pokémon.
+Description = Medicina en espray que descongela a un Pokémon.
 #-------------------------------
 [FULLHEAL]
 Name = Cura Total
@@ -3389,7 +3389,7 @@ Price = 400
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30,Healing
-Description = Medicina en spray que cura todos los problemas de estado de un Pokémon.
+Description = Medicina en espray que cura todos los problemas de estado de un Pokémon.
 #-------------------------------
 [PEWTERCRUNCHIES]
 Name = Rokikos
@@ -3473,7 +3473,7 @@ Description = Fritura típica de Alola que cura todos los problemas de estado de
 #-------------------------------
 [REVIVE]
 Name = Revivir
-NamePlural = Revivir
+NamePlural = Revivires
 Pocket = 2
 Price = 2000
 FieldUse = OnPokemon
@@ -3483,7 +3483,7 @@ Description = Medicina que reanima a un Pokémon debilitado y restaura la mitad 
 #-------------------------------
 [MAXREVIVE]
 Name = Revivir Máximo
-NamePlural = Revivir Máximos
+NamePlural = Revivires Máximos
 Pocket = 2
 Price = 4000
 BPPrice = 20
@@ -3500,7 +3500,7 @@ Price = 100
 FieldUse = OnPokemon
 BattleUse = OnPokemon
 Flags = Fling_30
-Description = Zumo de bayas 100% natural que restaura 20 PS de un Pokémon.
+Description = Zumo de bayas 100% natural que restaura 20 PS de un Pokémon. Si se equipa el Pokémon lo usará automáticamente.
 #-------------------------------
 [SWEETHEART]
 Name = Corazón Dulce
@@ -3554,8 +3554,8 @@ Flags = Fling_30,Healing
 Description = Leche de alto valor nutritivo que restaura 100 PS de un Pokémon.
 #-------------------------------
 [ENERGYPOWDER]
-Name = Polvoenergía
-NamePlural = Polvoenergías
+Name = Polvo Energía
+NamePlural = Polvos Energía
 Pocket = 2
 Price = 500
 FieldUse = OnPokemon
@@ -3719,6 +3719,7 @@ Description = Nutritiva bebida que sube la Velocidad de un Pokémon.
 #-------------------------------
 [HEALTHFEATHER]
 Name = Pluma Vigor
+NamePlural = Plumas Vigor
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
@@ -3727,6 +3728,7 @@ Description = Objeto que aumenta los PS base de un Pokémon.
 #-------------------------------
 [MUSCLEFEATHER]
 Name = Pluma Músculo
+NamePlural = Plumas Músculo
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
@@ -3735,6 +3737,7 @@ Description = Objeto que aumenta el Ataque base de un Pokémon.
 #-------------------------------
 [RESISTFEATHER]
 Name = Pluma Aguante
+NamePlural = Plumas Aguante
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
@@ -3743,6 +3746,7 @@ Description = Objeto que aumenta la Defensa base de un Pokémon.
 #-------------------------------
 [GENIUSFEATHER]
 Name = Pluma Intelecto
+NamePlural = Plumas Intelecto
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
@@ -3751,6 +3755,7 @@ Description = Objeto que aumenta el Ataque Especial base de un Pokémon.
 #-------------------------------
 [CLEVERFEATHER]
 Name = Pluma Mente
+NamePlural = Plumas Mente
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
@@ -3759,6 +3764,7 @@ Description = Objeto que aumenta la Defensa Especial base de un Pokémon.
 #-------------------------------
 [SWIFTFEATHER]
 Name = Pluma Ímpetu
+NamePlural = Plumas Ímpetu
 Pocket = 2
 Price = 300
 FieldUse = OnPokemon
@@ -3973,7 +3979,7 @@ Price = 20
 BPPrice = 50
 FieldUse = OnPokemon
 Flags = Fling_10
-Description = Menta que cambia la naturaleza de tu Pokémon a seria (neutra).
+Description = Menta que cambia la naturaleza de tu Pokémon a Seria (neutra).
 #-------------------------------
 [ABILITYCAPSULE]
 Name = Cápsula Habilidad
@@ -4486,7 +4492,7 @@ BPPrice = 32
 FieldUse = TM
 Flags = Fling_10
 Move = PROTECT
-Description = Frena s los ataques, pero puede fallar si se usa repetidamente.
+Description = Frena los ataques, pero puede fallar si se usa repetidamente.
 #-------------------------------
 [TM18]
 Name = MT18
@@ -4783,7 +4789,7 @@ BPPrice = 32
 FieldUse = TM
 Flags = Fling_10
 Move = REST
-Description = Restaura s los PS y cura s los problemas de estado del usuario. Duerme los dos próximos turnos.
+Description = Restaura los PS y cura los problemas de estado del usuario. Duerme los dos próximos turnos.
 #-------------------------------
 [TM45]
 Name = MT45
@@ -6113,8 +6119,8 @@ Flags = IconMail
 Description = Carta con la imagen de una pared de ladrillos. Haz que la entregue un Pokémon.
 #-------------------------------
 [XATTACK]
-Name = Ataque X 1
-NamePlural = Ataque X
+Name = Ataque X
+NamePlural = Ataques X
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -6123,7 +6129,7 @@ Description = Aumenta 1 nivel el Ataque en combate. Al cambiar de Pokémon, el e
 #-------------------------------
 [XATTACK2]
 Name = Ataque X 2
-NamePlural = Ataque X 2
+NamePlural = Ataques X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -6132,7 +6138,7 @@ Description = Aumenta 2 niveles el Ataque en combate. Al cambiar de Pokémon, el
 #-------------------------------
 [XATTACK3]
 Name = Ataque X 3
-NamePlural = Ataque X 3
+NamePlural = Ataques X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -6141,7 +6147,7 @@ Description = Aumenta 3 niveles el Ataque en combate. Al cambiar de Pokémon, el
 #-------------------------------
 [XATTACK6]
 Name = Ataque X 6
-NamePlural = Ataque X 6
+NamePlural = Ataques X 6
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -6149,8 +6155,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 6 niveles el Ataque en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XDEFENSE]
-Name = Defensa X 1
-NamePlural = Defensas X 1
+Name = Defensa X
+NamePlural = Defensas X
 Pocket = 7
 Price = 2000
 BattleUse = OnBattler
@@ -6185,8 +6191,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Defensa en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPATK]
-Name = Ataque Especial X 1
-NamePlural = Ataques Especiales X 1
+Name = Ataque Especial X
+NamePlural = Ataques Especiales X
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -6221,8 +6227,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 6 niveles el At. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPDEF]
-Name = Defensa Especial X 1
-NamePlural = Defensas Especiales X 1
+Name = Defensa Especial X
+NamePlural = Defensas Especiales X
 Pocket = 7
 Price = 2000
 BattleUse = OnBattler
@@ -6257,8 +6263,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Def. Especial en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XSPEED]
-Name = Velocidad X 1
-NamePlural = Velocidades X 1
+Name = Velocidad X
+NamePlural = Velocidades X
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -6293,8 +6299,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 6 niveles la Velocidad en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [XACCURACY]
-Name = Precisión X 1
-NamePlural = Precisiones X 1
+Name = Precisión X
+NamePlural = Precisiones X
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -6338,8 +6344,8 @@ Flags = Fling_30,XItem
 Description = Setas que aumentan todas las estadísticas de un Pokémon en combate.
 #-------------------------------
 [DIREHIT]
-Name = Directo 1
-NamePlural = Directos 1
+Name = Crítico X
+NamePlural = Críticos X
 Pocket = 7
 Price = 1000
 BattleUse = OnBattler
@@ -6347,8 +6353,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 1 nivel el índice de golpe crítico en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [DIREHIT2]
-Name = Directo 2
-NamePlural = Directos 2
+Name = Crítico X 2
+NamePlural = Críticos X 2
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -6356,8 +6362,8 @@ Flags = Fling_30,XItem
 Description = Aumenta 2 niveles el índice de golpe crítico en combate. Al cambiar de Pokémon, el efecto desaparece.
 #-------------------------------
 [DIREHIT3]
-Name = Directo 3
-NamePlural = Directos 3
+Name = Crítico X 3
+NamePlural = Críticos X 3
 Pocket = 7
 Price = 0
 BattleUse = OnBattler
@@ -6966,7 +6972,7 @@ Description = Capa con capucha que protege de los efectos secundarios de los mov
 #-------------------------------
 [LOADEDDICE]
 Name = Dado Trucado
-NamePlural = Dado Trucado
+NamePlural = Dados Trucados
 Pocket = 1
 Price = 20000
 Flags = Fling_30
@@ -7162,7 +7168,7 @@ Description = Metal resultante de la mezcla de otros metales. Permite evoluciona
 #-------------------------------
 [INDIGODISK]
 Name = Disco Índigo
-NamePlural = 
+NamePlural = Discos Índigo
 Pocket = 8
 Price = 0
 Flags = KeyItem
@@ -7207,8 +7213,8 @@ Flags = KeyItem
 Description = Dispositivo que ofrece información sobre los Pokémon salvajes del lugar en el que estés.
 #-------------------------------
 [VIAL]
-Name = Pokévial
-NamePlural = Pokévial
+Name = Curaportátil
+NamePlural = Curaportátiles
 Pocket = 8
 Price = 0
 FieldUse = Direct
@@ -7216,8 +7222,8 @@ Flags = KeyItem
 Description = Aparato de usos limitados que permite curar a todo tu equipo. Se recarga en Centros Pokémon.
 #-------------------------------
 [EMPTYVIAL]
-Name = Pokévial
-NamePlural = Pokévial
+Name = Curaportátil
+NamePlural = Curaportátiles
 Pocket = 8
 Price = 0
 FieldUse = Direct

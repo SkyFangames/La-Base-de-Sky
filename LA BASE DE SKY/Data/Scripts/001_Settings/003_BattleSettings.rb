@@ -20,6 +20,13 @@ module Settings
     # También determina si la tasa de golpe crítico puede ser copiada por 
     # Transform/Psych Up.
     NEW_CRITICAL_HIT_RATE_MECHANICS             = (MECHANICS_GENERATION >= 6)
+
+    # El fondo se mueve a los lados al inicio de la batalla, junto con las bases laterales y el/los entrenador(es)/Pokémon. 
+    # Si esto es true, el fondo no se moverá (las bases/entrenadores/Pokémon sí lo harán).
+    DISABLE_SLIDING_BACKGROUND = false
+
+    # Mostrar las bases de batalla (true) o no (false). Ten en cuenta que esto no afecta a los fondos de batalla, solo a las bases.
+    SHOW_BATTLE_BASES = true
   
     #=============================================================================
 
@@ -71,6 +78,9 @@ module Settings
     # de afecto solo comienzan a aplicarse por encima de una felicidad de 179. 
     # También reduce el umbral de evolución por felicidad a 160.
     APPLY_HAPPINESS_SOFT_CAP = AFFECTION_EFFECTS
+
+    # Cambia que el umbral de evolución por felicidad a 160.
+    APPLY_HAPPINESS_SOFT_CAP_EVOS = true
   
     #=============================================================================
   
@@ -157,11 +167,11 @@ module Settings
     GROUP_EXP_SHARE_MESSAGE = true
 
 
-    # Whether a move's power/type/category/etc. as shown in battle, the summary
-    # screen and the Move Reminder screen will appear as their calculated values
-    # (true) or their values from the PBS file moves.txt (false). For example, if
-    # this is true, Judgment's displayed type will depend on the Plate being held
-    # by the Pokémon that knows it.
+    # Independientemente de si el poder, tipo, categoría, etc. de un movimiento se muestra en combate, la pantalla de resumen
+    # y la pantalla de Recordatorio de Movimientos aparecerán con sus valores calculados
+    # (verdadero) o con los valores del archivo PBS moves.txt (falso). Por ejemplo, si
+    # esto es verdadero, el tipo mostrado de Sentencia dependerá de la Tabla que sostenga
+    # el Pokémon que lo tenga.
     SHOW_MODIFIED_MOVE_PROPERTIES = true
 
     # Agrega el porcentaje de vida restante del Pokémon enemigo debajo de la barra de vida.

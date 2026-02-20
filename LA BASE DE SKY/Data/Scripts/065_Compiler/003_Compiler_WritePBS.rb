@@ -876,4 +876,36 @@ module Compiler
   def write_phone
     write_PBS_file_generic(GameData::PhoneMessage)
   end
+
+  #=============================================================================
+  # Save all data to PBS files
+  #=============================================================================
+  def write_all
+    Console.echo_h1(_INTL("Writing all PBS files"))
+    write_town_map
+    write_connections
+    write_types
+    write_abilities
+    write_moves
+    write_items
+    write_berry_plants
+    write_pokemon
+    write_pokemon_forms
+    write_pokemon_metrics
+    write_shadow_pokemon
+    write_regional_dexes
+    write_ribbons
+    write_encounters
+    write_trainer_types
+    write_trainers
+    write_trainer_lists
+    write_metadata
+    write_map_metadata
+    write_dungeon_tilesets
+    write_dungeon_parameters
+    write_phone
+    echoln ""
+    Console.echo_h2(_INTL("Successfully rewrote all PBS files"), text: :green)
+  end
 end
+

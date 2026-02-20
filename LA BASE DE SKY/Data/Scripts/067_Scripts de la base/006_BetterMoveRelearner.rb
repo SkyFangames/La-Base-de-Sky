@@ -1,0 +1,554 @@
+#===============================================================================
+#
+#===============================================================================
+class UI::MoveReminderCursor < IconSprite
+  attr_accessor :top_index
+
+  CURSOR_WIDTH     = 258
+  CURSOR_HEIGHT    = 72
+  CURSOR_THICKNESS = 6
+
+  def initialize(viewport = nil)
+    super(0, 0, viewport)
+    setBitmap("Graphics/UI/Move Reminder/cursor")
+    self.src_rect = Rect.new(0, 0, CURSOR_WIDTH, CURSOR_HEIGHT)
+    self.z = 1600
+    @bg_sprite = IconSprite.new(x, y, viewport)
+    @bg_sprite.setBitmap("Graphics/UI/Move Reminder/cursor")
+    @bg_sprite.src_rect = Rect.new(0, CURSOR_HEIGHT, CURSOR_WIDTH, CURSOR_HEIGHT)
+    @top_index = 0
+    self.index = 0
+  end
+
+  def dispose
+    @bg_sprite.dispose
+    @bg_sprite = nil
+    super
+  end
+
+  def index=(value)
+    @index = value
+    refresh_position
+  end
+
+  def visible=(value)
+    super
+    @bg_sprite.visible = value
+  end
+
+  def refresh_position
+    return if @index < 0
+    self.x = UI::MoveReminderVisuals::MOVE_LIST_X
+    self.y = UI::MoveReminderVisuals::MOVE_LIST_Y - CURSOR_THICKNESS
+    self.y += (@index - @top_index) * UI::MoveReminderVisuals::MOVE_LIST_SPACING
+    @bg_sprite.x = self.x
+    @bg_sprite.y = self.y
+  end
+end
+
+#===============================================================================
+#
+#===============================================================================
+class UI::MoveReminderVisuals < UI::BaseVisuals
+  attr_reader :index
+
+  GRAPHICS_FOLDER   = "Move Reminder/"   # Subfolder in Graphics/UI
+  TEXT_COLOR_THEMES = {   # These color themes are added to @sprites[:overlay]
+    :default => [Color.new(248, 248, 248), Color.new(0, 0, 0)],   # Base and shadow colour
+    :white   => [Color.new(248, 248, 248), Color.new(0, 0, 0)],
+    :black   => [Color.new(64, 64, 64), Color.new(176, 176, 176)],
+    :header  => [Color.new(88, 88, 80), Color.new(168, 184, 184)]
+  }
+  MOVE_LIST_X        = 0
+  MOVE_LIST_Y        = 84
+  MOVE_LIST_SPACING  = 64    # Y distance between top of two adjacent move areas
+  VISIBLE_MOVES      = 4
+  TYPE_ICONS_X       = 396
+  TYPE_ICONS_Y       = 70
+  TYPE_ICONS_SPACING = 6
+  POKEMON_ICON_X     = 314
+  POKEMON_ICON_Y     = 84
+  HEADER_X           = 16
+  HEADER_Y           = 14
+  BUTTON_DOWN_WIDTH  = 76
+  BUTTON_DOWN_HEIGHT = 32
+  BUTTON_DOWN_X      = 47
+  BUTTON_DOWN_Y      = 350
+  BUTTON_UP_WIDTH    = 76
+  BUTTON_UP_HEIGHT   = 32
+  BUTTON_UP_X        = 135
+  BUTTON_UP_Y        = 350
+  MOVE_NAME_X_OFFSET = 76
+  MOVE_NAME_Y_OFFSET = 6
+  LEVEL_OR_TM_X_OFFSET = 12
+  LEVEL_OR_TM_Y_OFFSET = 36
+  PP_LABEL_X_OFFSET   = 150
+  PP_LABEL_Y_OFFSET   = 38
+  PP_VALUE_X_OFFSET   = 240
+  PP_VALUE_Y_OFFSET   = 38
+  POWER_LABEL_X       = 278
+  POWER_LABEL_Y       = 120
+  POWER_VALUE_X       = 480
+  POWER_VALUE_Y       = 120
+  ACCURACY_LABEL_X    = 278
+  ACCURACY_LABEL_Y    = 152
+  ACCURACY_VALUE_X    = 480
+  ACCURACY_VALUE_Y    = 152
+  CATEGORY_LABEL_X    = 278
+  CATEGORY_LABEL_Y    = 184
+  CATEGORY_ICON_X     = 436
+  CATEGORY_ICON_Y     = 178
+  DESCRIPTION_X       = 275
+  DESCRIPTION_Y       = 215
+  DESCRIPTION_WIDTH   = 235
+  DESCRIPTION_LINES   = 5
+  TYPE_ICON_X_OFFSET  = 8
+  TYPE_ICON_Y_OFFSET  = 1
+  MOVE_NAME_WIDTH     = 230
+
+  # Color del punto rojo (puedes cambiarlo a otro color)
+  NEW_MOVE_INDICATOR_COLOR = Color.new(255, 60, 60)  # Rojo
+  
+  # Radio del punto en píxeles
+  NEW_MOVE_INDICATOR_RADIUS = 6
+  
+  # Mostrar borde blanco alrededor del punto
+  NEW_MOVE_INDICATOR_BORDER = true
+  
+  # Color del borde
+  NEW_MOVE_INDICATOR_BORDER_COLOR = Color.new(255, 255, 255)  # Blanco
+  INDICATOR_OFFSET_X = 105
+  INDICATOR_OFFSET_Y = 45
+
+  def initialize(pokemon, moves)
+    @pokemon   = pokemon
+    @moves     = moves
+    @top_index = 0
+    @index     = 0
+    super()
+    refresh_cursor
+    # Mark initial move as seen
+    if Settings::SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER && !@moves.empty?
+      initial_move = @moves[@index]
+      if initial_move && !@pokemon.seen_move?(initial_move[0])
+        $PokemonGlobal.add_seen_move(@pokemon.species, initial_move[0])
+      end
+    end
+  end
+
+  def initialize_bitmaps
+    @bitmaps[:types]   = AnimatedBitmap.new(UI_FOLDER + _INTL("types"))
+    @bitmaps[:buttons] = AnimatedBitmap.new(graphics_folder + "buttons")
+  end
+
+  def initialize_sprites
+    # Pokémon icon
+    @sprites[:pokemon_icon] = PokemonIconSprite.new(@pokemon, @viewport)
+    @sprites[:pokemon_icon].setOffset(PictureOrigin::CENTER)
+    @sprites[:pokemon_icon].x = POKEMON_ICON_X
+    @sprites[:pokemon_icon].y = POKEMON_ICON_Y
+    @sprites[:pokemon_icon].z = 200
+    # Cursor
+    @sprites[:cursor] = UI::MoveReminderCursor.new(@viewport)
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def moves=(move_list)
+    @moves = move_list
+    @index = @moves.length - 1 if @index >= @moves.length
+    refresh_on_index_changed(@index)
+    @cursor.visible = false if @moves.empty?
+    refresh
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def refresh_overlay
+    super
+    draw_header
+    draw_pokemon_type_icons(TYPE_ICONS_X, TYPE_ICONS_Y, TYPE_ICONS_SPACING)
+    draw_moves_list
+    draw_move_properties
+    draw_buttons
+  end
+
+  def draw_header
+    draw_text(_INTL("¿Enseñar movimiento?"), HEADER_X, HEADER_Y, theme: :header)
+  end
+
+  # x and y are the top left corner of the type icon if there is only one type.
+  def draw_pokemon_type_icons(x, y, spacing)
+    @pokemon.types.each_with_index do |type, i|
+      type_number = GameData::Type.get(type).icon_position
+      offset = ((@pokemon.types.length - 1) * (GameData::Type::ICON_SIZE[0] + spacing) / 2)
+      offset = (offset / 2) * 2
+      type_x = x - offset + ((GameData::Type::ICON_SIZE[0] + spacing) * i)
+      draw_image(@bitmaps[:types], type_x, y,
+                 0, type_number * GameData::Type::ICON_SIZE[1], *GameData::Type::ICON_SIZE)
+    end
+  end
+
+  def draw_moves_list
+    VISIBLE_MOVES.times do |i|
+      move = @moves[@top_index + i]
+      next if move.nil?
+      draw_move_in_list(move, MOVE_LIST_X, MOVE_LIST_Y + (i * MOVE_LIST_SPACING))
+    end
+  end
+
+  def draw_move_in_list(move, x, y)
+    move_data = GameData::Move.get(move[0])
+
+    # Draw move type icon
+    type_number = GameData::Type.get(move_data.display_type(@pokemon)).icon_position
+    draw_image(@bitmaps[:types], x + TYPE_ICON_X_OFFSET, y + TYPE_ICON_Y_OFFSET,
+                0, type_number * GameData::Type::ICON_SIZE[1], *GameData::Type::ICON_SIZE)
+
+    # Draw move name
+    move_name = move_data.name
+    move_name = crop_text(move_name, MOVE_NAME_WIDTH)
+    draw_text(move_name, x + MOVE_NAME_X_OFFSET, y + MOVE_NAME_Y_OFFSET)
+
+    # Draw move learn level or TM/HM
+    if move[1]
+      tm_hm = move[1] == :TM ? _INTL("MT") : move[1] == :HM ? _INTL("MO") : move[1]
+      draw_text(tm_hm, x + LEVEL_OR_TM_X_OFFSET, y + LEVEL_OR_TM_Y_OFFSET)
+    end
+
+    # Draw PP text
+    if move_data.total_pp > 0
+      draw_text(_INTL("PP"), x + PP_LABEL_X_OFFSET, y + PP_LABEL_Y_OFFSET, theme: :black)
+      draw_text(sprintf("%d/%d", move_data.total_pp, move_data.total_pp), x + PP_VALUE_X_OFFSET, y + PP_VALUE_Y_OFFSET, align: :right, theme: :black)
+    end
+
+    # Draw indicator for unseen moves
+    if Settings::SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER && !@pokemon.seen_move?(move[0])
+      indicator_x = x + INDICATOR_OFFSET_X
+      indicator_y = y + INDICATOR_OFFSET_Y
+      
+      # Draw border circle if enabled
+      if NEW_MOVE_INDICATOR_BORDER
+        border_radius = NEW_MOVE_INDICATOR_RADIUS + 2
+        @sprites[:overlay].bitmap.bmp_circle(NEW_MOVE_INDICATOR_BORDER_COLOR, border_radius, indicator_x, indicator_y, false)
+      end
+      
+      # Draw main indicator circle
+      @sprites[:overlay].bitmap.bmp_circle(NEW_MOVE_INDICATOR_COLOR, NEW_MOVE_INDICATOR_RADIUS, indicator_x, indicator_y, false)
+    end
+  end
+
+  def draw_move_properties
+    move = @moves[@index]
+    move_data = GameData::Move.get(move[0])
+    # Power
+    draw_text(_INTL("POTENCIA"), POWER_LABEL_X, POWER_LABEL_Y)
+    power_text = move_data.display_power(@pokemon)
+    power_text = "---" if power_text == 0   # Status move
+    power_text = "???" if power_text == 1   # Variable power move
+    draw_text(power_text, POWER_VALUE_X, POWER_VALUE_Y, align: :right, theme: :black)
+    # Accuracy
+    draw_text(_INTL("PRECISIÓN"), ACCURACY_LABEL_X, ACCURACY_LABEL_Y)
+    accuracy = move_data.display_accuracy(@pokemon)
+    if accuracy == 0
+      draw_text("---", ACCURACY_VALUE_X, ACCURACY_VALUE_Y, align: :right, theme: :black)
+    else
+      draw_text(accuracy, ACCURACY_VALUE_X, ACCURACY_VALUE_Y, align: :right, theme: :black)
+      draw_text("%", ACCURACY_VALUE_X, ACCURACY_VALUE_Y, theme: :black)
+    end
+
+    # Draw move category
+    draw_text(_INTL("CATEGORÍA"), CATEGORY_LABEL_X, CATEGORY_LABEL_Y)
+    draw_image(UI_FOLDER + "category", CATEGORY_ICON_X, CATEGORY_ICON_Y,
+               0, move_data.display_category(@pokemon) * GameData::Move::CATEGORY_ICON_SIZE[1], *GameData::Move::CATEGORY_ICON_SIZE)
+
+    # Description
+    draw_paragraph_text(move_data.description, DESCRIPTION_X, DESCRIPTION_Y, DESCRIPTION_WIDTH, DESCRIPTION_LINES, theme: :black)
+  end
+
+  def draw_buttons
+    draw_image(@bitmaps[:buttons], BUTTON_DOWN_X, BUTTON_DOWN_Y, 0, 0, BUTTON_DOWN_WIDTH, BUTTON_DOWN_HEIGHT) if @index < @moves.length - 1 
+    draw_image(@bitmaps[:buttons], BUTTON_UP_X, BUTTON_UP_Y, BUTTON_DOWN_WIDTH, 0, BUTTON_UP_WIDTH, BUTTON_UP_HEIGHT) if @top_index > 0
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def refresh_cursor
+    @sprites[:cursor].top_index = @top_index
+    @sprites[:cursor].index = @index
+  end
+
+  def refresh_on_index_changed(old_index)
+    pbPlayCursorSE if old_index != @index && defined?(old_index)
+    # Mark move as seen when cursor passes over it
+    if Settings::SHOW_INDICATOR_FOR_UNSEEN_MOVES_IN_MOVE_RELEARNER && old_index != @index
+      current_move = @moves[@index]
+      if current_move && !@pokemon.seen_move?(current_move[0])
+        $PokemonGlobal.add_seen_move(@pokemon.species, current_move[0])
+      end
+    end
+    # Change @top_index to keep @index in the middle of the visible list (or as
+    # close to it as possible)
+    middle_range_top = (VISIBLE_MOVES / 2) - ((VISIBLE_MOVES + 1) % 2)
+    middle_range_bottom = VISIBLE_MOVES / 2
+    if @index < @top_index + middle_range_top
+      @top_index = @index - middle_range_top
+    elsif @index > @top_index + middle_range_bottom
+      @top_index = @index - middle_range_bottom
+    end
+    @top_index = @top_index.clamp(0, [@moves.length - VISIBLE_MOVES, 0].max)
+    refresh_cursor
+    refresh
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def update_input
+    # Check for movement to a new move
+    update_cursor_movement
+    # Check for interaction
+    if Input.trigger?(Input::USE)
+      return update_interaction(Input::USE)
+    elsif Input.trigger?(Input::BACK)
+      return update_interaction(Input::BACK)
+    elsif Input.trigger?(Input::ACTION)
+      return update_interaction(Input::ACTION)
+    end
+    return nil
+  end
+
+  def update_cursor_movement
+    old_index = @index
+    # Check for movement to a new move
+    if Input.repeat?(Input::UP)
+      @index -= 1
+      if Input.trigger?(Input::UP)
+        @index = @moves.length - 1 if @index < 0   # Wrap around
+      else
+        @index = 0 if @index < 0
+      end
+    elsif Input.repeat?(Input::DOWN)
+      @index += 1
+      if Input.trigger?(Input::DOWN)
+        @index = 0 if @index >= @moves.length   # Wrap around
+      else
+        @index = @moves.length - 1 if @index >= @moves.length
+      end
+    elsif Input.repeat?(Input::JUMPUP)
+      @index -= VISIBLE_MOVES
+      @index = 0 if @index < 0
+    elsif Input.repeat?(Input::JUMPDOWN)
+      @index += VISIBLE_MOVES
+      @index = @moves.length - 1 if @index >= @moves.length
+    end
+    if old_index != @index
+      refresh_on_index_changed(old_index)
+    end
+    
+    return old_index != @index
+  end
+
+  def update_interaction(input)
+    case input
+    when Input::USE
+      pbPlayDecisionSE
+      return :learn
+    when Input::BACK
+      pbPlayCloseMenuSE
+      return :quit
+    end
+    return nil
+  end
+end
+
+#===============================================================================
+#
+#===============================================================================
+class UI::MoveReminder < UI::BaseScreen
+  attr_reader :pokemon
+  
+
+  ACTIONS = HandlerHash.new
+
+  SCREEN_ID = :move_reminder_screen
+
+  # mode is either :normal or :single.
+  def initialize(pokemon, mode: :normal, required_item: nil)
+    @pokemon = pokemon
+    @mode = mode
+    @required_item = required_item
+    @moves = []
+    @result = nil
+    @consumed_items = 0
+    generate_move_list
+    super()
+  end
+
+  def initialize_visuals
+    @visuals = UI::MoveReminderVisuals.new(@pokemon, @moves)
+  end
+
+  def required_item
+    return @required_item
+  end
+
+  def consumed_items
+    return @consumed_items
+  end
+
+  def consumed_items=(value)
+    @consumed_items = value
+  end
+
+  def show_consumed_items_message
+    return if @required_item.nil? || @consumed_items <= 0
+    item_name = GameData::Item.get(@required_item).name_plural
+    pbMessage(_INTL("\\PN entregó {1} {2} a cambio.", @consumed_items, item_name))
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def generate_move_list
+    @moves = []
+    return if !@pokemon || @pokemon.egg? || @pokemon.shadowPokemon?
+    @pokemon.getMoveList.each do |move|
+      next if move[0] > @pokemon.level || @pokemon.hasMove?(move[1])
+      # @moves.push(move[1]) if !@moves.include?(move[1])
+      move_to_add = move.is_a?(GameData::Move) ? move.id : move[1]
+      @moves << [move_to_add, _INTL("Nv. #{move[0].to_i.abs}")] if !@moves.include?(move_to_add)
+    end
+    if Settings::MOVE_RELEARNER_CAN_TEACH_MORE_MOVES && @pokemon.first_moves
+      first_moves = []
+      @pokemon.first_moves.each do |move|
+        first_moves.push([move, _INTL("Nv. 1")]) if !@moves.any? { |m| m[0] == move } && !@pokemon.hasMove?(move)
+      end
+      @moves = first_moves + @moves   # List first moves before level-up moves
+    end
+    @moves = @moves.uniq { |move| move[0] }   # remove duplicates based on move ID
+
+    if Settings::SHOW_MTS_MOS_IN_MOVE_RELEARNER
+      tms = pbGetTMMoves(@pokemon)
+      for tm in tms
+        if !@moves.any? { |m| m[0] == tm[0] }
+            @moves.push([tm[0], tm[1]])
+        end
+      end
+    end
+
+  end
+
+  def refresh_move_list
+    generate_move_list
+    @visuals.moves = @moves
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def move
+    return @moves[self.index]
+  end
+
+  #-----------------------------------------------------------------------------
+
+  #===============================================================================
+  # Actions that can be triggered in the Move Reminder screen.
+  #===============================================================================
+  ACTIONS.add(:learn, {
+    :effect => proc { |screen|
+      # move Array len 2
+      # Possible values
+      # [:MOVE_ID, "Nv X."]
+      # [:MOVE_ID, "TM"]
+      # [:MOVE_ID, "HM"]
+      move = screen.move
+      next if !screen.show_confirm_message(_INTL("¿Enseñar {1}?", GameData::Move.get(move[0]).name))
+
+      is_machine = [:TM, :HM].include?(move[1]) ? true : false
+      
+      # Check if player has required item (only for non-machine moves)
+      if !is_machine && screen.required_item && !$bag.has?(screen.required_item)
+        screen.show_message(_INTL("No tienes más {1}.", GameData::Item.get(screen.required_item).name_plural))
+        screen.end_screen
+        next
+      end
+      
+      relearn = is_machine ? false : true
+      next if !pbLearnMove(screen.pokemon, move[0], false, is_machine, relearn)
+      
+      # Remove required item if specified (only for non-machine moves)
+      if !is_machine && screen.required_item
+        $bag.remove(screen.required_item)
+        screen.consumed_items = screen.consumed_items + 1
+      end
+      
+      $stats.moves_taught_by_reminder += 1 if !is_machine
+      $stats.moves_taught_by_item     += 1 if is_machine
+      
+      if screen.mode == :normal
+        screen.refresh_move_list
+        # Check if player still has items (only for non-machine moves)
+        if !is_machine && screen.required_item && !$bag.has?(screen.required_item)
+          screen.show_message(_INTL("No tienes más {1}.", GameData::Item.get(screen.required_item).name_plural))
+          screen.end_screen
+        end
+      else
+        screen.end_screen
+      end
+    }
+  })
+
+  #-----------------------------------------------------------------------------
+
+  def main
+    return if @disposed
+    start_screen
+    @visuals.refresh if @visuals
+    Graphics.update
+    loop do
+      on_start_main_loop
+      command = @visuals.navigate
+      break if command == :quit && (@mode == :normal ||
+               show_confirm_message(_INTL("¿Prefieres que {1} no aprenda un movimiento nuevo?", @pokemon.name)))
+      perform_action(command)
+      if @moves.empty?
+        show_message(_INTL("No hay más movimientos para que {1} aprenda.", @pokemon.name))
+        break
+      end
+      if @disposed
+        @result = true
+        break
+      end
+    end
+    end_screen
+    return @result
+  end
+end
+
+#===============================================================================
+#
+#===============================================================================
+def pbRelearnMoveScreen(pkmn, required_item = nil)
+  ret = true
+  pbFadeOutIn do
+    mode = Settings::CLOSE_MOVE_RELEARNER_AFTER_TEACHING_MOVE ? :single : :normal
+    move_reminder = UI::MoveReminder.new(pkmn, mode: mode, required_item: required_item)
+    ret = move_reminder.main
+    move_reminder.show_consumed_items_message
+  end
+  return ret
+end
+
+def pbGetTMMoves(pokemon)
+  tmmoves = []
+  for item_aux in $bag.pockets[4]
+    item = GameData::Item.get(item_aux[0])
+    if item.is_machine?
+      machine = item.move
+      tmorhm = item.is_HM? ? :HM : :TM
+      if pokemon.compatible_with_move?(machine) && !pokemon.hasMove?(machine)
+        tmmoves.push([machine, tmorhm])
+      end
+    end
+  end
+  return tmmoves
+end

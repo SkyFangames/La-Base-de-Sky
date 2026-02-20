@@ -99,12 +99,30 @@ class Player < Trainer
     # in that region.
     # @param dex [Integer] region ID
     # @return [Boolean] whether there are any seen Pokémon
-    def seen_any?(dex = -1)
+    def seen_any?(dex = -1, check_forms = false)
       validate dex => Integer
       if dex == -1
         GameData::Species.each_species { |s| return true if @seen[s.species] }
       else
-        pbAllRegionalSpecies(dex).each { |s| return true if s && @seen[s] }
+        pbAllRegionalSpecies(dex).each do |s|
+          next if !s
+          # Get the species data to extract the base species and form
+          species_data = GameData::Species.try_get(s)
+          next if !species_data
+          base_species = species_data.species
+          # Check if the base species has been seen
+          return true if @seen[base_species]
+          # If checking forms, also check if this specific form has been seen
+          if check_forms
+            form = species_data.form
+            @seen_forms[base_species] ||= [[[], []], [[], []]]
+            # Check all genders and shiny variations for this form
+            return true if @seen_forms[base_species][0][0][form] ||  # male/genderless non-shiny
+                           @seen_forms[base_species][0][1][form] ||  # male/genderless shiny
+                           @seen_forms[base_species][1][0][form] ||  # female non-shiny
+                           @seen_forms[base_species][1][1][form]     # female shiny
+          end
+        end
       end
       return false
     end
@@ -320,12 +338,17 @@ class Player < Trainer
         @accessible_dexes[0] = region if self.seen_any?(region)
         return
       end
+      # Get the number of regional dexes (not including National Dex slot)
+      num_regional_dexes = pbLoadRegionalDexes.length
       if dexes_count == 1   # Only National Dex is defined
         @accessible_dexes.push(-1) if self.unlocked?(0) && self.seen_any?
       else   # Regional Dexes + National Dex
         dexes_count.times do |i|
-          dex_list_to_check = (i == dexes_count - 1) ? -1 : i
-          if self.unlocked?(i) && self.seen_any?(dex_list_to_check)
+          # Only the last slot (after all regional dexes) is the National Dex
+          dex_list_to_check = (i >= num_regional_dexes) ? -1 : i
+          # Check forms for regional dexes (in case they contain alternate forms)
+          check_forms = (dex_list_to_check >= 0) && Settings::REGIONAL_DEXES_INCLUDE_ALTERNATE_FORMS
+          if self.unlocked?(i) && self.seen_any?(dex_list_to_check, check_forms)
             @accessible_dexes.push(dex_list_to_check)
           end
         end

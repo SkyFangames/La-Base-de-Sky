@@ -572,8 +572,8 @@ class Window_AdvancedTextPokemon < SpriteWindow_Base
         elsif @textchars[@curchar] == "\1"
           @pausing = true if @curchar < @numtextchars - 1
           self.startPause
+          refresh
         end
-        refresh
       end
     end
   end
@@ -1047,6 +1047,8 @@ module HoverImageMixin
     @hover_background.visible = false
     @hover_animated_bitmap = nil
     @current_image_path = nil
+    @command_images ||= []
+    @command_show_background ||= []
   end
 
   def parseCommandsWithImages(commands)
@@ -1080,7 +1082,7 @@ module HoverImageMixin
   end
 
   def updateHoverImage
-    return unless self.active && self.visible && @command_images&.length > 0
+    return unless self.active && self.visible && @command_images && @command_images.length > 0
     
     initHoverImage unless @hover_image
     image_source = @command_images[self.index]

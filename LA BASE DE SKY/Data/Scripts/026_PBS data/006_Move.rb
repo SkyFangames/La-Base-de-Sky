@@ -435,7 +435,7 @@ module GameData
         when "PowerHigherWithUserHappiness"
           return [(pkmn.happiness * 2 / 5).floor, 1].max
         when "PowerLowerWithUserHappiness"
-          return [((255 - pkmn.happiness) * 2 / 5).floor, 1].max
+          return [((Settings::MAX_HAPPINESS - pkmn.happiness) * 2 / 5).floor, 1].max
         when "PowerHigherWithLessPP"
           dmgs = [200, 80, 60, 50, 40]
           ppLeft = [[(move&.pp || @total_pp) - 1, 0].max, dmgs.length - 1].min

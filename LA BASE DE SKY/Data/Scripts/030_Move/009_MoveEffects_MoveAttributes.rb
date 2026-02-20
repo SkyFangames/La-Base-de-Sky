@@ -146,12 +146,12 @@ class Battle::Move::DamageTargetAlly < Battle::Move
       b.pbReduceHP(b.totalhp / 16, false)
     end
     if hitAlly.length == 2
-      @battle.pbDisplay(_INTL("Las chispas también alcanzarón a {1} y {2}!",
+      @battle.pbDisplay(_INTL("Las chispas también alcanzaron a {1} y {2}!",
                               @battle.battlers[hitAlly[0][0]].pbThis(true),
                               @battle.battlers[hitAlly[1][0]].pbThis(true)))
     elsif hitAlly.length > 0
       hitAlly.each do |b|
-        @battle.pbDisplay(_INTL("Las chispas también alcanzarón a {1}!",
+        @battle.pbDisplay(_INTL("Las chispas también alcanzaron a {1}!",
                                 @battle.battlers[b[0]].pbThis(true)))
       end
     end
@@ -222,7 +222,7 @@ end
 #===============================================================================
 class Battle::Move::PowerLowerWithUserHappiness < Battle::Move
   def pbBasePower(base_power, user, target)
-    return [((255 - user.happiness) * 2 / 5).floor, 1].max
+    return [((Settings::MAX_HAPPINESS - user.happiness) * 2 / 5).floor, 1].max
   end
 end
 
@@ -1782,7 +1782,7 @@ class Battle::Move::TargetMovesBecomeElectric < Battle::Move
 
   def pbEffectAgainstTarget(user, target)
     target.effects[PBEffects::Electrify] = true
-    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Electrico!", target.pbThis(true)))
+    @battle.pbDisplay(_INTL("¡Electrificación hace que el siguiente movimiento de {1} sea de tipo Eléctrico!", target.pbThis(true)))
   end
 end
 

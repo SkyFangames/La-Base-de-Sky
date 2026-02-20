@@ -142,7 +142,6 @@ end
 #===============================================================================
 class BattlePointShop_Scene
 
-  QTY_WINDOW_Y_OFFSET= -102
   SCROLL_MAP_START_DIRECTION    = 6   # Scroll right when opening mart
   SCROLL_MAP_START_DISTANCE     = 5
   SCROLL_MAP_START_SPEED        = 5
@@ -558,7 +557,7 @@ def pbBattlePointShop(stock, speech = nil)
   screen = BattlePointShopScreen.new(scene, stock)
   screen.pbBuyScreen
   pbMessage(_INTL("Gracias por tu visita."))
-  pbMessage(_INTL("Por favor, visítanos de nuevo cuando hayas conseguido más PB."))
+  pbMessage(_INTL("Por favor, visítenos de nuevo cuando hayas conseguido más PB."))
   $game_temp.clear_mart_prices
 end
 

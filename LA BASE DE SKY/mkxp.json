@@ -46,6 +46,17 @@
       "r": "AUX2 (W)"
     },
 
+    // Font substitutions allow drop-in replacements of fonts to be used without
+    // changing the RGSS scripts, e.g. providing 'Liberation Sans' when the game
+    // thinks it's using 'Arial'. Font family to be substituted and replacement
+    // family are separated by one sole '>'. Be careful not to include any
+    // spaces.
+    // This is not connected to the built-in font, which is always used when a
+    // non-existing font family is requested by RGSS.
+    "fontSub": [
+        "Arial>Liberation Sans"
+    ],
+
     // The name of this game's save folder. If undefined, the save folder's name
     // will be the "Game Title" as defined in RPG Maker XP. It should not
     // contain any accented characters.
@@ -143,7 +154,7 @@
     // Sync screen redraws to the monitor refresh rate, to reduce screen
     // tearing.
     //
-    "vsync": true,
+    "vsync": false,
 
     // Use a fixed framerate that is approx. equal to the native screen refresh
     // rate. This is different from "fixedFramerate" because the actual frame
@@ -151,9 +162,9 @@
     // refresh rate cannot be determined, this option is force-disabled. This
     // option may be force-disabled at build time.
     //
-    "syncToRefreshrate": true
+    "syncToRefreshrate": false,
 
     // The game's frame rate, if "syncToRefreshrate" is false.
     //
-    // "fixedFramerate": 60
+    "fixedFramerate": 60
 }

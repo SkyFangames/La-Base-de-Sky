@@ -644,7 +644,7 @@ class Battle::Battler
   # Message shown when a move fails the per-hit success check above.
   def pbMissMessage(move, user, target)
     if target.damageState.affection_missed
-      @battle.pbDisplay(_INTL("¡{1} ha evitado el ataque a tienpo con tu orden!", target.pbThis))
+      @battle.pbDisplay(_INTL("¡{1} ha evitado el ataque a tiempo con tu orden!", target.pbThis))
     elsif move.pbTarget(user).num_targets > 1 || target.effects[PBEffects::TwoTurnAttack]
       @battle.pbDisplay(_INTL("¡{1} ha evitado el ataque!", target.pbThis))
     elsif !move.pbMissMessage(user, target)

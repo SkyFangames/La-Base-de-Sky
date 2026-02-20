@@ -150,8 +150,8 @@ end
 class Battle
   # Hook into weather starting to begin continuous animations
   alias cwas_pbStartWeather pbStartWeather
-  def pbStartWeather(user, newWeather, fixedDuration = false, showAnim = true)
-    cwas_pbStartWeather(user, newWeather, fixedDuration, showAnim)
+  def pbStartWeather(user, newWeather, fixedDuration = false, showAnim = true, message = nil)
+    cwas_pbStartWeather(user, newWeather, fixedDuration, showAnim, message)
     # Start continuous weather animation
     @scene.pbStartContinuousWeather(@field.weather) if @field.weather != :None && ContinuousWeatherSettings::ENABLED
   end

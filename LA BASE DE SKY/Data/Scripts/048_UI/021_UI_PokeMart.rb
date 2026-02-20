@@ -1,7 +1,7 @@
 #===============================================================================
 # Abstraction layer for Pokemon Essentials
 #===============================================================================
-class PokemonMartAdapter
+class PokemonMartAdapter 
   def getMoney
     return $player.money
   end
@@ -14,6 +14,67 @@ class PokemonMartAdapter
     $player.money = value
   end
 
+  def getItemIconRect(_item)
+    return Rect.new(0, 0, 48, 48)
+  end
+
+  def getDisplayPrice(item, selling = false)
+    price = getPrice(item, selling).to_s_formatted
+    return _INTL("$ {1}", price)
+  end
+
+  # ========== ABSTRACT METHODS - Must be implemented by subclasses ==========
+
+  def getItemIcon(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getItemIcon"
+  end
+
+  def getInventory
+    raise NotImplementedError, "#{self.class} debe implementar #getInventory"
+  end
+
+  def getName(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getName"
+  end
+
+  def getNamePlural(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getNamePlural"
+  end
+
+  def getDisplayName(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getDisplayName"
+  end
+
+  def getDescription(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getDescription"
+  end
+
+  def getQuantity(item)
+    raise NotImplementedError, "#{self.class} debe implementar #getQuantity"
+  end
+
+  def getPrice(item, selling = false)
+    raise NotImplementedError, "#{self.class} debe implementar #getPrice"
+  end
+
+  def getDisplayPrice(item, selling = false)
+    raise NotImplementedError, "#{self.class} debe implementar #getDisplayPrice"
+  end
+
+  def canSell?(item)
+    raise NotImplementedError, "#{self.class} debe implementar #canSell?"
+  end
+
+  def addItem(item)
+    raise NotImplementedError, "#{self.class} debe implementar #addItem"
+  end
+
+  def removeItem(item)
+    raise NotImplementedError, "#{self.class} debe implementar #removeItem"
+  end
+end
+
+class PokemonItemMartAdapter < PokemonMartAdapter
   def getInventory
     return $bag
   end
@@ -74,11 +135,6 @@ class PokemonMartAdapter
     return (item) ? GameData::Item.icon_filename(item) : nil
   end
 
-  # Unused
-  def getItemIconRect(_item)
-    return Rect.new(0, 0, 48, 48)
-  end
-
   def getQuantity(item)
     return $bag.quantity(item)
   end
@@ -97,11 +153,6 @@ class PokemonMartAdapter
     end
     return GameData::Item.get(item).sell_price if selling
     return GameData::Item.get(item).price
-  end
-
-  def getDisplayPrice(item, selling = false)
-    price = getPrice(item, selling).to_s_formatted
-    return _INTL("$ {1}", price)
   end
 
   def canSell?(item)
@@ -206,6 +257,8 @@ class Window_PokemonMart < Window_DrawableCommand
   ITEM_NAME_Y_OFFSET      = 2
   ITEM_QUANTITY_X_OFFSET  = -18
   ITEM_QUANTITY_Y_OFFSET  = 2
+  BASE_COLOR              = Color.new(88, 88, 80)
+  SHADOW_COLOR            = Color.new(168, 184, 184)
 
 
   def initialize(stock, adapter, x, y, width, height, viewport = nil)
@@ -213,8 +266,8 @@ class Window_PokemonMart < Window_DrawableCommand
     @adapter     = adapter
     super(x, y, width, height, viewport)
     @selarrow    = AnimatedBitmap.new("Graphics/UI/Mart/cursor")
-    @baseColor   = Color.new(88, 88, 80)
-    @shadowColor = Color.new(168, 184, 184)
+    @baseColor   = BASE_COLOR
+    @shadowColor = SHADOW_COLOR
     self.windowskin = nil
   end
 
@@ -281,6 +334,12 @@ class PokemonMart_Scene
   DISPLAY_TEXT_LINES            = 2
   CHOOSE_NUMBER_WINDOW_WIDTH    = 224
   CHOOSE_NUMBER_WINDOW_HEIGHT   = 64
+  TEXT_BASE_COLOR               = Color.new(248, 248, 248)
+  TEXT_SHADOW_COLOR             = Color.new(0, 0, 0)
+  MONEY_BASE_COLOR              = Color.new(88, 88, 80)
+  MONEY_SHADOW_COLOR            = Color.new(168, 184, 184)
+  QUANTITY_BASE_COLOR           = Color.new(88, 88, 80)
+  QUANTITY_SHADOW_COLOR         = Color.new(168, 184, 184)
   
   def update
     pbUpdateSpriteHash(@sprites)
@@ -325,8 +384,8 @@ class PokemonMart_Scene
       "", ITEM_TEXT_WINDOW_X, Graphics.height + ITEM_TEXT_WINDOW_Y_OFFSET, Graphics.width + ITEM_TEXT_WINDOW_WIDTH_OFFSET, ITEM_TEXT_WINDOW_HEIGHT, @viewport
     )
     pbPrepareWindow(@sprites["itemtextwindow"])
-    @sprites["itemtextwindow"].baseColor = Color.new(248, 248, 248)
-    @sprites["itemtextwindow"].shadowColor = Color.black
+    @sprites["itemtextwindow"].baseColor = TEXT_BASE_COLOR
+    @sprites["itemtextwindow"].shadowColor = TEXT_SHADOW_COLOR
     @sprites["itemtextwindow"].windowskin = nil
     @sprites["helpwindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["helpwindow"])
@@ -342,16 +401,16 @@ class PokemonMart_Scene
     @sprites["moneywindow"].y = MONEY_WINDOW_Y
     @sprites["moneywindow"].width = MONEY_WINDOW_WIDTH
     @sprites["moneywindow"].height = MONEY_WINDOW_HEIGHT
-    @sprites["moneywindow"].baseColor = Color.new(88, 88, 80)
-    @sprites["moneywindow"].shadowColor = Color.new(168, 184, 184)
+    @sprites["moneywindow"].baseColor = MONEY_BASE_COLOR
+    @sprites["moneywindow"].shadowColor = MONEY_SHADOW_COLOR
     @sprites["qtywindow"] = Window_AdvancedTextPokemon.new("")
     pbPrepareWindow(@sprites["qtywindow"])
     @sprites["qtywindow"].setSkin("Graphics/Windowskins/goldskin")
     @sprites["qtywindow"].viewport = @viewport
     @sprites["qtywindow"].width = QTY_WINDOW_WIDTH
     @sprites["qtywindow"].height = QTY_WINDOW_HEIGHT
-    @sprites["qtywindow"].baseColor = Color.new(88, 88, 80)
-    @sprites["qtywindow"].shadowColor = Color.new(168, 184, 184)
+    @sprites["qtywindow"].baseColor = QUANTITY_BASE_COLOR
+    @sprites["qtywindow"].shadowColor = QUANTITY_SHADOW_COLOR
     @sprites["qtywindow"].text = _INTL("En Mochila:<r>{1}", @adapter.getQuantity(@sprites["itemwindow"].item))
     @sprites["qtywindow"].y    = Graphics.height + QTY_WINDOW_Y_OFFSET - @sprites["qtywindow"].height
     pbDeactivateWindows(@sprites)
@@ -399,8 +458,8 @@ class PokemonMart_Scene
     @sprites["moneywindow"].y = MONEY_WINDOW_Y
     @sprites["moneywindow"].width = MONEY_WINDOW_SELL_WIDTH
     @sprites["moneywindow"].height = MONEY_WINDOW_SELL_HEIGHT
-    @sprites["moneywindow"].baseColor = Color.new(88, 88, 80)
-    @sprites["moneywindow"].shadowColor = Color.new(168, 184, 184)
+    @sprites["moneywindow"].baseColor = MONEY_BASE_COLOR
+    @sprites["moneywindow"].shadowColor = MONEY_SHADOW_COLOR
     pbDeactivateWindows(@sprites)
     @buying = false
     pbRefresh
@@ -549,8 +608,8 @@ class PokemonMart_Scene
       numwindow.viewport = @viewport
       numwindow.width = CHOOSE_NUMBER_WINDOW_WIDTH
       numwindow.height = CHOOSE_NUMBER_WINDOW_HEIGHT
-      numwindow.baseColor = Color.new(88, 88, 80)
-      numwindow.shadowColor = Color.new(168, 184, 184)
+      numwindow.baseColor = MONEY_BASE_COLOR
+      numwindow.shadowColor = MONEY_SHADOW_COLOR
       numwindow.text = _INTL("x{1}<r>$ {2}", curnumber, (curnumber * itemprice).to_s_formatted)
       pbBottomRight(numwindow)
       numwindow.y -= helpwindow.height
@@ -644,7 +703,7 @@ class PokemonMartScreen
   def initialize(scene, stock)
     @scene = scene
     @stock = stock
-    @adapter = PokemonMartAdapter.new
+    @adapter = PokemonItemMartAdapter.new
   end
 
   def pbConfirm(msg)

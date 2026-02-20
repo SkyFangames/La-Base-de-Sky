@@ -10,7 +10,7 @@ class MapBottomSprite < Sprite
   MAP_NAME_Y        = 4
   MAP_LOCATION_X    = 18
   MAP_LOCATION_Y    = 360
-  MAP_DATAILS_X     = Graphics.width - 16
+  MAP_DATAILS_X     = -16
   MAP_DATAILS_Y     = 360
 
   def initialize(viewport = nil)
@@ -47,7 +47,7 @@ class MapBottomSprite < Sprite
     textpos = [
       [@mapname, MAP_NAME_X, MAP_NAME_Y, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
       [@maplocation, MAP_LOCATION_X, MAP_LOCATION_Y, :left, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR],
-      [@mapdetails, MAP_DATAILS_X, MAP_DATAILS_Y, :right, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR]
+      [@mapdetails, Graphics.width + MAP_DATAILS_X, MAP_DATAILS_Y, :right, TEXT_MAIN_COLOR, TEXT_SHADOW_COLOR]
     ]
     pbDrawTextPositions(bitmap, textpos)
   end
@@ -57,16 +57,16 @@ end
 #
 #===============================================================================
 class PokemonRegionMap_Scene
-  LEFT               = 0
-  TOP                = 0
-  RIGHT              = 29
-  BOTTOM             = 19
-  SQUARE_WIDTH       = 16
-  SQUARE_HEIGHT      = 16
-  MAP2_WIDTH         = 480
-  MAP2_HEIGHT        = 320
-  HELP_SPRITE_HEIGHT = 32
-  HELP_SPRITE_X       = Graphics.width - 16
+  LEFT                = 0
+  TOP                 = 0
+  RIGHT               = 29
+  BOTTOM              = 19
+  SQUARE_WIDTH        = 16
+  SQUARE_HEIGHT       = 16
+  MAP2_WIDTH          = 480
+  MAP2_HEIGHT         = 320
+  HELP_SPRITE_HEIGHT  = 32
+  HELP_SPRITE_X       = -16
   HELP_SPRITE_Y       = 4
 
   def initialize(region = - 1, wallmap = true)
@@ -247,7 +247,7 @@ class PokemonRegionMap_Scene
     text = (@mode == 0) ? _INTL("ACCIÓN: Vuelo") : _INTL("ACCIÓN: Cancelar Vuelo")
     pbDrawTextPositions(
       @sprites["help"].bitmap,
-      [[text, HELP_SPRITE_X, HELP_SPRITE_Y, :right, Color.new(248, 248, 248), Color.black]]
+      [[text, Graphics.width + HELP_SPRITE_X, HELP_SPRITE_Y, :right, Color.new(248, 248, 248), Color.black]]
     )
     @sprites.each do |key, sprite|
       next if !key.include?("point")
@@ -315,11 +315,12 @@ class PokemonRegionMap_Scene
            ($DEBUG && Input.press?(Input::CTRL)))
           return healspot if @fly_map
           name = pbGetMapNameFromId(healspot[0])
-          return healspot if pbConfirmMessage(_INTL("¿Quieres usar Vuelo para viajar a {1}?", name)) { pbUpdate }
+          return healspot if pbConfirmMessage(_INTL("¿Quieres usar Vuelo para ir a {1}?", name)) { pbUpdate }
         end
       elsif Input.trigger?(Input::USE) && @editor   # Intentionally after other USE input check
         pbChangeMapLocation(@map_x, @map_y)
-      elsif Input.trigger?(Input::ACTION) && !@wallmap && !@fly_map && pbCanFly?
+      elsif Input.trigger?(Input::ACTION) && Settings::CAN_FLY_FROM_TOWN_MAP &&
+            !@wallmap && !@fly_map && pbCanFly?
         pbPlayDecisionSE
         @mode = (@mode == 1) ? 0 : 1
         refresh_fly_screen

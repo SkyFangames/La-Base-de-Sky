@@ -595,7 +595,6 @@ SaveData.register_conversion(:v20_convert_pokemon_markings) do
 end
 
 #===============================================================================
-
 SaveData.register_conversion(:v21_replace_phone_data) do
   essentials_version 21
   display_title "Actualizando el formato de los datos del Teléfono"
@@ -608,13 +607,13 @@ SaveData.register_conversion(:v21_replace_phone_data) do
           @phoneNumbers.each do |contact|
             if contact.length > 4
               # Trainer
-              Phone.add_silent(contact[6], contact[7], contact[1], contact[2], contact[5], 0)
-              new_contact = Phone.get(contact[1], contact[2], 0)
+              @phone.add(contact[6], contact[7], contact[1], contact[2], contact[5], 0)
+              new_contact = @phone.get(contact[1], contact[2], 0)
               new_contact.visible = contact[0]
               new_contact.rematch_flag = [contact[4] - 1, 0].max
             else
               # Non-trainer
-              Phone.add_silent(contact[3], contact[2], contact[1])
+              @phone.add(contact[3], contact[2], contact[1])
             end
           end
           @phoneNumbers = nil
@@ -663,14 +662,32 @@ SaveData.register_conversion(:v21_add_bump_stat) do
   end
 end
 
+SaveData.register_conversion(:lbdsky_define_version) do
+  lbds_version "1.2.0"
+  display_title 'Agregando version de LBDSKY a los datos de guardado'
+  to_all do |save_data|
+    unless save_data.has_key?(:lbdsky_version)
+      save_data[:lbdsky_version] = LBDSKY::VERSION
+    end
+  end
+end
+
 SaveData.register_conversion(:v22_add_new_options) do
   lbds_version "1.2.0"
-  display_title "Setting default values for new options"
+  display_title "Configurando valores predeterminados para las nuevas opciones de audio"
   to_value :pokemon_system do |pokemon_system|
     pokemon_system.instance_eval do
-      @skip_move_learning = 0
+      @skip_move_learning = 1
       @main_volume = 100
       @pokemon_cry_volume = 100
     end
+  end
+end
+
+SaveData.register_conversion(:v22_add_skip_text_option) do
+  lbds_version "1.2.0"
+  display_title "Añadiendo opción de saltar textos"
+  to_value :pokemon_system do |pokemon_system|
+    pokemon_system.skip_texts = 1 if pokemon_system.skip_texts.nil?
   end
 end

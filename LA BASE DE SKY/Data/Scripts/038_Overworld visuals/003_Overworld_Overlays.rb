@@ -2,18 +2,145 @@
 # Location signpost
 #===============================================================================
 class LocationWindow
-  APPEAR_TIME = 0.4   # In seconds; is also the disappear time
+  APPEAR_TIME = 0.6   # In seconds; is also the disappear time
   LINGER_TIME = 1.6   # In seconds; time during which self is fully visible
 
-  def initialize(name)
+  def initialize(name, graphic_name = nil, animate = true, viewport = nil)
+    initialize_viewport(viewport)
+    @graphic_offset = [0, 0]
+    @window_offset = [0, 0]
+    initialize_graphic(graphic_name)
+    initialize_text_window(name)
+    apply_style(graphic_name)
+    setup_initial_positions
+    @current_map = $game_map.map_id
+    @timer_start = System.uptime
+    @delayed = !$game_temp.fly_destination.nil?
+    @animate = animate
+  end
+
+  def initialize_viewport(viewport)
+    if viewport
+      @viewport = viewport
+      return
+    end
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport.z = 99999
+  end
+
+  def initialize_graphic(graphic_name)
+    return if graphic_name.nil? || !pbResolveBitmap("Graphics/UI/Location/#{graphic_name}")
+    @graphic = Sprite.new(@viewport)
+    @graphic.bitmap = RPG::Cache.ui("Location/#{graphic_name}")
+    @graphic.x = 0
+    @graphic.y = 0
+  end
+
+  def initialize_text_window(name)
     @window = Window_AdvancedTextPokemon.new(name)
     @window.resizeToFit(name, Graphics.width)
     @window.x        = 0
-    @window.y        = -@window.height
-    @window.viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    @window.viewport.z = 99999
-    @currentmap = $game_map.map_id
-    @timer_start = System.uptime
+    @window.y        = 0
+    @window.z        = 1
+    @window.viewport = @viewport
+  end
+
+  def apply_style(graphic_name)
+    # Set up values to be used elsewhere
+    @graphic_offset = [0, 0]
+    @window_offset = [0, 0]
+    @y_distance = @window.height
+    return if graphic_name.nil?
+    # Determine the style and base/shadow colors
+    style = :none
+    base_color = nil
+    shadow_color = nil
+    zoom_x = 1
+    zoom_y = 1
+    center_text = false
+    Settings::LOCATION_SIGN_GRAPHIC_STYLES.each_pair do |val, filenames|
+      filenames.each do |filename|
+        if filename.is_a?(Hash)
+          next if !filename.key?(:graphic) || filename[:graphic] != graphic_name
+          base_color = filename[:text_color] if filename.key?(:text_color)
+          shadow_color = filename[:shadow_color] if filename.key?(:shadow_color)
+          zoom_x = filename[:zoomx] || 1 
+          zoom_y = filename[:zoomy] || 1
+          @window_offset = filename[:text_offset] || [0, 0]
+          @graphic_offset = filename[:graphic_offset] || [0, 0]
+          center_text = filename[:center_text] || false
+        else
+          next if filename != graphic_name
+        end
+        style = val
+        break
+      end
+      break if style != :none
+    end
+    return if style == :none
+    # Apply the style
+    @y_distance = @graphic&.height || @window.height
+    @window.back_opacity = 0
+    @graphic.zoom_x = zoom_x if zoom_x
+    @graphic.zoom_y = zoom_y if zoom_y
+    case style
+    when :dp
+      @window.baseColor = base_color if base_color
+      @window.shadowColor = shadow_color if shadow_color
+      @graphic&.dispose
+      @graphic = Window_AdvancedTextPokemon.new("")
+      @graphic.setSkin("Graphics/UI/Location/#{graphic_name}")
+      @graphic.width    = @window.width + (@window_offset[0] * 2) - 4
+      @graphic.height   = 48
+      @graphic.x        = 0
+      @graphic.y        = (@animate) ? -@graphic.height : @graphic_offset[1]
+      @graphic.z        = 0
+      @graphic.zoom_x = zoom_x if zoom_x
+      @graphic.zoom_y = zoom_y if zoom_y
+      @graphic.viewport = @viewport
+      @y_distance = @graphic.height
+    when :hgss
+      @window.baseColor = base_color if base_color
+      @window.shadowColor = shadow_color if shadow_color
+      @window.width = @graphic.width
+    when :platinum
+      @window.baseColor = base_color || Color.black
+      @window.shadowColor = shadow_color || Color.new(144, 144, 160)
+      @window_offset = [10, 16] if @window_offset == [0, 0]
+    when :oras
+      @window.baseColor = base_color || Color.white
+      @window.shadowColor = shadow_color || Color.new(0, 0, 0, 128)
+    when :xy
+      @window.baseColor = base_color || Color.white
+      @window.shadowColor = shadow_color || Color.new(0, 0, 0, 128)
+    end
+    @window.text = @window.text   # Because the text colors were changed
+    @window.text = "<ac>" + @window.text if center_text
+  end
+
+  def setup_initial_positions
+    # Determine animation direction based on graphic position
+    @animate_from_bottom = @graphic && (@graphic_offset[1] > Graphics.height / 2)
+    
+    if @animate
+      if @animate_from_bottom
+        initial_y_offset = @y_distance
+      else
+        initial_y_offset = -@y_distance
+      end
+    else
+      initial_y_offset = 0
+    end
+    
+    # Position graphic
+    if @graphic
+      @graphic.x = @graphic_offset[0]
+      @graphic.y = @graphic_offset[1] + initial_y_offset
+    end
+    
+    # Position window relative to graphic (text_offset is relative to graphic_offset)
+    @window.x = @graphic_offset[0] + @window_offset[0]
+    @window.y = @graphic_offset[1] + @window_offset[1] + initial_y_offset
   end
 
   def disposed?
@@ -21,22 +148,57 @@ class LocationWindow
   end
 
   def dispose
+    @graphic&.dispose
     @window.dispose
+    @viewport.dispose
   end
 
   def update
-    return if @window.disposed?
+    return if disposed? || $game_temp.fly_destination
+    if @delayed
+      @timer_start = System.uptime
+      @delayed = false
+    end
+    @graphic&.update
     @window.update
-    if $game_temp.message_window_showing || @currentmap != $game_map.map_id
-      @window.dispose
+    return if !@animate
+    if $game_temp.message_window_showing || @current_map != $game_map.map_id
+      dispose
       return
     end
+    
+    # Calculate animation offset
     if System.uptime - @timer_start >= APPEAR_TIME + LINGER_TIME
-      @window.y = lerp(0, -@window.height, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
-      @window.dispose if @window.y + @window.height <= 0
+      # Disappearing
+      if @animate_from_bottom
+        y_offset = lerp(0, @y_distance, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
+        if y_offset >= @y_distance
+          dispose
+          return
+        end
+      else
+        y_offset = lerp(0, -@y_distance, APPEAR_TIME, @timer_start + APPEAR_TIME + LINGER_TIME, System.uptime)
+        if y_offset <= -@y_distance
+          dispose
+          return
+        end
+      end
     else
-      @window.y = lerp(-@window.height, 0, APPEAR_TIME, @timer_start, System.uptime)
+      # Appearing
+      if @animate_from_bottom
+        y_offset = lerp(@y_distance, 0, APPEAR_TIME, @timer_start, System.uptime)
+      else
+        y_offset = lerp(-@y_distance, 0, APPEAR_TIME, @timer_start, System.uptime)
+      end
     end
+    
+    # Apply positions (text is positioned relative to graphic)
+    if @graphic
+      @graphic.x = @graphic_offset[0]
+      @graphic.y = @graphic_offset[1] + y_offset
+    end
+    @window.x = @graphic_offset[0] + @window_offset[0]
+    @window.y = @graphic_offset[1] + @window_offset[1] + y_offset
   end
 end
 
@@ -46,12 +208,18 @@ end
 class DarknessSprite < Sprite
   attr_reader :radius
 
+  PIXELLATE_CIRCLE = true
+
   def initialize(viewport = nil)
     super(viewport)
-    @darkness = Bitmap.new(Graphics.width, Graphics.height)
+    bitmap_size = [Graphics.width, Graphics.height]
+    bitmap_size = [Graphics.width / 2, Graphics.height / 2] if PIXELLATE_CIRCLE
+    @darkness = Bitmap.new(*bitmap_size)
     @radius = radiusMin
     self.bitmap = @darkness
     self.z      = 99998
+    self.zoom_x = 2.0 if PIXELLATE_CIRCLE
+    self.zoom_y = 2.0 if PIXELLATE_CIRCLE
     refresh
   end
 
@@ -60,8 +228,17 @@ class DarknessSprite < Sprite
     super
   end
 
-  def radiusMin; return 64;  end   # Before using Flash
-  def radiusMax; return 176; end   # After using Flash
+  # Before using Flash.
+  def radiusMin
+    ret = 64
+    return (PIXELLATE_CIRCLE) ? ret / 2 : ret
+  end
+
+  # After using Flash.
+  def radiusMax
+    ret = 176
+    return (PIXELLATE_CIRCLE) ? ret / 2 : ret
+  end
 
   def radius=(value)
     @radius = value.round
@@ -69,15 +246,15 @@ class DarknessSprite < Sprite
   end
 
   def refresh
-    @darkness.fill_rect(0, 0, Graphics.width, Graphics.height, Color.black)
-    cx = Graphics.width / 2
-    cy = Graphics.height / 2
-    cradius = @radius
+    @darkness.fill_rect(0, 0, @darkness.width, @darkness.height, Color.black)
+    cx = @darkness.width / 2
+    cy = @darkness.height / 2
+    cradius = @radius - (@radius % 2)
     numfades = 5
     (1..numfades).each do |i|
       (cx - cradius..cx + cradius).each do |j|
         diff2 = (cradius * cradius) - ((j - cx) * (j - cx))
-        diff = Math.sqrt(diff2)
+        diff = Math.sqrt(diff2).round
         @darkness.fill_rect(j, cy - diff, 1, diff * 2, Color.new(0, 0, 0, 255.0 * (numfades - i) / numfades))
       end
       cradius = (cradius * 0.9).floor
@@ -225,4 +402,3 @@ EventHandlers.add(:on_new_spriteset_map, :add_light_effects,
     end
   }
 )
-

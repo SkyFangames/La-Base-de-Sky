@@ -128,7 +128,7 @@ class Scene_Credits
       _INTL("Afilicado con Game Freak")
     ])
     ret.push("", "")
-    ret.push(_INTL("Esto es un fan juego sin ánimo de lucro."),
+    ret.push(_INTL("Esto es un fanjuego sin ánimo de lucro."),
              _INTL("No se pretende infringir los derechos de autor."),
              _INTL("¡Por favor, apoya los juegos oficiales!"))
     return ret

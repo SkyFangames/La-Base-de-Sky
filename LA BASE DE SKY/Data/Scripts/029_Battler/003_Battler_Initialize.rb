@@ -5,7 +5,7 @@ class Battle::Battler
   #-----------------------------------------------------------------------------
   # Creating a battler.
   #-----------------------------------------------------------------------------
-
+  attr_accessor :baseMoves
   def initialize(btl, idxBattler)
     @battle      = btl
     @index       = idxBattler
@@ -101,7 +101,44 @@ class Battle::Battler
     end
   end
 
+  
+  #-----------------------------------------------------------------------------
+  # Displays updates to battler's moves in the fight menu.
+  #-----------------------------------------------------------------------------
+  def display_mega_moves
+    mega_moves = MultipleForms.call("getMegaMoves", @pokemon)
+    return if !mega_moves
+    for i in 0...@moves.length
+      @baseMoves.push(@moves[i])
+      new_id = mega_moves[@moves[i].id]
+      next if !new_id || !GameData::Move.exists?(new_id)
+      @pokemon.moves[i].id = new_id
+      @moves[i] = Battle::Move.from_pokemon_move(@battle, @pokemon.moves[i])
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # Utility for resetting a battler's moves back to its original moveset.
+  #-----------------------------------------------------------------------------
+  def display_base_moves(reset_pokemon_moves = false)
+    return if @baseMoves.empty?
+    for i in 0...@moves.length
+      next if !@baseMoves[i]
+      if @baseMoves[i].is_a?(Battle::Move)
+        @moves[i] = @baseMoves[i]
+      else
+        @moves[i] = Battle::Move.from_pokemon_move(@battle, @baseMoves[i])
+      end
+      if reset_pokemon_moves
+        next if @pokemon.moves[i].id == @baseMoves[i].id
+        @pokemon.moves[i].id = @baseMoves[i].id
+      end
+    end
+    @baseMoves.clear
+  end
+
   def pbInitEffects(batonPass)
+    @baseMoves   = []
     if batonPass
       # These effects are passed on if Baton Pass is used, but they need to be
       # reapplied

@@ -122,7 +122,7 @@ def pbStartTrade(pokemonIndex, newpoke, nickname, trainerName, trainerGender = 0
     resetmoves = false
   else
     species_data = GameData::Species.try_get(newpoke)
-    raise _INTL("Species {1} does not exist.", newpoke) if !species_data
+    raise _INTL("La especie {1} no existe.", newpoke) if !species_data
     yourPokemon = Pokemon.new(species_data.id, myPokemon.level)
     yourPokemon.owner = Pokemon::Owner.new_foreign(trainerName, trainerGender)
   end
@@ -228,7 +228,7 @@ class Battle
           pbParty(0).each_with_index do |pkmn, i|
             next if !pkmn || pkmn.egg?
             pkmn.legacy_data[:trainer_count] += 1
-            if tname == _INTL("Gym Leader")
+            if tname == _INTL("Líder de Gimnasio")
               pkmn.legacy_data[:leader_count] += 1
             end
           end
@@ -346,7 +346,7 @@ class DayCare
     day_care = $PokemonGlobal.day_care
     pkmn = $player.party[party_index]
     pkmn.update_party_time
-    raise _INTL("No Pokémon at index {1} in party.", party_index) if pkmn.nil?
+    raise _INTL("No hay ningún Pokémon en el índice {1} del equipo.", party_index) if pkmn.nil?
     day_care.slots.each do |slot|
       next if slot.filled?
       slot.deposit(pkmn)
@@ -354,16 +354,16 @@ class DayCare
       day_care.reset_egg_counters
       return
     end
-    raise _INTL("No room to deposit a Pokémon.")
+    raise _INTL("No hay espacio para depositar un Pokémon.")
   end
 
   def self.withdraw(index)
     day_care = $PokemonGlobal.day_care
     slot = day_care[index]
     if !slot.filled?
-      raise _INTL("No Pokémon found in slot {1}.", index)
+      raise _INTL("No se encontró ningún Pokémon en la ranura {1}.", index)
     elsif $player.party_full?
-      raise _INTL("No room in party for Pokémon.")
+      raise _INTL("No hay espacio en el equipo para el Pokémon.")
     end
     $stats.day_care_levels_gained += slot.level_gain
     slot.pokemon.last_update_time = System.uptime

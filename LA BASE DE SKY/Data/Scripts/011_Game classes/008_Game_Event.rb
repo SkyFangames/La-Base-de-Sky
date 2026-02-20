@@ -8,6 +8,7 @@ class Game_Event < Game_Character
   attr_reader   :starting
   attr_reader   :tempSwitches   # Temporary self-switches
   attr_accessor :need_refresh
+  attr_accessor :side_stairs
 
   def initialize(map_id, event, map = nil)
     super(map)
@@ -43,7 +44,11 @@ class Game_Event < Game_Character
   end
 
   def start
-    @starting = true if @list.size > 1
+    if is_stair_event?
+      $game_player.slope(*self.get_stair_data)
+    else
+      @starting = true if @list.size > 1
+    end
   end
 
   def erase
@@ -139,6 +144,56 @@ class Game_Event < Game_Character
     return @map_id == $game_player.map_id && at_coordinate?($game_player.x, $game_player.y)
   end
 
+  def is_stair_event?
+    return STAIR_EVENT_NAMES.include?(self.name)
+  end
+
+  def mss_check_events
+    return if !($game_map && $game_map.events)
+    return if self.is_stair_event?
+    map_id = $game_map.map_id
+    $game_map&.side_stairs ||= {}
+    $game_map&.side_stairs[map_id] ||= []
+    side_stairs = $game_map&.side_stairs[map_id]
+    return if side_stairs.nil?
+    for event in side_stairs
+      if !on_stair? && (@real_x / Game_Map::REAL_RES_X).round == event.x &&
+          (@real_y / Game_Map::REAL_RES_Y).round == event.y
+        if event.is_stair_event?
+          next if $game_player.x == event.x && $game_player.y == event.y
+          self.slope(*event.get_stair_data)        
+          return
+        end
+      end
+    end
+  end
+
+  def get_stair_data
+    return if !is_stair_event?
+    return if !@list
+    for cmd in @list
+      if cmd.code == 108
+        if cmd.parameters[0] =~ /Slope: (\d+)x(\d+)/
+          xincline, yincline = $1.to_i, $2.to_i
+        elsif cmd.parameters[0] =~ /Slope: -(\d+)x(\d+)/
+          xincline, yincline = -$1.to_i, $2.to_i
+        elsif cmd.parameters[0] =~ /Slope: (\d+)x-(\d+)/
+          xincline, yincline = $1.to_i, -$2.to_i
+        elsif cmd.parameters[0] =~ /Slope: -(\d+)x-(\d+)/
+          xincline, yincline = -$1.to_i, -$2.to_i
+        elsif cmd.parameters[0] =~ /Width: (\d+)\/(\d+)/
+          ypos, yheight = $1.to_i, $2.to_i
+        elsif cmd.parameters[0] =~ /Offset: (\d+)px/
+          offset = $1.to_i
+        end
+      end
+      if xincline && yincline && ypos && yheight && offset
+        return [xincline, yincline, ypos, yheight, offset]
+      end
+    end
+    return [xincline, yincline, ypos, yheight, 16]
+  end
+
   def over_trigger?
     return false if @map_id != $game_player.map_id
     return false if @character_name != "" && !@through
@@ -150,6 +205,7 @@ class Game_Event < Game_Character
   end
 
   def check_event_trigger_touch(dir)
+    return if on_stair?
     return if @map_id != $game_player.map_id
     return if @trigger != 2   # Event touch
     return if $game_system.map_interpreter.running?
@@ -197,6 +253,8 @@ class Game_Event < Game_Character
   end
 
   def check_event_trigger_auto
+    mss_check_events
+    return if on_stair? || $game_player.on_stair?
     case @trigger
     when 2   # Event touch
       if at_coordinate?($game_player.x, $game_player.y) && !jumping? && over_trigger?

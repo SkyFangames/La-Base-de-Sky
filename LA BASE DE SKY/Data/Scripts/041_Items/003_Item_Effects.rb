@@ -126,7 +126,7 @@ ItemHandlers::UseFromBag.add(:ESCAPEROPE, proc { |item, bag_screen|
   if ($PokemonGlobal.escapePoint rescue false) && $PokemonGlobal.escapePoint.length > 0
     next 2   # End screen and use item
   end
-  pbMessage(_INTL("Can't use that here."))
+  pbMessage(_INTL("No puede usarse aquí."))
   next 0
 })
 ItemHandlers::ConfirmUseInField.add(:ESCAPEROPE, proc { |item|   # Called from Ready Menu
@@ -320,7 +320,7 @@ ItemHandlers::UseText.add(:EXPALLOFF, proc { |item|
 })
 ItemHandlers::UseInField.add(:EXPALLOFF, proc { |item|
   $bag.replace_item(:EXPALLOFF, :EXPALL)
-  pbMessage(_INTL("El Rep Exp se ha encendido."))
+  pbMessage(_INTL("El Rep. Exp. se ha encendido."))
   next true
 })
 
@@ -329,7 +329,7 @@ ItemHandlers::UseText.add(:EXPALL, proc { |item|
 })
 ItemHandlers::UseInField.add(:EXPALL, proc { |item|
   $bag.replace_item(:EXPALL, :EXPALLOFF)
-  pbMessage(_INTL("El Rep Exp se ha apagado."))
+  pbMessage(_INTL("El Rep. Exp. se ha apagado."))
   next true
 })
 
@@ -1185,7 +1185,7 @@ ItemHandlers::UseOnPokemon.add(:EXPCANDYXL, proc { |item, qty, pkmn, scene|
 #-------------------------------------------------------------------------------
 
 ItemHandlers::UsableOnPokemon.add(:POMEGBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:HP] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:HP] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:POMEGBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:HP, pkmn)
@@ -1202,7 +1202,7 @@ ItemHandlers::UseOnPokemon.add(:POMEGBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:KELPSYBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:ATTACK] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:ATTACK] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:KELPSYBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:ATTACK, pkmn)
@@ -1211,7 +1211,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:KELPSYBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:KELPSYBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :ATTACK, qty, [
-      _INTL("¡{1} te adora! Its base Attack fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Aataque base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Ataque de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Ataque de base!", pkmn.name)
     ]
@@ -1219,7 +1219,7 @@ ItemHandlers::UseOnPokemon.add(:KELPSYBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:QUALOTBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:DEFENSE] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:DEFENSE] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:QUALOTBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:DEFENSE, pkmn)
@@ -1228,7 +1228,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:QUALOTBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:QUALOTBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :DEFENSE, qty, [
-      _INTL("¡{1} te adora! Its base Defense fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Defensa base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Defensa de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Defensa de base!", pkmn.name)
     ]
@@ -1236,7 +1236,7 @@ ItemHandlers::UseOnPokemon.add(:QUALOTBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:HONDEWBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:SPECIAL_ATTACK] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:SPECIAL_ATTACK] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:HONDEWBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:SPECIAL_ATTACK, pkmn)
@@ -1245,7 +1245,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:HONDEWBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:HONDEWBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :SPECIAL_ATTACK, qty, [
-      _INTL("¡{1} te adora! Its base Special Attack fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Ataque Especial base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Ataque Especial de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Ataque Especial de base!", pkmn.name)
     ]
@@ -1253,7 +1253,7 @@ ItemHandlers::UseOnPokemon.add(:HONDEWBERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:GREPABERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:SPECIAL_DEFENSE] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:SPECIAL_DEFENSE] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:GREPABERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:SPECIAL_DEFENSE, pkmn)
@@ -1262,7 +1262,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:GREPABERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:GREPABERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :SPECIAL_DEFENSE, qty, [
-      _INTL("¡{1} te adora! Its base Special Defense fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Defensa Especial base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Defensa Especial de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Defensa Especial de base!", pkmn.name)
     ]
@@ -1270,7 +1270,7 @@ ItemHandlers::UseOnPokemon.add(:GREPABERRY, proc { |item, qty, pkmn, scene|
 })
 
 ItemHandlers::UsableOnPokemon.add(:TAMATOBERRY, proc { |item, pkmn|
-  next pkmn.happiness < 255 || pkmn.ev[:SPEED] > 0
+  next pkmn.happiness < Settings::MAX_HAPPINESS || pkmn.ev[:SPEED] > 0
 })
 ItemHandlers::UseOnPokemonMaximum.add(:TAMATOBERRY, proc { |item, pkmn|
   next pbMaxUsesOfEVLoweringBerry(:SPEED, pkmn)
@@ -1279,7 +1279,7 @@ ItemHandlers::UseOnPokemonMaximum.add(:TAMATOBERRY, proc { |item, pkmn|
 ItemHandlers::UseOnPokemon.add(:TAMATOBERRY, proc { |item, qty, pkmn, scene|
   next pbRaiseHappinessAndLowerEV(
     pkmn, scene, :SPEED, qty, [
-      _INTL("¡{1} te adora! Its base Speed fell!", pkmn.name),
+      _INTL("¡{1} te adora! ¡Su Velocidad base bajó!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Su Velocidad de base ya no puede bajar más!", pkmn.name),
       _INTL("{1} se ha vuelto más amable. ¡Pero tiene menos Veloc de base!", pkmn.name)
     ]
@@ -1512,31 +1512,32 @@ ItemHandlers::UseOnPokemon.add(:PRISONBOTTLE, proc { |item, qty, pkmn, scene|
 ItemHandlers::UsableOnPokemon.add(:ROTOMCATALOG, proc { |item, pkmn|
   next pkmn.isSpecies?(:ROTOM) && pkmn.able?
 })
+
 ItemHandlers::UseOnPokemon.add(:ROTOMCATALOG, proc { |item, qty, pkmn, scene|
   if !pkmn.isSpecies?(:ROTOM)
-    scene.pbDisplay(_INTL("No tendría efecto."))
+    scene.pbDisplay(_INTL("Pero no tuvo efecto."))
     next false
   elsif pkmn.fainted?
-    scene.pbDisplay(_INTL("No se puede usar en Pokémon debilitados."))
+    scene.pbDisplay(_INTL("Esto no puede ser usado en un Pokémon debilitado."))
     next false
   end
   choices = [
     _INTL("Bombilla"),
     _INTL("Microondas"),
     _INTL("Lavadora"),
-    _INTL("Frigorífico"),
+    _INTL("Nevera"),
     _INTL("Ventilador"),
-    _INTL("Cortacésped"),
+    _INTL("Corta césped"),
     _INTL("Cancelar")
   ]
-  new_form = scene.pbShowCommands(_INTL("¿Qué electrodoméstico te gustaría pedir?"), choices, pkmn.form)
+  new_form = scene.pbShowCommands(_INTL("¿Qué electrodoméstico quieres pedir?"), choices, pkmn.form)
   if new_form == pkmn.form
     scene.pbDisplay(_INTL("No tendría ningún efecto."))
     next false
-  elsif new_form > 0 && new_form < choices.length - 1
+  elsif new_form >= 0 && new_form < choices.length - 1
     pkmn.setForm(new_form) do
       scene.pbRefresh
-      scene.pbDisplay(_INTL("¡{1} se tranformó!", pkmn.name))
+      scene.pbDisplay(_INTL("¡{1} se transformó!", pkmn.name))
     end
     next true
   end
@@ -1560,7 +1561,7 @@ ItemHandlers::UseOnPokemon.add(:ZYGARDECUBE, proc { |item, qty, pkmn, scene|
     newForm = (pkmn.form == 0) ? 1 : 0
     pkmn.setForm(newForm) do
       scene.pbRefresh
-      scene.pbDisplay(_INTL("¡{1} se tranformó!", pkmn.name))
+      scene.pbDisplay(_INTL("¡{1} se transformó!", pkmn.name))
     end
     next true
   when 1   # Change ability
@@ -1737,7 +1738,7 @@ ItemHandlers::UseOnPokemon.add(:NLUNARIZERUSED, proc { |item, qty, pkmn, scene|
     scene.pbDisplay(_INTL("No se puede usar en Pokémon debilitados."))
     next false
   elsif $player.party_full?
-    scene.pbDisplay(_INTL("You have no room to separate the Pokémon."))
+    scene.pbDisplay(_INTL("No tienes espacio para separar a los Pokémon."))
     next false
   end
   # Unfusing
@@ -1760,7 +1761,7 @@ ItemHandlers::UseOnPokemon.add(:REINSOFUNITY, proc { |item, qty, pkmn, scene|
     next false
   end
   # Fusing
-  chosen = scene.pbChoosePokemon(_INTL("Fuse with which Pokémon?"))
+  chosen = scene.pbChoosePokemon(_INTL("¿Fusionar con qué Pokémon?"))
   next false if chosen < 0
   other_pkmn = $player.party[chosen]
   if pkmn == other_pkmn
@@ -1867,7 +1868,7 @@ ItemHandlers::UseOnPokemon.add(:METEORITE, proc { |item, qty, pkmn, scene|
     _INTL("Forma Velocidad"),
     _INTL("Cancelar")
   ]
-  new_form = scene.pbShowCommands(_INTL("¿En que forma debería convertise {1}?", pkmn.name), choices, pkmn.form)
+  new_form = scene.pbShowCommands(_INTL("¿En qué forma debería convertirse {1}?", pkmn.name), choices, pkmn.form)
   if new_form == pkmn.form
     scene.pbDisplay(_INTL("No tendría efecto."))
     next false

@@ -107,7 +107,7 @@ class SpeciesIntro
   
   def text_message
     ret = name
-    ret += @message_complement || _INTL(". Pokémon {1}.", category)
+    ret += @message_complement || _INTL(". El Pokémon {1}.", category)
     return ret
   end
 

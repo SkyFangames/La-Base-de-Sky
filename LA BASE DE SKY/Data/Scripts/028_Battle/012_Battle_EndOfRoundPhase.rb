@@ -21,7 +21,8 @@ class Battle
     when :Sun         then pbDisplay(_INTL("El sol pega fuerte."))
     when :Rain        then pbDisplay(_INTL("Sigue lloviendo."))
     when :Sandstorm   then pbDisplay(_INTL("La tormenta de arena arrecia."))
-    when :Hail        then pbDisplay(_INTL("Sigue nevando."))
+    when :Hail        then pbDisplay(_INTL("Sigue granizando."))
+    when :Snowstorm   then pbDisplay(_INTL("Sigue nevando."))
     when :HarshSun    then pbDisplay(_INTL("El sol es realmente abrasador."))
     when :HeavyRain   then pbDisplay(_INTL("La lluvia está siendo muy intensa."))
     when :StrongWinds then pbDisplay(_INTL("El aire está lleno de turbulencias."))
@@ -117,7 +118,7 @@ class Battle
       next if !@battlers[idxPos] || !@battlers[idxPos].canHeal?
       wishMaker = pbThisEx(idxPos, pos.effects[PBEffects::WishMaker])
       @battlers[idxPos].pbRecoverHP(pos.effects[PBEffects::WishAmount])
-      pbDisplay(_INTL("¡{1} se ha hecho realidad!", wishMaker))
+      pbDisplay(_INTL("¡El deseo de {1} se ha hecho realidad!", wishMaker))
     end
   end
 
@@ -486,7 +487,7 @@ class Battle
                              _INTL("El conjuro de {1} se ha desvanecido.", @battlers[side].pbTeam(true)))
     # Pledge Rainbow
     pbEORCountDownSideEffect(side, PBEffects::Rainbow,
-                             _INTL("El arcoiris sobre {1} ha desaparecido.", @battlers[side].pbTeam(true)))
+                             _INTL("El arcoíris sobre {1} ha desaparecido.", @battlers[side].pbTeam(true)))
     # Pledge Sea of Fire
     pbEORCountDownSideEffect(side, PBEffects::SeaOfFire,
                              _INTL("El mar de llamas que rodeaba a {1} ha desaparecido.", @battlers[side].pbTeam(true)))

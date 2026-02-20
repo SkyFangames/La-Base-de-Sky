@@ -264,7 +264,7 @@ class Battle::Battler
         @battle.pbDisplay(_INTL("¡{1} se durmió!", pbThis))
       when :POISON
         if newStatusCount > 0
-          @battle.pbDisplay(_INTL("¡{1} ha sido gravemente envenendo!", pbThis))
+          @battle.pbDisplay(_INTL("¡{1} ha sido gravemente envenenado!", pbThis))
         else
           @battle.pbDisplay(_INTL("¡{1} se ha envenenado!", pbThis))
         end
@@ -484,7 +484,7 @@ class Battle::Battler
       when :SLEEP     then @battle.pbDisplay(_INTL("¡{1} se ha despertado!", pbThis))
       when :POISON    then @battle.pbDisplay(_INTL("¡{1} se ha curado del envenenamiento!", pbThis))
       when :BURN      then @battle.pbDisplay(_INTL("¡La quemadura de {1} se ha curado!", pbThis))
-      when :PARALYSIS then @battle.pbDisplay(_INTL("¡{1} se ha curado de paralisis!", pbThis))
+      when :PARALYSIS then @battle.pbDisplay(_INTL("¡{1} se ha curado de la parálisis!", pbThis))
       when :FROZEN    then @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", pbThis))
       when :FROSTBITE then @battle.pbDisplay(_INTL("¡{1} se ha descongelado!", pbThis))
       end

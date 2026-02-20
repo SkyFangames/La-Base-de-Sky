@@ -76,6 +76,14 @@ class PokemonBag
   def has?(item, qty = 1)
     return quantity(item) >= qty
   end
+
+  def has_any?(items)
+    items.each do |item|
+      return true if has?(item)
+    end
+    return false
+  end
+  
   alias can_remove? has?
 
   def can_add?(item, qty = 1)
