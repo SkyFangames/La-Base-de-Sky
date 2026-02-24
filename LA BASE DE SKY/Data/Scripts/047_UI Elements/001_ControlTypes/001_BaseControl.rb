@@ -106,9 +106,9 @@ class UIControls::BaseControl < BitmapSprite
 
   #-----------------------------------------------------------------------------
 
-  def draw_text(this_bitmap, text_x, text_y, this_text, align = 0)
+  def draw_text(this_bitmap, text_x, text_y, this_text)
     text_size = this_bitmap.text_size(this_text.to_s)
-    this_bitmap.draw_text(text_x, text_y, text_size.width, text_size.height, this_text.to_s, align)
+    this_bitmap.draw_text(text_x, text_y, text_size.width, text_size.height, this_text.to_s, 0)
   end
 
   def draw_text_centered(this_bitmap, text_x, text_y, wid, this_text)
@@ -125,8 +125,11 @@ class UIControls::BaseControl < BitmapSprite
 
   def refresh
     self.bitmap.clear
+    draw_background
     draw_area_highlight
   end
+
+  def draw_background; end
 
   def draw_area_highlight
     return if !@interactions || @interactions.empty?

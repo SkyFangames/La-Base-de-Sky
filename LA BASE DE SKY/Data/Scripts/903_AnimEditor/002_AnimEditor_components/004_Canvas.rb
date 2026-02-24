@@ -32,11 +32,49 @@ class AnimationEditor::Canvas < Sprite
     @captured          = nil
     @user_coords       = []
     @target_coords     = []
+    initialize_bitmaps
     initialize_background
     initialize_battlers
     initialize_particle_sprites
     initialize_particle_frames
     refresh
+  end
+
+  def initialize_bitmaps
+    # Emitter bitmap
+    btmp_size = 16
+    btmp_graphic = %w(
+      . . . . . . . . . . . . . . . ~
+      . . . . . . . . . . . . . . ~ X
+      . . . . . . . . . . . . . . ~ X
+      . . . . . . . . . . . . . . ~ X
+      . . . . . ~ ~ . . . . . . . ~ X
+      . . . . ~ X X ~ . . . . . . ~ X
+      . . . . ~ X X X ~ . . . . . ~ X
+      . . . . . ~ X X X ~ . . . . ~ X
+      . . . . . . ~ X X X ~ . . . ~ X
+      . . . . . . . ~ X X X ~ . . ~ X
+      . . . . . . . . ~ X X X ~ . . ~
+      . . . . . . . . . ~ X X ~ . . .
+      . . . . . . . . . . ~ ~ . . ~ ~
+      . . . . . . . . . . . . . ~ X X
+      . ~ ~ ~ ~ ~ ~ ~ ~ ~ . . ~ X ~ ~
+      ~ X X X X X X X X X ~ . ~ X ~ X
+    )
+    btmp = Bitmap.new(btmp_size * 2, btmp_size * 2)
+    red_color = Color.red
+    white_color = Color.white
+    btmp_graphic.length.times do |i|
+      next if btmp_graphic[i] == "."
+      pixel_x = i % btmp_size
+      pixel_y = i / btmp_size
+      col = (btmp_graphic[i] == "X") ? red_color : white_color
+      btmp.fill_rect(pixel_x, pixel_y, 1, 1, col)
+      btmp.fill_rect(btmp.width - 1 - pixel_x, pixel_y, 1, 1, col)
+      btmp.fill_rect(pixel_x, btmp.height - 1 - pixel_y, 1, 1, col)
+      btmp.fill_rect(btmp.width - 1 - pixel_x, btmp.height - 1 - pixel_y, 1, 1, col)
+    end
+    @emitter_bitmap = btmp
   end
 
   def initialize_background
@@ -78,6 +116,7 @@ class AnimationEditor::Canvas < Sprite
   end
 
   def dispose
+    @emitter_bitmap&.dispose
     @user_bitmap_front&.dispose
     @user_bitmap_back&.dispose
     @target_bitmap_front&.dispose
@@ -155,7 +194,6 @@ class AnimationEditor::Canvas < Sprite
     return false if index < 0 || index >= @anim[:particles].length
     particle = @anim[:particles][index]
     return false if !particle || particle[:name] == "SE"
-    return false if (particle[:emitter_type] || :none) != :none
     return true
   end
 
@@ -430,7 +468,7 @@ class AnimationEditor::Canvas < Sprite
   end
 
   def get_sprite_and_frame(index, target_idx = -1)
-    return if !show_particle_sprite?(index)
+    return nil, nil if !show_particle_sprite?(index)
     spr = nil
     frame = nil
     particle = @anim[:particles][index]
@@ -458,7 +496,6 @@ class AnimationEditor::Canvas < Sprite
     return spr, frame
   end
 
-  # TODO: Make a version of this method for whether the particle is an emitter.
   def refresh_sprite(index, target_idx = -1)
     particle = @anim[:particles][index]
     return if !show_particle_sprite?(index)
@@ -477,16 +514,17 @@ class AnimationEditor::Canvas < Sprite
     values.each_pair do |property, val|
       values[property] = val[0]
     end
+    visible_property = ((particle[:emitter_type] || :none) == :none) ? :visible : :emitting
     last_frame_visible = false
-    if !values[:visible] && @display_keyframe > 0
-      last_frame_visible = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(particle, :visible, @display_keyframe - 1)[0]
+    if !values[visible_property] && @display_keyframe > 0
+      last_frame_visible = AnimationEditor::ParticleDataHelper.get_keyframe_particle_value(
+        particle, visible_property, @display_keyframe - 1
+      )[0]
     end
     # Set visibility
-    spr.visible = values[:visible] || last_frame_visible
+    spr.visible = values[visible_property] || last_frame_visible
     frame.visible = spr.visible
     return if !spr.visible
-    # Set opacity
-    spr.opacity = (values[:visible]) ? values[:opacity] : 0
     # Set coordinates
     base_x = values[:x]
     base_y = values[:y]
@@ -499,12 +537,25 @@ class AnimationEditor::Canvas < Sprite
     AnimationPlayer::Helper.apply_xy_focus_to_sprite(spr, :x, base_x, focus_xy)
     AnimationPlayer::Helper.apply_xy_focus_to_sprite(spr, :y, base_y, focus_xy)
     # Set graphic and ox/oy (may also alter y coordinate)
-    AnimationPlayer::Helper.set_bitmap_and_origin(particle, spr, user_index, target_idx,
-                                                  [@user_bitmap_front_name, @user_bitmap_back_name],
-                                                  [@target_bitmap_front_name, @target_bitmap_back_name])
+    if (particle[:emitter_type] || :none) == :none
+      AnimationPlayer::Helper.set_bitmap_and_origin(particle, spr, user_index, target_idx,
+                                                    [@user_bitmap_front_name, @user_bitmap_back_name],
+                                                    [@target_bitmap_front_name, @target_bitmap_back_name])
+    else
+      if (particle[:emitter_type] || :none) != :none
+        spr.z = 99997
+        spr.bitmap = @emitter_bitmap
+        spr.ox = spr.bitmap.width / 2
+        spr.oy = spr.bitmap.height / 2
+        return
+      end
+    end
     offset_xy = AnimationPlayer::Helper.get_xy_offset(particle, spr)
     spr.x += offset_xy[0]
     spr.y += offset_xy[1]
+    return if (particle[:emitter_type] || :none) != :none   # Emitter
+    # Set opacity
+    spr.opacity = (values[visible_property]) ? values[:opacity] : 0
     # Set frame
     spr.src_rect.x = values[:frame].floor * spr.src_rect.width
     # Set z (priority)

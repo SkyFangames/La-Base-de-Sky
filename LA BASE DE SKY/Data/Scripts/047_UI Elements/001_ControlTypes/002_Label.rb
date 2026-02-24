@@ -1,5 +1,5 @@
 #===============================================================================
-
+#
 #===============================================================================
 class UIControls::Label < UIControls::BaseControl
   attr_reader :text
@@ -9,6 +9,7 @@ class UIControls::Label < UIControls::BaseControl
   def initialize(width, height, viewport, text)
     super(width, height, viewport)
     @text = text
+    @underlined = false
     @header = false
     @disabled = true   # No interactivity
   end
@@ -17,6 +18,11 @@ class UIControls::Label < UIControls::BaseControl
 
   def text=(value)
     @text = value
+    refresh
+  end
+
+  def underlined=(val)
+    @underlined = val
     refresh
   end
 
@@ -41,6 +47,11 @@ class UIControls::Label < UIControls::BaseControl
                             text_size.width, 1, get_color_of(:text))
     else
       draw_text(self.bitmap, LEFT_PADDING, TEXT_OFFSET_Y, @text)
+      if @underlined
+        text_size = self.bitmap.text_size(@text)
+        self.bitmap.fill_rect(LEFT_PADDING, TEXT_OFFSET_Y + text_size.height,
+                              text_size.width, 1, get_color_of(:text))
+      end
     end
   end
 end

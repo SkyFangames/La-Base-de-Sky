@@ -130,6 +130,10 @@ class UIControls::List < UIControls::BaseControl
 
   #-----------------------------------------------------------------------------
 
+  def draw_background
+    self.bitmap.fill_rect(0, 0, width, height, get_color_of(:control_background))
+  end
+
   def draw_area_highlight
     # If a row is captured, it will automatically be selected and the selection
     # color will be drawn over the highlight. There's no point drawing a

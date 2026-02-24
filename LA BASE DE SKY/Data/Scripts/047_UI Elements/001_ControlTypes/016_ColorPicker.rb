@@ -275,8 +275,8 @@ class UIControls::ColorPicker < UIControls::BaseControl
     refresh_picker_box
     return if @picker_box
     super
-    # Draw disabled color
     if disabled?
+      # Draw disabled color
       self.bitmap.fill_rect(@button_rect.x, @button_rect.y,
                             @button_rect.width, @button_rect.height,
                             get_color_of(:disabled_fill))

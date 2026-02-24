@@ -479,7 +479,11 @@ class AnimationEditor::AnimationSelector
   end
 
   def selected_animation_id
-    return @components.get_control(:animations_list).value
+    move = @components.get_control(:moves_list).value
+    anim = @components.get_control(:animations_list).value
+    return @move_animations[move][anim][:id] if @animation_type == 0
+    return @common_animations[move][anim][:id] if @animation_type == 1
+    return nil
   end
 
   #-----------------------------------------------------------------------------

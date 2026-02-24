@@ -11,6 +11,7 @@ module UIControls::StyleMixin
   COLOR_SCHEMES = {
     :light => {
       :background          => Color.new(248, 248, 248),
+      :control_background  => Color.white,
       :gray_background     => Color.new(160, 160, 160),
       :semi_transparent    => Color.new(0, 0, 0, 128),
       :text                => Color.black,
@@ -20,8 +21,6 @@ module UIControls::StyleMixin
       :hover               => Color.new(224, 255, 255),
       :capture             => Color.new(255, 64, 128),
       :highlight           => Color.new(224, 192, 32),
-      # Sidebars
-      :delete_icon         => Color.new(248, 96, 96),
       # Checkbox
       :checked             => Color.new(48, 192, 48),
       :unchecked           => Color.gray,
@@ -53,20 +52,19 @@ module UIControls::StyleMixin
     },
     :dark => {
       :background          => Color.new(32, 32, 32),
+      :control_background  => Color.new(16, 16, 16),
       :gray_background     => Color.new(96, 96, 96),
 #      :semi_transparent    => Color.new(0, 0, 0, 128),   # Unchanged
-      :text                => Color.new(248, 248, 248),
+      :text                => Color.new(224, 224, 224),
       :disabled_text       => Color.new(96, 96, 96),
-      :line                => Color.new(248, 248, 248),
-      :disabled_fill       => Color.new(160, 160, 160),
-      :hover               => Color.new(64, 80, 80),
+      :line                => Color.new(224, 224, 224),
+      :disabled_fill       => Color.new(128, 128, 128),
+      :hover               => Color.new(16, 56, 56),
       :capture             => Color.new(224, 32, 96),
       :highlight           => Color.new(160, 128, 16),
-      # Sidebars
-#      :delete_icon         => Color.new(248, 96, 96),   # Unchanged
       # Checkbox
       :checked             => Color.new(32, 160, 32),
-      :unchecked           => Color.new(160, 160, 160),
+      :unchecked           => Color.new(128, 128, 128),
       # ColorPicker
       :negative_text       => Color.black,   # Darker than :background
       :checkerboard_light  => Color.new(144, 144, 144),

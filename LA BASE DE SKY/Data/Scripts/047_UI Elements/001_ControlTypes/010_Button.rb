@@ -1,30 +1,28 @@
 #===============================================================================
-#
+# Supports multi-line text, just separate lines with "\n".
 #===============================================================================
 class UIControls::Button < UIControls::BaseControl
-  BUTTON_X           = 2
-  BUTTON_Y           = 2
-  BUTTON_PADDING     = 10   # Used when @fixed_size is false
-  BUTTON_HEIGHT      = 28   # Used when @fixed_size is false
-  TEXT_BASE_OFFSET_Y = 18   # Text is centred vertically in the button
+  BUTTON_FRAME_THICKNESS = 4
+  BUTTON_X               = 0
+  BUTTON_Y               = 0
+  TEXT_BASE_OFFSET_Y     = 8   # Text is centred vertically in the button
+  TEXT_LINE_SPACING      = 18
 
   def initialize(width, height, viewport, text = "")
     super(width, height, viewport)
     @text = text
-    @fixed_size = false
     @highlight = false
   end
 
   #-----------------------------------------------------------------------------
 
-  def set_fixed_size
-    @fixed_size = true
+  def real_width
+    return @button_rect&.width || self.width
   end
 
   def set_text(val)
     return if @text == val
     @text = val
-    set_interactive_rects if !@fixed_size
     invalidate
   end
 
@@ -64,8 +62,8 @@ class UIControls::Button < UIControls::BaseControl
 
   def set_interactive_rects
     @interactions&.clear
-    button_width = (@fixed_size) ? width - (BUTTON_X * 2) : self.bitmap.text_size(@text).width + (BUTTON_PADDING * 2)
-    button_height = (@fixed_size) ? height - (2 * BUTTON_Y) : BUTTON_HEIGHT
+    button_width = width - (BUTTON_X * 2)
+    button_height = height - (2 * BUTTON_Y)
     button_height = [button_height, height - (2 * BUTTON_Y)].min
     @button_rect = Rect.new(BUTTON_X, (height - button_height) / 2, button_width, button_height)
     @interactions = {
@@ -75,35 +73,40 @@ class UIControls::Button < UIControls::BaseControl
 
   #-----------------------------------------------------------------------------
 
+  def draw_background
+    bg_color = (disabled?) ? :disabled_fill : :control_background
+    bg_color = :highlight if highlighted?
+    self.bitmap.fill_rect(@button_rect.x, @button_rect.y,
+                          @button_rect.width, @button_rect.height,
+                          get_color_of(bg_color))
+  end
+
+  def draw_area_highlight
+    super if !highlighted?
+  end
+
   def refresh
     super
-    if highlighted?
-      # Draw highligted colour
-      self.bitmap.fill_rect(@button_rect.x, @button_rect.y,
-                            @button_rect.width, @button_rect.height,
-                            highlight_color)
-    elsif disabled?
-      # Draw disabled colour
-      self.bitmap.fill_rect(@button_rect.x, @button_rect.y,
-                            @button_rect.width, @button_rect.height,
-                            disabled_fill_color)
-    end
     # Draw button outline
     self.bitmap.outline_rect(@button_rect.x, @button_rect.y,
                              @button_rect.width, @button_rect.height,
-                             line_color)
+                             get_color_of(:line))
     # Draw inner grey ring that shows this is a button rather than a text box
     if !disabled?
-      shade = line_color.clone
-      shade.alpha = (shade.red > 128) ? 160 : 64
+      shade = get_color_of(:line).clone
+      shade.alpha = (shade.red > 128) ? 160 : 64   # Dark : light
       self.bitmap.outline_rect(@button_rect.x + 2, @button_rect.y + 2,
                                @button_rect.width - 4, @button_rect.height - 4,
                                shade, 1)
     end
     # Draw button text
-    draw_text_centered(self.bitmap, @button_rect.x,
-                       @button_rect.y + (@button_rect.height - TEXT_BASE_OFFSET_Y) / 2,
-                       @button_rect.width, @text)
+    lines = @text.split("\n")
+    lines.each_with_index do |line, i|
+      text_y = @button_rect.y + (@button_rect.height / 2) - TEXT_BASE_OFFSET_Y
+      text_y -= ((lines.length - 1) * TEXT_LINE_SPACING / 2)
+      text_y += TEXT_LINE_SPACING * i
+      draw_text_centered(self.bitmap, @button_rect.x, text_y, @button_rect.width, line)
+    end
   end
 
   #-----------------------------------------------------------------------------

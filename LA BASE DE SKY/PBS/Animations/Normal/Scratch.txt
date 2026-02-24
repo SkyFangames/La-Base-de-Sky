@@ -2,8 +2,8 @@
 #-------------------------------
 [Move,SCRATCH]
 Name = Essentials
+NoUser = true
 Credit = Maruno
-<User>
 <Target>
     FoeInvertX = true
     MoveX = 0,1,-2

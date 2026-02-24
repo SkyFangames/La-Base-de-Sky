@@ -46,6 +46,10 @@ class UIControls::CheckboxList < UIControls::List
 
   #-----------------------------------------------------------------------------
 
+  def draw_background
+    self.bitmap.fill_rect(0, 0, width, height, get_color_of(:control_background))
+  end
+
   def draw_area_highlight
     return if !@interactions || @interactions.empty?
     if !@captured_area || @hover_area == @captured_area
@@ -84,6 +88,7 @@ class UIControls::CheckboxList < UIControls::List
 
   def refresh
     self.bitmap.clear
+    draw_background
     draw_area_highlight
     # Draw control outline
     self.bitmap.outline_rect(0, 0, width, height, get_color_of(:line))

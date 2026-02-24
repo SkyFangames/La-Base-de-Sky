@@ -31,11 +31,12 @@ class AnimationEditor
     msg_bitmap.bitmap.draw_text(0, (msg_bitmap.height / 2) - MESSAGE_BOX_BUTTON_HEIGHT,
                                 msg_bitmap.width, text_size.height, text, 1)
     # Create buttons
+    button_spacing = 2
     buttons = []
     options.each_with_index do |option, i|
       btn = UIControls::Button.new(MESSAGE_BOX_BUTTON_WIDTH, MESSAGE_BOX_BUTTON_HEIGHT, @pop_up_viewport, option[1])
-      btn.x = msg_bitmap.x + (msg_bitmap.width - (MESSAGE_BOX_BUTTON_WIDTH * options.length)) / 2
-      btn.x += MESSAGE_BOX_BUTTON_WIDTH * i
+      btn.x = msg_bitmap.x + ((msg_bitmap.width - ((MESSAGE_BOX_BUTTON_WIDTH + button_spacing) * options.length)) / 2) + (button_spacing / 2)
+      btn.x += (MESSAGE_BOX_BUTTON_WIDTH + button_spacing) * i
       btn.y = msg_bitmap.y + msg_bitmap.height - MESSAGE_BOX_BUTTON_HEIGHT - MESSAGE_BOX_SPACING
       btn.color_scheme = @color_scheme
       btn.set_interactive_rects
@@ -264,9 +265,8 @@ class AnimationEditor
     @pop_up_bg_bitmap.visible = true
     bg_bitmap = create_pop_up_window(GRAPHIC_CHOOSER_WINDOW_WIDTH, GRAPHIC_CHOOSER_WINDOW_HEIGHT)
     bg_bitmap.z += graphic_chooser.z
-    # Draw box around list control
-    list = graphic_chooser.get_control(:list)
     # Get a list of files
+    list = graphic_chooser.get_control(:list)
     files = get_all_files_in_folder(
       sprite_folder, [".png", ".jpg", ".jpeg"],
       ["USER", "USER_OPP", "USER_FRONT", "USER_BACK", "TARGET", "TARGET_OPP", "TARGET_FRONT", "TARGET_BACK"]
@@ -297,13 +297,14 @@ class AnimationEditor
     list.options = files
     list.selected = idx
     # Create sprite preview
-    bg_bitmap.bitmap.outline_rect(CONTAINER_BORDER - graphic_chooser.x + list.x + list.width + 6,
+    bg_bitmap.bitmap.outline_rect(CONTAINER_BORDER - graphic_chooser.x + list.x + list.width + 4,
                                   CONTAINER_BORDER - graphic_chooser.y + list.y,
-                                  GRAPHIC_CHOOSER_PREVIEW_SIZE + 4, GRAPHIC_CHOOSER_PREVIEW_SIZE + 4,
+                                  GRAPHIC_CHOOSER_PREVIEW_SIZE + (GRAPHIC_CHOOSER_PREVIEW_BORDER * 2),
+                                  GRAPHIC_CHOOSER_PREVIEW_SIZE + (GRAPHIC_CHOOSER_PREVIEW_BORDER * 2),
                                   get_color_of(:line))
     preview_sprite = Sprite.new(@pop_up_viewport)
-    preview_sprite.x = list.x + list.width + 8 + (GRAPHIC_CHOOSER_PREVIEW_SIZE / 2)
-    preview_sprite.y = list.y + 2 + (GRAPHIC_CHOOSER_PREVIEW_SIZE / 2)
+    preview_sprite.x = list.x + list.width + 4 + GRAPHIC_CHOOSER_PREVIEW_BORDER + (GRAPHIC_CHOOSER_PREVIEW_SIZE / 2)
+    preview_sprite.y = list.y + GRAPHIC_CHOOSER_PREVIEW_BORDER + (GRAPHIC_CHOOSER_PREVIEW_SIZE / 2)
     preview_sprite.z = graphic_chooser.z
     preview_bitmap = nil
     set_preview_graphic = lambda do |sprite, filename|
@@ -328,8 +329,8 @@ class AnimationEditor
         end
       end
       preview_bitmap = AnimatedBitmap.new(folder + fname)
-      bg_bitmap.bitmap.fill_rect(CONTAINER_BORDER - graphic_chooser.x + list.x + list.width + 8,
-                                 CONTAINER_BORDER - graphic_chooser.y + list.y + 2,
+      bg_bitmap.bitmap.fill_rect(CONTAINER_BORDER - graphic_chooser.x + list.x + list.width + 4 + GRAPHIC_CHOOSER_PREVIEW_BORDER,
+                                 CONTAINER_BORDER - graphic_chooser.y + list.y + GRAPHIC_CHOOSER_PREVIEW_BORDER,
                                  GRAPHIC_CHOOSER_PREVIEW_SIZE, GRAPHIC_CHOOSER_PREVIEW_SIZE,
                                  get_color_of(:background))
       next if !preview_bitmap
@@ -392,9 +393,8 @@ class AnimationEditor
     @pop_up_bg_bitmap.visible = true
     bg_bitmap = create_pop_up_window(AUDIO_CHOOSER_WINDOW_WIDTH, AUDIO_CHOOSER_WINDOW_HEIGHT)
     bg_bitmap.z += audio_chooser.z
-    # Draw box around list control
-    list = audio_chooser.get_control(:list)
     # Get a list of files
+    list = audio_chooser.get_control(:list)
     files = get_all_files_in_folder(audio_folder, [".wav", ".ogg", ".mp3", ".wma"], ["USER", "TARGET"])
     files.prepend(["TARGET", _INTL("[[Target's cry]]")]) if !@anim[:no_target]
     files.prepend(["USER",  _INTL("[[User's cry]]")]) if !@anim[:no_user]

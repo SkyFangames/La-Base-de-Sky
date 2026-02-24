@@ -191,6 +191,7 @@ class UIControls::ListedContainer < UIControls::BaseContainer
   attr_accessor :label_offset_x, :label_offset_y
 
   LINE_SPACING        = 24
+  BUTTON_HEIGHT       = 20
   OFFSET_FROM_LABEL_X = 65
   OFFSET_FROM_LABEL_Y = 0
 
@@ -263,7 +264,7 @@ class UIControls::ListedContainer < UIControls::BaseContainer
   end
 
   def add_button(id, button_text, has_label = false)
-    add_control(id, UIControls::Button.new(*control_size(has_label), @viewport, button_text), has_label)
+    add_control(id, UIControls::Button.new(*control_size(has_label, true), @viewport, button_text), has_label)
   end
 
   def add_labelled_button(id, label, button_text)
@@ -272,7 +273,7 @@ class UIControls::ListedContainer < UIControls::BaseContainer
   end
 
   def add_fitted_button(id, button_text, has_label = false)
-    add_control(id, UIControls::FittedButton.new(*control_size(has_label), @viewport, button_text), has_label)
+    add_control(id, UIControls::FittedButton.new(*control_size(has_label, true), @viewport, button_text), has_label)
   end
 
   def add_labelled_fitted_button(id, label, button_text)
@@ -312,11 +313,12 @@ class UIControls::ListedContainer < UIControls::BaseContainer
 
   #-----------------------------------------------------------------------------
 
-  def control_size(has_label = false)
+  def control_size(has_label = false, is_button = false)
+    ctrl_height = (is_button) ? BUTTON_HEIGHT : LINE_SPACING
     if has_label
-      return @width - @label_offset_x, LINE_SPACING - @label_offset_y
+      return @width - @label_offset_x, ctrl_height - @label_offset_y
     end
-    return @width, LINE_SPACING
+    return @width, ctrl_height
   end
 
   def next_control_position(add_offset = false)
@@ -330,13 +332,18 @@ class UIControls::ListedContainer < UIControls::BaseContainer
 
   def add_control(id, control, add_offset = false, rows = 1)
     ctrl_x, ctrl_y = next_control_position(add_offset)
-    ctrl_x += 4 if control.is_a?(UIControls::List)
+    case control
+    when UIControls::List
+      ctrl_x += 4
+    when UIControls::Button, UIControls::FittedButton
+      ctrl_y += (LINE_SPACING - BUTTON_HEIGHT) / 2
+    end
     add_control_at(id, ctrl_x, ctrl_y, control)
     increment_row_count(rows) if !add_offset
     @pixel_offset -= (LINE_SPACING - UIControls::List::ROW_HEIGHT) * (rows - 1) if control.is_a?(UIControls::List)
   end
 
-  def increment_row_count(count)
+  def increment_row_count(count = 1)
     @row_count += count
   end
 end

@@ -60,10 +60,6 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
     end
     @dropdown_menu_viewport = Viewport.new(view_x, view_y, @button_rect.x + @button_rect.width - @text_box_rect.x, menu_height)
     @dropdown_menu_viewport.z = self.viewport.z + 100
-    # Draw menu's background
-    @dropdown_menu_bg = BitmapSprite.new(@text_box_rect.width + @button_rect.width, menu_height, @dropdown_menu_viewport)
-    @dropdown_menu_bg.z = -100
-    @dropdown_menu_bg.bitmap.fill_rect(0, 0, @dropdown_menu_bg.width, @dropdown_menu_bg.height, get_color_of(:background))
     # Create menu
     @dropdown_menu = UIControls::List.new(@text_box_rect.width + @button_rect.width, menu_height,
                                           @dropdown_menu_viewport, @options, TEXT_BOX_HEIGHT)
@@ -73,8 +69,6 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
   end
 
   def remove_dropdown_menu
-    @dropdown_menu_bg&.dispose
-    @dropdown_menu_bg = nil
     @dropdown_menu&.dispose
     @dropdown_menu = nil
     @dropdown_menu_viewport&.dispose
@@ -84,6 +78,15 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
   end
 
   #-----------------------------------------------------------------------------
+
+  def draw_background
+    super
+    bg_color = (disabled?) ? :disabled_fill : :control_background
+    bg_color = :hover if @hover_area && @captured_area != :button
+    self.bitmap.fill_rect(@button_rect.x, @button_rect.y,
+                          @button_rect.width, @button_rect.height,
+                          get_color_of(bg_color))
+  end
 
   def draw_area_highlight
     highlight_color = nil
@@ -107,12 +110,6 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
   def refresh
     refresh_dropdown_menu
     super
-    # Draw disabled color in button
-    if disabled?
-      self.bitmap.fill_rect(@button_rect.x, @button_rect.y,
-                            @button_rect.width, @button_rect.height,
-                            get_color_of(:disabled_fill))
-    end
     # Draw button outline
     self.bitmap.outline_rect(@button_rect.x, @button_rect.y,
                              @button_rect.width, @button_rect.height,
@@ -121,8 +118,6 @@ class UIControls::TextBoxDropdownList < UIControls::TextBox
     arrow_area_x = @button_rect.x + @button_rect.width - @button_rect.height + 1
     arrow_area_width = @button_rect.height - 2
     arrow_color = (disabled?) ? get_color_of(:disabled_text) : get_color_of(:text)
-    self.bitmap.fill_rect(arrow_area_x, @button_rect.y + 1, arrow_area_width, arrow_area_width,
-                          (@hover_area && @captured_area != :button) ? get_color_of(:hover) : get_color_of(:background))
     6.times do |i|
       self.bitmap.fill_rect(arrow_area_x + (arrow_area_width / 2) - 5 + i,
                             @button_rect.y + (arrow_area_width / 2) - 1 + i,

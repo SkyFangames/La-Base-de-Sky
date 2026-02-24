@@ -58,7 +58,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
   end
 
   def draw_list_sprite_tree(row, group, level, arrow, sprite)
-    return if !@groups_expanded[:main] || @particle[:name] == "SE"
+    return if @particle[:name] == "SE"
     line_color = get_color_of(:property_background)
     top_level_x = (LIST_BOX_TOP_LEVEL_X - 1) / 2   # 9
     upper_seg_height = ROW_HEIGHT / 2   # 12
@@ -117,6 +117,7 @@ class AnimationEditor::ListedParticle < UIControls::BaseContainer
     ctrl.x = (LIST_BOX_TOP_LEVEL_X - LIST_ARROW_SIZE) / 2
     ctrl.x += LIST_BOX_INDENT_X if row != :main && groups.has_key?(row)
     ctrl.z = 1
+    ctrl.color_scheme = @color_scheme
     ctrl.set_interactive_rects
     @rows[row][LIST_ARROW] = ctrl
   end

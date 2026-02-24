@@ -92,6 +92,7 @@ class UIControls::SEPicker < UIControls::BaseControl
     ctrl.x = PICKER_BOX_LIST_X
     ctrl.y = PICKER_BOX_LIST_Y
     ctrl.set_interactive_rects
+    ctrl.color_scheme = @color_scheme
     @picker_controls[:list] = ctrl
     # Buttons
     button_x = PICKER_BOX_LIST_X

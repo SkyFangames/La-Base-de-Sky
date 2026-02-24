@@ -6,7 +6,7 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
 
   SLOWDOWN_FACTORS     = [1, 2, 4, 6, 8]
 
-  BUTTON_SPACING       = 1
+  BUTTON_SPACING       = 2
   LABEL_HEIGHT         = 28
   PLAY_BUTTON_X        = 11
   PLAY_BUTTON_Y        = 11
@@ -14,17 +14,18 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
   LOOP_BUTTON_SIZE     = 24   # Full size of button; bitmap in the button is 16
   LOOP_BUTTON_X        = PLAY_BUTTON_X + PLAY_BUTTON_SIZE + BUTTON_SPACING
   LOOP_BUTTON_Y        = PLAY_BUTTON_Y + ((PLAY_BUTTON_SIZE - LOOP_BUTTON_SIZE) / 2)
-  SLOWDOWN_BUTTON_X    = 246   # This is the right side of the buttons, not the left
+  SLOWDOWN_BUTTON_X    = AnimationEditor::MenuBar::TOTAL_WIDTH - PLAY_BUTTON_X   # This is the right side of the buttons, not the left
   SLOWDOWN_BUTTON_Y    = LOOP_BUTTON_Y
   SLOWDOWN_BUTTON_SIZE = LOOP_BUTTON_SIZE
   # NOTE: Slowdown label is centered horizontally over the buttons.
-  # TODO: I don't know why the -5 needs to be here.
-  SLOWDOWN_LABEL_X     = SLOWDOWN_BUTTON_X - (SLOWDOWN_FACTORS.length * (SLOWDOWN_BUTTON_SIZE + BUTTON_SPACING) / 2) - 5
+  SLOWDOWN_LABEL_X     = SLOWDOWN_BUTTON_X
+  SLOWDOWN_LABEL_X     -= ((SLOWDOWN_FACTORS.length * (SLOWDOWN_BUTTON_SIZE + BUTTON_SPACING)) - BUTTON_SPACING) / 2
+  SLOWDOWN_LABEL_X     -= UIControls::Label::LEFT_PADDING
   SLOWDOWN_LABEL_Y     = 0
   # NOTE: Duration label and value are centered horizontally on DURATION_TEXT_X.
-  DURATION_LABEL_X     = 128
-  DURATION_LABEL_Y     = 46
-  DURATION_VALUE_X     = SLOWDOWN_BUTTON_X - 17   # This is the right side of the label, not the left
+  DURATION_LABEL_X     = 122
+  DURATION_LABEL_Y     = 48
+  DURATION_VALUE_X     = DURATION_LABEL_X + 109   # This is the right side of the label, not the left
   DURATION_VALUE_Y     = DURATION_LABEL_Y
 
   def initialize(x, y, width, height, viewport, anim)
@@ -132,7 +133,7 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
     # Slowdown factor buttons
     SLOWDOWN_FACTORS.each_with_index do |value, i|
       id = ("slowdown" + value.to_s).to_sym
-      button_x = SLOWDOWN_BUTTON_X - (SLOWDOWN_FACTORS.length * (SLOWDOWN_BUTTON_SIZE + BUTTON_SPACING))
+      button_x = SLOWDOWN_BUTTON_X - (SLOWDOWN_FACTORS.length * (SLOWDOWN_BUTTON_SIZE + BUTTON_SPACING)) + BUTTON_SPACING
       button_x += i * (SLOWDOWN_BUTTON_SIZE + BUTTON_SPACING)
       add_control_at(id, button_x, SLOWDOWN_BUTTON_Y,
                      UIControls::Button.new(SLOWDOWN_BUTTON_SIZE, SLOWDOWN_BUTTON_SIZE, self.viewport, value.to_s))
@@ -140,13 +141,11 @@ class AnimationEditor::PlayControls < UIControls::BaseContainer
     end
     # Duration label
     add_control_at(:duration_label, DURATION_LABEL_X, DURATION_LABEL_Y,
-                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("Duration")))
+                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport, _INTL("Duration:")))
     # Duration value
     add_control_at(:duration_value, DURATION_VALUE_X, DURATION_VALUE_Y,
-                   UIControls::Label.new(
-                    200, LABEL_HEIGHT, self.viewport,
-                    _ISPRINTF("{1:.02f}s", @duration / @anim[:fps].to_f)
-                   ))
+                   UIControls::Label.new(200, LABEL_HEIGHT, self.viewport,
+                                         _ISPRINTF("{1:.02f}s", @duration / @anim[:fps].to_f)))
     @controls[:duration_value].x -= @controls[:duration_value].text_width
   end
 

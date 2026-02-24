@@ -266,6 +266,7 @@ class AnimationEditor::Timeline < UIControls::BaseContainer
     ret.duration = @duration
     ret.timeline_ox = @timeline_ox
     ret.selected_keyframe = @selected_keyframe
+    ret.color_scheme = @color_scheme
     return ret
   end
 

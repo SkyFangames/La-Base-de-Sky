@@ -28,7 +28,7 @@ class UIControls::Scrollbar < UIControls::BaseControl
   # Range is the total size of the large area that the scrollbar is able to
   # show part of.
   def range=(new_val)
-    raise "Can't set a scrollbar's range to 0!" if new_val == 0
+    raise "No se puede poner el rango de una barra de scroll en 0!" if new_val == 0
     @range = new_val
     @slider_size = (@tray_size * [@tray_size.to_f / @range, 1].min).round
     if @direction == :horizontal
@@ -81,11 +81,15 @@ class UIControls::Scrollbar < UIControls::BaseControl
 
   #-----------------------------------------------------------------------------
 
+  def draw_background
+    self.bitmap.fill_rect(@slider_tray.x, @slider_tray.y,
+                          @slider_tray.width, @slider_tray.height,
+                          get_color_of(:control_background))
+  end
+
   def refresh
     super
     return if !self.visible
-    # Draw the tray
-    self.bitmap.fill_rect(@slider_tray.x, @slider_tray.y, @slider_tray.width, @slider_tray.height, get_color_of(:background))
     # Draw the slider
     if @slider_size < @tray_size && !disabled?
       bar_color = get_color_of(:text)
