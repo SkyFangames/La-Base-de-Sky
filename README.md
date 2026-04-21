@@ -1,5 +1,13 @@
 # BASE DE SKY
 
+> # ⚠️ **Aviso importante**
+>
+> El desarrollo de la base de Sky se ha movido al siguiente repositorio de GitLab:
+> https://gitlab.com/la-base-de-sky/La-Base-de-Sky
+>
+> **No habrá más actualizaciones en este repositorio de GitHub.**
+
+
 **Creada por [Skyflyer](https://twitter.com/Sky_fangames) y [DPertierra](https://github.com/dpertierra)**
 
 ## Base de Pokémon Essentials en Español creada sobre la versión 21.1
