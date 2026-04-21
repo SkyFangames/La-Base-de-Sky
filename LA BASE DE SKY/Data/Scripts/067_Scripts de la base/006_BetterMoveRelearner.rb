@@ -156,9 +156,9 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
 
   def moves=(move_list)
     @moves = move_list
-    @index = @moves.length - 1 if @index >= @moves.length
+    @index = [@moves.length - 1, 0].max if @index >= @moves.length
     refresh_on_index_changed(@index)
-    @cursor.visible = false if @moves.empty?
+    @sprites[:cursor].visible = false if @moves.empty?
     refresh
   end
 
@@ -239,6 +239,7 @@ class UI::MoveReminderVisuals < UI::BaseVisuals
   end
 
   def draw_move_properties
+    return if @moves.empty?
     move = @moves[@index]
     move_data = GameData::Move.get(move[0])
     # Power
